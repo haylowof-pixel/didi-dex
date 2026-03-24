@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HUD</title>
+<style>
+/* ===== THEME VARIABLES ===== */
+:root {
+  --accent:#7c6aef; --accent-l:#9d8ff5;
+  --accent-glow:rgba(124,106,239,0.15); --accent-bg:rgba(124,106,239,0.08);
+  --accent-border:rgba(124,106,239,0.22);
+  --success:#2dd4a0; --danger:#ef4444; --warning:#f59e0b;
+  --bg-0:#000000; --bg-1:#0a0a0a; --bg-2:#111111;
+  --text-0:#edeef3; --text-1:#b8bac4; --text-2:#7d808e; --text-3:#4e5160;
+  --border-s:rgba(255,255,255,0.04); --border-m:rgba(255,255,255,0.07);
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --r-sm:6px; --r-md:8px; --r-lg:12px;
+  --starve:#2dd4a0; --torpor:#9d8ff5;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: transparent; overflow: hidden; height: 100%; }
+
+#widget {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.88);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border-s);
+  font-family: var(--font);
+  backdrop-filter: blur(16px);
+  -webkit-app-region: drag;
+  cursor: move;
+  transition: opacity .2s, border-color .2s;
+}
+#widget.clickthrough {
+  opacity: 0.65;
+  border-color: rgba(255,255,255,0.03);
+  cursor: default;
+}
+#widget.interactive {
+  opacity: 1;
+  border-color: var(--accent-glow);
+}
+
+/* ===== TOP ROW ===== */
+.w-top { display: flex; align-items: center; gap: 6px; }
+
+.w-name {
+  font-size: 10px; font-weight: 700; color: var(--text-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex: 1;
+}
+
+.w-mode-badge {
+  font-size: 7px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 1px 4px; border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+  display: none;
+}
+#widget.interactive .w-mode-badge { display: inline; color: var(--accent); background: var(--accent-bg); }
+
+.w-drag-hint {
+  font-size: 7px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  display: none;
+}
+#widget.interactive .w-drag-hint { display: inline; color: var(--accent); }
+
+.w-close {
+  border: none; background: transparent;
+  color: var(--text-3); font-size: 12px;
+  cursor: pointer; padding: 0 4px;
+  line-height: 1; margin-left: auto;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  display: none;
+}
+.w-close:hover { background: #c42b1c; color: white; }
+#widget.interactive .w-close { display: inline; }
+
+/* ===== MINI MODE: timers row ===== */
+.w-row { display: flex; gap: 14px; align-items: center; }
+.w-timer { display: flex; align-items: center; gap: 4px; }
+.w-ico { font-size: 10px; }
+.w-val {
+  font-size: 14px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3px;
+}
+.w-val.starve { color: var(--starve); }
+.w-val.torpor { color: var(--torpor); }
+.w-val.danger { color: var(--danger); animation: pulse 0.8s infinite; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ===== STANDARD MODE extras ===== */
+.w-bars { display: none; flex-direction: column; gap: 3px; margin-top: 4px; }
+
+.w-bar-row { display: flex; align-items: center; gap: 6px; }
+.w-bar-label { font-size: 7px; font-weight: 700; color: var(--text-3); text-transform: uppercase; width: 40px; }
+.w-bar-track { flex: 1; height: 3px; background: var(--bg-2); border-radius: 2px; overflow: hidden; }
+.w-bar-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+.w-bar-fill.starve-f { background: linear-gradient(90deg, #0d3d2e, var(--starve)); }
+.w-bar-fill.torpor-f { background: linear-gradient(90deg, #2e2260, var(--torpor)); }
+.w-bar-pct { font-size: 8px; font-weight: 700; color: var(--text-2); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.w-food-info { display: none; align-items: center; gap: 8px; margin-top: 2px; }
+.w-food-stat { font-size: 8px; color: var(--text-3); }
+.w-food-stat span { color: var(--starve); font-weight: 700; }
+
+/* ===== DETAILED MODE extras ===== */
+.w-detail { display: none; flex-direction: column; gap: 4px; margin-top: 4px; border-top: 1px solid var(--border-s); padding-top: 5px; }
+
+.w-narco-row { display: flex; align-items: center; gap: 6px; }
+.w-narco-item { display: flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; color: var(--text-2); }
+.w-narco-item .n-val { color: var(--torpor); font-variant-numeric: tabular-nums; }
+
+.w-breed-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 0; }
+.w-breed-label { font-size: 8px; font-weight: 700; color: var(--text-3); text-transform: uppercase; }
+.w-breed-time { font-size: 11px; font-weight: 800; color: var(--warning); font-variant-numeric: tabular-nums; }
+.w-breed-time.inactive { color: var(--text-3); }
+
+.w-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 2px; }
+.w-stat-cell { text-align: center; padding: 2px; border-radius: var(--r-sm); background: rgba(255,255,255,0.03); }
+.w-stat-name { font-size: 6px; font-weight: 700; color: var(--text-3); text-transform: uppercase; }
+.w-stat-val { font-size: 10px; font-weight: 800; color: var(--text-1); font-variant-numeric: tabular-nums; }
+
+/* ===== MODE DISPLAY RULES ===== */
+[data-mode="mini"] .w-bars,
+[data-mode="mini"] .w-food-info,
+[data-mode="mini"] .w-detail { display: none; }
+
+[data-mode="standard"] .w-bars { display: flex; }
+[data-mode="standard"] .w-food-info { display: flex; }
+[data-mode="standard"] .w-detail { display: none; }
+
+[data-mode="detailed"] .w-bars { display: flex; }
+[data-mode="detailed"] .w-food-info { display: flex; }
+[data-mode="detailed"] .w-detail { display: flex; }
+</style>
+</head>
+<body>
+<div id="widget" class="clickthrough" data-mode="mini">
+
+  <!-- Top row: dino name + badges + close -->
+  <div class="w-top">
+    <div class="w-name" id="wName">--</div>
+    <span class="w-mode-badge" id="wModeBadge">MINI</span>
+    <span class="w-drag-hint">DRAG</span>
+    <button class="w-close" onclick="if(window.api)window.api.widgetClose()" title="Fermer">✕</button>
+  </div>
+
+  <!-- Timer values (always visible) -->
+  <div class="w-row">
+    <div class="w-timer">
+      <span class="w-ico">🍖</span>
+      <span class="w-val starve" id="wStarve">--:--</span>
+    </div>
+    <div class="w-timer">
+      <span class="w-ico">💜</span>
+      <span class="w-val torpor" id="wTorpor">--:--</span>
+    </div>
+  </div>
+
+  <!-- Standard mode: progress bars -->
+  <div class="w-bars">
+    <div class="w-bar-row">
+      <span class="w-bar-label">Starve</span>
+      <div class="w-bar-track"><div class="w-bar-fill starve-f" id="wStarveBar" style="width:0%"></div></div>
+      <span class="w-bar-pct" id="wStarvePct">0%</span>
+    </div>
+    <div class="w-bar-row">
+      <span class="w-bar-label">Torpor</span>
+      <div class="w-bar-track"><div class="w-bar-fill torpor-f" id="wTorporBar" style="width:0%"></div></div>
+      <span class="w-bar-pct" id="wTorporPct">0%</span>
+    </div>
+  </div>
+
+  <!-- Standard mode: food info -->
+  <div class="w-food-info">
+    <span class="w-food-stat">Food: <span id="wFoodCur">0</span>/<span id="wFoodMax">0</span></span>
+    <span class="w-food-stat">Requis: <span id="wFoodReq">0</span></span>
+  </div>
+
+  <!-- Detailed mode: narcotics + breeding -->
+  <div class="w-detail">
+    <div class="w-narco-row">
+      <div class="w-narco-item">💊 Narco: <span class="n-val" id="wNarco">0</span></div>
+      <div class="w-narco-item">☠️ Bio: <span class="n-val" id="wBio">0</span></div>
+    </div>
+
+    <div class="w-breed-row">
+      <span class="w-breed-label">🥚 Incubation</span>
+      <span class="w-breed-time inactive" id="wBreedInc">--:--:--</span>
+    </div>
+    <div class="w-breed-row">
+      <span class="w-breed-label">🍼 Maturation</span>
+      <span class="w-breed-time inactive" id="wBreedMat">--:--:--</span>
+    </div>
+
+    <div class="w-stats-grid" id="wStatsGrid">
+      <!-- filled dynamically -->
+    </div>
+  </div>
+
+</div>
+<script>
+var widget = document.getElementById('widget');
+var MODES = ['mini', 'standard', 'detailed'];
+var MODE_SIZES = { mini: [220, 70], standard: [280, 140], detailed: [340, 260] };
+var currentMode = 'mini';
+
+// ===== MODE CYCLING =====
+function setMode(mode) {
+  currentMode = mode;
+  widget.setAttribute('data-mode', mode);
+  document.getElementById('wModeBadge').textContent = mode.toUpperCase();
+  // Notify main process to resize
+  if (window.api && window.api.widgetSetMode) {
+    window.api.widgetSetMode(mode, MODE_SIZES[mode][0], MODE_SIZES[mode][1]);
+  }
+}
+
+function cycleMode() {
+  var idx = MODES.indexOf(currentMode);
+  var next = MODES[(idx + 1) % MODES.length];
+  setMode(next);
+}
+
+// Listen for mode cycle from main process (keyboard shortcut)
+if (window.api && window.api.onWidgetCycleMode) {
+  window.api.onWidgetCycleMode(function() {
+    cycleMode();
+  });
+}
+
+// ===== DATA UPDATES =====
+if (window.api && window.api.onWidgetDataUpdate) {
+  window.api.onWidgetDataUpdate(function(data) {
+    if (data.dinoName) document.getElementById('wName').textContent = data.dinoName;
+
+    // Starve timer
+    if (data.starveTime) {
+      var el = document.getElementById('wStarve');
+      el.textContent = data.starveTime;
+      var parts = data.starveTime.split(':');
+      el.classList.toggle('danger', parseInt(parts[0]) < 5);
+    }
+
+    // Torpor timer
+    if (data.torporTime) {
+      var el2 = document.getElementById('wTorpor');
+      el2.textContent = data.torporTime;
+      var parts2 = data.torporTime.split(':');
+      el2.classList.toggle('danger', parseInt(parts2[0]) < 5);
+    }
+
+    // Progress bars (standard+)
+    if (data.starvePercent !== undefined) {
+      document.getElementById('wStarveBar').style.width = data.starvePercent + '%';
+      document.getElementById('wStarvePct').textContent = Math.round(data.starvePercent) + '%';
+    }
+    if (data.torporPercent !== undefined) {
+      document.getElementById('wTorporBar').style.width = data.torporPercent + '%';
+      document.getElementById('wTorporPct').textContent = Math.round(data.torporPercent) + '%';
+    }
+
+    // Food info (standard+)
+    if (data.foodCurrent !== undefined) document.getElementById('wFoodCur').textContent = data.foodCurrent;
+    if (data.foodMax !== undefined) document.getElementById('wFoodMax').textContent = data.foodMax;
+    if (data.foodRequired !== undefined) document.getElementById('wFoodReq').textContent = data.foodRequired;
+
+    // Narcotics (detailed)
+    if (data.narcoCount !== undefined) document.getElementById('wNarco').textContent = data.narcoCount;
+    if (data.bioCount !== undefined) document.getElementById('wBio').textContent = data.bioCount;
+
+    // Breeding (detailed)
+    if (data.breeding) {
+      var inc = document.getElementById('wBreedInc');
+      var mat = document.getElementById('wBreedMat');
+      if (data.breeding.incubation) { inc.textContent = data.breeding.incubation; inc.classList.remove('inactive'); }
+      if (data.breeding.maturation) { mat.textContent = data.breeding.maturation; mat.classList.remove('inactive'); }
+    }
+
+    // Base stats (detailed)
+    if (data.baseStats && Object.keys(data.baseStats).length > 0) {
+      var grid = document.getElementById('wStatsGrid');
+      var html = '';
+      var names = ['Health','Stamina','Oxygen','Food','Weight','Melee Damage','Movement Speed','Torpidity'];
+      names.forEach(function(n) {
+        if (data.baseStats[n] !== undefined) {
+          var short = n.replace('Melee Damage','Melee').replace('Movement Speed','Speed');
+          html += '<div class="w-stat-cell"><div class="w-stat-name">' + short + '</div><div class="w-stat-val">' + data.baseStats[n] + '</div></div>';
+        }
+      });
+      grid.innerHTML = html;
+    }
+  });
+}
+
+// ===== CLICK-THROUGH =====
+if (window.api && window.api.onWidgetClickThroughChanged) {
+  window.api.onWidgetClickThroughChanged(function(isClickThrough) {
+    if (isClickThrough) {
+      widget.classList.remove('interactive');
+      widget.classList.add('clickthrough');
+    } else {
+      widget.classList.remove('clickthrough');
+      widget.classList.add('interactive');
+    }
+  });
+}
+</script>
+</body>
+</html>

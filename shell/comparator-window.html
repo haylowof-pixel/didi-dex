@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Comparateur</title>
+<style>
+/* ===== THEME VARIABLES ===== */
+:root {
+  --accent:#8b5cf6; --accent-hover:#a78bfa; --accent-dim:#6d45d4;
+  --accent-glow:rgba(139,92,246,0.25); --accent-bg:#1a1028;
+  --accent-bg-hover:#251540; --accent-border:#2a1a40; --accent-text:#c4b5fd;
+  --success:#4ade80; --success-bg:#0a1a14; --success-border:#153020;
+  --danger:#ef4444; --danger-bg:#1a0a0a; --danger-border:#2a1515;
+  --warning:#f59e0b; --warning-bg:#1a1408; --warning-border:#302010;
+  --info:#60a5fa;
+  --bg-0:#000; --bg-1:#050505; --bg-2:#080808; --bg-3:#0a0a0a;
+  --bg-4:#0d0d0d; --bg-5:#111; --bg-6:#151515; --bg-7:#1a1a1a;
+  --text-0:#e0e0e0; --text-1:#ccc; --text-2:#888; --text-3:#555; --text-4:#333;
+  --border-s:rgba(255,255,255,0.04); --border-1:#1a1a1a; --border-2:#2a2a2a;
+  --bar-h:34px; --font:'Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --r-sm:4px; --r-md:6px; --r-lg:8px;
+  --starve:#4aedc4; --torpor:#b088dd;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: var(--bg-0); color: #d0d0d0; }
+
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* Title bar */
+#cmp-bar {
+  display: flex; align-items: center; height: var(--bar-h); padding: 0 12px;
+  background: var(--bg-3); border-bottom: 1px solid var(--border-s);
+  -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
+}
+.cmp-title { font-size: 12px; font-weight: 600; color: #666; }
+.cmp-spacer { flex: 1; }
+.cmp-btn {
+  -webkit-app-region: no-drag; height: 24px; padding: 0 10px;
+  border: 1px solid #222; border-radius: 5px;
+  background: #111; color: #888; font-size: 10px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .1s;
+}
+.cmp-btn:hover { background: #1a1a1a; color: #ccc; }
+.cmp-btn.pin { background: var(--accent-bg); color: var(--accent-hover); border-color: var(--accent-border); }
+.cmp-close {
+  -webkit-app-region: no-drag; width: 34px; height: 28px; border: none;
+  background: transparent; color: #555; font-size: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .1s;
+}
+.cmp-close:hover { background: #c42b1c; color: #fff; }
+
+/* Content */
+#cmp-content {
+  flex: 1; display: flex; overflow-y: auto; padding: 12px;
+}
+
+/* Columns */
+.dino-col {
+  flex: 1; display: flex; flex-direction: column; gap: 6px;
+  padding: 12px; border-radius: 10px;
+}
+.dino-col.left { background: #0a0d14; border: 1px solid #151a28; margin-right: 6px; }
+.dino-col.right { background: #0a140d; border: 1px solid #152818; margin-left: 6px; }
+
+.vs-divider {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 900; color: #333;
+  min-width: 36px; flex-shrink: 0;
+}
+
+.dino-header { text-align: center; margin-bottom: 6px; }
+.dino-header-name {
+  font-size: 16px; font-weight: 800; color: #e0e0e0;
+  min-height: 22px;
+}
+.dino-header-sub { font-size: 9px; color: #444; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+.stat-row-cmp {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 8px; border-radius: 5px;
+  background: rgba(255,255,255,0.02);
+}
+.stat-row-cmp:nth-child(even) { background: rgba(255,255,255,0.04); }
+.stat-name-cmp { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
+.stat-val-cmp { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat-val-cmp.better { color: var(--success); }
+.stat-val-cmp.worse { color: var(--danger); }
+.stat-val-cmp.neutral { color: #888; }
+
+.empty-state {
+  display: flex; align-items: center; justify-content: center;
+  flex: 1; color: #333; font-size: 12px; text-align: center; padding: 20px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="cmp-bar">
+    <span class="cmp-title">⚖️ Comparateur de Dinos</span>
+    <div class="cmp-spacer"></div>
+    <button class="cmp-btn pin" id="pinBtn" onclick="pinCurrent()">📌 Pin Dino 1</button>
+    <button class="cmp-btn" id="windowPinBtn" onclick="toggleWindowPin()" title="Keep on top" style="font-size:11px;padding:0 6px;">📌</button>
+    <button class="cmp-close" onclick="window.api.comparatorClose()">✕</button>
+  </div>
+
+  <div id="cmp-content">
+    <div class="dino-col left" id="col1">
+      <div class="dino-header">
+        <div class="dino-header-name" id="name1">—</div>
+        <div class="dino-header-sub">PINNED</div>
+      </div>
+      <div id="stats1" class="empty-state">Navigue vers un dino<br>puis clique 📌 Pin</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="dino-col right" id="col2">
+      <div class="dino-header">
+        <div class="dino-header-name" id="name2">—</div>
+        <div class="dino-header-sub">CURRENT</div>
+      </div>
+      <div id="stats2" class="empty-state">En attente de données...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var STAT_LABELS = ['Health','Stamina','Oxygen','Food','Weight','Melee Damage','Movement Speed','Torpidity'];
+var pinnedData = null;
+var currentData = null;
+
+function pinCurrent() {
+  if (currentData) {
+    pinnedData = JSON.parse(JSON.stringify(currentData));
+    renderAll();
+    document.getElementById('pinBtn').textContent = '📌 Re-Pin';
+  }
+}
+
+function renderStats(containerId, data, compareData, isHigherBetter) {
+  var container = document.getElementById(containerId);
+  if (!data || !data.baseStats || Object.keys(data.baseStats).length === 0) {
+    container.innerHTML = '<div class="empty-state">Pas de stats disponibles</div>';
+    return;
+  }
+  var html = '';
+  STAT_LABELS.forEach(function(stat) {
+    var val = data.baseStats[stat];
+    if (val === undefined) return;
+    var cls = 'neutral';
+    if (compareData && compareData.baseStats && compareData.baseStats[stat] !== undefined) {
+      var other = compareData.baseStats[stat];
+      if (val > other) cls = 'better';
+      else if (val < other) cls = 'worse';
+    }
+    html += '<div class="stat-row-cmp">';
+    html += '<span class="stat-name-cmp">' + stat + '</span>';
+    html += '<span class="stat-val-cmp ' + cls + '">' + val + '</span>';
+    html += '</div>';
+  });
+  container.innerHTML = html || '<div class="empty-state">Pas de stats</div>';
+}
+
+function renderAll() {
+  if (pinnedData) {
+    document.getElementById('name1').textContent = pinnedData.dinoName || '—';
+    renderStats('stats1', pinnedData, currentData);
+  }
+  if (currentData) {
+    document.getElementById('name2').textContent = currentData.dinoName || '—';
+    renderStats('stats2', currentData, pinnedData);
+  }
+}
+
+if (window.api && window.api.onComparatorDataUpdate) {
+  window.api.onComparatorDataUpdate(function(data) {
+    currentData = data;
+    renderAll();
+  });
+}
+if (window.api && window.api.onDinoPinned) {
+  window.api.onDinoPinned(function(data) {
+    pinnedData = data;
+    renderAll();
+  });
+}
+
+// ===== WINDOW PIN TOGGLE =====
+var windowPinned = true;
+document.getElementById('windowPinBtn').classList.add('pin');
+function toggleWindowPin() {
+  if (window.api && window.api.comparatorTogglePin) {
+    window.api.comparatorTogglePin();
+  }
+}
+if (window.api && window.api.onComparatorPinChanged) {
+  window.api.onComparatorPinChanged(function(val) {
+    windowPinned = val;
+    var btn = document.getElementById('windowPinBtn');
+    btn.classList.toggle('pin', val);
+  });
+}
+</script>
+</body>
+</html>

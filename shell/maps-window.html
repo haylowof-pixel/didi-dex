@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+<title>Minimap</title>
+<style>
+/* ===== THEME VARIABLES ===== */
+:root {
+  --accent:#7c6aef; --accent-hover:#9d8ff5; --accent-dim:#6354c4;
+  --accent-glow:rgba(124,106,239,0.15); --accent-bg:rgba(124,106,239,0.08);
+  --accent-bg-hover:rgba(124,106,239,0.12); --accent-border:rgba(124,106,239,0.22); --accent-text:#9d8ff5;
+  --success:#2dd4a0; --success-bg:rgba(45,212,160,0.08); --success-border:rgba(45,212,160,0.20);
+  --danger:#ef4444; --danger-bg:rgba(239,68,68,0.08); --danger-border:rgba(239,68,68,0.20);
+  --warning:#f59e0b; --warning-bg:rgba(245,158,11,0.08); --warning-border:rgba(245,158,11,0.20);
+  --info:#60a5fa;
+  --bg-0:#000000; --bg-1:#0a0a0a; --bg-2:#111111; --bg-3:#181818;
+  --bg-4:#1e1e1e; --bg-5:#222222; --bg-6:#262626; --bg-7:#2b2b2b;
+  --text-0:#edeef3; --text-1:#b8bac4; --text-2:#7d808e; --text-3:#4e5160; --text-4:rgba(255,255,255,0.10);
+  --border-s:rgba(255,255,255,0.04); --border-m:rgba(255,255,255,0.07); --border-1:rgba(255,255,255,0.07); --border-2:rgba(255,255,255,0.12);
+  --bar-h:34px; --font:'Inter',system-ui,sans-serif;
+  --r-sm:6px; --r-md:8px; --r-lg:12px;
+  --starve:#2dd4a0; --torpor:#9d8ff5;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: var(--bg-0); color: var(--text-1); }
+
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ===== TITLE BAR ===== */
+#maps-bar {
+  display: flex; align-items: center; height: var(--bar-h); padding: 0 6px 0 10px;
+  background: var(--bg-2); border-bottom: 1px solid var(--border-s);
+  -webkit-app-region: drag; flex-shrink: 0; gap: 4px;
+}
+.bar-title {
+  font-size: 10px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  display: flex; align-items: center; gap: 5px;
+}
+.bar-title .dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 4px var(--accent-glow);
+}
+.bar-spacer { flex: 1; }
+
+.bar-btn-s {
+  -webkit-app-region: no-drag; height: 22px; padding: 0 7px;
+  border: 1px solid var(--border-m); border-radius: var(--r-sm);
+  background: var(--bg-0); color: var(--text-3); font-size: 9px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .1s;
+  display: flex; align-items: center; gap: 3px;
+}
+.bar-btn-s:hover { background: var(--bg-2); color: var(--text-2); border-color: var(--border-2); }
+.bar-btn-s.active { background: var(--accent-bg); color: var(--accent-hover); border-color: var(--accent-border); }
+
+.maps-close {
+  -webkit-app-region: no-drag; width: 30px; height: 24px; border: none;
+  background: transparent; color: var(--text-3); font-size: 11px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .1s;
+  border-radius: var(--r-sm);
+}
+.maps-close:hover { background: #c42b1c; color: #fff; }
+
+/* ===== MAIN LAYOUT ===== */
+#main-wrap {
+  flex: 1; display: flex; overflow: hidden; position: relative;
+}
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  width: 140px; flex-shrink: 0; display: flex; flex-direction: column;
+  background: var(--bg-0); border-right: 1px solid var(--border-s);
+  overflow-y: auto; overflow-x: hidden; transition: width .2s, opacity .2s;
+}
+#sidebar.collapsed { width: 0; opacity: 0; overflow: hidden; }
+
+.sb-section { padding: 8px 8px; }
+.sb-label {
+  font-size: 8px; font-weight: 700; color: var(--text-4);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+
+/* ===== SIDEBAR TABS ===== */
+.sb-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border-s);
+  flex-shrink: 0;
+}
+.sb-tab {
+  flex: 1; padding: 6px 4px; border: none; background: transparent;
+  color: var(--text-3); font-size: 8px; font-weight: 700; font-family: inherit;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  cursor: pointer; transition: all .1s; text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sb-tab:hover { color: var(--text-2); background: rgba(255,255,255,0.02); }
+.sb-tab.active { color: var(--accent-hover); border-bottom-color: var(--accent-hover); background: rgba(124,106,239,0.06); }
+
+.sb-tab-content { display: none; flex: 1; overflow-y: auto; }
+.sb-tab-content.active { display: flex; flex-direction: column; }
+
+/* Map list in sidebar */
+.map-list { display: flex; flex-direction: column; gap: 2px; }
+.map-item {
+  padding: 5px 7px; border-radius: var(--r-sm); font-size: 10px; font-weight: 600;
+  color: var(--text-3); cursor: pointer; transition: all .1s; border: none;
+  background: transparent; font-family: inherit; text-align: left;
+  display: flex; align-items: center; gap: 5px; width: 100%;
+}
+.map-item:hover { background: rgba(124,106,239,0.08); color: var(--text-2); transform: translateX(2px); }
+.map-item.active { background: rgba(124,106,239,0.12); color: var(--accent-hover); }
+.map-item .m-ico { font-size: 11px; }
+
+/* Layer toggles */
+.layer-list { display: flex; flex-direction: column; gap: 2px; }
+.layer-toggle {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 7px; border-radius: var(--r-sm); font-size: 10px; font-weight: 600;
+  color: var(--text-3); cursor: pointer; transition: all .1s; border: none;
+  background: transparent; font-family: inherit; text-align: left; width: 100%;
+}
+.layer-toggle:hover { background: rgba(124,106,239,0.08); color: var(--text-2); transform: translateX(2px); }
+.layer-toggle.active { color: var(--accent-hover); }
+.layer-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  border: 1px solid var(--text-4); background: transparent;
+  flex-shrink: 0; transition: all .15s;
+}
+.layer-toggle.active .layer-dot { background: var(--accent-hover); border-color: var(--accent-hover); box-shadow: 0 0 4px var(--accent-glow); }
+
+.layer-group-label {
+  font-size: 8px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 8px 7px 4px; cursor: pointer; display: flex;
+  align-items: center; gap: 5px; user-select: none;
+  transition: color .15s;
+}
+.layer-group-label:hover { color: var(--accent-hover); }
+.layer-group-label .arrow {
+  font-size: 7px; transition: transform .2s; display: inline-block;
+}
+.layer-group-label.open .arrow { transform: rotate(90deg); }
+.layer-group-list {
+  display: none; padding-left: 2px;
+}
+.layer-group-list.open { display: block; }
+
+/* Coords */
+.coord-row { display: flex; gap: 4px; margin-top: 4px; }
+.coord-input {
+  flex: 1; width: 0; padding: 4px 5px; background: var(--bg-0);
+  border: 1px solid var(--border-m); border-radius: var(--r-sm);
+  color: var(--text-2); font-size: 10px; font-weight: 600;
+  font-family: inherit; outline: none; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.coord-input::placeholder { color: var(--text-4); }
+.coord-input:focus { border-color: var(--accent-border); color: var(--accent-hover); }
+
+.coord-go-btn {
+  padding: 4px 6px; background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: var(--r-sm); color: var(--accent-hover); font-size: 9px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all .1s; margin-top: 4px;
+  width: 100%; text-align: center;
+}
+.coord-go-btn:hover { background: var(--accent-bg-hover); border-color: #2e1a60; }
+
+/* Opacity slider in sidebar */
+.sb-slider-wrap {
+  display: flex; align-items: center; gap: 6px;
+}
+.sb-slider {
+  flex: 1; -webkit-appearance: none; height: 2px;
+  background: var(--border-2); border-radius: 1px; outline: none;
+}
+.sb-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 10px; height: 10px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+}
+.sb-slider-val {
+  font-size: 9px; font-weight: 700; color: var(--text-3);
+  min-width: 22px; text-align: right; font-variant-numeric: tabular-nums;
+}
+
+/* Image load buttons */
+.img-btn-row { display: flex; gap: 4px; margin-top: 4px; }
+.img-btn {
+  flex: 1; padding: 4px 0; background: var(--bg-0); border: 1px solid var(--border-m);
+  border-radius: var(--r-sm); color: var(--text-3); font-size: 8px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .1s; text-align: center;
+}
+.img-btn:hover { background: var(--bg-2); color: var(--text-2); border-color: var(--border-2); }
+.img-btn.danger:hover { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.20); }
+
+/* ===== MAP CANVAS ===== */
+#map-container {
+  flex: 1; position: relative; overflow: hidden; background: var(--bg-1);
+}
+
+#map-canvas {
+  width: 100%; height: 100%; display: block; cursor: crosshair;
+}
+
+/* Tooltip */
+#map-tooltip {
+  position: absolute; display: none; padding: 5px 8px;
+  background: rgba(8,9,12,0.95); border: 1px solid var(--border-m);
+  border-radius: var(--r-md); font-size: 9px; color: var(--text-1);
+  pointer-events: none; z-index: 100; white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+#map-tooltip .tt-title { color: var(--accent-hover); font-weight: 700; margin-bottom: 2px; }
+#map-tooltip .tt-coord { color: var(--text-3); font-size: 8px; font-variant-numeric: tabular-nums; }
+
+/* ===== BOTTOM STATUS BAR ===== */
+#statusbar {
+  display: flex; align-items: center; height: 20px; padding: 0 8px;
+  background: var(--bg-0); border-top: 1px solid var(--border-s);
+  flex-shrink: 0; gap: 8px;
+}
+.status-text {
+  font-size: 8px; color: var(--text-4); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.status-coords {
+  font-size: 9px; color: var(--text-3); font-weight: 700;
+  font-variant-numeric: tabular-nums; margin-left: auto;
+}
+.status-zoom {
+  font-size: 8px; color: var(--text-4); font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Title Bar -->
+  <div id="maps-bar">
+    <span class="bar-title"><span class="dot"></span>MINIMAP</span>
+    <div class="bar-spacer"></div>
+    <button class="bar-btn-s" id="resetBtn" onclick="resetView()" title="Reset view">⌂</button>
+    <button class="bar-btn-s" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+    <button class="bar-btn-s" id="pinBtn" onclick="togglePin()" title="Pin on top">📌</button>
+    <button class="maps-close" onclick="window.api.mapsClose()" title="Close">✕</button>
+  </div>
+
+  <!-- Main content -->
+  <div id="main-wrap">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <!-- Tabs -->
+      <div class="sb-tabs">
+        <button class="sb-tab active" onclick="switchTab('maps', this)">Maps</button>
+        <button class="sb-tab" onclick="switchTab('layers', this)">Layers</button>
+      </div>
+
+      <!-- Tab: Maps -->
+      <div class="sb-tab-content active" id="tab-maps">
+        <div class="sb-section">
+          <div class="map-list" id="mapList">
+            <button class="map-item active" onclick="switchMap('the-island','The Island',this)"><span class="m-ico">🏝️</span>The Island</button>
+            <button class="map-item" onclick="switchMap('scorched-earth','Scorched Earth',this)"><span class="m-ico">🏜️</span>Scorched Earth</button>
+            <button class="map-item" onclick="switchMap('aberration','Aberration',this)"><span class="m-ico">🌑</span>Aberration</button>
+            <button class="map-item" onclick="switchMap('extinction','Extinction',this)"><span class="m-ico">🌆</span>Extinction</button>
+            <button class="map-item" onclick="switchMap('ragnarok','Ragnarok',this)"><span class="m-ico">⛰️</span>Ragnarok</button>
+            <button class="map-item" onclick="switchMap('valguero','Valguero',this)"><span class="m-ico">🌲</span>Valguero</button>
+            <button class="map-item" onclick="switchMap('genesis','Genesis',this)"><span class="m-ico">🧬</span>Genesis</button>
+            <button class="map-item" onclick="switchMap('genesis-2','Genesis 2',this)"><span class="m-ico">🚀</span>Genesis 2</button>
+            <button class="map-item" onclick="switchMap('crystal-isles','Crystal Isles',this)"><span class="m-ico">💎</span>Crystal Isles</button>
+            <button class="map-item" onclick="switchMap('lost-island','Lost Island',this)"><span class="m-ico">🌴</span>Lost Island</button>
+            <button class="map-item" onclick="switchMap('fjordur','Fjordur',this)"><span class="m-ico">❄️</span>Fjordur</button>
+            <button class="map-item" onclick="switchMap('the-center','The Center',this)"><span class="m-ico">🌊</span>The Center</button>
+            <button class="map-item" onclick="switchMap('astraeos','Astraeos',this)"><span class="m-ico">🌌</span>Astraeos</button>
+          </div>
+        </div>
+
+        <div class="sb-section" style="border-top: 1px solid rgba(255,255,255,0.03);">
+          <div class="sb-label">Opacity</div>
+          <div class="sb-slider-wrap">
+            <input type="range" class="sb-slider" id="opacSlider" min="30" max="100" value="100" oninput="setOpacity(this.value)">
+            <span class="sb-slider-val" id="opacVal">100</span>
+          </div>
+        </div>
+
+        <div class="sb-section" style="border-top: 1px solid rgba(255,255,255,0.03);">
+          <div class="sb-label">Coords</div>
+          <div class="coord-row">
+            <input type="number" class="coord-input" id="coordLat" placeholder="LAT" step="0.1">
+            <input type="number" class="coord-input" id="coordLon" placeholder="LON" step="0.1">
+          </div>
+          <button class="coord-go-btn" onclick="goToCoords()">Go</button>
+        </div>
+
+        <div class="sb-section" style="border-top: 1px solid rgba(255,255,255,0.03);">
+          <div class="sb-label">Background</div>
+          <div class="img-btn-row">
+            <button class="img-btn" onclick="loadMapImage()">Load Image</button>
+            <button class="img-btn danger" id="clearImgBtn" onclick="clearMapImage()" style="display:none;">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Layers -->
+      <div class="sb-tab-content" id="tab-layers">
+        <div class="sb-section">
+
+          <button class="layer-toggle" onclick="toggleLayer('spawn', 'all', this)" style="margin-bottom:4px"><span class="layer-dot"></span>All Spawns</button>
+
+          <!-- Carnivores -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Carnivores</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Rex',this)"><span class="layer-dot"></span>Rex</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Raptor',this)"><span class="layer-dot"></span>Raptor</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Spino',this)"><span class="layer-dot"></span>Spino</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Carno',this)"><span class="layer-dot"></span>Carnotaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Allo',this)"><span class="layer-dot"></span>Allosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Giga',this)"><span class="layer-dot"></span>Giganotosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Baryonyx',this)"><span class="layer-dot"></span>Baryonyx</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Yutyrannus',this)"><span class="layer-dot"></span>Yutyrannus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Thyla',this)"><span class="layer-dot"></span>Thylacoleo</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','DireWolf',this)"><span class="layer-dot"></span>Dire Wolf</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','DireBear',this)"><span class="layer-dot"></span>Dire Bear</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Sabertooth',this)"><span class="layer-dot"></span>Sabertooth</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Sarco',this)"><span class="layer-dot"></span>Sarco</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Megalosaurus',this)"><span class="layer-dot"></span>Megalosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Kaprosuchus',this)"><span class="layer-dot"></span>Kaprosuchus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Terror Bird',this)"><span class="layer-dot"></span>Terror Bird</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Dilo',this)"><span class="layer-dot"></span>Dilophosaur</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Compy',this)"><span class="layer-dot"></span>Compy</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Troodon',this)"><span class="layer-dot"></span>Troodon</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Dimetrodon',this)"><span class="layer-dot"></span>Dimetrodon</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Scorpion',this)"><span class="layer-dot"></span>Pulmonoscorpius</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Araneo',this)"><span class="layer-dot"></span>Araneo</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Titanoboa',this)"><span class="layer-dot"></span>Titanoboa</button>
+          </div>
+
+          <!-- Herbivores -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Herbivores</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Trike',this)"><span class="layer-dot"></span>Triceratops</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Stego',this)"><span class="layer-dot"></span>Stegosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Bronto',this)"><span class="layer-dot"></span>Brontosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Ankylo',this)"><span class="layer-dot"></span>Ankylosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Theri',this)"><span class="layer-dot"></span>Therizinosaur</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Doedicurus',this)"><span class="layer-dot"></span>Doedicurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Mammoth',this)"><span class="layer-dot"></span>Mammoth</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','WoollyRhino',this)"><span class="layer-dot"></span>Woolly Rhino</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Parasaur',this)"><span class="layer-dot"></span>Parasaur</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Castoroides',this)"><span class="layer-dot"></span>Castoroides</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Pachy',this)"><span class="layer-dot"></span>Pachycephalosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Paracer',this)"><span class="layer-dot"></span>Paraceratherium</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Diplo',this)"><span class="layer-dot"></span>Diplodocus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Iguanodon',this)"><span class="layer-dot"></span>Iguanodon</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Moschops',this)"><span class="layer-dot"></span>Moschops</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Phiomia',this)"><span class="layer-dot"></span>Phiomia</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Dodo',this)"><span class="layer-dot"></span>Dodo</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Lystro',this)"><span class="layer-dot"></span>Lystrosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','GiantBee',this)"><span class="layer-dot"></span>Giant Bee</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Equus',this)"><span class="layer-dot"></span>Equus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Ovis',this)"><span class="layer-dot"></span>Ovis</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Turtle',this)"><span class="layer-dot"></span>Carbonemys</button>
+          </div>
+
+          <!-- Flyers -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Flyers</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Argentavis',this)"><span class="layer-dot"></span>Argentavis</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Pteranodon',this)"><span class="layer-dot"></span>Pteranodon</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Quetzal',this)"><span class="layer-dot"></span>Quetzal</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Tapejara',this)"><span class="layer-dot"></span>Tapejara</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Pelagornis',this)"><span class="layer-dot"></span>Pelagornis</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Dimorphodon',this)"><span class="layer-dot"></span>Dimorphodon</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Ichthyornis',this)"><span class="layer-dot"></span>Ichthyornis</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Griffin',this)"><span class="layer-dot"></span>Griffin</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','SnowOwl',this)"><span class="layer-dot"></span>Snow Owl</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Wyvern',this)"><span class="layer-dot"></span>Wyvern</button>
+          </div>
+
+          <!-- Marine -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Marine</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Megalodon',this)"><span class="layer-dot"></span>Megalodon</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Mosa',this)"><span class="layer-dot"></span>Mosasaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Plesiosaur',this)"><span class="layer-dot"></span>Plesiosaur</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Tuso',this)"><span class="layer-dot"></span>Tusoteuthis</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Basilosaurus',this)"><span class="layer-dot"></span>Basilosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Ichthy',this)"><span class="layer-dot"></span>Ichthyosaurus</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Manta',this)"><span class="layer-dot"></span>Manta</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Angler',this)"><span class="layer-dot"></span>Angler</button>
+            <button class="layer-toggle" onclick="toggleLayer('spawn','Dunkleosteus',this)"><span class="layer-dot"></span>Dunkleosteus</button>
+          </div>
+
+          <!-- Resources -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Resources</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('resource','Metal',this)"><span class="layer-dot"></span>Metal</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Crystal',this)"><span class="layer-dot"></span>Crystal</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Obsidian',this)"><span class="layer-dot"></span>Obsidian</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Oil',this)"><span class="layer-dot"></span>Oil</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Silica Pearls',this)"><span class="layer-dot"></span>Silica Pearls</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Polymer',this)"><span class="layer-dot"></span>Organic Polymer</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Black Pearl',this)"><span class="layer-dot"></span>Black Pearls</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Beaver Dam',this)"><span class="layer-dot"></span>Beaver Dams</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Sulfur',this)"><span class="layer-dot"></span>Sulfur</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Cactus',this)"><span class="layer-dot"></span>Cactus Sap</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Element',this)"><span class="layer-dot"></span>Element Dust</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Fungal Wood',this)"><span class="layer-dot"></span>Fungal Wood</button>
+            <button class="layer-toggle" onclick="toggleLayer('resource','Sap',this)"><span class="layer-dot"></span>Sap</button>
+          </div>
+
+          <!-- Points of Interest -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Points of Interest</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('poi','Cave',this)"><span class="layer-dot"></span>Caves</button>
+            <button class="layer-toggle" onclick="toggleLayer('poi','Artifact',this)"><span class="layer-dot"></span>Artifacts</button>
+            <button class="layer-toggle" onclick="toggleLayer('poi','Obelisk',this)"><span class="layer-dot"></span>Obelisks</button>
+          </div>
+
+          <!-- Custom -->
+          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Custom</div>
+          <div class="layer-group-list">
+            <button class="layer-toggle" onclick="toggleLayer('custom','Markers',this)"><span class="layer-dot"></span>My Markers</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Canvas -->
+    <div id="map-container">
+      <canvas id="map-canvas"></canvas>
+      <div id="map-tooltip"></div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div id="statusbar">
+    <span class="status-text" id="statusMap">The Island</span>
+    <span class="status-zoom" id="statusZoom">x1.0</span>
+    <span class="status-coords" id="statusCoords"></span>
+  </div>
+</div>
+
+<script>
+// ===================================================================
+//  ARK MAP DATA
+// ===================================================================
+var MAPS = {
+  'the-island': {
+    name: 'The Island',
+    biomes: [
+      { name: 'Snow',       color: 'rgba(160,190,220,0.12)', rect: [8,8,28,40] },
+      { name: 'Mountains',  color: 'rgba(120,120,120,0.10)', rect: [25,35,48,72] },
+      { name: 'Redwood',    color: 'rgba(100,50,15,0.12)',   rect: [43,22,58,48] },
+      { name: 'Swamp',      color: 'rgba(50,80,25,0.12)',    rect: [52,58,75,82] },
+      { name: 'Jungle',     color: 'rgba(25,100,25,0.10)',   rect: [60,8,88,55] },
+      { name: 'Grasslands', color: 'rgba(50,130,50,0.08)',   rect: [46,8,60,22] },
+      { name: 'Beach South',color: 'rgba(180,160,90,0.06)',  rect: [86,8,93,92] },
+      { name: 'Beach East', color: 'rgba(180,160,90,0.06)',  rect: [8,88,92,93] },
+    ],
+    pois: {
+      obelisks: [
+        { lat: 58.8, lon: 22.5, name: 'Green Obelisk', color: '#00cc44' },
+        { lat: 18.2, lon: 22.8, name: 'Blue Obelisk',  color: '#4488ff' },
+        { lat: 35.5, lon: 83.5, name: 'Red Obelisk',   color: '#ff4444' },
+      ],
+      caves: [
+        { lat: 41.5, lon: 46.9, name: 'Central Cave' },
+        { lat: 68.2, lon: 56.2, name: 'Upper South Cave' },
+        { lat: 80.3, lon: 49.5, name: 'Lower South Cave' },
+        { lat: 19.3, lon: 19.0, name: 'North West Cave' },
+        { lat: 14.7, lon: 85.6, name: 'North East Cave' },
+        { lat: 43.6, lon: 61.2, name: 'Lava Cave' },
+        { lat: 62.7, lon: 37.3, name: 'Swamp Cave' },
+        { lat: 29.1, lon: 31.8, name: 'Snow Cave' },
+      ],
+      artifacts: [
+        { lat: 80.3, lon: 53.5, name: 'Artifact of the Hunter' },
+        { lat: 68.2, lon: 56.2, name: 'Artifact of the Pack' },
+        { lat: 41.5, lon: 46.9, name: 'Artifact of the Massive' },
+        { lat: 14.7, lon: 85.6, name: 'Artifact of the Devious' },
+        { lat: 19.3, lon: 19.0, name: 'Artifact of the Clever' },
+        { lat: 62.7, lon: 37.3, name: 'Artifact of the Brute' },
+        { lat: 43.6, lon: 61.2, name: 'Artifact of the Immune' },
+        { lat: 29.1, lon: 31.8, name: 'Artifact of the Strong' },
+        { lat: 24.5, lon: 39.2, name: 'Artifact of the Skylord' },
+      ],
+    },
+    spawns: {
+      // Carnivores
+      'Rex':         { color: '#ff4444', zones: [{lat:35,lon:55,r:12},{lat:22,lon:65,r:8},{lat:42,lon:48,r:7},{lat:18,lon:50,r:8}] },
+      'Raptor':      { color: '#44ff44', zones: [{lat:70,lon:35,r:18},{lat:55,lon:25,r:14},{lat:60,lon:70,r:12},{lat:82,lon:45,r:10}] },
+      'Spino':       { color: '#ff88ff', zones: [{lat:55,lon:40,r:8},{lat:65,lon:45,r:8},{lat:48,lon:35,r:6},{lat:60,lon:65,r:10}] },
+      'Carno':       { color: '#ff6644', zones: [{lat:35,lon:50,r:14},{lat:55,lon:35,r:10},{lat:65,lon:60,r:10},{lat:25,lon:55,r:8}] },
+      'Allo':        { color: '#ee5533', zones: [{lat:50,lon:30,r:12},{lat:60,lon:45,r:10},{lat:45,lon:55,r:8}] },
+      'Giga':        { color: '#ff0000', zones: [{lat:35,lon:50,r:8},{lat:22,lon:75,r:6}] },
+      'Baryonyx':    { color: '#4488cc', zones: [{lat:55,lon:40,r:8},{lat:62,lon:38,r:7},{lat:60,lon:65,r:8}] },
+      'Yutyrannus':  { color: '#ddddff', zones: [{lat:15,lon:20,r:10},{lat:18,lon:30,r:8},{lat:12,lon:15,r:6}] },
+      'Thyla':       { color: '#cc6600', zones: [{lat:48,lon:32,r:10},{lat:52,lon:38,r:8},{lat:45,lon:28,r:7}] },
+      'DireWolf':    { color: '#ccddee', zones: [{lat:15,lon:15,r:10},{lat:12,lon:25,r:8},{lat:20,lon:20,r:7}] },
+      'DireBear':    { color: '#886644', zones: [{lat:18,lon:18,r:9},{lat:15,lon:28,r:7},{lat:48,lon:35,r:6}] },
+      'Sabertooth':  { color: '#ddbb88', zones: [{lat:15,lon:20,r:10},{lat:25,lon:35,r:8},{lat:30,lon:50,r:7}] },
+      'Sarco':       { color: '#668844', zones: [{lat:60,lon:38,r:8},{lat:55,lon:65,r:8},{lat:70,lon:42,r:6}] },
+      'Megalodon':   { color: '#4466aa', zones: [{lat:90,lon:50,r:15},{lat:50,lon:93,r:12},{lat:50,lon:7,r:12},{lat:10,lon:50,r:10}] },
+      'Megalosaurus': { color: '#664488', zones: [{lat:41,lon:47,r:5},{lat:68,lon:56,r:4},{lat:80,lon:50,r:4}] },
+      'Kaprosuchus':  { color: '#558844', zones: [{lat:58,lon:62,r:10},{lat:62,lon:38,r:8},{lat:55,lon:70,r:7}] },
+      'Terror Bird':  { color: '#cc5544', zones: [{lat:48,lon:30,r:10},{lat:52,lon:38,r:8},{lat:45,lon:25,r:7}] },
+      'Dilo':         { color: '#77cc44', zones: [{lat:75,lon:30,r:20},{lat:60,lon:50,r:18},{lat:82,lon:60,r:14}] },
+      'Compy':        { color: '#99dd55', zones: [{lat:70,lon:35,r:16},{lat:60,lon:55,r:14},{lat:80,lon:40,r:12}] },
+      'Troodon':      { color: '#886655', zones: [{lat:60,lon:40,r:10},{lat:50,lon:35,r:8},{lat:65,lon:55,r:8}] },
+      'Dimetrodon':   { color: '#cc8866', zones: [{lat:58,lon:65,r:8},{lat:55,lon:70,r:7},{lat:62,lon:60,r:6}] },
+      'Scorpion':     { color: '#776633', zones: [{lat:70,lon:40,r:12},{lat:60,lon:55,r:10},{lat:55,lon:30,r:8}] },
+      'Araneo':       { color: '#553366', zones: [{lat:41,lon:47,r:5},{lat:68,lon:56,r:4},{lat:80,lon:50,r:4},{lat:62,lon:37,r:4}] },
+      'Titanoboa':    { color: '#557744', zones: [{lat:58,lon:65,r:10},{lat:55,lon:70,r:8},{lat:62,lon:38,r:6},{lat:41,lon:47,r:5}] },
+      // Marine
+      'Mosa':         { color: '#2255aa', zones: [{lat:92,lon:50,r:18},{lat:50,lon:95,r:15},{lat:50,lon:5,r:15}] },
+      'Plesiosaur':   { color: '#3366bb', zones: [{lat:90,lon:40,r:14},{lat:50,lon:93,r:12},{lat:8,lon:50,r:10}] },
+      'Tuso':         { color: '#442266', zones: [{lat:92,lon:50,r:12},{lat:50,lon:95,r:10}] },
+      'Basilosaurus': { color: '#4488aa', zones: [{lat:88,lon:50,r:14},{lat:50,lon:90,r:12},{lat:50,lon:10,r:10}] },
+      'Ichthy':       { color: '#55aacc', zones: [{lat:85,lon:40,r:16},{lat:50,lon:88,r:14},{lat:50,lon:12,r:12}] },
+      'Manta':        { color: '#3399aa', zones: [{lat:88,lon:50,r:16},{lat:50,lon:90,r:14},{lat:10,lon:50,r:12}] },
+      'Angler':       { color: '#225566', zones: [{lat:92,lon:50,r:10},{lat:50,lon:95,r:8}] },
+      'Dunkleosteus': { color: '#556677', zones: [{lat:90,lon:50,r:12},{lat:50,lon:93,r:10},{lat:50,lon:7,r:8}] },
+      // Herbivores
+      'Trike':       { color: '#88aa44', zones: [{lat:70,lon:30,r:18},{lat:60,lon:50,r:14},{lat:80,lon:45,r:12},{lat:50,lon:20,r:10}] },
+      'Stego':       { color: '#66bb66', zones: [{lat:65,lon:35,r:16},{lat:55,lon:45,r:12},{lat:75,lon:50,r:10}] },
+      'Bronto':      { color: '#44aa44', zones: [{lat:65,lon:40,r:14},{lat:55,lon:30,r:10},{lat:50,lon:50,r:8}] },
+      'Ankylo':      { color: '#aaaaaa', zones: [{lat:30,lon:50,r:12},{lat:40,lon:58,r:8},{lat:20,lon:35,r:6}] },
+      'Theri':       { color: '#88ff88', zones: [{lat:48,lon:35,r:12},{lat:55,lon:28,r:8}] },
+      'Doedicurus':  { color: '#998877', zones: [{lat:30,lon:45,r:10},{lat:35,lon:55,r:8},{lat:25,lon:60,r:7}] },
+      'Mammoth':     { color: '#bbaa88', zones: [{lat:12,lon:15,r:10},{lat:15,lon:25,r:9},{lat:20,lon:18,r:7}] },
+      'WoollyRhino': { color: '#aa9977', zones: [{lat:15,lon:18,r:9},{lat:12,lon:28,r:7},{lat:20,lon:22,r:6}] },
+      'Parasaur':    { color: '#55cc55', zones: [{lat:80,lon:30,r:18},{lat:75,lon:60,r:15},{lat:65,lon:20,r:12},{lat:85,lon:50,r:10}] },
+      'Castoroides': { color: '#cc8844', zones: [{lat:55,lon:35,r:7},{lat:60,lon:42,r:6},{lat:50,lon:30,r:5}] },
+      'Pachy':       { color: '#aacc55', zones: [{lat:65,lon:30,r:12},{lat:55,lon:45,r:10},{lat:70,lon:50,r:8}] },
+      'Paracer':     { color: '#bb9966', zones: [{lat:55,lon:35,r:10},{lat:45,lon:50,r:8},{lat:65,lon:40,r:7}] },
+      'Diplo':       { color: '#66cc88', zones: [{lat:60,lon:40,r:12},{lat:65,lon:50,r:10},{lat:50,lon:35,r:8}] },
+      'Iguanodon':   { color: '#88bb44', zones: [{lat:65,lon:35,r:14},{lat:55,lon:50,r:12},{lat:75,lon:40,r:10}] },
+      'Moschops':    { color: '#ccaa66', zones: [{lat:70,lon:35,r:12},{lat:60,lon:50,r:10},{lat:80,lon:45,r:8}] },
+      'Phiomia':     { color: '#aa8855', zones: [{lat:75,lon:30,r:14},{lat:65,lon:50,r:12},{lat:80,lon:55,r:10}] },
+      'Dodo':        { color: '#ddcc77', zones: [{lat:80,lon:30,r:20},{lat:70,lon:55,r:16},{lat:85,lon:60,r:14}] },
+      'Lystro':      { color: '#ddaa55', zones: [{lat:75,lon:35,r:14},{lat:65,lon:50,r:12},{lat:80,lon:45,r:10}] },
+      'GiantBee':    { color: '#ffcc22', zones: [{lat:48,lon:35,r:8},{lat:52,lon:38,r:6}] },
+      'Equus':       { color: '#bb9944', zones: [{lat:65,lon:30,r:12},{lat:55,lon:45,r:10},{lat:75,lon:50,r:8}] },
+      'Ovis':        { color: '#eeddcc', zones: [{lat:15,lon:18,r:8},{lat:12,lon:25,r:6},{lat:20,lon:22,r:5}] },
+      'Turtle':      { color: '#669955', zones: [{lat:80,lon:30,r:14},{lat:75,lon:55,r:12},{lat:85,lon:45,r:10}] },
+      // Flyers
+      'Argentavis':  { color: '#8888ff', zones: [{lat:30,lon:45,r:14},{lat:35,lon:60,r:12},{lat:48,lon:35,r:8}] },
+      'Pteranodon':  { color: '#66aacc', zones: [{lat:80,lon:40,r:20},{lat:50,lon:50,r:18},{lat:30,lon:45,r:12}] },
+      'Quetzal':     { color: '#ffcc00', zones: [{lat:50,lon:50,r:35}] },
+      'Tapejara':    { color: '#aa66cc', zones: [{lat:48,lon:35,r:10},{lat:52,lon:40,r:8},{lat:55,lon:30,r:7}] },
+      'Pelagornis':  { color: '#88bbdd', zones: [{lat:85,lon:30,r:12},{lat:85,lon:70,r:12},{lat:50,lon:90,r:10}] },
+      'Dimorphodon': { color: '#cc7744', zones: [{lat:70,lon:35,r:14},{lat:60,lon:50,r:12},{lat:80,lon:40,r:10}] },
+      'Ichthyornis': { color: '#77aacc', zones: [{lat:82,lon:30,r:10},{lat:82,lon:70,r:10},{lat:50,lon:88,r:8}] },
+      'Griffin':     { color: '#ddaa44', zones: [] },
+      'SnowOwl':     { color: '#aaccee', zones: [] },
+      'Wyvern':      { color: '#ee6644', zones: [] },
+    },
+    resources: {
+      'Metal':         { color: '#999999', points: [[28,45],[32,50],[35,55],[38,60],[30,65],[40,48],[42,52],[15,20],[18,25],[20,30],[25,78],[28,82]] },
+      'Crystal':       { color: '#88ccff', points: [[30,45],[35,50],[28,55],[40,60],[15,25],[20,30],[38,48]] },
+      'Obsidian':      { color: '#442266', points: [[40,50],[42,52],[38,48],[30,55],[35,60]] },
+      'Oil':           { color: '#222222', points: [[12,15],[15,20],[10,25],[5,50],[95,50],[50,5],[50,95]] },
+      'Silica Pearls': { color: '#eeddff', points: [[85,25],[90,40],[90,60],[85,75],[55,35],[60,40]] },
+      'Polymer':       { color: '#88ddaa', points: [[10,15],[12,20],[8,25],[15,30]] },
+      'Black Pearl':   { color: '#332244', points: [[5,50],[95,50],[50,5],[50,95]] },
+      'Beaver Dam':    { color: '#cc8844', points: [[55,35],[60,42],[65,38],[50,30]] },
+      'Sulfur':        { color: '#ccbb22', points: [] },
+      'Cactus':        { color: '#66aa44', points: [] },
+      'Element':       { color: '#6666ff', points: [] },
+      'Fungal Wood':   { color: '#886644', points: [] },
+      'Sap':           { color: '#cc8822', points: [[48,33],[50,36],[52,38],[46,30]] },
+    },
+  },
+  'scorched-earth': {
+    name: 'Scorched Earth',
+    biomes: [
+      { name: 'Dunes',     color: 'rgba(180,150,80,0.10)', rect: [10,10,50,90] },
+      { name: 'Badlands',  color: 'rgba(140,80,40,0.10)',  rect: [50,10,70,90] },
+      { name: 'Mountains', color: 'rgba(120,120,120,0.10)',rect: [70,10,90,90] },
+    ],
+    pois: {
+      obelisks: [
+        { lat: 22, lon: 65, name: 'Blue Obelisk', color: '#4488ff' },
+        { lat: 76, lon: 76, name: 'Red Obelisk',  color: '#ff4444' },
+        { lat: 51, lon: 20, name: 'Green Obelisk', color: '#00cc44' },
+      ],
+      caves: [
+        { lat: 58.6, lon: 47.7, name: 'Old Tunnels' },
+        { lat: 78.5, lon: 75.6, name: 'Ruins of Nosti' },
+        { lat: 28.2, lon: 32.8, name: 'Grave of the Tyrants' },
+      ],
+      artifacts: [],
+    },
+    spawns: {}, resources: {},
+  },
+  'aberration': {
+    name: 'Aberration',
+    biomes: [
+      { name: 'Fertile',   color: 'rgba(30,120,80,0.10)',  rect: [20,15,55,85] },
+      { name: 'Biolum',    color: 'rgba(60,30,120,0.10)',  rect: [55,15,75,85] },
+      { name: 'Radiation', color: 'rgba(120,120,20,0.10)', rect: [75,15,92,85] },
+    ],
+    pois: { obelisks: [], caves: [], artifacts: [] },
+    spawns: {}, resources: {},
+  },
+  'extinction': {
+    name: 'Extinction',
+    biomes: [
+      { name: 'Sanctuary', color: 'rgba(60,60,100,0.10)',  rect: [35,35,65,65] },
+      { name: 'Wasteland', color: 'rgba(80,60,40,0.08)',   rect: [8,8,92,92] },
+      { name: 'Snow Dome', color: 'rgba(160,190,220,0.10)',rect: [15,15,35,35] },
+      { name: 'Desert Dome', color:'rgba(180,150,80,0.10)',rect: [65,65,85,85] },
+      { name: 'Sunken Forest',color:'rgba(20,80,20,0.10)', rect: [60,15,85,35] },
+    ],
+    pois: { obelisks: [], caves: [], artifacts: [] },
+    spawns: {}, resources: {},
+  },
+  'ragnarok': {
+    name: 'Ragnarok',
+    biomes: [
+      { name: 'Highlands', color: 'rgba(60,140,60,0.10)',  rect: [20,40,50,70] },
+      { name: 'Volcano',   color: 'rgba(140,60,20,0.10)',  rect: [15,65,45,92] },
+      { name: 'Canyon',    color: 'rgba(120,80,40,0.08)',   rect: [50,10,80,50] },
+      { name: 'Snow',      color: 'rgba(160,190,220,0.10)',rect: [8,8,25,40] },
+      { name: 'Jungle',    color: 'rgba(25,100,25,0.10)',  rect: [70,50,92,92] },
+    ],
+    pois: {
+      obelisks: [
+        { lat: 18, lon: 44, name: 'Blue Obelisk', color: '#4488ff' },
+        { lat: 57, lon: 60, name: 'Green Obelisk', color: '#00cc44' },
+      ],
+      caves: [
+        { lat: 18.3, lon: 27.7, name: 'Frozen Dungeon' },
+        { lat: 20, lon: 51, name: 'Jungle Dungeon' },
+      ],
+      artifacts: [],
+    },
+    spawns: {}, resources: {},
+  },
+  'valguero': {
+    name: 'Valguero',
+    biomes: [
+      { name: 'White Cliffs', color: 'rgba(200,200,200,0.08)', rect: [10,10,35,50] },
+      { name: 'Redwoods',     color: 'rgba(100,50,15,0.10)',   rect: [35,30,60,60] },
+      { name: 'Tundra',       color: 'rgba(160,190,220,0.10)', rect: [10,60,35,92] },
+      { name: 'Jungle',       color: 'rgba(25,100,25,0.10)',   rect: [60,10,92,92] },
+    ],
+    pois: {
+      obelisks: [
+        { lat: 14, lon: 86, name: 'Blue Obelisk', color: '#4488ff' },
+        { lat: 82, lon: 82, name: 'Red Obelisk',  color: '#ff4444' },
+        { lat: 50, lon: 14, name: 'Green Obelisk', color: '#00cc44' },
+      ],
+      caves: [], artifacts: [],
+    },
+    spawns: {}, resources: {},
+  },
+  'genesis':       { name: 'Genesis',      biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+  'genesis-2':     { name: 'Genesis 2',    biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+  'crystal-isles': { name: 'Crystal Isles',biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+  'lost-island':   { name: 'Lost Island',  biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+  'fjordur':       { name: 'Fjordur',      biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+  'the-center':    { name: 'The Center',   biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+  'astraeos':      { name: 'Astraeos',    biomes: [], pois: { obelisks: [], caves: [], artifacts: [] }, spawns: {}, resources: {} },
+};
+
+// ===================================================================
+//  STATE
+// ===================================================================
+var currentMap = 'the-island';
+var viewLat = 50, viewLon = 50;    // Center of view in ARK coords
+var zoom = 1;                       // Zoom multiplier
+var isDragging = false;
+var dragStartX, dragStartY, dragStartLat, dragStartLon;
+var cursorLat = -1, cursorLon = -1;
+var activeLayers = {};
+var userMarkers = [];
+var bgImage = null;
+var isPinned = true;
+var gotoMarker = null;              // Temporary "go to" marker
+
+var canvas = document.getElementById('map-canvas');
+var ctx = canvas.getContext('2d');
+var container = document.getElementById('map-container');
+var tooltip = document.getElementById('map-tooltip');
+
+// ===================================================================
+//  CANVAS RESIZE
+// ===================================================================
+function resizeCanvas() {
+  var dpr = window.devicePixelRatio || 1;
+  var w = container.clientWidth;
+  var h = container.clientHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  render();
+}
+var ro = new ResizeObserver(resizeCanvas);
+ro.observe(container);
+
+// ===================================================================
+//  COORDINATE TRANSFORMS
+// ===================================================================
+function getScale() {
+  var size = Math.min(container.clientWidth, container.clientHeight);
+  return (size / 100) * zoom;
+}
+
+function mapToScreen(lat, lon) {
+  var scale = getScale();
+  var cx = container.clientWidth / 2;
+  var cy = container.clientHeight / 2;
+  return {
+    x: cx + (lon - viewLon) * scale,
+    y: cy + (lat - viewLat) * scale
+  };
+}
+
+function screenToMap(sx, sy) {
+  var scale = getScale();
+  var cx = container.clientWidth / 2;
+  var cy = container.clientHeight / 2;
+  return {
+    lat: viewLat + (sy - cy) / scale,
+    lon: viewLon + (sx - cx) / scale
+  };
+}
+
+// ===================================================================
+//  UTILITY
+// ===================================================================
+function hexToRgba(hex, alpha) {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
+// ===================================================================
+//  RENDERING
+// ===================================================================
+function render() {
+  var w = container.clientWidth;
+  var h = container.clientHeight;
+  if (w === 0 || h === 0) return;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // --- Background ---
+  ctx.fillStyle = '#070a0d';
+  ctx.fillRect(0, 0, w, h);
+
+  // --- Map area background ---
+  var tl = mapToScreen(0, 0);
+  var br = mapToScreen(100, 100);
+  ctx.fillStyle = '#0c1210';
+  ctx.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+
+  // --- Background image ---
+  if (bgImage) {
+    ctx.globalAlpha = 0.85;
+    ctx.drawImage(bgImage, tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+    ctx.globalAlpha = 1;
+  }
+
+  // --- Biomes ---
+  drawBiomes();
+
+  // --- Grid ---
+  drawGrid(w, h);
+
+  // --- Map boundary ---
+  ctx.strokeStyle = 'rgba(74,170,128,0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+
+  // --- Markers ---
+  drawSpawnZones();
+  drawResources();
+  drawPOIs();
+  drawUserMarkers();
+  drawGotoMarker();
+
+  // --- Cursor crosshair ---
+  if (cursorLat >= 0 && cursorLon >= 0) {
+    drawCrosshair(w, h);
+  }
+
+  // --- Loading indicator ---
+  if (isLoadingImage) {
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(w/2 - 70, h/2 - 18, 140, 36);
+    ctx.strokeStyle = 'rgba(74,170,128,0.3)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(w/2 - 70, h/2 - 18, 140, 36);
+    ctx.fillStyle = '#a78bfa';
+    ctx.font = '600 10px "Segoe UI"';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Loading map...', w/2, h/2);
+  }
+}
+
+function drawBiomes() {
+  var mapData = MAPS[currentMap];
+  if (!mapData || !mapData.biomes) return;
+
+  mapData.biomes.forEach(function(biome) {
+    var r = biome.rect;
+    var p1 = mapToScreen(r[0], r[1]);
+    var p2 = mapToScreen(r[2], r[3]);
+    var bw = p2.x - p1.x;
+    var bh = p2.y - p1.y;
+
+    ctx.fillStyle = biome.color;
+    ctx.fillRect(p1.x, p1.y, bw, bh);
+
+    // Label (only visible when zoomed enough)
+    if (bw > 40 && bh > 20) {
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.font = '600 9px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(biome.name, p1.x + bw / 2, p1.y + bh / 2);
+    }
+  });
+}
+
+function drawGrid(w, h) {
+  var topLeft = screenToMap(0, 0);
+  var bottomRight = screenToMap(w, h);
+
+  var step = 5;
+  var minLat = Math.floor(topLeft.lat / step) * step;
+  var maxLat = Math.ceil(bottomRight.lat / step) * step;
+  var minLon = Math.floor(topLeft.lon / step) * step;
+  var maxLon = Math.ceil(bottomRight.lon / step) * step;
+
+  ctx.textBaseline = 'top';
+
+  // Horizontal lines
+  for (var lat = minLat; lat <= maxLat; lat += step) {
+    var major = lat % 10 === 0;
+    var p = mapToScreen(lat, 0);
+    ctx.strokeStyle = major ? 'rgba(74,170,128,0.10)' : 'rgba(74,170,128,0.035)';
+    ctx.lineWidth = major ? 0.7 : 0.4;
+    ctx.beginPath();
+    ctx.moveTo(0, p.y);
+    ctx.lineTo(w, p.y);
+    ctx.stroke();
+
+    if (major && lat >= 0 && lat <= 100) {
+      ctx.fillStyle = 'rgba(74,170,128,0.18)';
+      ctx.font = '600 8px "Segoe UI"';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(lat.toString(), 3, p.y - 2);
+    }
+  }
+
+  // Vertical lines
+  for (var lon = minLon; lon <= maxLon; lon += step) {
+    var major = lon % 10 === 0;
+    var p = mapToScreen(0, lon);
+    ctx.strokeStyle = major ? 'rgba(74,170,128,0.10)' : 'rgba(74,170,128,0.035)';
+    ctx.lineWidth = major ? 0.7 : 0.4;
+    ctx.beginPath();
+    ctx.moveTo(p.x, 0);
+    ctx.lineTo(p.x, h);
+    ctx.stroke();
+
+    if (major && lon >= 0 && lon <= 100) {
+      ctx.fillStyle = 'rgba(74,170,128,0.18)';
+      ctx.font = '600 8px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(lon.toString(), p.x, 3);
+    }
+  }
+}
+
+function drawSpawnZones() {
+  var mapData = MAPS[currentMap];
+  if (!mapData || !mapData.spawns) return;
+
+  Object.keys(mapData.spawns).forEach(function(name) {
+    if (!activeLayers['spawn:' + name] && !activeLayers['spawn:all']) return;
+    var spawn = mapData.spawns[name];
+    spawn.zones.forEach(function(zone) {
+      var p = mapToScreen(zone.lat, zone.lon);
+      var scale = getScale();
+      var r = zone.r * scale;
+
+      // Fill
+      ctx.fillStyle = hexToRgba(spawn.color, 0.06);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = hexToRgba(spawn.color, 0.25);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Center dot
+      ctx.fillStyle = hexToRgba(spawn.color, 0.5);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Label
+      if (r > 20) {
+        ctx.fillStyle = hexToRgba(spawn.color, 0.4);
+        ctx.font = '600 8px "Segoe UI"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(name, p.x, p.y + r + 10);
+      }
+    });
+  });
+}
+
+function drawResources() {
+  var mapData = MAPS[currentMap];
+  if (!mapData || !mapData.resources) return;
+
+  Object.keys(mapData.resources).forEach(function(name) {
+    if (!activeLayers['resource:' + name]) return;
+    var res = mapData.resources[name];
+    res.points.forEach(function(pt) {
+      var p = mapToScreen(pt[0], pt[1]);
+      // Diamond marker
+      ctx.fillStyle = res.color;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - 4);
+      ctx.lineTo(p.x + 3, p.y);
+      ctx.lineTo(p.x, p.y + 4);
+      ctx.lineTo(p.x - 3, p.y);
+      ctx.closePath();
+      ctx.fill();
+
+      // Glow
+      ctx.strokeStyle = hexToRgba(res.color, 0.4);
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+  });
+}
+
+function drawPOIs() {
+  var mapData = MAPS[currentMap];
+  if (!mapData || !mapData.pois) return;
+
+  // Obelisks
+  if (activeLayers['poi:Obelisk'] && mapData.pois.obelisks) {
+    mapData.pois.obelisks.forEach(function(ob) {
+      var p = mapToScreen(ob.lat, ob.lon);
+
+      // Glow
+      ctx.shadowColor = ob.color;
+      ctx.shadowBlur = 10;
+
+      // Diamond
+      ctx.fillStyle = ob.color;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - 9);
+      ctx.lineTo(p.x + 6, p.y);
+      ctx.lineTo(p.x, p.y + 9);
+      ctx.lineTo(p.x - 6, p.y);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+
+      // Label
+      ctx.fillStyle = '#ccc';
+      ctx.font = '700 8px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(ob.name, p.x, p.y - 13);
+    });
+  }
+
+  // Caves
+  if (activeLayers['poi:Cave'] && mapData.pois.caves) {
+    mapData.pois.caves.forEach(function(cave) {
+      var p = mapToScreen(cave.lat, cave.lon);
+
+      ctx.shadowColor = '#ff8800';
+      ctx.shadowBlur = 5;
+      ctx.fillStyle = '#ff8800';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Label
+      ctx.fillStyle = '#aaa';
+      ctx.font = '600 7px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(cave.name, p.x, p.y - 7);
+    });
+  }
+
+  // Artifacts
+  if (activeLayers['poi:Artifact'] && mapData.pois.artifacts) {
+    mapData.pois.artifacts.forEach(function(art) {
+      var p = mapToScreen(art.lat, art.lon);
+
+      ctx.shadowColor = '#cc44ff';
+      ctx.shadowBlur = 5;
+      ctx.fillStyle = '#cc44ff';
+      // Star shape
+      drawStar(p.x, p.y, 5, 5, 2.5);
+      ctx.shadowBlur = 0;
+
+      // Label
+      ctx.fillStyle = '#999';
+      ctx.font = '600 7px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(art.name, p.x, p.y - 8);
+    });
+  }
+}
+
+function drawStar(cx, cy, spikes, outerR, innerR) {
+  var rot = Math.PI / 2 * 3;
+  var step = Math.PI / spikes;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - outerR);
+  for (var i = 0; i < spikes; i++) {
+    ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+    rot += step;
+    ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+    rot += step;
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawUserMarkers() {
+  if (!activeLayers['custom:Markers']) return;
+
+  userMarkers.forEach(function(m, i) {
+    if (m.map !== currentMap) return;
+    var p = mapToScreen(m.lat, m.lon);
+
+    ctx.shadowColor = '#ffdd00';
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#ffdd00';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Outline
+    ctx.strokeStyle = '#aa9900';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = '#ffdd00';
+    ctx.font = '700 8px "Segoe UI"';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(m.label, p.x, p.y - 8);
+
+    // Coords
+    ctx.fillStyle = 'rgba(255,221,0,0.4)';
+    ctx.font = '600 7px "Segoe UI"';
+    ctx.fillText(m.lat.toFixed(1) + ', ' + m.lon.toFixed(1), p.x, p.y + 14);
+  });
+}
+
+function drawGotoMarker() {
+  if (!gotoMarker) return;
+  var p = mapToScreen(gotoMarker.lat, gotoMarker.lon);
+
+  // Animated ring
+  var time = Date.now() / 1000;
+  var pulse = 6 + Math.sin(time * 3) * 3;
+
+  ctx.strokeStyle = 'rgba(74,170,128,0.6)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, pulse, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = '#a78bfa';
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Coords label
+  ctx.fillStyle = '#a78bfa';
+  ctx.font = '700 9px "Segoe UI"';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(gotoMarker.lat.toFixed(1) + ', ' + gotoMarker.lon.toFixed(1), p.x, p.y - 12);
+
+  // Keep animating while goto marker exists
+  requestAnimationFrame(render);
+}
+
+function drawCrosshair(w, h) {
+  var p = mapToScreen(cursorLat, cursorLon);
+
+  ctx.strokeStyle = 'rgba(74,170,128,0.20)';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([4, 4]);
+
+  ctx.beginPath();
+  ctx.moveTo(p.x, 0);
+  ctx.lineTo(p.x, h);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, p.y);
+  ctx.lineTo(w, p.y);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+}
+
+// ===================================================================
+//  MOUSE EVENTS
+// ===================================================================
+canvas.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+
+  var before = screenToMap(mx, my);
+
+  var factor = e.deltaY > 0 ? 0.88 : 1.14;
+  zoom = Math.max(0.4, Math.min(25, zoom * factor));
+
+  var after = screenToMap(mx, my);
+  viewLat += before.lat - after.lat;
+  viewLon += before.lon - after.lon;
+
+  document.getElementById('statusZoom').textContent = 'x' + zoom.toFixed(1);
+  render();
+}, { passive: false });
+
+canvas.addEventListener('mousedown', function(e) {
+  if (e.button === 0) {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    dragStartLat = viewLat;
+    dragStartLon = viewLon;
+    canvas.style.cursor = 'grabbing';
+  }
+});
+
+canvas.addEventListener('mousemove', function(e) {
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+
+  if (isDragging) {
+    var scale = getScale();
+    var dx = e.clientX - dragStartX;
+    var dy = e.clientY - dragStartY;
+    viewLat = dragStartLat - dy / scale;
+    viewLon = dragStartLon - dx / scale;
+  }
+
+  var pos = screenToMap(mx, my);
+  cursorLat = pos.lat;
+  cursorLon = pos.lon;
+
+  // Status bar
+  if (cursorLat >= 0 && cursorLat <= 100 && cursorLon >= 0 && cursorLon <= 100) {
+    document.getElementById('statusCoords').textContent =
+      'LAT ' + cursorLat.toFixed(1) + '  LON ' + cursorLon.toFixed(1);
+  } else {
+    document.getElementById('statusCoords').textContent = '';
+  }
+
+  // Tooltip for nearby markers
+  updateTooltip(mx, my);
+
+  render();
+});
+
+canvas.addEventListener('mouseup', function(e) {
+  isDragging = false;
+  canvas.style.cursor = 'crosshair';
+});
+
+canvas.addEventListener('mouseleave', function() {
+  isDragging = false;
+  cursorLat = -1;
+  cursorLon = -1;
+  canvas.style.cursor = 'crosshair';
+  tooltip.style.display = 'none';
+  render();
+});
+
+// Double-click to place marker
+canvas.addEventListener('dblclick', function(e) {
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+  var pos = screenToMap(mx, my);
+
+  if (pos.lat < 0 || pos.lat > 100 || pos.lon < 0 || pos.lon > 100) return;
+
+  userMarkers.push({
+    map: currentMap,
+    lat: Math.round(pos.lat * 10) / 10,
+    lon: Math.round(pos.lon * 10) / 10,
+    label: '#' + (userMarkers.length + 1),
+  });
+
+  // Auto-enable custom markers layer
+  if (!activeLayers['custom:Markers']) {
+    activeLayers['custom:Markers'] = true;
+    document.querySelectorAll('.layer-toggle').forEach(function(b) {
+      if (b.textContent.indexOf('My Markers') !== -1) b.classList.add('active');
+    });
+  }
+
+  render();
+});
+
+// Right-click to remove marker
+canvas.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+  if (!activeLayers['custom:Markers']) return;
+
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+  var pos = screenToMap(mx, my);
+
+  var nearest = -1;
+  var minDist = 3 / zoom; // 3 map units at current zoom
+  userMarkers.forEach(function(m, i) {
+    if (m.map !== currentMap) return;
+    var d = Math.sqrt(Math.pow(m.lat - pos.lat, 2) + Math.pow(m.lon - pos.lon, 2));
+    if (d < minDist) { minDist = d; nearest = i; }
+  });
+
+  if (nearest >= 0) {
+    userMarkers.splice(nearest, 1);
+    render();
+  }
+});
+
+// ===================================================================
+//  TOOLTIP
+// ===================================================================
+function updateTooltip(mx, my) {
+  var pos = screenToMap(mx, my);
+  var mapData = MAPS[currentMap];
+  if (!mapData) { tooltip.style.display = 'none'; return; }
+
+  var hit = null;
+  var hitDist = 5 / zoom;
+
+  // Check POIs
+  if (mapData.pois) {
+    if (activeLayers['poi:Obelisk'] && mapData.pois.obelisks) {
+      mapData.pois.obelisks.forEach(function(ob) {
+        var d = Math.sqrt(Math.pow(ob.lat - pos.lat, 2) + Math.pow(ob.lon - pos.lon, 2));
+        if (d < hitDist) { hit = { name: ob.name, lat: ob.lat, lon: ob.lon, type: 'Obelisk' }; hitDist = d; }
+      });
+    }
+    if (activeLayers['poi:Cave'] && mapData.pois.caves) {
+      mapData.pois.caves.forEach(function(c) {
+        var d = Math.sqrt(Math.pow(c.lat - pos.lat, 2) + Math.pow(c.lon - pos.lon, 2));
+        if (d < hitDist) { hit = { name: c.name, lat: c.lat, lon: c.lon, type: 'Cave' }; hitDist = d; }
+      });
+    }
+    if (activeLayers['poi:Artifact'] && mapData.pois.artifacts) {
+      mapData.pois.artifacts.forEach(function(a) {
+        var d = Math.sqrt(Math.pow(a.lat - pos.lat, 2) + Math.pow(a.lon - pos.lon, 2));
+        if (d < hitDist) { hit = { name: a.name, lat: a.lat, lon: a.lon, type: 'Artifact' }; hitDist = d; }
+      });
+    }
+  }
+
+  // Check user markers
+  if (activeLayers['custom:Markers']) {
+    userMarkers.forEach(function(m) {
+      if (m.map !== currentMap) return;
+      var d = Math.sqrt(Math.pow(m.lat - pos.lat, 2) + Math.pow(m.lon - pos.lon, 2));
+      if (d < hitDist) { hit = { name: m.label, lat: m.lat, lon: m.lon, type: 'Marker' }; hitDist = d; }
+    });
+  }
+
+  if (hit) {
+    tooltip.innerHTML = '<div class="tt-title">' + hit.name + '</div>' +
+      '<div class="tt-coord">' + hit.type + ' — ' + hit.lat.toFixed(1) + ', ' + hit.lon.toFixed(1) + '</div>';
+    tooltip.style.display = 'block';
+    tooltip.style.left = (mx + 12) + 'px';
+    tooltip.style.top = (my - 8) + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+}
+
+// ===================================================================
+//  UI FUNCTIONS
+// ===================================================================
+
+// --- Tabs ---
+function switchTab(tabName, btn) {
+  document.querySelectorAll('.sb-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.sb-tab-content').forEach(function(c) { c.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var content = document.getElementById('tab-' + tabName);
+  if (content) content.classList.add('active');
+}
+
+// --- Map switching ---
+function switchMap(slug, name, btn) {
+  currentMap = slug;
+  document.getElementById('statusMap').textContent = name;
+  bgImage = null;
+  gotoMarker = null;
+
+  // Reset layers
+  activeLayers = {};
+  document.querySelectorAll('.layer-toggle').forEach(function(b) { b.classList.remove('active'); });
+
+  // Update active map button
+  document.querySelectorAll('.map-item').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+
+  // Reset view
+  viewLat = 50;
+  viewLon = 50;
+  zoom = 1;
+  document.getElementById('statusZoom').textContent = 'x1.0';
+
+  // Update clear button
+  document.getElementById('clearImgBtn').style.display = 'none';
+
+  // Notify main process
+  if (window.api && window.api.changeMap) {
+    window.api.changeMap(slug, name);
+  }
+
+  // Load saved background image (also triggers render with loading indicator)
+  loadSavedBgImage(slug);
+}
+
+// --- Sidebar ---
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('collapsed');
+  var btn = document.getElementById('sidebarToggle');
+  btn.classList.toggle('active', !sidebar.classList.contains('collapsed'));
+  // Canvas needs to resize
+  setTimeout(function() { resizeCanvas(); }, 250);
+}
+
+// --- Pin ---
+function togglePin() {
+  if (window.api && window.api.mapsTogglePin) {
+    window.api.mapsTogglePin();
+  }
+}
+if (window.api && window.api.onPinChanged) {
+  window.api.onPinChanged(function(val) {
+    isPinned = val;
+    document.getElementById('pinBtn').classList.toggle('active', val);
+  });
+}
+
+// --- Opacity ---
+function setOpacity(val) {
+  document.getElementById('opacVal').textContent = val;
+  if (window.api && window.api.mapsSetOpacity) {
+    window.api.mapsSetOpacity(parseInt(val) / 100);
+  }
+}
+
+// --- Layer toggles ---
+function toggleLayer(type, name, btn) {
+  var key = type + ':' + name;
+  var isActive = !activeLayers[key];
+  activeLayers[key] = isActive;
+  btn.classList.toggle('active', isActive);
+  render();
+}
+
+// --- Group dropdown ---
+function toggleGroup(label) {
+  label.classList.toggle('open');
+  var list = label.nextElementSibling;
+  if (list) list.classList.toggle('open');
+}
+
+// --- Reset view ---
+function resetView() {
+  viewLat = 50;
+  viewLon = 50;
+  zoom = 1;
+  gotoMarker = null;
+  document.getElementById('statusZoom').textContent = 'x1.0';
+  render();
+}
+
+// --- Go to coordinates ---
+function goToCoords() {
+  var latInput = document.getElementById('coordLat');
+  var lonInput = document.getElementById('coordLon');
+  var lat = parseFloat(latInput.value);
+  var lon = parseFloat(lonInput.value);
+
+  if (isNaN(lat) || isNaN(lon)) return;
+
+  lat = Math.max(0, Math.min(100, lat));
+  lon = Math.max(0, Math.min(100, lon));
+
+  viewLat = lat;
+  viewLon = lon;
+  zoom = Math.max(zoom, 3);
+  document.getElementById('statusZoom').textContent = 'x' + zoom.toFixed(1);
+
+  gotoMarker = { lat: lat, lon: lon };
+  render();
+}
+
+// Enter key on coord inputs
+document.getElementById('coordLat').addEventListener('keydown', function(e) { if (e.key === 'Enter') goToCoords(); });
+document.getElementById('coordLon').addEventListener('keydown', function(e) { if (e.key === 'Enter') goToCoords(); });
+
+// --- Background image ---
+function loadMapImage() {
+  if (window.api && window.api.selectMapImage) {
+    window.api.selectMapImage(currentMap).then(function(dataUrl) {
+      if (dataUrl) {
+        var img = new Image();
+        img.onload = function() {
+          bgImage = img;
+          document.getElementById('clearImgBtn').style.display = '';
+          render();
+        };
+        img.src = dataUrl;
+      }
+    });
+  }
+}
+
+function clearMapImage() {
+  bgImage = null;
+  document.getElementById('clearImgBtn').style.display = 'none';
+  if (window.api && window.api.clearMapImage) {
+    window.api.clearMapImage(currentMap);
+  }
+  render();
+}
+
+var isLoadingImage = false;
+
+function loadSavedBgImage(slug) {
+  if (!window.api) return;
+
+  isLoadingImage = true;
+  render(); // Show loading indicator immediately
+
+  // First try local (user custom or cached download)
+  if (window.api.loadSavedMapImage) {
+    window.api.loadSavedMapImage(slug).then(function(dataUrl) {
+      if (currentMap !== slug) { isLoadingImage = false; return; }
+      if (dataUrl) {
+        isLoadingImage = false;
+        setBackgroundFromData(slug, dataUrl);
+      } else {
+        // No local image — try auto-download from wiki
+        autoDownloadMapImage(slug);
+      }
+    }).catch(function() {
+      isLoadingImage = false;
+      if (currentMap === slug) autoDownloadMapImage(slug);
+    });
+  } else {
+    isLoadingImage = false;
+    render();
+  }
+}
+
+function autoDownloadMapImage(slug) {
+  if (!window.api || !window.api.downloadMapImage) return;
+  isLoadingImage = true;
+  render(); // Show loading indicator
+
+  window.api.downloadMapImage(slug).then(function(dataUrl) {
+    isLoadingImage = false;
+    if (dataUrl && currentMap === slug) {
+      setBackgroundFromData(slug, dataUrl);
+    } else {
+      render();
+    }
+  }).catch(function() {
+    isLoadingImage = false;
+    render();
+  });
+}
+
+function setBackgroundFromData(slug, dataUrl) {
+  var img = new Image();
+  img.onload = function() {
+    if (currentMap === slug) {
+      bgImage = img;
+      document.getElementById('clearImgBtn').style.display = '';
+      render();
+    }
+  };
+  img.src = dataUrl;
+}
+
+// ===== RECEIVE MAP CHANGES FROM MAIN APP =====
+if (window.api && window.api.onMapChange) {
+  window.api.onMapChange(function(data) {
+    var slug = data.slug || currentMap;
+    var name = data.name || '';
+    document.getElementById('statusMap').textContent = name;
+
+    // Find and click the correct map button
+    document.querySelectorAll('.map-item').forEach(function(b) {
+      var onc = b.getAttribute('onclick') || '';
+      var isMatch = onc.indexOf("'" + slug + "'") !== -1;
+      b.classList.toggle('active', isMatch);
+    });
+
+    if (slug !== currentMap) {
+      currentMap = slug;
+      bgImage = null;
+      gotoMarker = null;
+      activeLayers = {};
+      document.querySelectorAll('.layer-toggle').forEach(function(b) { b.classList.remove('active'); });
+      viewLat = 50; viewLon = 50; zoom = 1;
+      document.getElementById('statusZoom').textContent = 'x1.0';
+      document.getElementById('clearImgBtn').style.display = 'none';
+      loadSavedBgImage(slug);
+    }
+  });
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT') return;
+
+  if (e.key === 'h' || e.key === 'H') {
+    resetView();
+  }
+  if (e.key === '+' || e.key === '=') {
+    zoom = Math.min(25, zoom * 1.2);
+    document.getElementById('statusZoom').textContent = 'x' + zoom.toFixed(1);
+    render();
+  }
+  if (e.key === '-') {
+    zoom = Math.max(0.4, zoom / 1.2);
+    document.getElementById('statusZoom').textContent = 'x' + zoom.toFixed(1);
+    render();
+  }
+});
+
+// ===== INIT =====
+document.getElementById('pinBtn').classList.add('active');
+loadSavedBgImage('the-island');
+resizeCanvas();
+</script>
+</body>
+</html>

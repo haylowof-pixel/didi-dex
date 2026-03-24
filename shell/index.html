@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
+<title>ARK Taming Companion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-0:#0b0c10; --bg-1:#13141a; --bg-2:#1a1c24; --bg-3:#22242e;
+  --text-0:#e4e5eb; --text-1:#a8aab6; --text-2:#6b6e7d; --text-3:#434652;
+  --accent:#7c6aef; --accent-l:#9d8ff5; --accent-d:#5f4ec8;
+  --accent-glow:rgba(124,106,239,0.18); --accent-bg:rgba(124,106,239,0.10);
+  --green:#2dd4a0; --orange:#f0993e; --red:#ef5f5f; --yellow:#f0c246;
+  --border-0:rgba(255,255,255,0.05); --border-1:rgba(255,255,255,0.08); --border-2:rgba(255,255,255,0.14);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --bar-h:40px;
+  --r-sm:5px; --r-md:8px; --r-lg:10px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);background:var(--bg-0);color:var(--text-0);-webkit-font-smoothing:antialiased}
+
+/* ===== APP BAR ===== */
+#appbar {
+  display:flex; align-items:center; height:var(--bar-h); padding:0 4px 0 12px;
+  background:var(--bg-1);
+  border-bottom:1px solid var(--border-0);
+  -webkit-app-region:drag; user-select:none; flex-shrink:0; z-index:100;
+  gap:2px;
+}
+
+.app-logo {
+  display:flex; align-items:center; gap:6px;
+  margin-right:4px; -webkit-app-region:no-drag; cursor:default;
+}
+.app-logo .logo-icon { font-size:14px; line-height:1; }
+.app-logo .lbl {
+  font-size:11px; font-weight:700; letter-spacing:0.4px;
+  color:var(--text-1);
+}
+
+/* ── Buttons ── */
+.bar-btn {
+  -webkit-app-region:no-drag;
+  height:30px; padding:0 8px; border:none;
+  border-radius:var(--r-sm); background:transparent;
+  color:var(--text-2); font-size:12px; cursor:pointer;
+  font-family:inherit; transition:all .12s ease;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  white-space:nowrap; flex-shrink:0; position:relative;
+}
+.bar-btn:hover { background:rgba(255,255,255,0.05); color:var(--text-1); }
+.bar-btn:active { transform:scale(0.97); }
+.bar-btn .ico { font-size:13px; line-height:1; }
+.bar-btn .lbl { font-size:10px; font-weight:600; letter-spacing:0.2px; }
+
+.bar-sep { width:1px; height:16px; background:var(--border-0); flex-shrink:0; margin:0 2px; }
+
+.bar-btn.on { background:var(--accent-bg); color:var(--accent-l); }
+.bar-btn.on:hover { background:rgba(124,106,239,0.16); }
+
+.bar-btn.timer { color:var(--orange); }
+.bar-btn.timer:hover { background:rgba(240,153,62,0.08); color:#f5b06a; }
+.bar-btn.timer.on { background:rgba(240,153,62,0.10); color:#f5b06a; }
+
+.bar-btn.widget,.bar-btn.breeding { color:var(--accent); }
+.bar-btn.widget:hover,.bar-btn.breeding:hover { background:rgba(124,106,239,0.08); color:var(--accent-l); }
+.bar-btn.widget.on,.bar-btn.breeding.on { background:var(--accent-bg); color:var(--accent-l); }
+
+.nav-cluster { display:flex; align-items:center; gap:0; -webkit-app-region:no-drag; }
+.spacer { flex:1; min-width:8px; }
+
+/* ── Opacity ── */
+.opacity-area { display:none; align-items:center; gap:4px; -webkit-app-region:no-drag; flex-shrink:1; min-width:0; }
+.opacity-area.show { display:flex; }
+.tool-slider {
+  width:52px; min-width:28px; -webkit-appearance:none; height:2px;
+  border-radius:1px; background:rgba(255,255,255,0.08); outline:none; flex-shrink:1;
+}
+.tool-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; width:10px; height:10px;
+  background:var(--accent); border-radius:50%; cursor:pointer;
+  border:2px solid var(--bg-1);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.opacity-label { font-size:9px; color:var(--text-3); min-width:20px; text-align:center; font-variant-numeric:tabular-nums; font-weight:600; }
+
+/* ── Dropdown ── */
+.resize-wrap { position:relative; -webkit-app-region:no-drag; }
+.resize-menu {
+  display:none; position:absolute; top:calc(100% + 6px); right:0;
+  background:var(--bg-2); border:1px solid var(--border-1);
+  border-radius:var(--r-lg); padding:4px; z-index:200; min-width:160px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+}
+.resize-menu.show { display:block; animation:menuIn .15s ease; }
+@keyframes menuIn {
+  from { opacity:0; transform:translateY(-4px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.resize-opt {
+  display:flex; align-items:center; gap:8px;
+  width:100%; padding:7px 10px; border:none;
+  background:transparent; color:var(--text-1); font-size:11px;
+  font-family:inherit; cursor:pointer; border-radius:var(--r-sm); text-align:left;
+  transition:background .1s;
+}
+.resize-opt:hover { background:rgba(255,255,255,0.05); }
+.resize-opt .dim { font-size:9px; color:var(--text-3); margin-left:auto; font-variant-numeric:tabular-nums; font-weight:600; }
+
+.maps-dropdown { min-width:190px; max-height:360px; overflow-y:auto; }
+
+/* ── Overlay badge ── */
+.overlay-pill {
+  padding:2px 7px; border-radius:var(--r-sm); font-size:8px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+  background:var(--accent-bg); border:1px solid rgba(124,106,239,0.20);
+  color:var(--accent-l); display:none; flex-shrink:0;
+}
+.overlay-pill.show { display:inline-block; animation:badgePop .2s ease; }
+@keyframes badgePop {
+  0%{opacity:0;transform:scale(0.85)} 60%{transform:scale(1.03)} 100%{opacity:1;transform:scale(1)}
+}
+
+.sync-dot {
+  width:5px; height:5px; border-radius:50%; background:var(--text-3);
+  display:inline-block; margin-left:3px; transition:background .3s;
+}
+.sync-dot.active { background:var(--green); box-shadow:0 0 6px rgba(45,212,160,0.5); }
+
+.hints { display:none; gap:3px; margin-left:4px; flex-shrink:1; overflow:hidden; }
+.hints kbd {
+  padding:1px 5px; background:rgba(255,255,255,0.03); border:1px solid var(--border-0);
+  border-radius:3px; font-family:'Consolas','SF Mono',monospace; font-size:8px; color:var(--text-3);
+  white-space:nowrap;
+}
+
+/* ── Window controls ── */
+.win-controls { display:flex; gap:0; margin-left:2px; -webkit-app-region:no-drag; }
+.win-btn {
+  width:40px; height:32px; border:none; background:transparent;
+  color:var(--text-3); font-size:11px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .1s;
+}
+.win-btn:hover { background:rgba(255,255,255,0.06); color:var(--text-0); }
+.win-btn.close:hover { background:#c42b1c; color:#fff; }
+
+/* ===== CONTENT ===== */
+#app { display:flex; flex-direction:column; height:100vh; }
+#main-content { flex:1; display:flex; overflow:hidden; position:relative; }
+#dododex-view { flex:1; border:none; width:100%; background:var(--bg-0); }
+
+/* ===== LOADING ===== */
+#loading {
+  position:absolute; inset:0; z-index:50;
+  background:var(--bg-0); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:14px;
+  transition:opacity .3s ease, transform .3s ease;
+}
+#loading.hidden { opacity:0; pointer-events:none; transform:scale(0.98); }
+.load-ring {
+  width:22px; height:22px; border:2px solid rgba(255,255,255,0.06);
+  border-top-color:var(--accent); border-radius:50%;
+  animation:spin .6s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.load-text { font-size:10px; color:var(--text-3); letter-spacing:0.6px; font-weight:600; text-transform:uppercase; }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:700px){
+  .lbl{display:none!important} .hints{display:none!important} .opacity-area{display:none!important}
+}
+@media(max-width:500px){
+  .bar-sep{display:none!important} .app-logo .lbl{display:none!important}
+}
+
+.resize-menu::-webkit-scrollbar{width:4px}
+.resize-menu::-webkit-scrollbar-track{background:transparent}
+.resize-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:4px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Single unified app bar -->
+  <div id="appbar">
+    <div class="app-logo">
+      <span class="logo-icon">🦖</span>
+      <span class="lbl">ARK Taming</span>
+    </div>
+
+    <div class="bar-sep"></div>
+
+    <!-- Navigation -->
+    <div class="nav-cluster">
+      <button class="bar-btn" onclick="goBack()" title="Back"><span class="ico">◀</span></button>
+      <button class="bar-btn" onclick="goForward()" title="Forward"><span class="ico">▶</span></button>
+      <button class="bar-btn" onclick="reload()" title="Reload"><span class="ico">↻</span></button>
+    </div>
+
+    <div class="bar-sep"></div>
+
+    <div class="nav-cluster">
+      <button class="bar-btn" onclick="navTo('https://www.dododex.com/')" title="Accueil">
+        <span class="ico">🏠</span><span class="lbl">Accueil</span>
+      </button>
+      <button class="bar-btn" onclick="navTo('https://www.dododex.com/dinosaurs')" title="All Dinos">
+        <span class="ico">🦕</span><span class="lbl">Dinos</span>
+      </button>
+    </div>
+
+    <div class="bar-sep"></div>
+
+    <!-- Overlay -->
+    <button class="bar-btn" id="overlayBtn" onclick="toggleOverlay()" title="Overlay mode (Alt+O)">
+      <span class="ico">📌</span><span class="lbl">Overlay</span>
+    </button>
+
+    <!-- Opacity -->
+    <div class="opacity-area">
+      <input type="range" class="tool-slider" id="opacitySlider" min="30" max="100" value="92"
+        oninput="setOpacity(this.value)">
+      <span class="opacity-label" id="opacityVal">92%</span>
+    </div>
+
+    <div class="bar-sep"></div>
+
+    <!-- Timers -->
+    <button class="bar-btn timer" id="timerBtn" onclick="toggleTimerOverlay()" title="Toggle mini timer overlay (Alt+M)">
+      <span class="ico">⏱</span><span class="lbl">Timers</span><span class="sync-dot" id="syncDot"></span>
+    </button>
+
+    <!-- Maps -->
+    <div class="resize-wrap">
+      <button class="bar-btn" id="mapsBtn" onclick="toggleMapsMenu()" title="Interactive Maps">
+        <span class="ico">🗺️</span><span class="lbl">Maps</span>
+      </button>
+      <div class="resize-menu maps-dropdown" id="mapsMenu">
+        <button class="resize-opt" onclick="openMap('the-island','The Island')">🏝️ The Island</button>
+        <button class="resize-opt" onclick="openMap('scorched-earth','Scorched Earth')">🏜️ Scorched Earth</button>
+        <button class="resize-opt" onclick="openMap('aberration','Aberration')">🌑 Aberration</button>
+        <button class="resize-opt" onclick="openMap('extinction','Extinction')">🌆 Extinction</button>
+        <button class="resize-opt" onclick="openMap('ragnarok','Ragnarok')">⛰️ Ragnarok</button>
+        <button class="resize-opt" onclick="openMap('valguero','Valguero')">🌲 Valguero</button>
+        <button class="resize-opt" onclick="openMap('genesis','Genesis')">🧬 Genesis</button>
+        <button class="resize-opt" onclick="openMap('genesis-2','Genesis 2')">🚀 Genesis 2</button>
+        <button class="resize-opt" onclick="openMap('crystal-isles','Crystal Isles')">💎 Crystal Isles</button>
+        <button class="resize-opt" onclick="openMap('lost-island','Lost Island')">🌴 Lost Island</button>
+        <button class="resize-opt" onclick="openMap('fjordur','Fjordur')">❄️ Fjordur</button>
+        <button class="resize-opt" onclick="openMap('the-center','The Center')">🌊 The Center</button>
+        <button class="resize-opt" onclick="openMap('astraeos','Astraeos')">🌌 Astraeos</button>
+      </div>
+    </div>
+
+    <!-- Widget -->
+    <button class="bar-btn widget" id="widgetBtn" onclick="toggleWidget()" title="Mini HUD Widget (Alt+W)">
+      <span class="ico">📊</span><span class="lbl">HUD</span>
+    </button>
+
+    <!-- Breeding -->
+    <button class="bar-btn breeding" id="breedingBtn" onclick="toggleBreeding()" title="Breeding Manager (Alt+B)">
+      <span class="ico">🧬</span><span class="lbl">Breeding</span>
+    </button>
+
+    <!-- OCR -->
+    <button class="bar-btn" id="ocrBtn" onclick="toggleOCR()" title="OCR Stats (Alt+S)">
+      <span class="ico">📸</span><span class="lbl">OCR</span>
+    </button>
+
+    <div class="bar-sep"></div>
+
+    <!-- Theme -->
+    <button class="bar-btn" id="themeBtn" onclick="toggleTheme()" title="Thème sombre/clair">
+      <span class="ico">🌙</span><span class="lbl">Sombre</span>
+    </button>
+
+    <!-- Taille -->
+    <div class="resize-wrap">
+      <button class="bar-btn" id="resizeBtn" onclick="toggleResizeMenu()" title="Taille de la fenêtre">
+        <span class="ico">📐</span><span class="lbl">Taille</span>
+      </button>
+      <div class="resize-menu" id="resizeMenu">
+        <button class="resize-opt" onclick="doResize('compact')">📱 Compact <span class="dim">480x700</span></button>
+        <button class="resize-opt" onclick="doResize('normal')">🖥️ Normal <span class="dim">1000x800</span></button>
+        <button class="resize-opt" onclick="doResize('wide')">🖼️ Wide <span class="dim">1400x900</span></button>
+        <button class="resize-opt" onclick="doResize('tall')">📄 Tall <span class="dim">550x950</span></button>
+      </div>
+    </div>
+
+    <div class="bar-sep"></div>
+
+    <!-- Settings -->
+    <button class="bar-btn" id="settingsBtn" onclick="toggleSettings()" title="Paramètres">
+      <span class="ico">⚙️</span><span class="lbl">Paramètres</span>
+    </button>
+
+    <!-- Overlay badge -->
+    <div class="overlay-pill" id="overlayBadge">OVERLAY</div>
+
+    <div class="spacer"></div>
+
+    <!-- Keyboard shortcut hints -->
+    <div class="hints" id="hintsArea">
+      <kbd>Alt+O</kbd><kbd>Alt+T</kbd><kbd>Alt+M</kbd><kbd>Alt+W</kbd><kbd>Alt+G</kbd><kbd>Alt+C</kbd>
+    </div>
+
+    <!-- Window controls -->
+    <div class="win-controls">
+      <button class="win-btn" onclick="window.api.minimize()" title="Minimize">─</button>
+      <button class="win-btn" onclick="window.api.maximize()" title="Maximize">□</button>
+      <button class="win-btn close" onclick="window.api.close()" title="Close">✕</button>
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div id="main-content">
+    <!-- Loading screen -->
+    <div id="loading">
+      <div class="load-ring"></div>
+      <div class="load-text">Chargement...</div>
+    </div>
+
+    <!-- Dododex webview -->
+    <webview id="dododex-view"
+      src="https://www.dododex.com/"
+      allowpopups
+      partition="persist:dododex"
+    ></webview>
+
+  </div>
+</div>
+
+<script>
+var wv = document.getElementById('dododex-view');
+var loading = document.getElementById('loading');
+var overlayBtn = document.getElementById('overlayBtn');
+var overlayBadge = document.getElementById('overlayBadge');
+var opacityVal = document.getElementById('opacityVal');
+var themeBtn = document.getElementById('themeBtn');
+var syncDot = document.getElementById('syncDot');
+
+var darkMode = true;
+var scraperInterval = null;
+
+// ===== NAVIGATION =====
+function navTo(url) { wv.src = url; }
+function goBack() { if (wv.canGoBack()) wv.goBack(); }
+function goForward() { if (wv.canGoForward()) wv.goForward(); }
+function reload() { wv.reload(); }
+
+// ===== WEBVIEW EVENTS =====
+wv.addEventListener('did-start-loading', function() {
+  loading.classList.remove('hidden');
+});
+
+wv.addEventListener('did-stop-loading', function() {
+  loading.classList.add('hidden');
+  if (darkMode) injectDarkTheme();
+  injectAdHider();
+  injectBrandingHider();
+  startScraper();
+});
+
+wv.addEventListener('new-window', function(e) {
+  e.preventDefault();
+  if (e.url.indexOf('dododex.com') !== -1) wv.src = e.url;
+});
+
+// ===== OVERLAY =====
+var isOverlay = false;
+function toggleOverlay() { window.api.toggleOverlay(); }
+var opacityArea = document.querySelector('.opacity-area');
+window.api.onOverlay(function(val) {
+  isOverlay = val;
+  overlayBtn.classList.toggle('on', val);
+  overlayBadge.classList.toggle('show', val);
+  if (opacityArea) opacityArea.classList.toggle('show', val);
+});
+window.api.getOverlay().then(function(val) {
+  isOverlay = val;
+  overlayBtn.classList.toggle('on', val);
+  overlayBadge.classList.toggle('show', val);
+  if (opacityArea) opacityArea.classList.toggle('show', val);
+});
+
+// ===== OPACITY =====
+function setOpacity(val) {
+  window.api.setOpacity(parseInt(val) / 100);
+  opacityVal.textContent = val + '%';
+}
+
+// ===== EXTENDED DODODEX DATA SCRAPER =====
+function startScraper() {
+  if (scraperInterval) clearInterval(scraperInterval);
+  scraperInterval = setInterval(scrapeDododexData, 2000);
+  setTimeout(scrapeDododexData, 1000);
+}
+
+function scrapeDododexData() {
+  var jsCode = [
+    '(function() {',
+    '  var result = {',
+    '    dinoName: "", starveTime: "", totalTime: "", foodRequired: "",',
+    '    foodCurrent: "", foodMax: "", torporTime: "", torporCurrent: "", torporMax: "",',
+    '    breeding: null, baseStats: {}',
+    '  };',
+    '',
+    '  var h1 = document.querySelector("h1");',
+    '  if (h1) result.dinoName = h1.textContent.trim();',
+    '',
+    '  function findTextEl(searchText) {',
+    '    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);',
+    '    while (walker.nextNode()) {',
+    '      if (walker.currentNode.textContent.indexOf(searchText) !== -1) return walker.currentNode.parentElement;',
+    '    }',
+    '    return null;',
+    '  }',
+    '',
+    '  // Starve Timer',
+    '  var starveEl = findTextEl("Starve Timer");',
+    '  if (starveEl) {',
+    '    var section = starveEl.closest("div[class]") || starveEl.parentElement;',
+    '    if (section) {',
+    '      var inputs = section.querySelectorAll("input[type=number], input[type=text]");',
+    '      inputs.forEach(function(inp) {',
+    '        var nearText = (inp.parentElement && inp.parentElement.textContent || "").toLowerCase();',
+    '        if (nearText.indexOf("current") !== -1) result.foodCurrent = inp.value;',
+    '        else if (nearText.indexOf("max") !== -1) result.foodMax = inp.value;',
+    '      });',
+    '      var timeMatch = section.textContent.match(/(\\d{1,3}:\\d{2})/);',
+    '      if (timeMatch) result.starveTime = timeMatch[1];',
+    '      var reqEl = findTextEl("Food required to eat");',
+    '      if (reqEl) {',
+    '        var numMatch = (reqEl.textContent || "").match(/([\\d,.]+)/);',
+    '        if (numMatch) result.foodRequired = numMatch[1];',
+    '      }',
+    '    }',
+    '  }',
+    '',
+    '  // Torpor Timer',
+    '  var torporEl = findTextEl("Torpor Timer");',
+    '  if (torporEl) {',
+    '    var tSection = torporEl.closest("div[class]") || torporEl.parentElement;',
+    '    if (tSection) {',
+    '      var tInputs = tSection.querySelectorAll("input[type=number], input[type=text]");',
+    '      tInputs.forEach(function(inp) {',
+    '        var nearText = (inp.parentElement && inp.parentElement.textContent || "").toLowerCase();',
+    '        if (nearText.indexOf("current") !== -1) result.torporCurrent = inp.value;',
+    '        else if (nearText.indexOf("max") !== -1) result.torporMax = inp.value;',
+    '      });',
+    '      var tMatch = tSection.textContent.match(/(\\d{1,3}:\\d{2})/);',
+    '      if (tMatch) result.torporTime = tMatch[1];',
+    '    }',
+    '  }',
+    '',
+    '  // Fallback Food/Torpor',
+    '  if (!result.foodCurrent || !result.foodMax) {',
+    '    var foodLabel = findTextEl("FOOD");',
+    '    if (foodLabel) {',
+    '      var parent = foodLabel.closest("div") || foodLabel.parentElement;',
+    '      if (parent) {',
+    '        var fInputs = parent.querySelectorAll("input");',
+    '        if (fInputs.length >= 2) {',
+    '          result.foodCurrent = result.foodCurrent || fInputs[0].value;',
+    '          result.foodMax = result.foodMax || fInputs[1].value;',
+    '        }',
+    '      }',
+    '    }',
+    '  }',
+    '  if (!result.torporCurrent || !result.torporMax) {',
+    '    var torpLabel = findTextEl("TORPOR");',
+    '    if (torpLabel) {',
+    '      var parent2 = torpLabel.closest("div") || torpLabel.parentElement;',
+    '      if (parent2) {',
+    '        var tpInputs = parent2.querySelectorAll("input");',
+    '        if (tpInputs.length >= 2) {',
+    '          result.torporCurrent = result.torporCurrent || tpInputs[0].value;',
+    '          result.torporMax = result.torporMax || tpInputs[1].value;',
+    '        }',
+    '      }',
+    '    }',
+    '  }',
+    '',
+    '  // ===== BREEDING DATA =====',
+    '  var breedEl = findTextEl("Breeding") || findTextEl("Incubation") || findTextEl("Maturation");',
+    '  if (breedEl) {',
+    '    result.breeding = {};',
+    '    var bSection = breedEl.closest("section") || breedEl.closest("div[class]") || breedEl.parentElement;',
+    '    if (!bSection) bSection = document.body;',
+    '    var bText = bSection.textContent;',
+    '    var incEl = findTextEl("Incubation");',
+    '    if (incEl) {',
+    '      var ip = incEl.closest("div") || incEl.parentElement;',
+    '      if (ip) {',
+    '        var it = ip.textContent.replace(/Incubation/gi, "").trim();',
+    '        var tm = it.match(/[\\d]+[dhms:\\s]+[\\d]+[dhms:\\s]*/i);',
+    '        if (tm) result.breeding.incubation = tm[0].trim();',
+    '      }',
+    '    }',
+    '    var matEl = findTextEl("Maturation");',
+    '    if (matEl) {',
+    '      var mp = matEl.closest("div") || matEl.parentElement;',
+    '      if (mp) {',
+    '        var mt = mp.textContent.replace(/Maturation/gi, "").replace(/Total/gi, "").trim();',
+    '        var mtm = mt.match(/[\\d]+[dhms:\\s]+[\\d]+[dhms:\\s]*/i);',
+    '        if (mtm) result.breeding.maturation = mtm[0].trim();',
+    '      }',
+    '    }',
+    '    var impEl = findTextEl("Imprint");',
+    '    if (impEl) {',
+    '      var impp = impEl.closest("div") || impEl.parentElement;',
+    '      if (impp) {',
+    '        var imt = impp.textContent.replace(/Imprint(ing)?/gi, "").trim();',
+    '        var imtm = imt.match(/[\\d]+[dhms:\\s]+[\\d]+[dhms:\\s]*/i);',
+    '        if (imtm) result.breeding.imprinting = imtm[0].trim();',
+    '      }',
+    '    }',
+    '    var intEl = findTextEl("Breeding Interval") || findTextEl("Mating Interval");',
+    '    if (intEl) {',
+    '      var intp = intEl.closest("div") || intEl.parentElement;',
+    '      if (intp) {',
+    '        var intt = intp.textContent.replace(/Breeding Interval|Mating Interval/gi, "").trim();',
+    '        var inttm = intt.match(/[\\d]+[dhms:\\s]+[\\d]+[dhms:\\s]*/i);',
+    '        if (inttm) result.breeding.interval = inttm[0].trim();',
+    '      }',
+    '    }',
+    '  }',
+    '',
+    '  // ===== BASE STATS =====',
+    '  var statNames = ["Health", "Stamina", "Oxygen", "Food", "Weight", "Melee Damage", "Movement Speed", "Torpidity"];',
+    '  statNames.forEach(function(name) {',
+    '    var el = findTextEl(name);',
+    '    if (el) {',
+    '      var row = el.closest("tr") || el.closest("div[class]") || el.parentElement;',
+    '      if (row) {',
+    '        var nums = row.textContent.match(/[\\d,]+\\.?\\d*/g);',
+    '        if (nums && nums.length > 0) {',
+    '          var val = parseFloat(nums[0].replace(",", ""));',
+    '          if (!isNaN(val) && val > 0) result.baseStats[name] = val;',
+    '        }',
+    '      }',
+    '    }',
+    '  });',
+    '',
+    '  return result;',
+    '})();'
+  ].join('\n');
+
+  wv.executeJavaScript(jsCode).then(function(data) {
+    if (data && (data.dinoName || data.foodCurrent || data.starveTime)) {
+      window.api.syncTimerData(data);
+      syncDot.classList.add('active');
+    } else {
+      syncDot.classList.remove('active');
+    }
+  }).catch(function() {
+    syncDot.classList.remove('active');
+  });
+}
+
+// ===== DARK THEME INJECTION =====
+function toggleTheme() {
+  darkMode = !darkMode;
+  themeBtn.innerHTML = darkMode
+    ? '<span class="ico">🌙</span><span class="lbl">Sombre</span>'
+    : '<span class="ico">☀️</span><span class="lbl">Clair</span>';
+  themeBtn.classList.toggle('on', darkMode);
+  if (darkMode) injectDarkTheme(); else removeDarkTheme();
+}
+
+function injectDarkTheme() {
+  wv.insertCSS([
+    ':root { color-scheme: dark !important; }',
+    'html, body { background: #000000 !important; color: #c0c0c0 !important; }',
+    '*, *::before, *::after { border-color: #1a1a1a !important; }',
+    'div, section, main, article, aside, nav, header, footer, form { background-color: transparent !important; }',
+    '[class*="header"], [class*="Header"], [class*="navbar"], [class*="Navbar"],',
+    '[class*="nav-"], [class*="Nav-"], [class*="topbar"], [class*="TopBar"] { background: #080808 !important; }',
+    '[class*="footer"], [class*="Footer"] { background: #050505 !important; }',
+    '[class*="sidebar"], [class*="Sidebar"], [class*="aside"], [class*="menu"], [class*="Menu"] { background: #0a0a0a !important; }',
+    '[class*="Card"], [class*="card"], [class*="Item"], [class*="item"],',
+    '[class*="result"], [class*="entry"], [class*="Entry"],',
+    '[class*="tile"], [class*="Tile"],',
+    'a[class*="Card"], a[class*="card"], a[class*="Item"] { background: #0d0d0d !important; border-color: #1a1a1a !important; }',
+    '[class*="Card"]:hover, [class*="card"]:hover, a[class*="Card"]:hover { background: #141414 !important; }',
+    'h1, h2, h3, h4, h5, h6 { color: #e0e0e0 !important; }',
+    'p, span, div, li, td, th, label, small, em, strong, b { color: #a0a0a0 !important; }',
+    'a { color: #8888cc !important; }',
+    'a:hover { color: #aaaaee !important; }',
+    'input, select, textarea { background: #111 !important; border: 1px solid #2a2a2a !important; color: #d0d0d0 !important; border-radius: 6px !important; }',
+    'input:focus, select:focus, textarea:focus { border-color: #555 !important; outline: none !important; box-shadow: 0 0 0 1px #333 !important; }',
+    'button, .btn, [class*="button"], [class*="Button"],',
+    'a[class*="btn"], input[type="submit"], input[type="button"] { background: #1a1a1a !important; color: #b0b0b0 !important; border-color: #2a2a2a !important; border-radius: 6px !important; }',
+    'button:hover, .btn:hover, [class*="button"]:hover, [class*="Button"]:hover { background: #222 !important; color: #e0e0e0 !important; }',
+    'table { border-color: #1a1a1a !important; }',
+    'th { background: #0d0d0d !important; color: #888 !important; }',
+    'td { background: transparent !important; border-color: #151515 !important; }',
+    'tr:nth-child(even) td { background: #080808 !important; }',
+    'tr:hover td { background: #111 !important; }',
+    '[class*="timer"], [class*="Timer"], [class*="torpor"], [class*="Torpor"],',
+    '[class*="starve"], [class*="Starve"], [class*="taming"], [class*="Taming"] {',
+    '  background: #0a0f0f !important; border: 1px solid #1a2a2a !important; border-radius: 10px !important; }',
+    '[class*="progress"], [class*="Progress"] { background: #1a1a1a !important; border-radius: 4px !important; }',
+    '::-webkit-scrollbar { width: 6px; }',
+    '::-webkit-scrollbar-track { background: #000; }',
+    '::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }',
+    '::-webkit-scrollbar-thumb:hover { background: #333; }',
+    'img { opacity: 0.9; }',
+    'img:hover { opacity: 1; }',
+    '[class*="cookie"], [class*="Cookie"], [class*="consent"], [class*="Consent"],',
+    '[class*="popup"], [class*="Popup"], [class*="modal"], [class*="Modal"],',
+    '[id*="cookie"], [id*="consent"],',
+    '[class*="overlay"][class*="cookie"],',
+    '[class*="banner"][class*="cookie"] { display: none !important; }',
+    '[style*="background: white"], [style*="background:#fff"],',
+    '[style*="background-color: white"], [style*="background-color:#fff"],',
+    '[style*="background-color:#FFF"], [style*="background: #fff"],',
+    '[style*="background: #FFF"], [style*="background:#ffffff"],',
+    '[style*="background: rgb(255"], [style*="background-color: rgb(255"] { background: #000 !important; }',
+    '[style*="background: #f"], [style*="background-color: #f"],',
+    '[style*="background: #e"], [style*="background-color: #e"],',
+    '[style*="background: #d"], [style*="background-color: #d"],',
+    '[style*="background-color: rgb(24"], [style*="background-color: rgb(23"],',
+    '[style*="background-color: rgb(22"], [style*="background-color: rgb(21"],',
+    '[style*="background-color: rgb(20"] { background: #0a0a0a !important; }'
+  ].join('\n')).then(function(key) { window.__darkThemeKey = key; });
+}
+
+function removeDarkTheme() {
+  if (window.__darkThemeKey) {
+    wv.removeInsertedCSS(window.__darkThemeKey);
+    window.__darkThemeKey = null;
+  }
+}
+
+function injectAdHider() {
+  wv.insertCSS([
+    '[class*="ad-"], [class*="Ad-"], [class*="ad_"], [id*="ad-"], [id*="ad_"],',
+    '[class*="adsbygoogle"], iframe[src*="ads"], iframe[src*="doubleclick"],',
+    '[class*="sponsor"], [class*="Sponsor"], [class*="banner-ad"], [class*="BannerAd"],',
+    'ins.adsbygoogle, [data-ad], [data-ads],',
+    '[class*="GoogleAd"], [class*="google-ad"], [id*="google_ads"],',
+    '[class*="advert"], [class*="Advert"] {',
+    '  display: none !important; height: 0 !important; overflow: hidden !important;',
+    '}'
+  ].join('\n'));
+}
+
+// ===== HIDE DODODEX BRANDING =====
+function injectBrandingHider() {
+  wv.insertCSS([
+    'img[src*="dododex"][src*="logo"],',
+    'img[alt*="Dododex"], img[alt*="dododex"],',
+    '[class*="logo" i] img[src*="dododex"],',
+    'a[href="/"] > img[src*="dododex"] { display: none !important; }',
+    'a[href*="play.google.com"],',
+    'a[href*="apps.apple.com"],',
+    'a[href*="itunes.apple.com"],',
+    'a[href*="get-dododex"] { display: none !important; }',
+    '[class*="download" i][class*="app" i],',
+    '[class*="get-app" i],',
+    '[class*="app-store" i],',
+    '[class*="play-store" i],',
+    '[class*="mobile-app" i],',
+    '[class*="app-banner" i],',
+    '[class*="install" i][class*="banner" i] { display: none !important; }',
+    'footer, [class*="footer" i] { display: none !important; }'
+  ].join('\n'));
+
+  var jsCode = [
+    '(function() {',
+    '  var timer = null;',
+    '  function hideBranding() {',
+    '    var texts = ["Get Dododex", "Download Dododex", "Get the App", "Get the Companion App"];',
+    '    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);',
+    '    while (walker.nextNode()) {',
+    '      var t = walker.currentNode.textContent.trim();',
+    '      if (texts.indexOf(t) !== -1) {',
+    '        var el = walker.currentNode.parentElement;',
+    '        if (el && el.tagName !== "BODY" && el.tagName !== "HTML" && el.style.display !== "none") {',
+    '          var c = el.closest("a, li, button") || el;',
+    '          c.style.display = "none";',
+    '        }',
+    '      }',
+    '    }',
+    '    document.querySelectorAll("h1").forEach(function(h) {',
+    '      if (h.textContent.toLowerCase().indexOf("dododex") !== -1 && h.style.visibility !== "hidden") {',
+    '        h.style.visibility = "hidden";',
+    '        h.style.height = "0";',
+    '        h.style.overflow = "hidden";',
+    '      }',
+    '    });',
+    '    document.querySelectorAll("img").forEach(function(img) {',
+    '      var src = (img.src || "").toLowerCase();',
+    '      var alt = (img.alt || "").toLowerCase();',
+    '      if (((src.indexOf("dododex") !== -1 && src.indexOf("logo") !== -1) || alt.indexOf("dododex") !== -1) && img.style.display !== "none") {',
+    '        img.style.display = "none";',
+    '      }',
+    '    });',
+    '  }',
+    '  hideBranding();',
+    '  var obs = new MutationObserver(function() {',
+    '    if (timer) clearTimeout(timer);',
+    '    timer = setTimeout(hideBranding, 500);',
+    '  });',
+    '  obs.observe(document.body, { childList: true, subtree: true });',
+    '})();'
+  ].join('\n');
+  wv.executeJavaScript(jsCode).catch(function() {});
+}
+
+// ===== RESIZE MENU =====
+var resizeMenu = document.getElementById('resizeMenu');
+function toggleResizeMenu() { resizeMenu.classList.toggle('show'); }
+function doResize(preset) { window.api.resizeWindow(preset); resizeMenu.classList.remove('show'); }
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.resize-wrap')) {
+    resizeMenu.classList.remove('show');
+    mapsMenu.classList.remove('show');
+  }
+});
+
+// ===== MAPS =====
+var mapsMenu = document.getElementById('mapsMenu');
+function toggleMapsMenu() { mapsMenu.classList.toggle('show'); }
+function openMap(slug, name) {
+  window.api.openMapsWindow(slug, name);
+  mapsMenu.classList.remove('show');
+}
+
+// ===== TIMER OVERLAY =====
+var timerBtn = document.getElementById('timerBtn');
+function toggleTimerOverlay() {
+  window.api.isTimerOpen().then(function(isOpen) {
+    if (isOpen) { window.api.closeTimerOverlay(); timerBtn.classList.remove('on'); }
+    else { window.api.openTimerOverlay(); timerBtn.classList.add('on'); }
+  });
+}
+
+// ===== WIDGET =====
+var widgetBtn = document.getElementById('widgetBtn');
+function toggleWidget() {
+  window.api.isWidgetOpen().then(function(isOpen) {
+    if (isOpen) { window.api.closeWidget(); widgetBtn.classList.remove('on'); }
+    else { window.api.openWidget(); widgetBtn.classList.add('on'); }
+  });
+}
+
+// ===== BREEDING =====
+var breedingBtn = document.getElementById('breedingBtn');
+function toggleBreeding() {
+  console.log('[Breeding] toggleBreeding called');
+  window.api.isBreedingOpen().then(function(isOpen) {
+    console.log('[Breeding] isOpen:', isOpen);
+    if (isOpen) { window.api.closeBreeding(); breedingBtn.classList.remove('on'); }
+    else { window.api.openBreeding(); breedingBtn.classList.add('on'); }
+  }).catch(function(err) {
+    console.error('[Breeding] Error:', err);
+    window.api.openBreeding();
+    breedingBtn.classList.add('on');
+  });
+}
+
+// Listen for breeding window close to sync button state
+if (window.api && window.api.onBreedingWindowClosed) {
+  window.api.onBreedingWindowClosed(function() {
+    breedingBtn.classList.remove('on');
+  });
+}
+
+// ===== OCR =====
+var ocrBtn = document.getElementById('ocrBtn');
+function toggleOCR() {
+  window.api.isOCROpen().then(function(isOpen) {
+    if (isOpen) { window.api.ocrClose(); ocrBtn.classList.remove('on'); }
+    else { window.api.openOCR(); ocrBtn.classList.add('on'); }
+  });
+}
+
+// ===== SETTINGS =====
+function toggleSettings() {
+  window.api.isSettingsOpen().then(function(isOpen) {
+    if (isOpen) { window.api.closeSettings(); }
+    else { window.api.openSettings(); }
+  });
+}
+
+// ===== DYNAMIC KEYBIND HINTS =====
+function updateHints(bindings) {
+  var area = document.getElementById('hintsArea');
+  if (!area || !bindings) return;
+  var keys = [];
+  if (bindings.toggleOverlay) keys.push(bindings.toggleOverlay);
+  if (bindings.toggleWindow) keys.push(bindings.toggleWindow);
+  if (bindings.toggleTimer) keys.push(bindings.toggleTimer);
+  if (bindings.toggleWidget) keys.push(bindings.toggleWidget);
+  if (bindings.toggleMaps) keys.push(bindings.toggleMaps);
+  if (bindings.toggleBreeding) keys.push(bindings.toggleBreeding);
+  if (bindings.toggleOCR) keys.push(bindings.toggleOCR);
+  area.innerHTML = keys.map(function(k) { return '<kbd>' + k + '</kbd>'; }).join('');
+}
+
+// Load initial keybinds for hints
+if (window.api && window.api.getKeybinds) {
+  window.api.getKeybinds().then(function(data) {
+    if (data && data.current) updateHints(data.current);
+  });
+}
+
+// Listen for keybind changes
+if (window.api && window.api.onKeybindsChanged) {
+  window.api.onKeybindsChanged(function(data) {
+    updateHints(data);
+  });
+}
+
+// Init
+themeBtn.classList.add('on');
+</script>
+</body>
+</html>

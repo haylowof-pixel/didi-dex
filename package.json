@@ -1,0 +1,66 @@
+{
+  "name": "didi-dex",
+  "version": "2.0.0",
+  "description": "DIDI DEX - ARK companion app with taming calculator, breeding, maps & more",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "vite build && electron .",
+    "dev": "vite build && electron .",
+    "vite:build": "vite build",
+    "build": "vite build && electron-builder"
+  },
+  "keywords": [
+    "ark",
+    "taming",
+    "calculator",
+    "dododex",
+    "overlay"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "build": {
+    "appId": "com.dididex.app",
+    "productName": "DIDI DEX",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "shell/**/*",
+      "dist/**/*",
+      "public/**/*"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "public/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "allowElevation": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "haylowof-pixel",
+      "repo": "didi-dex"
+    }
+  },
+  "devDependencies": {
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1",
+    "rcedit": "^5.0.2",
+    "to-ico": "^1.1.5"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "electron-updater": "^6.8.3",
+    "framer-motion": "^12.38.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sharp": "^0.34.5",
+    "tesseract.js": "^7.0.0",
+    "vite": "^8.0.1"
+  }
+}

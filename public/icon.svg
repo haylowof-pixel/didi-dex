@@ -1,0 +1,62 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'>
+  <defs>
+    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#1a1a2e'/>
+      <stop offset='50%' stop-color='#16213e'/>
+      <stop offset='100%' stop-color='#0f3460'/>
+    </linearGradient>
+    <linearGradient id='accent' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#a78bfa'/>
+      <stop offset='50%' stop-color='#7c6aef'/>
+      <stop offset='100%' stop-color='#6d28d9'/>
+    </linearGradient>
+    <linearGradient id='glow' x1='0' y1='0' x2='0' y2='1'>
+      <stop offset='0%' stop-color='#c4b5fd'/>
+      <stop offset='100%' stop-color='#7c6aef'/>
+    </linearGradient>
+    <filter id='shadow' x='-20%' y='-20%' width='140%' height='140%'>
+      <feDropShadow dx='0' dy='4' stdDeviation='12' flood-color='#7c6aef' flood-opacity='0.5'/>
+    </filter>
+    <clipPath id='roundRect'>
+      <rect width='512' height='512' rx='108' ry='108'/>
+    </clipPath>
+  </defs>
+
+  <g clip-path='url(#roundRect)'>
+    <rect width='512' height='512' fill='url(#bg)'/>
+    <g opacity='0.03' stroke='#a78bfa' stroke-width='1'>
+      <line x1='0' y1='128' x2='512' y2='128'/>
+      <line x1='0' y1='256' x2='512' y2='256'/>
+      <line x1='0' y1='384' x2='512' y2='384'/>
+      <line x1='128' y1='0' x2='128' y2='512'/>
+      <line x1='256' y1='0' x2='256' y2='512'/>
+      <line x1='384' y1='0' x2='384' y2='512'/>
+    </g>
+    <circle cx='256' cy='220' r='140' fill='#7c6aef' opacity='0.08'/>
+    <circle cx='256' cy='220' r='90' fill='#7c6aef' opacity='0.06'/>
+  </g>
+
+  <g filter='url(#shadow)'>
+    <polygon points='256,80 366,138 366,302 256,360 146,302 146,138' fill='none' stroke='url(#accent)' stroke-width='3' opacity='0.4'/>
+    <path d='M200,150 L200,290 L270,290 C320,290 355,255 355,220 C355,185 320,150 270,150 Z' fill='none' stroke='url(#glow)' stroke-width='8' stroke-linejoin='round'/>
+    <path d='M220,175 L220,265 L265,265 C300,265 328,245 328,220 C328,195 300,175 265,175 Z' fill='url(#accent)' opacity='0.15'/>
+    <circle cx='275' cy='220' r='14' fill='url(#accent)'/>
+    <circle cx='275' cy='220' r='6' fill='#1a1a2e'/>
+    <circle cx='279' cy='216' r='3' fill='white' opacity='0.8'/>
+    <path d='M175,155 C200,170 210,185 190,200 C170,215 180,230 210,245' fill='none' stroke='#a78bfa' stroke-width='2.5' opacity='0.5' stroke-linecap='round'/>
+    <path d='M185,160 C210,175 220,190 200,205 C180,220 190,235 220,250' fill='none' stroke='#6d28d9' stroke-width='2.5' opacity='0.4' stroke-linecap='round'/>
+    <circle cx='182' cy='178' r='2.5' fill='#a78bfa' opacity='0.6'/>
+    <circle cx='192' cy='202' r='2.5' fill='#a78bfa' opacity='0.6'/>
+    <circle cx='200' cy='232' r='2.5' fill='#a78bfa' opacity='0.6'/>
+  </g>
+
+  <g filter='url(#shadow)'>
+    <text x='256' y='420' text-anchor='middle' font-family='Arial Black,Impact,Arial,sans-serif' font-weight='900' font-size='52' fill='url(#glow)' letter-spacing='8'>DIDI DEX</text>
+    <rect x='145' y='435' width='222' height='3' rx='1.5' fill='url(#accent)' opacity='0.6'/>
+  </g>
+
+  <path d='M40,108 L40,60 Q40,40 60,40 L108,40' fill='none' stroke='url(#accent)' stroke-width='2.5' opacity='0.3'/>
+  <path d='M472,108 L472,60 Q472,40 452,40 L404,40' fill='none' stroke='url(#accent)' stroke-width='2.5' opacity='0.3'/>
+  <path d='M40,404 L40,452 Q40,472 60,472 L108,472' fill='none' stroke='url(#accent)' stroke-width='2.5' opacity='0.3'/>
+  <path d='M472,404 L472,452 Q472,472 452,472 L404,472' fill='none' stroke='url(#accent)' stroke-width='2.5' opacity='0.3'/>
+</svg>

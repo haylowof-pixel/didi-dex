@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob:; img-src * data: blob:; connect-src 'self' https://cdn.jsdelivr.net https://ark.wiki.gg https://*.wiki.gg blob:;">
+<title>OCR Scanner</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+/* ===== THEME VARIABLES ===== */
+:root {
+  --accent:#7c6aef; --accent-l:#9d8ff5; --accent-d:#6354c4;
+  --accent-glow:rgba(124,106,239,0.15); --accent-bg:rgba(124,106,239,0.08);
+  --accent-border:rgba(124,106,239,0.22);
+  --success:#2dd4a0; --danger:#ef4444; --warning:#f59e0b; --info:#60a5fa;
+  --bg-0:#000000; --bg-1:#0a0a0a; --bg-2:#111111; --bg-3:#181818;
+  --text-0:#edeef3; --text-1:#b8bac4; --text-2:#7d808e; --text-3:#4e5160;
+  --border-s:rgba(255,255,255,0.04); --border-m:rgba(255,255,255,0.07); --border-h:rgba(255,255,255,0.12);
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --bar-h:34px;
+  --r-sm:6px; --r-md:8px; --r-lg:12px;
+  --male:#60a5fa; --female:#f472b6;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: transparent; color: var(--text-1); -webkit-font-smoothing: antialiased; }
+#app { display: flex; flex-direction: column; height: 100vh; background: rgba(0,0,0,0.88); border-radius: 12px; border: 1px solid rgba(124,106,239,0.25); overflow: hidden; backdrop-filter: blur(12px); }
+
+/* ===== TITLE BAR ===== */
+#ocr-bar {
+  display: flex; align-items: center; height: var(--bar-h); padding: 0 12px;
+  background: var(--bg-1); border-bottom: 1px solid var(--border-s);
+  -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
+}
+.bar-title { font-size: 12px; font-weight: 700; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+.bar-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+.bar-spacer { flex: 1; }
+.bar-btn {
+  -webkit-app-region: no-drag; height: 24px; padding: 0 10px;
+  border: 1px solid var(--border-m); border-radius: var(--r-sm);
+  background: var(--bg-2); color: var(--text-2); font-size: 10px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+  display: flex; align-items: center; gap: 4px;
+}
+.bar-btn:hover { background: var(--bg-3); color: var(--text-1); border-color: rgba(255,255,255,0.15); }
+.ocr-close {
+  -webkit-app-region: no-drag; width: 34px; height: 28px; border: none;
+  background: transparent; color: var(--text-3); font-size: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .1s; border-radius: var(--r-sm);
+}
+.ocr-close:hover { background: #c42b1c; color: #fff; }
+
+/* ===== CONTENT ===== */
+#content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+/* ===== SCAN SECTION ===== */
+#scan-section {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px 16px; gap: 16px;
+}
+
+.scan-placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 40px 24px; border: 2px dashed var(--border-m); border-radius: var(--r-lg);
+  text-align: center; width: 100%; transition: border-color .2s;
+}
+.scan-placeholder:hover { border-color: rgba(124,106,239,0.30); }
+.scan-placeholder.hidden { display: none; }
+.scan-ico { font-size: 48px; opacity: 0.4; }
+.scan-title { font-size: 15px; font-weight: 700; color: var(--text-0); }
+.scan-sub { font-size: 11px; color: var(--text-3); line-height: 1.5; }
+.scan-steps { font-size: 10px; color: var(--text-3); line-height: 1.8; text-align: left; }
+.scan-steps span { color: var(--accent-l); font-weight: 700; }
+
+.scan-btn {
+  padding: 14px 32px; border-radius: var(--r-md); border: none;
+  background: linear-gradient(135deg, var(--accent-d), var(--accent));
+  color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all .2s;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  box-shadow: 0 4px 20px rgba(124,106,239,0.3);
+  display: flex; align-items: center; gap: 8px;
+}
+.scan-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,106,239,0.4); }
+.scan-btn:active { transform: translateY(0) scale(0.98); }
+.scan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ===== STATUS BAR ===== */
+.ocr-status {
+  display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+  background: var(--bg-1); border-top: 1px solid var(--border-s);
+  font-size: 10px; color: var(--text-3); flex-shrink: 0;
+}
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text-3);
+  transition: background .3s;
+}
+.status-dot.processing { background: var(--warning); animation: pulse 1s infinite; }
+.status-dot.done { background: var(--success); }
+.status-dot.error { background: var(--danger); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.progress-bar {
+  flex: 1; height: 3px; background: var(--bg-3); border-radius: 2px;
+  overflow: hidden; display: none;
+}
+.progress-bar.show { display: block; }
+.progress-fill {
+  height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent-d), var(--accent-l));
+  transition: width 0.3s;
+}
+
+/* ===== RESULTS CARD ===== */
+#results-area { display: none; flex-direction: column; padding: 12px 16px; gap: 12px; }
+#results-area.show { display: flex; }
+
+/* Species header */
+.species-header {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--bg-1); border: 1px solid var(--border-s); border-radius: var(--r-lg);
+}
+.species-icon { width: 48px; height: 48px; border-radius: var(--r-md); background: var(--bg-2); object-fit: contain; }
+.species-info { flex: 1; }
+.species-name { font-size: 16px; font-weight: 800; color: var(--text-0); }
+.species-level { font-size: 11px; color: var(--accent-l); font-weight: 700; }
+.species-confidence { font-size: 9px; color: var(--text-3); margin-top: 2px; }
+
+/* Name & sex row */
+.edit-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.edit-input {
+  flex: 1; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border-m);
+  border-radius: var(--r-sm); color: var(--text-0); font-size: 12px; font-weight: 600;
+  font-family: inherit; outline: none; transition: border-color .15s;
+}
+.edit-input:focus { border-color: var(--accent); }
+
+.sex-toggle {
+  display: flex; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--border-m);
+}
+.sex-btn {
+  padding: 8px 14px; border: none; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+  background: var(--bg-2); color: var(--text-3);
+}
+.sex-btn.active-male { background: rgba(96,165,250,0.15); color: var(--male); }
+.sex-btn.active-female { background: rgba(244,114,182,0.15); color: var(--female); }
+.sex-btn:hover { background: var(--bg-3); color: var(--text-1); }
+
+/* Stats grid */
+.stats-card {
+  background: var(--bg-1); border: 1px solid var(--border-s); border-radius: var(--r-lg); overflow: hidden;
+}
+.stats-card-header {
+  padding: 8px 12px; font-size: 10px; font-weight: 700; color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: var(--bg-2); border-bottom: 1px solid var(--border-s);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.stat-row {
+  display: flex; align-items: center; padding: 7px 12px;
+  border-bottom: 1px solid var(--border-s); transition: background .1s;
+}
+.stat-row:hover { background: rgba(124,106,239,0.04); }
+.stat-row:last-child { border-bottom: none; }
+.stat-row.stat-missing { background: rgba(239,68,68,0.04); }
+.stat-ico-wrap { width: 28px; text-align: center; display: flex; align-items: center; justify-content: center; }
+.stat-ico-wrap img.stat-ico { width: 20px; height: 20px; filter: invert(1) brightness(1.5); }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-2); flex: 1; }
+.stat-input {
+  width: 90px; padding: 4px 8px; background: var(--bg-2); border: 1px solid var(--border-m);
+  border-radius: var(--r-sm); color: var(--accent-l); font-size: 13px; font-weight: 700;
+  font-family: inherit; text-align: right; outline: none;
+  font-variant-numeric: tabular-nums; transition: border-color .15s;
+}
+.stat-input:focus { border-color: var(--accent); }
+.stat-confidence {
+  font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
+  margin-left: 6px; min-width: 30px; text-align: center;
+}
+.conf-high { background: rgba(45,212,160,0.10); color: var(--success); }
+.conf-mid { background: rgba(245,158,11,0.10); color: var(--warning); }
+.conf-low { background: rgba(239,68,68,0.10); color: var(--danger); }
+
+/* Raw text toggle */
+.raw-toggle {
+  font-size: 10px; color: var(--text-3); cursor: pointer; padding: 4px 0;
+  display: flex; align-items: center; gap: 4px; user-select: none;
+}
+.raw-toggle:hover { color: var(--text-2); }
+.raw-text {
+  display: none; padding: 8px 12px; font-family: 'Consolas', 'SF Mono', monospace;
+  font-size: 10px; color: var(--text-2); white-space: pre-wrap;
+  max-height: 80px; overflow-y: auto; word-break: break-all;
+  background: var(--bg-2); border-radius: var(--r-sm); margin-top: 4px;
+}
+.raw-text.show { display: block; }
+
+/* Actions */
+.result-actions {
+  display: none; gap: 6px; padding: 12px 16px;
+  border-top: 1px solid var(--border-s); flex-shrink: 0;
+}
+.result-actions.show { display: flex; }
+.action-btn {
+  flex: 1; padding: 10px 14px; border-radius: var(--r-md);
+  font-size: 11px; font-weight: 700; font-family: inherit; border: 1px solid var(--border-m);
+  cursor: pointer; background: var(--bg-2); color: var(--text-2);
+  transition: all .15s; text-transform: uppercase; letter-spacing: 0.3px;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.action-btn:hover { background: var(--bg-3); color: var(--text-0); border-color: rgba(255,255,255,0.15); }
+.action-btn.primary { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); }
+.action-btn.primary:hover { background: rgba(124,106,239,0.14); color: var(--accent-l); }
+.action-btn.success { background: rgba(45,212,160,0.10); color: var(--success); border-color: rgba(45,212,160,0.20); }
+.action-btn.success:hover { background: rgba(45,212,160,0.16); }
+
+/* Toast notification */
+.toast {
+  position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+  background: var(--success); color: #000; font-size: 11px; font-weight: 700;
+  padding: 8px 20px; border-radius: 20px; opacity: 0; transition: opacity .3s;
+  pointer-events: none; z-index: 1000;
+}
+.toast.show { opacity: 1; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Title bar -->
+  <div id="ocr-bar">
+    <span class="bar-title"><span class="dot"></span>OCR Scanner</span>
+    <div class="bar-spacer"></div>
+    <button class="bar-btn" id="resetBtn" onclick="resetScan()" style="display:none">Reset</button>
+    <button class="ocr-close" onclick="window.api.ocrClose()">&#10005;</button>
+  </div>
+
+  <!-- Content -->
+  <div id="content">
+    <!-- Scan section (initial state) -->
+    <div id="scan-section">
+      <div class="scan-placeholder" id="placeholder">
+        <div class="scan-ico">&#127922;</div>
+        <div class="scan-title">Scanner un Dino</div>
+        <div class="scan-sub">Capture automatique + OCR en un clic</div>
+        <div class="scan-steps">
+          <span>1.</span> Ouvre l'inventaire/stats du dino dans ARK<br>
+          <span>2.</span> Clique le bouton ou appuie sur <kbd style="background:var(--bg-3);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--accent-l);border:1px solid var(--border-h)">F8</kbd><br>
+          <span>3.</span> Screenshot automatique + analyse OCR
+        </div>
+        <button class="scan-btn" id="scanBtn" onclick="startScan()">&#128247; Scanner le Dino <span style="font-size:10px;opacity:0.6;margin-left:6px">(F8)</span></button>
+      </div>
+    </div>
+
+    <!-- Results (hidden until OCR done) -->
+    <div id="results-area">
+      <!-- Species header -->
+      <div class="species-header">
+        <img id="speciesIcon" class="species-icon" src="" onerror="this.style.display='none'">
+        <div class="species-info">
+          <div class="species-name" id="speciesName">--</div>
+          <div class="species-level" id="speciesLevel">--</div>
+          <div class="species-confidence" id="speciesConf"></div>
+        </div>
+      </div>
+      <!-- Species correction -->
+      <div style="position:relative;margin:4px 10px 0">
+        <input type="text" id="speciesCorrect" class="edit-input" placeholder="Corriger l'espèce..." style="font-size:11px;padding:4px 8px;width:100%" oninput="filterSpeciesCorrect()">
+        <div id="speciesCorrDropdown" style="display:none;position:absolute;left:0;right:0;top:100%;max-height:150px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-h);border-radius:0 0 var(--r-sm) var(--r-sm);z-index:100"></div>
+      </div>
+
+      <!-- Name & Sex -->
+      <div class="edit-row">
+        <input type="text" class="edit-input" id="dinoName" placeholder="Nom du dino...">
+        <div class="sex-toggle">
+          <button class="sex-btn" id="sexM" onclick="setSex('M')">&#9794;</button>
+          <button class="sex-btn" id="sexF" onclick="setSex('F')">&#9792;</button>
+        </div>
+      </div>
+
+      <!-- Stats card -->
+      <div class="stats-card">
+        <div class="stats-card-header">&#128202; Stats Sauvages Detectees</div>
+        <div id="statsRows"></div>
+      </div>
+
+      <!-- Raw text -->
+      <div class="raw-toggle" onclick="toggleRaw()">&#9660; Texte brut OCR</div>
+      <div class="raw-text" id="rawText">--</div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="ocr-status">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">Pret</span>
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="result-actions" id="resultActions">
+    <button class="action-btn" onclick="startScan()">&#128247; Nouveau scan</button>
+    <button class="action-btn success" onclick="sendToBreeding()">&#129516; Envoyer au Breeding</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+var parsedStats = {};
+var detectedSpecies = null;
+var detectedLevel = null;
+var detectedSex = null;
+var rawOCRText = '';
+
+// ===== DINOSAUR LIST (for matching OCR text to species) =====
+var DINO_NAMES = [
+  { name: 'Rex', aka: ['T-Rex','Tyrannosaurus','Rex'] },
+  { name: 'Raptor', aka: ['Raptor','Utahraptor'] },
+  { name: 'Triceratops', aka: ['Triceratops','Trike'] },
+  { name: 'Argentavis', aka: ['Argentavis','Argy','Argent'] },
+  { name: 'Pteranodon', aka: ['Pteranodon','Ptera','PT'] },
+  { name: 'Ankylosaurus', aka: ['Ankylosaurus','Anky'] },
+  { name: 'Doedicurus', aka: ['Doedicurus','Doed'] },
+  { name: 'Quetzalcoatlus', aka: ['Quetzalcoatlus','Quetz','Quetzal'] },
+  { name: 'Spinosaurus', aka: ['Spinosaurus','Spino'] },
+  { name: 'Therizinosaurus', aka: ['Therizinosaurus','Theri'] },
+  { name: 'Giganotosaurus', aka: ['Giganotosaurus','Giga'] },
+  { name: 'Baryonyx', aka: ['Baryonyx','Bary'] },
+  { name: 'Parasaur', aka: ['Parasaur','Para','Parasaurolophus'] },
+  { name: 'Stegosaurus', aka: ['Stegosaurus','Stego'] },
+  { name: 'Yutyrannus', aka: ['Yutyrannus','Yuty'] },
+  { name: 'Tapejara', aka: ['Tapejara','Tape'] },
+  { name: 'Dimetrodon', aka: ['Dimetrodon','Dime'] },
+  { name: 'Mammoth', aka: ['Mammoth'] },
+  { name: 'Carnotaurus', aka: ['Carnotaurus','Carno'] },
+  { name: 'Daeodon', aka: ['Daeodon','Pig'] },
+  { name: 'Brontosaurus', aka: ['Brontosaurus','Bronto'] },
+  { name: 'Dilophosaur', aka: ['Dilophosaur','Diloph'] },
+  { name: 'Dodo', aka: ['Dodo'] },
+  { name: 'Maewing', aka: ['Maewing'] },
+  { name: 'Gallimimus', aka: ['Gallimimus','Galli'] },
+  { name: 'Iguanodon', aka: ['Iguanodon'] },
+  { name: 'Megaloceros', aka: ['Megaloceros'] },
+  { name: 'Pachycephalosaurus', aka: ['Pachycephalosaurus','Pachy'] },
+  { name: 'Ichthyosaurus', aka: ['Ichthyosaurus','Ichthy'] },
+  { name: 'Beelzebufo', aka: ['Beelzebufo','Frog'] },
+  { name: 'Carbonemys', aka: ['Carbonemys'] },
+  { name: 'Kaprosuchus', aka: ['Kaprosuchus','Kapro'] },
+  { name: 'Kentrosaurus', aka: ['Kentrosaurus','Kentro'] },
+  { name: 'Sabertooth', aka: ['Sabertooth','Saber'] },
+  { name: 'Sarcosuchus', aka: ['Sarcosuchus','Sarco'] },
+  { name: 'Terror Bird', aka: ['Terror Bird'] },
+  { name: 'Velonasaur', aka: ['Velonasaur','Velo'] },
+  { name: 'Diplodocus', aka: ['Diplodocus','Diplo'] },
+  { name: 'Equus', aka: ['Equus'] },
+  { name: 'Allosaurus', aka: ['Allosaurus','Allo'] },
+  { name: 'Castoroides', aka: ['Castoroides','Beaver'] },
+  { name: 'Dire Bear', aka: ['Dire Bear','Direbear'] },
+  { name: 'Direwolf', aka: ['Direwolf'] },
+  { name: 'Dunkleosteus', aka: ['Dunkleosteus','Dunkle'] },
+  { name: 'Megalodon', aka: ['Megalodon'] },
+  { name: 'Megalosaurus', aka: ['Megalosaurus','Megalo'] },
+  { name: 'Megatherium', aka: ['Megatherium','Mega'] },
+  { name: 'Paraceratherium', aka: ['Paraceratherium','Paracer'] },
+  { name: 'Plesiosaur', aka: ['Plesiosaur','Plesi'] },
+  { name: 'Snow Owl', aka: ['Snow Owl'] },
+  { name: 'Woolly Rhino', aka: ['Woolly Rhino','Rhino'] },
+  { name: 'Gasbags', aka: ['Gasbags'] },
+  { name: 'Mosasaurus', aka: ['Mosasaurus','Mosa'] },
+  { name: 'Managarmr', aka: ['Managarmr','Mana'] },
+  { name: 'Basilosaurus', aka: ['Basilosaurus','Basilo'] },
+  { name: 'Tropeognathus', aka: ['Tropeognathus','Trope'] },
+  { name: 'Thylacoleo', aka: ['Thylacoleo','Thyla'] },
+  { name: 'Griffin', aka: ['Griffin','Griffon'] },
+  { name: 'Rock Elemental', aka: ['Rock Elemental','Golem'] },
+  { name: 'Ceratosaurus', aka: ['Ceratosaurus','Cerato'] },
+  { name: 'Ovis', aka: ['Ovis','Sheep'] },
+  { name: 'Wyvern', aka: ['Wyvern'] },
+  { name: 'Rock Drake', aka: ['Rock Drake'] },
+  { name: 'Magmasaur', aka: ['Magmasaur'] },
+  { name: 'Shadowmane', aka: ['Shadowmane'] },
+  { name: 'Desmodus', aka: ['Desmodus'] },
+  { name: 'Carcharodontosaurus', aka: ['Carcharodontosaurus','Carchar'] },
+  { name: 'Dinopithecus', aka: ['Dinopithecus'] },
+  { name: 'Sinomacrops', aka: ['Sinomacrops','Sino'] },
+  { name: 'Fjordhawk', aka: ['Fjordhawk'] },
+  { name: 'Deinosuchus', aka: ['Deinosuchus','Deino'] },
+  { name: 'Fasolasuchus', aka: ['Fasolasuchus','Faso'] },
+  { name: 'Yi Ling', aka: ['Yi Ling'] },
+  { name: 'Gigantoraptor', aka: ['Gigantoraptor'] },
+  { name: 'Andrewsarchus', aka: ['Andrewsarchus','Andrew'] },
+  { name: 'Amargasaurus', aka: ['Amargasaurus','Amarga'] },
+  { name: 'Fire Wyvern', aka: ['Fire Wyvern'] },
+  { name: 'Lightning Wyvern', aka: ['Lightning Wyvern'] },
+  { name: 'Poison Wyvern', aka: ['Poison Wyvern'] },
+  { name: 'Ice Wyvern', aka: ['Ice Wyvern'] },
+  { name: 'Reaper King', aka: ['Reaper King','Reaper'] },
+  { name: 'Tusoteuthis', aka: ['Tusoteuthis','Tuso'] },
+  { name: 'Karkinos', aka: ['Karkinos','Crab'] },
+  { name: 'Fenrir', aka: ['Fenrir'] },
+  { name: 'Tek Rex', aka: ['Tek Rex'] },
+  { name: 'Tek Raptor', aka: ['Tek Raptor'] },
+  { name: 'Tek Parasaur', aka: ['Tek Parasaur'] },
+  { name: 'Tek Stego', aka: ['Tek Stego'] },
+  { name: 'Tek Quetzal', aka: ['Tek Quetzal'] },
+];
+
+// ===== STAT PATTERNS =====
+var N = '(\\d+\\.?\\d*)';
+var SEP = '[\\s.:]+';
+
+var STAT_PATTERNS = [
+  { name: 'Health', key: 'Health', ico: '<img src="https://ark.wiki.gg/images/Health.png" class="stat-ico">', icoFallback: 'HP',
+    aliases: ['health','hp','vie','sant'],
+    regex: new RegExp('health' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+  },
+  { name: 'Stamina', key: 'Stamina', ico: '<img src="https://ark.wiki.gg/images/Stamina.png" class="stat-ico">', icoFallback: 'Stam',
+    aliases: ['stamina','stam','endurance'],
+    regex: new RegExp('stam(?:ina|na)?' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+  },
+  { name: 'Oxygen', key: 'Oxygen', ico: '<img src="https://ark.wiki.gg/images/Oxygen.png" class="stat-ico">', icoFallback: 'Oxy',
+    aliases: ['oxygen','oxy','oxyg'],
+    regex: new RegExp('oxy(?:gen|g[eè]ne?)?' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+  },
+  { name: 'Food', key: 'Food', ico: '<img src="https://ark.wiki.gg/images/Food.png" class="stat-ico">', icoFallback: 'Food',
+    aliases: ['food','nourriture','nourr'],
+    regex: new RegExp('food' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+  },
+  { name: 'Weight', key: 'Weight', ico: '<img src="https://ark.wiki.gg/images/Weight.png" class="stat-ico">', icoFallback: 'Weight',
+    aliases: ['weight','poids','weigh'],
+    regex: new RegExp('weig?h?t' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+  },
+  { name: 'Melee Damage', key: 'Melee Damage', ico: '<img src="https://ark.wiki.gg/images/Melee_Damage.png" class="stat-ico">', icoFallback: 'Melee', isPct: true,
+    aliases: ['melee damage','melee','damage','corps'],
+    regex: new RegExp('melee(?:\\s*damage)?' + SEP + N + '\\s*%?', 'i')
+  },
+];
+
+// ===== HELPERS =====
+function setStatus(state, text) {
+  document.getElementById('statusDot').className = 'status-dot ' + (state || '');
+  document.getElementById('statusText').textContent = text || '';
+}
+
+function showProgress(show, pct) {
+  var bar = document.getElementById('progressBar');
+  var fill = document.getElementById('progressFill');
+  if (show) {
+    bar.classList.add('show');
+    fill.style.width = (pct || 0) + '%';
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+function cleanNumber(numStr) {
+  if (!numStr) return NaN;
+  var s = numStr.replace(/\s/g, '').replace(',', '.');
+  if (s.endsWith('.')) s = s.slice(0, -1);
+  return parseFloat(s);
+}
+
+// ===== OCR TEXT PRE-PROCESSING =====
+function preprocessOCRText(text) {
+  var t = text;
+  t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  t = t.replace(/\|/g, 'l');
+  t = t.replace(/0xygen/gi, 'Oxygen');
+  t = t.replace(/f00d/gi, 'Food'); t = t.replace(/fo0d/gi, 'Food');
+  t = t.replace(/t0rpor/gi, 'Torpor'); t = t.replace(/t0rpidity/gi, 'Torpidity');
+  t = t.replace(/hea1th/gi, 'Health'); t = t.replace(/heaith/gi, 'Health');
+  t = t.replace(/heatth/gi, 'Health');
+  t = t.replace(/we1ght/gi, 'Weight'); t = t.replace(/welght/gi, 'Weight');
+  t = t.replace(/stam1na/gi, 'Stamina'); t = t.replace(/starnina/gi, 'Stamina');
+  t = t.replace(/me1ee/gi, 'Melee'); t = t.replace(/meiee/gi, 'Melee');
+  t = t.replace(/1evel/gi, 'Level'); t = t.replace(/leve1/gi, 'Level');
+  t = t.replace(/t0rpor/gi, 'Torpor'); t = t.replace(/t0rpidity/gi, 'Torpidity');
+  t = t.replace(/([a-zA-Z\u00e9\u00e8\u00ea\u00e0])\s*;\s*(\d)/g, '$1: $2');
+  t = t.replace(/[ \t]{2,}/g, ' ');
+  return t;
+}
+
+// ===== IMAGE ENHANCEMENT FOR OCR =====
+function enhanceImageForOCR(imageData) {
+  var canvas = document.createElement('canvas');
+  var img = new Image();
+  return new Promise(function(resolve) {
+    img.onload = function() {
+      // Full screenshot — don't crop, let OCR read everything
+      var SCALE = 2;
+      var w = img.width * SCALE, h = img.height * SCALE;
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
+
+      var data = ctx.getImageData(0, 0, w, h);
+      var d = data.data;
+
+      // Convert to grayscale with high contrast, invert dark bg to white bg for Tesseract
+      var totalBright = 0;
+      for (var i = 0; i < d.length; i += 4) {
+        totalBright += 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+      }
+      var avgBright = totalBright / (d.length / 4);
+
+      for (var i2 = 0; i2 < d.length; i2 += 4) {
+        var gray = 0.299 * d[i2] + 0.587 * d[i2+1] + 0.114 * d[i2+2];
+        // High contrast: boost contrast around midpoint
+        gray = ((gray - 128) * 2.0) + 128;
+        gray = Math.max(0, Math.min(255, gray));
+        // If dark background (game), invert so text becomes dark on white
+        if (avgBright < 128) gray = 255 - gray;
+        // Threshold to make it sharper
+        gray = gray > 160 ? 255 : (gray < 80 ? 0 : gray);
+        d[i2] = d[i2+1] = d[i2+2] = gray;
+      }
+      ctx.putImageData(data, 0, 0);
+
+      // Add white padding
+      var PAD = 30;
+      var padded = document.createElement('canvas');
+      padded.width = w + PAD * 2;
+      padded.height = h + PAD * 2;
+      var pCtx = padded.getContext('2d');
+      pCtx.fillStyle = '#ffffff';
+      pCtx.fillRect(0, 0, padded.width, padded.height);
+      pCtx.drawImage(canvas, PAD, PAD);
+
+      resolve(padded.toDataURL('image/png'));
+    };
+    img.src = imageData;
+  });
+}
+
+// ===== FUZZY MATCH (Levenshtein distance) =====
+function levenshtein(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  var matrix = [];
+  for (var i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (var j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (var i2 = 1; i2 <= b.length; i2++) {
+    for (var j2 = 1; j2 <= a.length; j2++) {
+      if (b.charAt(i2 - 1) === a.charAt(j2 - 1)) {
+        matrix[i2][j2] = matrix[i2 - 1][j2 - 1];
+      } else {
+        matrix[i2][j2] = Math.min(
+          matrix[i2 - 1][j2 - 1] + 1,
+          matrix[i2][j2 - 1] + 1,
+          matrix[i2 - 1][j2] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
+// ===== SPECIES DETECTION =====
+function detectSpecies(text) {
+  var textLower = text.toLowerCase();
+  var best = null;
+  var bestLen = 0;
+
+  // Pass 1: exact substring match (longest wins)
+  for (var i = 0; i < DINO_NAMES.length; i++) {
+    var dino = DINO_NAMES[i];
+    var allNames = [dino.name].concat(dino.aka);
+    for (var j = 0; j < allNames.length; j++) {
+      var n = allNames[j].toLowerCase();
+      if (textLower.indexOf(n) !== -1 && n.length > bestLen) {
+        best = dino.name;
+        bestLen = n.length;
+      }
+    }
+  }
+  if (best && bestLen >= 4) return best;
+
+  // Pass 2: fuzzy match — split OCR text into words/phrases, compare against dino names
+  var words = text.split(/[\n\r\s]+/).filter(function(w) { return w.length >= 3; });
+  var bestFuzzy = null;
+  var bestFuzzyDist = 999;
+
+  for (var i2 = 0; i2 < DINO_NAMES.length; i2++) {
+    var dino2 = DINO_NAMES[i2];
+    var allNames2 = [dino2.name].concat(dino2.aka);
+    for (var j2 = 0; j2 < allNames2.length; j2++) {
+      var target = allNames2[j2].toLowerCase();
+      // Check each word against the target
+      for (var w = 0; w < words.length; w++) {
+        var word = words[w].toLowerCase().replace(/[^a-z]/g, '');
+        if (word.length < 3) continue;
+        var dist = levenshtein(word, target);
+        var maxDist = Math.max(1, Math.floor(target.length * 0.3)); // Allow 30% error
+        if (dist <= maxDist && dist < bestFuzzyDist) {
+          bestFuzzyDist = dist;
+          bestFuzzy = dino2.name;
+        }
+        // Also check 2-word combinations for multi-word names
+        if (w < words.length - 1) {
+          var twoWords = (words[w] + ' ' + words[w+1]).toLowerCase().replace(/[^a-z ]/g, '');
+          var dist2 = levenshtein(twoWords, target);
+          if (dist2 <= maxDist && dist2 < bestFuzzyDist) {
+            bestFuzzyDist = dist2;
+            bestFuzzy = dino2.name;
+          }
+        }
+      }
+    }
+  }
+
+  return best || bestFuzzy;
+}
+
+// ===== LEVEL DETECTION =====
+function detectLevel(text) {
+  var m = text.match(/(?:level|lvl|lvi|niveau|niv)[\s.:]*(\d+)/i);
+  if (m) {
+    var v = parseInt(m[1]);
+    if (v > 0 && v <= 500) return v;
+  }
+  return null;
+}
+
+// ===== SEX DETECTION =====
+function detectSex(text) {
+  var t = text.toLowerCase();
+  // Common patterns in ARK's UI
+  if (/\bmale\b/.test(t) && !/\bfemale\b/.test(t)) return 'M';
+  if (/\bfemale\b/.test(t) || /\bfemelle\b/.test(t)) return 'F';
+  if (/\bm[aâ]le\b/.test(t) && !/\bfe/.test(t)) return 'M';
+  // Check for gender symbols
+  if (text.indexOf('\u2642') !== -1) return 'M';
+  if (text.indexOf('\u2640') !== -1) return 'F';
+  return null;
+}
+
+// ===== PARSE STATS =====
+function parseStats(text, globalConf) {
+  parsedStats = {};
+
+  for (var j = 0; j < STAT_PATTERNS.length; j++) {
+    var pat = STAT_PATTERNS[j];
+    var match = pat.regex.exec(text);
+    if (match) {
+      var rawVal = match[1];
+      var rawMax = match[2];
+      var val = cleanNumber(rawVal);
+      if (rawMax) {
+        var maxVal = cleanNumber(rawMax);
+        if (!isNaN(maxVal) && maxVal > 0) val = maxVal;
+      }
+      if (!isNaN(val) && val >= 0.1) {
+        parsedStats[pat.key] = { value: val, confidence: Math.min(95, globalConf + 5) };
+      }
+    }
+  }
+
+  // Fallback: line-by-line alias matching
+  var lines = text.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    var lineLower = line.toLowerCase();
+
+    for (var j2 = 0; j2 < STAT_PATTERNS.length; j2++) {
+      var pat2 = STAT_PATTERNS[j2];
+      if (parsedStats[pat2.key]) continue;
+
+      var found = false;
+      for (var k = 0; k < pat2.aliases.length; k++) {
+        if (lineLower.indexOf(pat2.aliases[k]) !== -1) { found = true; break; }
+      }
+      if (!found) continue;
+
+      var numRegex = /(\d+[.,]\d+|\d+)/g;
+      var nums = []; var m;
+      while ((m = numRegex.exec(line)) !== null) nums.push(m[1]);
+      if (nums.length === 0) continue;
+
+      // For "current / max" format, prefer max (last number or after /)
+      var bestVal = null;
+      if (line.indexOf('/') !== -1) {
+        var parts = line.split('/');
+        if (parts.length >= 2) {
+          var lastNum = parts[parts.length - 1].match(/(\d+[.,]?\d*)/);
+          if (lastNum) bestVal = cleanNumber(lastNum[1]);
+        }
+      }
+      if (bestVal === null) {
+        for (var ni = nums.length - 1; ni >= 0; ni--) {
+          var nv = cleanNumber(nums[ni]);
+          if (!isNaN(nv) && nv > 0) { bestVal = nv; break; }
+        }
+      }
+      if (bestVal !== null && bestVal > 0) {
+        parsedStats[pat2.key] = { value: bestVal, confidence: Math.max(30, globalConf - 15) };
+      }
+    }
+  }
+}
+
+// ===== SET SEX =====
+function setSex(sex) {
+  detectedSex = sex;
+  document.getElementById('sexM').className = 'sex-btn' + (sex === 'M' ? ' active-male' : '');
+  document.getElementById('sexF').className = 'sex-btn' + (sex === 'F' ? ' active-female' : '');
+}
+
+// ===== SPECIES CORRECTION =====
+function filterSpeciesCorrect() {
+  var input = document.getElementById('speciesCorrect');
+  var dd = document.getElementById('speciesCorrDropdown');
+  var q = input.value.toLowerCase().trim();
+  if (q.length < 2) { dd.style.display = 'none'; return; }
+
+  var html = '';
+  var count = 0;
+  for (var i = 0; i < DINO_NAMES.length && count < 8; i++) {
+    var name = DINO_NAMES[i].name;
+    if (name.toLowerCase().indexOf(q) !== -1) {
+      var wn = name.replace(/ /g, '_');
+      html += '<div onclick="pickSpeciesCorrect(\'' + name.replace(/'/g, "\\'") + '\')" style="padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:11px;border-bottom:1px solid var(--border-s);transition:background .1s" onmouseover="this.style.background=\'rgba(124,106,239,0.1)\'" onmouseout="this.style.background=\'transparent\'">';
+      html += '<img src="https://ark.wiki.gg/images/thumb/' + wn + '.png/24px-' + wn + '.png" style="width:20px;height:20px;filter:invert(1) brightness(1.8)" onerror="this.style.display=\'none\'">';
+      html += '<span style="color:var(--text-0)">' + name + '</span></div>';
+      count++;
+    }
+  }
+  dd.innerHTML = html;
+  dd.style.display = count > 0 ? 'block' : 'none';
+}
+
+function pickSpeciesCorrect(name) {
+  detectedSpecies = name;
+  document.getElementById('speciesCorrect').value = '';
+  document.getElementById('speciesCorrDropdown').style.display = 'none';
+  document.getElementById('speciesName').textContent = name;
+  var wn = name.replace(/ /g, '_');
+  var iconEl = document.getElementById('speciesIcon');
+  iconEl.src = 'https://ark.wiki.gg/images/thumb/' + wn + '.png/96px-' + wn + '.png';
+  iconEl.style.display = 'block';
+}
+
+// ===== TOGGLE RAW TEXT =====
+function toggleRaw() {
+  document.getElementById('rawText').classList.toggle('show');
+}
+
+// ===== SHOW RESULTS =====
+function showResults() {
+  document.getElementById('scan-section').style.display = 'none';
+  document.getElementById('results-area').classList.add('show');
+  document.getElementById('resultActions').classList.add('show');
+  document.getElementById('resetBtn').style.display = 'flex';
+
+  // Species
+  var speciesEl = document.getElementById('speciesName');
+  speciesEl.textContent = detectedSpecies || 'Espece inconnue';
+
+  // Species icon from ark.wiki.gg
+  var iconEl = document.getElementById('speciesIcon');
+  if (detectedSpecies) {
+    var wikiName = detectedSpecies.replace(/ /g, '_');
+    iconEl.src = 'https://ark.wiki.gg/images/thumb/' + wikiName + '.png/96px-' + wikiName + '.png';
+    iconEl.style.display = 'block';
+  } else {
+    iconEl.style.display = 'none';
+  }
+
+  // Level
+  var levelEl = document.getElementById('speciesLevel');
+  levelEl.textContent = detectedLevel ? 'Level ' + detectedLevel : 'Niveau non detecte';
+
+  // Sex
+  if (detectedSex) {
+    setSex(detectedSex);
+  } else {
+    setSex('M'); // Default to M
+  }
+
+  // Name
+  var nameInput = document.getElementById('dinoName');
+  nameInput.value = detectedSpecies ? detectedSpecies + (detectedLevel ? ' Lv' + detectedLevel : '') : '';
+
+  // Stats
+  var html = '';
+  for (var i = 0; i < STAT_PATTERNS.length; i++) {
+    var pat = STAT_PATTERNS[i];
+    var stat = parsedStats[pat.key];
+    var val = stat ? stat.value : '';
+    var conf = stat ? stat.confidence : 0;
+    var confClass = conf >= 70 ? 'conf-high' : (conf >= 40 ? 'conf-mid' : 'conf-low');
+    var missing = !stat ? ' stat-missing' : '';
+
+    html += '<div class="stat-row' + missing + '">';
+    html += '<span class="stat-ico-wrap">' + pat.ico + '</span>';
+    html += '<span class="stat-label">' + pat.name + '</span>';
+    html += '<input type="number" class="stat-input" data-stat="' + pat.key + '" value="' + val + '" step="0.1">';
+    if (stat) {
+      html += '<span class="stat-confidence ' + confClass + '">' + conf + '%</span>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('statsRows').innerHTML = html;
+
+  // Raw text
+  document.getElementById('rawText').textContent = rawOCRText;
+
+  setStatus('done', 'Scan termine - ' + Object.keys(parsedStats).length + '/' + STAT_PATTERNS.length + ' stats detectees');
+}
+
+// ===== START SCAN (ONE-CLICK FLOW) =====
+function startScan() {
+  var btn = document.getElementById('scanBtn');
+  if (btn) btn.disabled = true;
+
+  setStatus('processing', 'Minimisation de la fenetre...');
+  showProgress(true, 5);
+
+  // Reset state
+  parsedStats = {};
+  detectedSpecies = null;
+  detectedLevel = null;
+  detectedSex = null;
+  rawOCRText = '';
+
+  // Step 1: Tell main process to minimize all DIDI DEX windows, wait, then screenshot
+  if (window.api && window.api.takeScreenshot) {
+    window.api.takeScreenshot().then(function(dataUrl) {
+      if (!dataUrl) {
+        setStatus('error', 'Capture echouee');
+        showProgress(false);
+        if (btn) btn.disabled = false;
+        return;
+      }
+
+      setStatus('processing', 'Amelioration de l\'image...');
+      showProgress(true, 25);
+
+      // Step 2: Enhance image for OCR
+      enhanceImageForOCR(dataUrl).then(function(enhancedDataUrl) {
+        setStatus('processing', 'Analyse OCR en cours...');
+        showProgress(true, 35);
+
+        // Step 3: Run Tesseract.js directly in the renderer
+        runTesseract(enhancedDataUrl).then(function(result) {
+          showProgress(false);
+          if (btn) btn.disabled = false;
+
+          if (result && result.text) {
+            rawOCRText = result.text;
+            var cleaned = preprocessOCRText(result.text);
+
+            // Detect species, level, sex
+            detectedSpecies = detectSpecies(cleaned);
+            detectedLevel = detectLevel(cleaned);
+            detectedSex = detectSex(cleaned);
+
+            // Parse stats
+            parseStats(cleaned, result.confidence || 70);
+
+            // Show results
+            showResults();
+          } else {
+            setStatus('error', 'Aucun texte detecte - verifie que les stats sont visibles');
+          }
+        }).catch(function(err) {
+          showProgress(false);
+          if (btn) btn.disabled = false;
+          setStatus('error', 'Erreur OCR: ' + err.message);
+        });
+      });
+    }).catch(function(err) {
+      showProgress(false);
+      if (btn) btn.disabled = false;
+      setStatus('error', 'Erreur capture: ' + err.message);
+    });
+  } else {
+    setStatus('error', 'API de capture non disponible');
+    showProgress(false);
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ===== TESSERACT.JS OCR (runs in renderer) =====
+function runTesseract(dataUrl) {
+  return new Promise(function(resolve, reject) {
+    if (typeof Tesseract === 'undefined') {
+      reject(new Error('Tesseract.js non charge'));
+      return;
+    }
+
+    Tesseract.recognize(dataUrl, 'eng', {
+      logger: function(info) {
+        if (info.status === 'recognizing text' && info.progress !== undefined) {
+          var pct = 35 + Math.round(info.progress * 60);
+          showProgress(true, pct);
+          setStatus('processing', 'OCR: ' + Math.round(info.progress * 100) + '%');
+        }
+      }
+    }).then(function(result) {
+      resolve({
+        text: result.data.text,
+        confidence: Math.round(result.data.confidence),
+      });
+    }).catch(function(err) {
+      reject(err);
+    });
+  });
+}
+
+// ===== RESET =====
+function resetScan() {
+  parsedStats = {};
+  detectedSpecies = null;
+  detectedLevel = null;
+  detectedSex = null;
+  rawOCRText = '';
+
+  document.getElementById('results-area').classList.remove('show');
+  document.getElementById('resultActions').classList.remove('show');
+  document.getElementById('scan-section').style.display = 'flex';
+  document.getElementById('placeholder').classList.remove('hidden');
+  document.getElementById('resetBtn').style.display = 'none';
+  document.getElementById('rawText').classList.remove('show');
+  setStatus('', 'Pret');
+  showProgress(false);
+}
+
+// ===== SEND TO BREEDING =====
+function sendToBreeding() {
+  // Collect stat values from inputs
+  var wildLevels = {};
+  var inputs = document.querySelectorAll('.stat-input');
+  inputs.forEach(function(inp) {
+    var key = inp.getAttribute('data-stat');
+    var val = parseFloat(inp.value);
+    if (!isNaN(val)) {
+      // Store the raw value - the breeding window can do level extraction
+      wildLevels[key] = val;
+    }
+  });
+
+  var creatureData = {
+    species: detectedSpecies || document.getElementById('speciesName').textContent,
+    name: document.getElementById('dinoName').value || (detectedSpecies || 'Dino') + ' #OCR',
+    sex: detectedSex || 'M',
+    level: detectedLevel || 0,
+    wildLevels: wildLevels,
+    tamed: true,
+    bred: false,
+    mutaPat: 0,
+    mutaMat: 0,
+    parentMale: '',
+    parentFemale: '',
+    addedAt: Date.now()
+  };
+
+  if (window.api && window.api.sendToBreeding) {
+    window.api.sendToBreeding(creatureData).then(function(result) {
+      if (result && result.success) {
+        showToast('Envoye au Breeding Library ! (ID: ' + result.id + ')');
+        setStatus('done', 'Creature ajoutee a la bibliotheque');
+      }
+    }).catch(function(err) {
+      setStatus('error', 'Erreur: ' + err.message);
+    });
+  } else {
+    // Fallback: use old IPC
+    if (window.api && window.api.sendOCRToBreeding) {
+      window.api.sendOCRToBreeding(creatureData);
+      showToast('Envoye au Breeding !');
+    }
+  }
+}
+
+// ===== LISTEN FOR OCR PROGRESS FROM MAIN (legacy support) =====
+if (window.api && window.api.onOCRProgress) {
+  window.api.onOCRProgress(function(pct) {
+    showProgress(true, pct);
+  });
+}
+
+// ===== LISTEN FOR F8 SCAN TRIGGER =====
+if (window.api && window.api.onTriggerScan) {
+  window.api.onTriggerScan(function() {
+    startScan();
+  });
+}
+</script>
+</body>
+</html>

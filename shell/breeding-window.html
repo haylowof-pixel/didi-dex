@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src * data:;">
+<title>Breeding Manager</title>
+<style>
+/* ===== DESIGN SYSTEM v3 ===== */
+:root{
+  --accent:#7c6aef;--accent-l:#9d8ff5;--accent-d:#6354c4;
+  --accent-glow:rgba(124,106,239,0.15);--accent-bg:rgba(124,106,239,0.08);
+  --accent-border:rgba(124,106,239,0.22);
+  --success:#2dd4a0;--success-bg:rgba(45,212,160,0.08);
+  --danger:#ef4444;--danger-bg:rgba(239,68,68,0.08);
+  --warning:#f59e0b;--warning-bg:rgba(245,158,11,0.08);
+  --info:#60a5fa;
+  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;
+  --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
+  --border-s:rgba(255,255,255,0.04);--border-m:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.12);
+  --bar-h:38px;--font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
+  --male:#60a5fa;--female:#f472b6
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);background:var(--bg-0);color:var(--text-0);-webkit-font-smoothing:antialiased}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* ===== TITLE BAR ===== */
+#breed-bar{display:flex;align-items:center;height:var(--bar-h);padding:0 10px 0 16px;background:var(--bg-1);border-bottom:1px solid var(--border-s);-webkit-app-region:drag;flex-shrink:0;gap:8px}
+.bar-title{font-size:11px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c6aef,#b68df7,#7c6aef);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bar-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);-webkit-text-fill-color:initial}
+.bar-spacer{flex:1}
+.bar-btn{-webkit-app-region:no-drag;height:26px;padding:0 10px;border:1px solid var(--border-s);border-radius:var(--r-sm);background:rgba(255,255,255,0.03);color:var(--text-2);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
+.bar-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-1);border-color:var(--border-m)}
+.bar-btn.active{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border)}
+.breed-close{-webkit-app-region:no-drag;width:36px;height:30px;border:none;background:transparent;color:var(--text-3);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;border-radius:var(--r-sm)}
+.breed-close:hover{background:#c42b1c;color:#fff}
+
+/* ===== LAYOUT ===== */
+#main-layout{flex:1;display:flex;overflow:hidden}
+
+/* Nav sidebar */
+#nav-bar{width:54px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg-1);border-right:1px solid var(--border-s);padding:8px 0;gap:2px;align-items:center}
+.nav-btn{width:40px;height:40px;border:none;border-radius:var(--r-md);background:transparent;color:var(--text-3);font-size:16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;position:relative}
+.nav-btn:hover{background:var(--accent-bg);color:var(--text-2)}
+.nav-btn.active{background:var(--accent-bg);color:var(--accent-l);box-shadow:inset 3px 0 0 var(--accent)}
+.nav-btn .nav-label{position:absolute;left:50px;padding:4px 10px;background:var(--bg-3);border:1px solid var(--border-m);border-radius:var(--r-sm);font-size:9px;font-weight:700;color:var(--text-1);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
+.nav-btn:hover .nav-label{opacity:1}
+
+/* Content panels */
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden}
+.panel.active{display:flex}
+.panel-header{padding:16px 20px 12px;border-bottom:1px solid var(--border-s);flex-shrink:0;background:rgba(255,255,255,0.01)}
+.panel-title{font-size:15px;font-weight:800;color:var(--text-0);margin-bottom:3px;letter-spacing:-0.2px}
+.panel-sub{font-size:10.5px;color:var(--text-3);font-weight:500}
+.panel-body{flex:1;overflow-y:auto;padding:16px 20px}
+
+/* ===== FORMS ===== */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.form-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px}
+.form-input{padding:7px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border-s);border-radius:var(--r-sm);color:var(--text-0);font-size:11.5px;font-weight:600;font-family:inherit;outline:none;transition:all .15s}
+.form-input:focus{border-color:var(--accent);color:var(--text-0);box-shadow:0 0 0 3px rgba(124,106,239,0.12)}
+.form-input::placeholder{color:var(--text-3)}
+select.form-input{cursor:pointer;background:var(--bg-2);color:var(--text-0);border:1px solid var(--border-s)}
+select.form-input option{background:var(--bg-2);color:var(--text-0)}
+
+.btn{height:32px;padding:0 16px;border:1px solid var(--border-m);border-radius:var(--r-md);background:rgba(255,255,255,0.03);color:var(--text-2);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;text-transform:uppercase;letter-spacing:.4px}
+.btn:hover{background:rgba(255,255,255,0.06);color:var(--text-0);border-color:var(--border-h)}
+.btn.primary{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border);box-shadow:0 2px 8px var(--accent-glow)}
+.btn.primary:hover{background:rgba(124,106,239,0.14);color:var(--accent-l);transform:translateY(-1px)}
+.btn.danger{background:var(--danger-bg);color:var(--danger);border-color:rgba(239,68,68,0.20)}
+.btn.danger:hover{background:rgba(239,68,68,0.12)}
+.btn.success{background:var(--success-bg);color:var(--success);border-color:rgba(45,212,160,0.20)}
+.btn.success:hover{background:rgba(45,212,160,0.12)}
+.btn-row{display:flex;gap:8px;margin-top:10px}
+
+/* ===== CARDS ===== */
+.card{border-radius:var(--r-lg);padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border-s);transition:all .2s}
+.card:hover{border-color:var(--border-m)}
+.card+.card{margin-top:8px}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.card-title{font-size:12.5px;font-weight:700;color:var(--text-0);flex:1}
+.card-badge{font-size:8px;font-weight:800;padding:2px 7px;border-radius:var(--r-sm);text-transform:uppercase;letter-spacing:.5px}
+.badge-male{background:rgba(96,165,250,0.08);color:var(--male);border:1px solid rgba(96,165,250,0.20)}
+.badge-female{background:rgba(244,114,182,0.08);color:var(--female);border:1px solid rgba(244,114,182,0.20)}
+.badge-muta{background:var(--accent-bg);color:var(--accent-l);border:1px solid rgba(124,106,239,0.22)}
+
+/* Stats row */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.stat-cell{padding:5px 6px;border-radius:var(--r-sm);background:rgba(255,255,255,0.02);text-align:center;border:1px solid transparent;transition:border-color .15s}
+.stat-cell:hover{border-color:var(--border-s)}
+.stat-name{font-size:7.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:13px;font-weight:900;color:var(--text-1);font-variant-numeric:tabular-nums}
+.stat-val.best{color:var(--success)}
+.stat-val.highlight{color:var(--accent-l)}
+.stat-val.worse{color:var(--danger)}
+
+/* Extractor result */
+.extract-row{display:grid;grid-template-columns:80px 1fr 60px 60px;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.extract-row:last-child{border:none}
+.extract-stat{font-size:10.5px;font-weight:700;color:var(--text-2)}
+.extract-bar{height:5px;background:rgba(255,255,255,0.05);border-radius:9999px;overflow:hidden}
+.extract-fill{height:100%;border-radius:9999px;background:var(--accent);transition:width .3s}
+.extract-wild{font-size:13px;font-weight:900;color:var(--accent-l);text-align:center;font-variant-numeric:tabular-nums}
+.extract-value{font-size:10.5px;color:var(--text-3);text-align:center;font-variant-numeric:tabular-nums}
+.extract-wild.top{color:var(--success)}
+
+/* Muta counter */
+.muta-display{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--text-3)}
+
+/* ===== BREED SIM ===== */
+.breed-parents{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:start}
+.breed-vs{display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--text-3);padding-top:30px}
+.breed-result{margin-top:14px;padding:16px;border-radius:var(--r-lg);background:rgba(124,106,239,0.03);border:1px solid rgba(124,106,239,0.10)}
+.breed-result-title{font-size:12px;font-weight:800;color:var(--accent-l);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* ===== LINEAGE TREE ===== */
+.lineage-node{display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:var(--r-md);background:rgba(255,255,255,0.02);border:1px solid var(--border-s);font-size:9px;color:var(--text-2);min-width:90px;text-align:center;transition:border-color .15s}
+.lineage-node:hover{border-color:var(--border-m)}
+.lineage-node .l-name{font-weight:700;color:var(--text-0);font-size:10.5px}
+.lineage-node .l-muta{font-size:8px;color:var(--accent-l)}
+
+/* ===== TABS ===== */
+.sub-tabs{display:flex;gap:0;border-bottom:1px solid var(--border-s);margin-bottom:12px;flex-shrink:0}
+.sub-tab{padding:9px 16px;border:none;background:transparent;color:var(--text-3);font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
+.sub-tab:hover{color:var(--text-2);background:rgba(124,106,239,0.03)}
+.sub-tab.active{color:var(--accent-l);border-bottom-color:var(--accent)}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.data-table th{text-align:left;padding:8px 10px;font-size:8.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border-s)}
+.data-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--text-2)}
+.data-table tr:hover td{background:var(--accent-bg);color:var(--text-1)}
+.data-table .t-name{font-weight:700;color:var(--text-0)}
+.data-table .t-stat{font-weight:700;font-variant-numeric:tabular-nums}
+.data-table .t-action{text-align:right}
+.t-btn-sm{padding:3px 10px;border:1px solid var(--border-s);border-radius:var(--r-sm);background:rgba(255,255,255,0.03);color:var(--text-3);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.t-btn-sm:hover{background:rgba(255,255,255,0.06);color:var(--text-1);border-color:var(--border-m)}
+.t-btn-sm.del:hover{background:var(--danger-bg);color:var(--danger);border-color:rgba(239,68,68,0.20)}
+
+/* Empty state */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;color:var(--text-3)}
+.empty-ico{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty-title{font-size:14px;font-weight:700;color:var(--text-2);margin-bottom:4px}
+.empty-sub{font-size:11px;color:var(--text-3)}
+
+/* Config cards */
+.config-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.config-card{padding:12px;border-radius:var(--r-md);background:rgba(255,255,255,0.02);border:1px solid var(--border-s);transition:border-color .15s}
+.config-card:hover{border-color:var(--border-m)}
+.config-card .cc-label{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.config-card .cc-val{font-size:17px;font-weight:900;color:var(--accent-l);font-variant-numeric:tabular-nums}
+
+/* Monte Carlo */
+.mc-results{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mc-stat{padding:10px;border-radius:var(--r-md);background:rgba(255,255,255,0.02);border:1px solid var(--border-s)}
+.mc-stat-name{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.mc-stat-pct{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
+.mc-stat-pct.high{color:var(--success)}.mc-stat-pct.mid{color:var(--warning)}.mc-stat-pct.low{color:var(--danger)}
+.prob-bar{height:5px;background:rgba(255,255,255,0.05);border-radius:9999px;overflow:hidden;margin-top:4px}
+.prob-fill{height:100%;border-radius:9999px;transition:width .3s}
+
+/* Section divider */
+.section-title{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border-s)}
+
+/* Searchable Select */
+.ss-wrap{position:relative;width:100%}
+.ss-input{width:100%}
+.ss-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:240px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-m);border-radius:var(--r-md);z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.7)}
+.ss-dropdown::-webkit-scrollbar{width:4px}.ss-dropdown::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.10);border-radius:4px}
+.ss-option{padding:6px 12px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .1s}
+.ss-option:hover,.ss-option.hl{background:var(--accent-bg);color:var(--text-0)}
+.ss-option.sel{color:var(--accent-l);font-weight:700}
+.ss-selected{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border-s);border-radius:var(--r-sm);cursor:default}
+.ss-sel-icon{border-radius:4px;flex-shrink:0;filter:invert(1) brightness(1.8);object-fit:contain}
+.ss-selected span{font-size:11.5px;font-weight:600;color:var(--text-0);flex:1}
+.ss-clear{border:none;background:transparent;color:var(--text-3);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}
+.ss-clear:hover{color:var(--text-0)}
+.ss-option{display:flex;align-items:center;gap:8px}
+.ss-option img{width:24px;height:24px;filter:invert(1) brightness(1.8);object-fit:contain;flex-shrink:0}
+.ss-empty{padding:14px;text-align:center;color:var(--text-3);font-size:10px;font-style:italic}
+.ss-group{padding:6px 12px 3px;font-size:8px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;background:var(--bg-1);position:sticky;top:0;z-index:1}
+
+/* Creature preview */
+.creature-preview{
+  display:flex;align-items:center;gap:20px;padding:0;margin:14px 0;
+  background:linear-gradient(135deg,rgba(124,106,239,0.06),rgba(15,15,30,0.8));
+  border:1px solid var(--accent-border);border-radius:var(--r-lg);
+  overflow:hidden;animation:fadeSlide .3s ease;min-height:160px;
+}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.creature-preview-img{
+  width:200px;height:160px;object-fit:cover;
+  background:linear-gradient(135deg,rgba(124,106,239,0.12),rgba(20,20,40,0.9));
+  flex-shrink:0;
+}
+.creature-preview-info{display:flex;flex-direction:column;gap:6px;padding:14px 20px}
+.creature-preview-name{font-size:24px;font-weight:900;color:var(--text-0);letter-spacing:-0.3px}
+.creature-preview-species{font-size:10px;font-weight:600;color:var(--accent-l);text-transform:uppercase;letter-spacing:1px}
+
+/* Best stats table */
+.best-table td.top-stat{color:var(--success);font-weight:900}
+.best-table td.good-stat{color:var(--accent-l);font-weight:700}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:9999px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.16)}
+
+/* Gene chips */
+.gene-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.gene-chip{padding:2px 7px;border-radius:var(--r-sm);font-size:8px;font-weight:800;cursor:default;letter-spacing:.3px}
+.gene-chip.mutable{background:var(--accent-bg);color:var(--accent-l);border:1px solid rgba(124,106,239,0.22)}
+.gene-chip.robust{background:var(--success-bg);color:var(--success);border:1px solid rgba(45,212,160,0.20)}
+.gene-chip.frail{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.20)}
+.gene-chip.special{background:var(--warning-bg);color:var(--warning);border:1px solid rgba(245,158,11,0.20)}
+
+/* ===== EDIT FORM ===== */
+.edit-form{padding:10px;background:rgba(255,255,255,0.02);border:1px solid var(--accent-border);border-radius:var(--r-md);margin-top:6px}
+.edit-form .form-grid{gap:8px}
+.edit-sex-toggle{display:flex;gap:0;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border-s)}
+.edit-sex-btn{flex:1;padding:6px 12px;border:none;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;transition:all .15s;background:rgba(255,255,255,0.03);color:var(--text-3)}
+.edit-sex-btn.active-male{background:rgba(96,165,250,0.15);color:var(--male);border-color:rgba(96,165,250,0.30)}
+.edit-sex-btn.active-female{background:rgba(244,114,182,0.15);color:var(--female);border-color:rgba(244,114,182,0.30)}
+
+/* ===== ADD CREATURE FORM ===== */
+.add-creature-overlay{display:none;margin-bottom:12px;padding:14px;background:rgba(124,106,239,0.04);border:1px solid var(--accent-border);border-radius:var(--r-lg);animation:fadeSlide .3s ease}
+.add-creature-overlay.visible{display:block}
+.add-creature-title{font-size:12px;font-weight:800;color:var(--accent-l);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.add-btn-header{width:28px;height:28px;border:1px solid var(--accent-border);border-radius:var(--r-md);background:var(--accent-bg);color:var(--accent-l);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.add-btn-header:hover{background:rgba(124,106,239,0.18);transform:translateY(-1px);box-shadow:0 2px 8px var(--accent-glow)}
+
+/* Autocomplete for add form */
+.ac-wrap{position:relative;width:100%}
+.ac-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:200px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-m);border-radius:var(--r-md);z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.7)}
+.ac-dropdown::-webkit-scrollbar{width:4px}.ac-dropdown::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.10);border-radius:4px}
+.ac-option{display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .1s}
+.ac-option:hover{background:var(--accent-bg);color:var(--text-0)}
+.ac-option img{width:24px;height:24px;filter:invert(1) brightness(1.8);object-fit:contain;flex-shrink:0}
+
+/* ===== ADVISOR ===== */
+.advisor-section{display:flex;flex-direction:column;gap:12px}
+.advisor-header{font-size:14px;font-weight:800;color:var(--accent-l);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.advisor-species-card{padding:14px;border-radius:var(--r-lg);background:rgba(255,255,255,0.02);border:1px solid var(--border-s);transition:border-color .2s}
+.advisor-species-card:hover{border-color:var(--border-m)}
+.advisor-species-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.advisor-species-ico{width:32px;height:32px;filter:invert(1) brightness(1.8);object-fit:contain;border-radius:4px;flex-shrink:0}
+.advisor-species-name{font-size:13px;font-weight:800;color:var(--text-0);flex:1}
+.advisor-priority{font-size:8px;font-weight:800;padding:3px 8px;border-radius:var(--r-sm);text-transform:uppercase;letter-spacing:.5px}
+.advisor-priority.high{background:var(--warning-bg);color:var(--warning);border:1px solid rgba(245,158,11,0.20)}
+.advisor-priority.done{background:var(--success-bg);color:var(--success);border:1px solid rgba(45,212,160,0.20)}
+.advisor-priority.need{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.20)}
+.advisor-pair{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px;padding:8px;background:rgba(255,255,255,0.02);border-radius:var(--r-md);border:1px solid var(--border-s)}
+.advisor-parent{font-size:10px;font-weight:600;padding:4px 0}
+.advisor-parent.male{color:var(--male)}
+.advisor-parent.female{color:var(--female)}
+.advisor-vs{font-size:14px;font-weight:900;color:var(--text-3);text-align:center}
+.advisor-stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:8px}
+.advisor-stat-cell{padding:5px 4px;border-radius:var(--r-sm);background:rgba(255,255,255,0.02);text-align:center;border:1px solid transparent;transition:border-color .15s}
+.advisor-stat-cell.locked{border-color:rgba(45,212,160,0.25);background:rgba(45,212,160,0.04)}
+.advisor-stat-cell.unlocked{border-color:rgba(245,158,11,0.20);background:rgba(245,158,11,0.03)}
+.advisor-stat-label{font-size:7px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px}
+.advisor-stat-val{font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}
+.advisor-stat-val.best-m{color:var(--male)}
+.advisor-stat-val.best-f{color:var(--female)}
+.advisor-stat-val.best-both{color:var(--success)}
+.advisor-completion{font-size:10px;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:6px}
+.advisor-completion-bar{flex:1;height:5px;background:rgba(255,255,255,0.05);border-radius:9999px;overflow:hidden}
+.advisor-completion-fill{height:100%;border-radius:9999px;transition:width .3s}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Title Bar -->
+  <div id="breed-bar">
+    <span class="bar-title"><span class="dot"></span>DIDI DEX — BREEDING</span>
+    <div class="bar-spacer"></div>
+    <button class="bar-btn" id="pinBtn" onclick="togglePin()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button>
+    <button class="bar-btn" onclick="exportData()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Export</button>
+    <button class="breed-close" onclick="window.api.breedingClose()">✕</button>
+  </div>
+
+  <div id="main-layout">
+    <!-- Nav sidebar -->
+    <div id="nav-bar">
+      <button class="nav-btn active" onclick="switchPanel('extractor',this)" title="Extracteur"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg><span class="nav-label">Extracteur</span></button>
+      <button class="nav-btn" onclick="switchPanel('library',this)" title="Bibliothèque"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg><span class="nav-label">Bibliothèque</span></button>
+      <button class="nav-btn" onclick="switchPanel('bestof',this)" title="Top Stats"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22M18 2H6v7a6 6 0 1 0 12 0V2Z"/></svg><span class="nav-label">Top Stats</span></button>
+      <button class="nav-btn" onclick="switchPanel('breed',this)" title="Breeding"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 3.236s1.612 2.164 3.5 3.264M5.5 9.5c1.667.333 3.333.333 5 0M6 16.5c2-.333 4-.333 6 0M14.5 20.764s-1.612-2.164-3.5-3.264"/></svg><span class="nav-label">Breeding</span></button>
+      <button class="nav-btn" onclick="switchPanel('pedigree',this)" title="Pedigree"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg><span class="nav-label">Pedigree</span></button>
+      <button class="nav-btn" onclick="switchPanel('advisor',this)" title="Conseiller"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg><span class="nav-label">Conseiller</span></button>
+      <button class="nav-btn" onclick="switchPanel('config',this)" title="Config"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="nav-label">Config</span></button>
+    </div>
+
+    <!-- ============ PANEL: STAT EXTRACTOR ============ -->
+    <div class="panel active" id="panel-extractor">
+      <div class="panel-header">
+        <div class="panel-title">Extracteur de Stats (ASB)</div>
+        <div class="panel-sub">Entre les valeurs brutes du jeu — extraction automatique des wild levels</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">Espèce</span>
+            <div class="ss-wrap" id="exSpeciesWrap">
+              <div class="ss-selected" id="exSpeciesSelected" style="display:none">
+                <img class="ss-sel-icon" id="exSpeciesIcon" width="24" height="24">
+                <span id="exSpeciesName"></span>
+                <button class="ss-clear" onclick="clearSpeciesSelection()">&times;</button>
+              </div>
+              <input class="form-input ss-input" id="exSpeciesInput" placeholder="Rechercher une espèce..." oninput="filterSpeciesDropdown()" onfocus="filterSpeciesDropdown()" autocomplete="off">
+              <div class="ss-dropdown" id="exSpeciesDropdown"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Nom</span>
+            <input class="form-input" id="exName" placeholder="Ex: Rex Boss #1">
+          </div>
+          <div class="form-group">
+            <span class="form-label">Sexe</span>
+            <select class="form-input" id="exSex"><option value="M">♂ Mâle</option><option value="F">♀ Femelle</option></select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Niveau (sauvage)</span>
+            <input class="form-input" id="exLevel" type="number" placeholder="150">
+          </div>
+          <div class="form-group">
+            <span class="form-label">Apprivoisé ?</span>
+            <select class="form-input" id="exTamed" onchange="onExtractChange()">
+              <option value="wild">Sauvage</option>
+              <option value="tamed" selected>Apprivoisé</option>
+              <option value="bred">Né en élevage</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Eff. Apprivoisement (%)</span>
+            <input class="form-input" id="exTE" type="number" value="100" min="0" max="100" step="0.1" placeholder="100">
+          </div>
+          <div class="form-group">
+            <span class="form-label">Imprinting (%)</span>
+            <input class="form-input" id="exImprint" type="number" value="0" min="0" max="100" step="0.1" placeholder="0">
+          </div>
+        </div>
+
+        <!-- Creature visual preview -->
+        <div id="exCreaturePreview" class="creature-preview" style="display:none">
+          <img id="exCreatureImg" class="creature-preview-img" src="">
+          <div class="creature-preview-info">
+            <div class="creature-preview-species">Espèce sélectionnée</div>
+            <div class="creature-preview-name" id="exCreaturePreviewName"></div>
+          </div>
+        </div>
+
+        <div class="section-title">Valeurs du Jeu (ce que tu vois in-game)</div>
+        <div class="form-grid cols-4">
+          <div class="form-group"><span class="form-label">Health</span><input class="form-input stat-input" id="exHP" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
+          <div class="form-group"><span class="form-label">Stamina</span><input class="form-input stat-input" id="exStam" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
+          <div class="form-group"><span class="form-label">Oxygen</span><input class="form-input stat-input" id="exOxy" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
+          <div class="form-group"><span class="form-label">Food</span><input class="form-input stat-input" id="exFood" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
+          <div class="form-group"><span class="form-label">Weight</span><input class="form-input stat-input" id="exWeight" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
+          <div class="form-group"><span class="form-label">Melee (%)</span><input class="form-input stat-input" id="exMelee" type="number" step="0.1" placeholder="100" oninput="onExtractChange()"></div>
+          <input type="hidden" id="exSpeed" value="0">
+          <input type="hidden" id="exTorpor" value="0">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn primary" onclick="extractStats()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Extraire les Levels</button>
+          <button class="btn" onclick="clearExtractor()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset</button>
+        </div>
+
+        <!-- Extraction results -->
+        <div id="extractResults" style="margin-top:12px"></div>
+
+        <div id="extractActions" style="display:none" class="btn-row">
+          <button class="btn success" onclick="saveExtracted()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"/></svg> Sauvegarder dans la Biblioth&#232;que</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: LIBRARY ============ -->
+    <div class="panel" id="panel-library">
+      <div class="panel-header" style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1">
+          <div class="panel-title">Bibliothèque de Créatures</div>
+          <div class="panel-sub">Toutes tes créatures avec leurs wild levels extraits</div>
+        </div>
+        <button class="add-btn-header" onclick="toggleAddCreatureForm()" title="Ajouter une créature">+</button>
+      </div>
+      <div class="panel-body">
+        <!-- Add Creature Form -->
+        <div class="add-creature-overlay" id="addCreatureForm">
+          <div class="add-creature-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Ajouter une Créature</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <span class="form-label">Espèce</span>
+              <div class="ac-wrap">
+                <input class="form-input" id="addSpeciesInput" placeholder="Rechercher une espèce..." oninput="filterAddSpecies()" onfocus="filterAddSpecies()" autocomplete="off">
+                <div class="ac-dropdown" id="addSpeciesDropdown"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Nom</span>
+              <input class="form-input" id="addName" placeholder="Ex: Rex Alpha">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Sexe</span>
+              <div class="edit-sex-toggle" id="addSexToggle">
+                <button class="edit-sex-btn active-male" onclick="setAddSex('M',this)">&#9794; Mâle</button>
+                <button class="edit-sex-btn" onclick="setAddSex('F',this)">&#9792; Femelle</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Niveau</span>
+              <input class="form-input" id="addLevel" type="number" placeholder="150">
+            </div>
+          </div>
+          <div class="section-title" style="margin-top:10px">Wild Levels</div>
+          <div class="form-grid cols-3" id="addStatsGrid">
+            <div class="form-group"><span class="form-label">Health</span><input class="form-input" id="addWL_Health" type="number" placeholder="0"></div>
+            <div class="form-group"><span class="form-label">Stamina</span><input class="form-input" id="addWL_Stamina" type="number" placeholder="0"></div>
+            <div class="form-group"><span class="form-label">Oxygen</span><input class="form-input" id="addWL_Oxygen" type="number" placeholder="0"></div>
+            <div class="form-group"><span class="form-label">Food</span><input class="form-input" id="addWL_Food" type="number" placeholder="0"></div>
+            <div class="form-group"><span class="form-label">Weight</span><input class="form-input" id="addWL_Weight" type="number" placeholder="0"></div>
+            <div class="form-group"><span class="form-label">Melee</span><input class="form-input" id="addWL_Melee" type="number" placeholder="0"></div>
+          </div>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn primary" onclick="addCreatureManual()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Ajouter</button>
+            <button class="btn" onclick="toggleAddCreatureForm()">Annuler</button>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-bottom:10px">
+          <div class="form-group"><span class="form-label">Filtrer par espèce</span>
+            <div class="ss-wrap" id="libFilterWrap">
+              <div class="ss-selected" id="libFilterSelected" style="display:none">
+                <img class="ss-sel-icon" id="libFilterIcon" width="24" height="24">
+                <span id="libFilterName"></span>
+                <button class="ss-clear" onclick="clearSS('libFilter');renderLibrary()">&times;</button>
+              </div>
+              <input class="form-input ss-input" id="libFilterInput" placeholder="Toutes les espèces..." oninput="openSS('libFilter')" onfocus="openSS('libFilter')" autocomplete="off">
+              <div class="ss-dropdown" id="libFilterDropdown"></div>
+            </div>
+          </div>
+          <div class="form-group" style="justify-content:flex-end">
+            <button class="btn" onclick="showImportDino()" style="margin-top:auto"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Importer JSON</button>
+          </div>
+        </div>
+        <div id="libraryList"></div>
+        <div id="libraryEmpty" class="empty">
+          <div class="empty-ico"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg></div>
+          <div class="empty-title">Bibliothèque vide</div>
+          <div class="empty-sub">Utilise l'Extracteur pour ajouter des créatures</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: TOP STATS ============ -->
+    <div class="panel" id="panel-bestof">
+      <div class="panel-header">
+        <div class="panel-title">Top Stats par Espèce</div>
+        <div class="panel-sub">Meilleurs wild levels pour chaque stat — identifie tes meilleurs reproducteurs</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-group" style="margin-bottom:10px">
+          <span class="form-label">Espèce</span>
+          <div class="ss-wrap" id="bestSpeciesWrap">
+              <div class="ss-selected" id="bestSpeciesSelected" style="display:none">
+                <img class="ss-sel-icon" id="bestSpeciesIcon" width="24" height="24">
+                <span id="bestSpeciesName"></span>
+                <button class="ss-clear" onclick="clearSS('bestSpecies')">&times;</button>
+              </div>
+              <input class="form-input ss-input" id="bestSpeciesInput" placeholder="Rechercher une espèce..." oninput="openSS('bestSpecies')" onfocus="openSS('bestSpecies')" autocomplete="off">
+              <div class="ss-dropdown" id="bestSpeciesDropdown"></div>
+            </div>
+        </div>
+        <div id="bestResults"></div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: BREED ============ -->
+    <div class="panel" id="panel-breed">
+      <div class="panel-header">
+        <div class="panel-title">Breeding Planner</div>
+        <div class="panel-sub">Trouve le meilleur couple et simule les résultats</div>
+      </div>
+      <div class="panel-body">
+        <div class="sub-tabs">
+          <button class="sub-tab active" onclick="switchBreedTab('pair',this)">Meilleur Couple</button>
+          <button class="sub-tab" onclick="switchBreedTab('manual',this)">Breed Manuel</button>
+          <button class="sub-tab" onclick="switchBreedTab('monte',this)">Monte Carlo</button>
+        </div>
+
+        <!-- Best pair finder -->
+        <div id="breedPair">
+          <div class="form-grid">
+            <div class="form-group"><span class="form-label">Espèce</span>
+              <div class="ss-wrap" id="pairSpeciesWrap">
+                <div class="ss-selected" id="pairSpeciesSelected" style="display:none">
+                  <img class="ss-sel-icon" id="pairSpeciesIcon" width="24" height="24">
+                  <span id="pairSpeciesName"></span>
+                  <button class="ss-clear" onclick="clearSS('pairSpecies')">&times;</button>
+                </div>
+                <input class="form-input ss-input" id="pairSpeciesInput" placeholder="Rechercher une espèce..." oninput="openSS('pairSpecies')" onfocus="openSS('pairSpecies')" autocomplete="off">
+                <div class="ss-dropdown" id="pairSpeciesDropdown"></div>
+              </div>
+            </div>
+          </div>
+          <div id="pairResults" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Manual breed -->
+        <div id="breedManual" style="display:none">
+          <div class="breed-parents">
+            <div>
+              <div class="section-title">♂ Mâle</div>
+              <select class="form-input" id="breedMale" onchange="updateBreedPreview()" style="width:100%;margin-bottom:8px"><option value="">-- Sélectionner --</option></select>
+              <div id="breedMalePreview"></div>
+            </div>
+            <div class="breed-vs">✕</div>
+            <div>
+              <div class="section-title">♀ Femelle</div>
+              <select class="form-input" id="breedFemale" onchange="updateBreedPreview()" style="width:100%;margin-bottom:8px"><option value="">-- Sélectionner --</option></select>
+              <div id="breedFemalePreview"></div>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:12px">
+            <button class="btn primary" onclick="simulateBreed(1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 3.236s1.612 2.164 3.5 3.264M5.5 9.5c1.667.333 3.333.333 5 0M6 16.5c2-.333 4-.333 6 0M14.5 20.764s-1.612-2.164-3.5-3.264"/></svg> Simuler 1 B&#233;b&#233;</button>
+            <button class="btn" onclick="simulateBreed(100)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg> x100</button>
+          </div>
+          <div id="breedResults"></div>
+        </div>
+
+        <!-- Monte Carlo -->
+        <div id="breedMonte" style="display:none">
+          <div class="form-grid cols-3">
+            <div class="form-group"><span class="form-label">Espèce</span>
+              <div class="ss-wrap" id="mcSpeciesWrap">
+                <div class="ss-selected" id="mcSpeciesSelected" style="display:none">
+                  <img class="ss-sel-icon" id="mcSpeciesIcon" width="24" height="24">
+                  <span id="mcSpeciesName"></span>
+                  <button class="ss-clear" onclick="clearSS('mcSpecies')">&times;</button>
+                </div>
+                <input class="form-input ss-input" id="mcSpeciesInput" placeholder="Rechercher une espèce..." oninput="openSS('mcSpecies')" onfocus="openSS('mcSpecies')" autocomplete="off">
+                <div class="ss-dropdown" id="mcSpeciesDropdown"></div>
+              </div>
+            </div>
+            <div class="form-group"><span class="form-label">Simulations</span><input class="form-input" id="mcCount" type="number" value="1000" min="100" max="10000"></div>
+            <div class="form-group" style="justify-content:flex-end"><button class="btn primary" onclick="runMonteCarloAll()" style="margin-top:auto"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg> Simuler</button></div>
+          </div>
+          <div id="mcResults" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: PEDIGREE ============ -->
+    <div class="panel" id="panel-pedigree">
+      <div class="panel-header">
+        <div class="panel-title">Pedigree / Arbre Généalogique</div>
+        <div class="panel-sub">Visualise la lignée d'une créature</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-group" style="margin-bottom:10px">
+          <span class="form-label">Créature</span>
+          <div class="ss-wrap" id="pedSelectWrap">
+              <div class="ss-selected" id="pedSelectSelected" style="display:none">
+                <img class="ss-sel-icon" id="pedSelectIcon" width="24" height="24">
+                <span id="pedSelectName"></span>
+                <button class="ss-clear" onclick="clearSS('pedSelect')">&times;</button>
+              </div>
+              <input class="form-input ss-input" id="pedSelectInput" placeholder="Rechercher une créature..." oninput="openSS('pedSelect')" onfocus="openSS('pedSelect')" autocomplete="off">
+              <div class="ss-dropdown" id="pedSelectDropdown"></div>
+            </div>
+        </div>
+        <div id="pedigreeView" style="overflow:auto"></div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: ADVISOR ============ -->
+    <div class="panel" id="panel-advisor">
+      <div class="panel-header">
+        <div class="panel-title">Conseiller d'Élevage</div>
+        <div class="panel-sub">Analyse ta bibliothèque et recommande les meilleurs accouplements</div>
+      </div>
+      <div class="panel-body">
+        <div id="advisorContent"></div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: CONFIG ============ -->
+    <div class="panel" id="panel-config">
+      <div class="panel-header">
+        <div class="panel-title">Configuration Serveur</div>
+        <div class="panel-sub">Multiplicateurs et paramètres</div>
+      </div>
+      <div class="panel-body">
+        <div class="section-title">Multiplicateurs de Breeding</div>
+        <div class="form-grid cols-3">
+          <div class="form-group"><span class="form-label">MatingInterval</span><input class="form-input" id="cfgMating" type="number" step="0.1" value="1.0"></div>
+          <div class="form-group"><span class="form-label">EggHatchSpeed</span><input class="form-input" id="cfgHatch" type="number" step="0.1" value="1.0"></div>
+          <div class="form-group"><span class="form-label">BabyMatureSpeed</span><input class="form-input" id="cfgMature" type="number" step="0.1" value="1.0"></div>
+          <div class="form-group"><span class="form-label">BabyCuddleInterval</span><input class="form-input" id="cfgCuddle" type="number" step="0.1" value="1.0"></div>
+          <div class="form-group"><span class="form-label">BabyImprintAmount</span><input class="form-input" id="cfgImprint" type="number" step="0.1" value="1.0"></div>
+          <div class="form-group"><span class="form-label">BabyFoodConsumption</span><input class="form-input" id="cfgFood" type="number" step="0.1" value="1.0"></div>
+        </div>
+        <div class="section-title">Multiplicateurs de Stats Sauvages</div>
+        <div class="form-grid cols-4">
+          <div class="form-group"><span class="form-label">Taming Eff. Mult</span><input class="form-input" id="cfgTaM" type="number" step="0.01" value="1.0"></div>
+          <div class="form-group"><span class="form-label">Wild Level Max</span><input class="form-input" id="cfgMaxWild" type="number" value="150"></div>
+          <div class="form-group"><span class="form-label">Imprint Stat Mult</span><input class="form-input" id="cfgImpMult" type="number" step="0.01" value="1.0"></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn primary" onclick="saveConfig()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"/></svg> Sauvegarder Config</button>
+          <button class="btn" onclick="resetConfig()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Load ASB creature data -->
+<script src="asb-data.js"></script>
+<script>
+// ===================================================================
+//  CONSTANTS & STAT KEYS
+// ===================================================================
+// ===================================================================
+//  CREATURE ICON URL RESOLVER
+// ===================================================================
+var SPECIAL_ICON_NAMES = {
+  'Therizinosaurus':'Therizinosaur','Spinosaurus':'Spino','Sarcosuchus':'Sarco',
+  'Pulmonoscorpius':'Scorpion','Castoroides':'Giant_Beaver','Araneo':'Spider',
+  'Compsognathus':'Compy','Triceratops':'Trike','Pachycephalosaurus':'Pachy',
+  'Quetzalcoatlus':'Quetzal','Woolly Rhino':'Woolly_Rhinoceros','Sabertooth Salmon':'Salmon',
+  'DodoRex':'Dodorex','Super Turkey':'Turkey','Royal Griffin':'Griffin',
+  'Woolly Mammoth':'Mammoth','Thylacosmilus':'Thylacoleo',
+  'Stegosaurus':'Stegosaurus','Carnotaurus':'Carnotaurus','Brontosaurus':'Brontosaurus',
+};
+function getBaseName(name) {
+  var n = name;
+  if (n.indexOf('R-') === 0) n = n.slice(2);
+  if (n.indexOf('Aberrant ') === 0) n = n.slice(9);
+  if (n.indexOf('X-') === 0) n = n.slice(2);
+  if (n.indexOf('Tek ') === 0) n = n.slice(4);
+  return SPECIAL_ICON_NAMES[n] || n.replace(/ /g, '_');
+}
+function getIconUrl(name) {
+  var w = getBaseName(name);
+  return 'https://ark.wiki.gg/images/thumb/' + w + '.png/64px-' + w + '.png';
+}
+function getDossierUrl(name) {
+  var w = getBaseName(name);
+  return 'https://ark.wiki.gg/images/thumb/Dossier_' + w + '.png/400px-Dossier_' + w + '.png';
+}
+function getImageFallbacks(name) {
+  var w = getBaseName(name);
+  return [
+    'https://ark.wiki.gg/images/thumb/Dossier_' + w + '.png/400px-Dossier_' + w + '.png',
+    'https://ark.wiki.gg/images/thumb/' + w + '_PaintRegion0_ASA.png/400px-' + w + '_PaintRegion0_ASA.png',
+    'https://ark.wiki.gg/images/thumb/' + w + '_PaintRegion0.png/400px-' + w + '_PaintRegion0.png',
+    'https://ark.wiki.gg/images/thumb/' + w + '.png/128px-' + w + '.png',
+  ];
+}
+
+// Map common/display names to ASB_DATA keys
+var SPECIES_TO_ASB = {
+  'Compsognathus':'Compy','Pulmonoscorpius':'Scorpion','Pachycephalosaurus':'Pachy',
+  'Parasaur':'Parasaur','Sarco':'Sarco','Spino':'Spino','Raptor':'Raptor','Rex':'Rex',
+  'Therizinosaurus':'Therizinosaur','Thylacoleo':'Thylacoleo','Castoroides':'Castoroides',
+  'Dire Bear':'Dire Bear','Direwolf':'Direwolf','Dodo':'Dodo','Mammoth':'Mammoth',
+  'Megalodon':'Megalodon','Mosasaurus':'Mosasaur','Plesiosaur':'Plesiosaur',
+  'Pteranodon':'Pteranodon','Quetzal':'Quetzal','Stegosaurus':'Stegosaurus',
+  'Triceratops':'Triceratops','Brontosaurus':'Brontosaurus','Griffin':'Griffin',
+  'Giganotosaurus':'Giganotosaurus','Argentavis':'Argentavis','Ankylosaurus':'Ankylosaurus',
+  'Yutyrannus':'Yutyrannus','Snow Owl':'Snow Owl','Rock Drake':'Rock Drake',
+  'Managarmr':'Managarmr','Desmodus':'Desmodus','Basilosaurus':'Basilosaurus',
+  'Tapejara':'Tapejara','Tropeognathus':'Tropeognathus','Woolly Rhino':'Woolly Rhino',
+  'Terror Bird':'Terror Bird','Megatherium':'Megatherium','Daeodon':'Daeodon',
+  'Deinonychus':'Deinonychus','Kentrosaurus':'Kentrosaurus','Diplodocus':'Diplodocus',
+  'Allosaurus':'Allosaurus','Baryonyx':'Baryonyx','Carnotaurus':'Carnotaurus',
+  'Iguanodon':'Iguanodon','Megalosaurus':'Megalosaurus','Megaloceros':'Megaloceros',
+  'Ichthyosaurus':'Ichthy','Kaprosuchus':'Kaprosuchus','Beelzebufo':'Beelzebufo',
+  'Carbonemys':'Carbonemys','Dilophosaur':'Dilophosaur','Dimorphodon':'Dimorphodon',
+  'Doedicurus':'Doedicurus','Equus':'Equus','Gallimimus':'Gallimimus',
+  'Gigantopithecus':'Gigantopithecus','Ichthyornis':'Ichthyornis',
+  'Lystrosaurus':'Lystrosaurus','Oviraptor':'Oviraptor','Pelagornis':'Pelagornis',
+  'Procoptodon':'Procoptodon','Pachyrhinosaurus':'Pachyrhinosaurus',
+  'Araneo':'Araneo','Achatina':'Achatina','Amargasaurus':'Amargasaurus',
+  'Andrewsarchus':'Andrewsarchus','Archaeopteryx':'Archaeopteryx',
+  'Chalicotherium':'Chalicotherium','Dimetrodon':'Dimetrodon',
+  'Manta':'Manta','Kairuku':'Kairuku','Jerboa':'Jerboa',
+  'Morellatops':'Morellatops','Carcharodontosaurus':'Carcharodontosaurus',
+  'Gigantoraptor':'Gigantoraptor','Fasolasuchus':'Fasolasuchus',
+  'Ceratosaurus':'Ceratosaurus','Shastasaurus':'Shastasaurus',
+  'Xiphactinus':'Xiphactinus','Yi Ling':'Yi Ling',
+};
+
+function resolveASBName(species) {
+  // Direct match
+  if (ASB_DATA[species]) return species;
+  // Lookup table
+  if (SPECIES_TO_ASB[species] && ASB_DATA[SPECIES_TO_ASB[species]]) return SPECIES_TO_ASB[species];
+  // Case-insensitive search through all ASB keys
+  var lower = species.toLowerCase();
+  var keys = Object.keys(ASB_DATA);
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].toLowerCase() === lower) return keys[i];
+  }
+  // Partial match (species name contained in ASB key or vice versa)
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].toLowerCase().indexOf(lower) >= 0 || lower.indexOf(keys[i].toLowerCase()) >= 0) return keys[i];
+  }
+  // Strip prefixes and try again
+  var stripped = species.replace(/^(Aberrant |R-|X-|Tek )/i, '');
+  if (stripped !== species) return resolveASBName(stripped);
+  return null;
+}
+
+var selectedSpeciesName = null;
+
+var STAT_KEYS = ['Health','Stamina','Oxygen','Food','Weight','Melee','Speed','Torpor'];
+var STAT_KEYS_DISPLAY = ['Health','Stamina','Oxygen','Food','Weight','Melee']; // visible stats (no Speed/Torpor)
+var STAT_LABELS = {Health:'HP',Stamina:'Stam',Oxygen:'Oxy',Food:'Food',Weight:'Weight',Melee:'Melee',Speed:'Speed',Torpor:'Torpor'};
+// Mapping to ASB stat names
+var ASB_STAT_MAP = {Health:'Health',Stamina:'Stamina',Oxygen:'Oxygen',Food:'Food',Weight:'Weight',Melee:'MeleeDamage',Speed:'Speed',Torpor:'Torpidity'};
+var STAT_IDS = {Health:'exHP',Stamina:'exStam',Oxygen:'exOxy',Food:'exFood',Weight:'exWeight',Melee:'exMelee',Speed:'exSpeed',Torpor:'exTorpor'};
+
+// ===================================================================
+//  STATE
+// ===================================================================
+var DB = {
+  creatures: [],
+  config: {
+    matingInterval:1, eggHatchSpeed:1, babyMatureSpeed:1,
+    babyCuddleInterval:1, babyImprintAmount:1, babyFoodConsumption:1,
+    tamingEffMult:1, maxWildLevel:150, imprintStatMult:1
+  },
+  nextId: 1
+};
+var lastExtracted = null;
+
+// ===================================================================
+//  PERSISTENCE
+// ===================================================================
+function saveDB() {
+  try { localStorage.setItem('ark-breeding-db-v2', JSON.stringify(DB)); } catch(e) {}
+  if (window.api && window.api.saveBreedingData) window.api.saveBreedingData(DB);
+}
+function loadDB() {
+  try {
+    var saved = localStorage.getItem('ark-breeding-db-v2');
+    if (saved) { DB = JSON.parse(saved); return; }
+    // Try migrating from v1
+    var v1 = localStorage.getItem('ark-breeding-db');
+    if (v1) {
+      var old = JSON.parse(v1);
+      if (old.dinos) {
+        old.dinos.forEach(function(d) {
+          DB.creatures.push({
+            id: DB.nextId++, species: d.species, name: d.name, sex: d.sex,
+            level: d.level || 0, wildLevels: d.stats || {},
+            mutaPat: d.mutaPat || 0, mutaMat: d.mutaMat || 0,
+            parentMale: d.parentMale || '', parentFemale: d.parentFemale || '',
+            bred: false, tamed: true
+          });
+        });
+        saveDB();
+      }
+    }
+  } catch(e) {}
+  if (window.api && window.api.loadBreedingData) {
+    window.api.loadBreedingData().then(function(data) {
+      if (data && data.creatures) { DB = data; renderAll(); }
+    });
+  }
+}
+
+// ===================================================================
+//  ASB STAT EXTRACTOR — THE CORE ALGORITHM
+// ===================================================================
+// Formula for wild creatures: V = B * (1 + Lw * Lw_levels)
+// For tamed creatures: V = (B * (1 + Lw * Lw_levels)) * (1 + Ta * Ta_mult * TE) * (1 + Imp * ImpMult * 0.2)
+// For Melee/Speed (percentage stats): V = (B * (1 + Lw * Lw_levels) + Ta * Ta_mult) * (1 + Imp * ImpMult * 0.2)
+// Torpor: V = B * (1 + Lw * level) — torpor always gets ALL wild levels proportionally
+
+function extractWildLevels(species, values, level, tamed, TE, imprint) {
+  var resolved = resolveASBName(species);
+  var sp = ASB_DATA[resolved || species];
+  if (!sp) return null;
+
+  var results = {};
+  var totalWild = 0;
+  var isPercent = {Melee: true, Speed: true};
+
+  STAT_KEYS.forEach(function(stat) {
+    var asbKey = ASB_STAT_MAP[stat];
+    var sd = sp.stats[asbKey];
+    if (!sd || sd.B === 0) { results[stat] = 0; return; }
+
+    var V = values[stat];
+    if (V === undefined || V === null || V === 0) { results[stat] = 0; return; }
+
+    var B = sd.B;
+    var Lw = sd.Lw;
+    var Ta = sd.Ta || 0;
+    var Tm = sd.Tm || 0;
+
+    if (stat === 'Torpor') {
+      // Torpor: V = B * (1 + Lw * totalWildLevel)
+      // Solved later after we know total wild levels, or use level directly
+      // For tamed: torpor includes all wild levels + taming bonus
+      if (tamed === 'wild') {
+        results[stat] = Math.round((V / B - 1) / Lw) || 0;
+      } else {
+        // Tamed torpor: V = B * (1 + Lw * wildLevel) * (1 + Ta * TE_factor)
+        var TEfactor = (tamed === 'bred') ? 1 : (TE / 100);
+        var torp_with_taming = V / (1 + Ta * TEfactor);
+        results[stat] = Math.round((torp_with_taming / B - 1) / Lw) || 0;
+      }
+      return;
+    }
+
+    if (Lw === 0) { results[stat] = 0; return; }
+
+    var wildLevels;
+    if (tamed === 'wild') {
+      // Wild: V = B * (1 + Lw * levels)
+      wildLevels = Math.round((V / B - 1) / Lw);
+    } else if (tamed === 'bred') {
+      // Bred: no TE bonus, but imprint bonus
+      var impBonus = 1 + (imprint / 100) * (DB.config.imprintStatMult || 1) * 0.2;
+      if (isPercent[stat]) {
+        // V = (1 + Lw * levels + Ta) * impBonus [Melee base is 1 = 100%]
+        var inner = (V / 100) / impBonus; // Convert % back to multiplier
+        wildLevels = Math.round((inner - 1 - Ta) / Lw);
+      } else {
+        var inner = V / impBonus;
+        wildLevels = Math.round((inner / B - 1) / Lw);
+      }
+    } else {
+      // Tamed: V = B * (1 + Lw * levels) * (1 + Ta * TE_factor)
+      var TEfactor = TE / 100;
+      if (isPercent[stat]) {
+        // Melee: V(%) = (1 + Lw * levels) * (1 + Tm * TE) + Ta * TE
+        // Actually: V = ( B*(1+Lw*levels) + B*Ta*TE ) * (1 + Tm*TE)
+        // Since B=1 for melee: V = (1 + Lw*levels + Ta*TE) * (1 + Tm*TE)
+        var outer = 1 + Tm * TEfactor;
+        var inner = (V / 100) / outer;
+        wildLevels = Math.round((inner - 1 - Ta * TEfactor) / Lw);
+      } else {
+        // V = B * (1 + Lw * levels) * (1 + Ta * TE)
+        var tamingMult = 1 + Ta * TEfactor;
+        wildLevels = Math.round((V / (B * tamingMult) - 1) / Lw);
+      }
+    }
+
+    results[stat] = Math.max(0, wildLevels || 0);
+    if (stat !== 'Torpor') totalWild += results[stat];
+  });
+
+  return { wildLevels: results, totalWild: totalWild };
+}
+
+// ===================================================================
+//  EXTRACTOR UI
+// ===================================================================
+function extractStats() {
+  var rawSpecies = selectedSpeciesName;
+  var species = resolveASBName(rawSpecies);
+  var level = parseInt(document.getElementById('exLevel').value) || 0;
+  var tamed = document.getElementById('exTamed').value;
+  var TE = parseFloat(document.getElementById('exTE').value) || 100;
+  var imprint = parseFloat(document.getElementById('exImprint').value) || 0;
+
+  if (!species || !ASB_DATA[species]) {
+    document.getElementById('extractResults').innerHTML = '<div class="empty"><div class="empty-title">Espèce "' + escH(rawSpecies||'') + '" non trouvée dans les données ASB</div></div>';
+    return;
+  }
+
+  // Collect values
+  var values = {};
+  STAT_KEYS.forEach(function(stat) {
+    values[stat] = parseFloat(document.getElementById(STAT_IDS[stat]).value) || 0;
+  });
+
+  var result = extractWildLevels(species, values, level, tamed, TE, imprint);
+  if (!result) return;
+
+  lastExtracted = {
+    species: species,
+    name: document.getElementById('exName').value || (species + ' #' + DB.nextId),
+    sex: document.getElementById('exSex').value,
+    level: level,
+    wildLevels: result.wildLevels,
+    totalWild: result.totalWild,
+    tamed: tamed !== 'wild',
+    bred: tamed === 'bred',
+    TE: TE,
+    imprint: imprint
+  };
+
+  renderExtractionResults(result, species, level);
+  document.getElementById('extractActions').style.display = '';
+}
+
+function renderExtractionResults(result, species, level) {
+  var maxWild = DB.config.maxWildLevel || 150;
+  var maxPerStat = Math.ceil(maxWild / 7 * 1.5); // ~32 for 150
+  var html = '<div class="card" style="margin-top:8px">';
+  html += '<div class="card-head"><span class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Wild Levels Extraits</span>';
+  html += '<span class="card-badge badge-muta">Total: ' + result.totalWild + ' pts</span></div>';
+
+  // Check if total makes sense
+  var expectedMax = level + 1; // Wild creature level = 1 + sum of all stat levels
+  if (result.totalWild > expectedMax + 5) {
+    html += '<div style="color:#f59e0b;font-size:10px;margin-bottom:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg> Total (' + result.totalWild + ') > niveau (' + level + ') \u2014 v\u00e9rifie les valeurs</div>';
+  }
+
+  STAT_KEYS.forEach(function(stat) {
+    var wl = result.wildLevels[stat] || 0;
+    var pct = Math.min(100, (wl / maxPerStat) * 100);
+    var isTop = wl >= maxPerStat * 0.85;
+    html += '<div class="extract-row">';
+    html += '<div class="extract-stat">' + (STAT_LABELS[stat] || stat) + '</div>';
+    html += '<div class="extract-bar"><div class="extract-fill" style="width:' + pct + '%;background:' + (isTop ? '#4ade80' : 'var(--accent)') + '"></div></div>';
+    html += '<div class="extract-wild' + (isTop ? ' top' : '') + '">' + wl + '</div>';
+    html += '<div class="extract-value">' + (document.getElementById(STAT_IDS[stat]).value || '0') + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  document.getElementById('extractResults').innerHTML = html;
+}
+
+function saveExtracted() {
+  if (!lastExtracted) return;
+  var c = {
+    id: DB.nextId++,
+    species: lastExtracted.species,
+    name: lastExtracted.name,
+    sex: lastExtracted.sex,
+    level: lastExtracted.level,
+    wildLevels: lastExtracted.wildLevels,
+    tamed: lastExtracted.tamed,
+    bred: lastExtracted.bred,
+    TE: lastExtracted.TE,
+    imprint: lastExtracted.imprint,
+    mutaPat: 0, mutaMat: 0,
+    parentMale: '', parentFemale: '',
+    addedAt: Date.now()
+  };
+  DB.creatures.push(c);
+  saveDB();
+  lastExtracted = null;
+  document.getElementById('extractActions').style.display = 'none';
+  document.getElementById('extractResults').innerHTML = '<div style="color:#4ade80;font-size:11px;font-weight:700;padding:10px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg> ' + escH(c.name) + ' ajout\u00e9 \u00e0 la biblioth\u00e8que !</div>';
+}
+
+function clearExtractor() {
+  STAT_KEYS.forEach(function(stat) { document.getElementById(STAT_IDS[stat]).value = ''; });
+  document.getElementById('exName').value = '';
+  document.getElementById('exLevel').value = '';
+  document.getElementById('exTE').value = '100';
+  document.getElementById('exImprint').value = '0';
+  document.getElementById('extractResults').innerHTML = '';
+  document.getElementById('extractActions').style.display = 'none';
+  lastExtracted = null;
+}
+
+function onExtractSpeciesChange() {}
+function onExtractChange() {
+  var tamed = document.getElementById('exTamed').value;
+  document.getElementById('exTE').disabled = tamed === 'bred';
+  document.getElementById('exImprint').disabled = tamed !== 'bred';
+}
+
+// ===================================================================
+//  LIBRARY
+// ===================================================================
+function renderLibrary() {
+  var list = document.getElementById('libraryList');
+  var empty = document.getElementById('libraryEmpty');
+  var filter = getSSValue('libFilter') || '';
+  var filtered = DB.creatures.filter(function(c) { return !filter || c.species === filter; });
+
+  if (filtered.length === 0) { list.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  // Sort by species then by total wild levels
+  filtered.sort(function(a, b) {
+    if (a.species !== b.species) return a.species.localeCompare(b.species);
+    var ta = 0, tb = 0;
+    STAT_KEYS.forEach(function(k) { ta += (a.wildLevels[k]||0); tb += (b.wildLevels[k]||0); });
+    return tb - ta;
+  });
+
+  // Find top stats per species for highlighting
+  var topStats = {};
+  filtered.forEach(function(c) {
+    if (!topStats[c.species]) topStats[c.species] = {};
+    STAT_KEYS.forEach(function(k) {
+      var v = c.wildLevels[k] || 0;
+      if (!topStats[c.species][k] || v > topStats[c.species][k]) topStats[c.species][k] = v;
+    });
+  });
+
+  var html = '';
+  filtered.forEach(function(c) {
+    var sexBadge = c.sex === 'M' ? '<span class="card-badge badge-male">♂</span>' : '<span class="card-badge badge-female">♀</span>';
+    var total = 0;
+    STAT_KEYS.forEach(function(k) { total += (c.wildLevels[k]||0); });
+
+    var icoUrl = getIconUrl(c.species);
+    var hasRawStats = c.rawStats && !c.wildLevelsExtracted;
+    html += '<div class="card"><div class="card-head">';
+    html += '<img src="' + icoUrl + '" style="width:28px;height:28px;filter:invert(1) brightness(1.8);border-radius:4px;margin-right:6px" onerror="this.style.display=\'none\'">';
+    html += '<span class="card-title">' + escH(c.name) + '</span>' + sexBadge;
+    html += '<span class="card-badge badge-muta">' + c.species + '</span>';
+    html += '<span style="font-size:9px;color:#666">Lv ' + (c.level||'?') + ' | ' + total + ' pts</span>';
+    html += '</div><div class="stat-grid">';
+    STAT_KEYS_DISPLAY.forEach(function(k) {
+      var v = c.wildLevels[k] || 0;
+      var isTop = topStats[c.species] && v > 0 && v === topStats[c.species][k];
+      html += '<div class="stat-cell"><div class="stat-name">' + (STAT_LABELS[k]||k) + '</div>';
+      html += '<div class="stat-val' + (isTop ? ' best' : '') + '">' + v + '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="btn-row" style="margin-top:6px">';
+    html += '<button class="t-btn-sm" onclick="extractLevelsForDino(' + c.id + ')" style="color:var(--success)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Extraire Levels</button>';
+    html += '<button class="t-btn-sm" onclick="copyDinoJSON(' + c.id + ')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> JSON</button>';
+    html += '<button class="t-btn-sm" onclick="editDino(' + c.id + ')" style="color:var(--accent-l)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg> Edit</button>';
+    html += '<button class="t-btn-sm del" onclick="if(confirm(\'Supprimer?\'))removeDino(' + c.id + ')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>';
+    html += '</div><div id="editForm_' + c.id + '"></div></div>';
+  });
+  list.innerHTML = html;
+}
+
+function removeDino(id) {
+  DB.creatures = DB.creatures.filter(function(c) { return c.id !== id; });
+  saveDB(); renderLibrary();
+}
+
+function copyDinoJSON(id) {
+  var c = DB.creatures.find(function(x) { return x.id === id; });
+  if (c) navigator.clipboard.writeText(JSON.stringify(c, null, 2)).catch(function(){});
+}
+
+function extractLevelsForDino(id) {
+  var c = DB.creatures.find(function(x) { return x.id === id; });
+  if (!c) return;
+  var species = resolveASBName(c.species);
+  if (!species || !ASB_DATA[species]) {
+    alert('Espèce "' + c.species + '" non trouvée dans les données ASB. Vérifie le nom.');
+    return;
+  }
+
+  // Check if wildLevels contains raw stat values (large numbers like HP>100) or already extracted levels (small numbers)
+  var vals = c.wildLevels || {};
+  var hasLargeValues = false;
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    if ((vals[k]||0) > 200) hasLargeValues = true;
+  });
+
+  // If values look like raw stats (from OCR), use them directly for extraction
+  var rawValues = {};
+  if (hasLargeValues) {
+    // These are raw in-game values, extract wild levels from them
+    var statMap = { Health:'Health', Stamina:'Stamina', Oxygen:'Oxygen', Food:'Food', Weight:'Weight', Melee:'Melee Damage' };
+    STAT_KEYS_DISPLAY.forEach(function(k) {
+      rawValues[k] = vals[k] || 0;
+    });
+  } else {
+    // Values are already levels or zero - prompt user to enter raw values
+    var formEl = document.getElementById('editForm_' + id);
+    if (!formEl) return;
+    var html = '<div class="edit-form" style="margin-top:8px;padding:10px;background:var(--bg-2);border-radius:var(--r-md);border:1px solid var(--border-m)">';
+    html += '<div style="font-size:11px;font-weight:700;color:var(--accent-l);margin-bottom:8px">Entrer les valeurs in-game pour extraire les levels</div>';
+    html += '<div style="font-size:9px;color:var(--text-2);margin-bottom:8px">Entre les stats telles que tu les vois dans le jeu (ex: Health 5400.2, Melee 350.5%)</div>';
+    html += '<div class="form-grid cols-3" style="gap:6px">';
+    STAT_KEYS_DISPLAY.forEach(function(k) {
+      html += '<div class="form-group"><span class="form-label" style="font-size:9px">' + k + '</span>';
+      html += '<input class="form-input" id="rawStat_' + id + '_' + k + '" type="number" step="0.1" placeholder="0" value="' + (vals[k]||'') + '"></div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:6px;display:flex;gap:6px">';
+    html += '<div class="form-group" style="width:80px"><span class="form-label" style="font-size:9px">Level</span>';
+    html += '<input class="form-input" id="rawLevel_' + id + '" type="number" value="' + (c.level||'') + '" placeholder="150"></div>';
+    html += '<div class="form-group" style="width:80px"><span class="form-label" style="font-size:9px">TE %</span>';
+    html += '<input class="form-input" id="rawTE_' + id + '" type="number" value="100" step="0.1"></div>';
+    html += '<div class="form-group" style="width:100px"><span class="form-label" style="font-size:9px">État</span>';
+    html += '<select class="form-input" id="rawTamed_' + id + '" style="color:var(--text-0)"><option value="tamed">Tamed</option><option value="bred">Bred</option><option value="wild">Wild</option></select></div>';
+    html += '</div>';
+    html += '<div class="btn-row" style="margin-top:8px">';
+    html += '<button class="btn primary" onclick="doExtractLevels(' + id + ')">Extraire</button>';
+    html += '<button class="btn" onclick="document.getElementById(\'editForm_' + id + '\').innerHTML=\'\'">Annuler</button>';
+    html += '</div></div>';
+    formEl.innerHTML = html;
+    return;
+  }
+
+  // Direct extraction from raw values
+  var tamed = c.bred ? 'bred' : (c.tamed ? 'tamed' : 'wild');
+  var result = extractWildLevels(species, rawValues, c.level || 0, tamed, 100, 0);
+  if (result) {
+    c.wildLevels = result.wildLevels;
+    c.wildLevelsExtracted = true;
+    saveDB();
+    renderLibrary();
+  } else {
+    alert('Impossible d\'extraire les levels. Vérifie les valeurs.');
+  }
+}
+
+function doExtractLevels(id) {
+  var c = DB.creatures.find(function(x) { return x.id === id; });
+  if (!c) return;
+  var species = resolveASBName(c.species);
+  if (!species || !ASB_DATA[species]) { alert('Espèce "' + c.species + '" non trouvée dans ASB'); return; }
+
+  var values = {};
+  STAT_KEYS.forEach(function(k) {
+    var el = document.getElementById('rawStat_' + id + '_' + k);
+    values[k] = el ? (parseFloat(el.value) || 0) : 0;
+  });
+  // Also fill Speed/Torpor with 0 if not present
+  if (!values['Speed']) values['Speed'] = 0;
+  if (!values['Torpor']) values['Torpor'] = 0;
+
+  var level = parseInt(document.getElementById('rawLevel_' + id).value) || 0;
+  var TE = parseFloat(document.getElementById('rawTE_' + id).value) || 100;
+  var tamed = document.getElementById('rawTamed_' + id).value || 'tamed';
+
+  var result = extractWildLevels(species, values, level, tamed, TE, 0);
+  if (result) {
+    c.wildLevels = result.wildLevels;
+    c.level = level;
+    c.tamed = tamed !== 'wild';
+    c.bred = tamed === 'bred';
+    c.wildLevelsExtracted = true;
+    saveDB();
+    renderLibrary();
+  } else {
+    alert('Impossible d\'extraire les levels. Vérifie les valeurs et le level.');
+  }
+}
+
+function showImportDino() {
+  var json = prompt('Colle le JSON ici:');
+  if (!json) return;
+  try {
+    var d = JSON.parse(json);
+    if (d.name && d.wildLevels) {
+      d.id = DB.nextId++;
+      DB.creatures.push(d);
+      saveDB(); renderLibrary();
+    }
+  } catch(e) { alert('JSON invalide'); }
+}
+
+// ===================================================================
+//  TOP STATS
+// ===================================================================
+function renderBestStats() {
+  var species = getSSValue('bestSpecies');
+  var el = document.getElementById('bestResults');
+  if (!species) { el.innerHTML = '<div class="empty"><div class="empty-title">S\u00e9lectionne une esp\u00e8ce</div></div>'; return; }
+  var dinos = DB.creatures.filter(function(c) { return c.species === species; });
+
+  if (dinos.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-title">Aucune créature ' + escH(species) + '</div></div>';
+    return;
+  }
+
+  // Find best per stat
+  var best = {};
+  STAT_KEYS.forEach(function(k) {
+    var top = null;
+    dinos.forEach(function(d) {
+      var v = d.wildLevels[k] || 0;
+      if (!top || v > top.val) top = { val: v, dino: d };
+    });
+    best[k] = top;
+  });
+
+  // Find ideal breeding pair (male with most top stats + female with most top stats)
+  var males = dinos.filter(function(d) { return d.sex === 'M'; });
+  var females = dinos.filter(function(d) { return d.sex === 'F'; });
+
+  var html = '<div class="section-title">Meilleur Wild Level par Stat</div>';
+  html += '<table class="data-table best-table"><thead><tr><th>Stat</th><th>Best Level</th><th>Créature</th><th>Sexe</th></tr></thead><tbody>';
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    if (!best[k]) return;
+    var b = best[k];
+    html += '<tr><td class="t-name">' + (STAT_LABELS[k]||k) + '</td>';
+    html += '<td class="top-stat">' + b.val + '</td>';
+    html += '<td>' + escH(b.dino.name) + '</td>';
+    html += '<td>' + (b.dino.sex === 'M' ? '<span style="color:var(--male)">♂</span>' : '<span style="color:var(--female)">♀</span>') + '</td></tr>';
+  });
+  html += '</tbody></table>';
+
+  // Ideal combination
+  if (males.length > 0 && females.length > 0) {
+    var idealPair = findOptimalPair(males, females);
+    if (idealPair) {
+      html += '<div class="section-title" style="margin-top:16px">Meilleur Couple Recommandé</div>';
+      html += '<div class="card">';
+      html += '<div style="font-size:12px;margin-bottom:8px">';
+      html += '<span style="color:var(--male);font-weight:700">♂ ' + escH(idealPair.male.name) + '</span>';
+      html += ' × <span style="color:var(--female);font-weight:700">♀ ' + escH(idealPair.female.name) + '</span>';
+      html += '</div>';
+      html += '<div class="stat-grid">';
+      STAT_KEYS_DISPLAY.forEach(function(k) {
+        var mv = idealPair.male.wildLevels[k] || 0;
+        var fv = idealPair.female.wildLevels[k] || 0;
+        var bestV = Math.max(mv, fv);
+        var isBest = best[k] && bestV === best[k].val;
+        html += '<div class="stat-cell"><div class="stat-name">' + (STAT_LABELS[k]||k) + '</div>';
+        html += '<div class="stat-val' + (isBest ? ' best' : '') + '">' + bestV + '</div>';
+        html += '<div style="font-size:8px;color:#444">' + mv + ' / ' + fv + '</div></div>';
+      });
+      html += '</div>';
+
+      // Breeding times
+      var sp = ASB_DATA[resolveASBName(species) || species];
+      if (sp && sp.breeding) {
+        var cfg = DB.config;
+        html += '<div class="section-title" style="margin-top:10px">Temps Estimés</div>';
+        html += '<div class="config-grid">';
+        var incub = sp.breeding.incubT || sp.breeding.gestT;
+        html += '<div class="config-card"><div class="cc-label">' + (sp.breeding.gestT > 0 ? 'Gestation' : 'Incubation') + '</div><div class="cc-val">' + fmtDuration(incub / (cfg.eggHatchSpeed||1)) + '</div></div>';
+        html += '<div class="config-card"><div class="cc-label">Maturation</div><div class="cc-val">' + fmtDuration(sp.breeding.matT / (cfg.babyMatureSpeed||1)) + '</div></div>';
+        html += '<div class="config-card"><div class="cc-label">Mating CD</div><div class="cc-val">' + fmtDuration(sp.breeding.mateMin * (cfg.matingInterval||1)) + '</div></div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+  }
+
+  el.innerHTML = html;
+}
+
+function findOptimalPair(males, females) {
+  var bestScore = -1, bestPair = null;
+  males.forEach(function(m) {
+    females.forEach(function(f) {
+      var score = 0;
+      STAT_KEYS.forEach(function(k) {
+        score += Math.max(m.wildLevels[k]||0, f.wildLevels[k]||0);
+      });
+      if (score > bestScore) { bestScore = score; bestPair = { male: m, female: f, score: score }; }
+    });
+  });
+  return bestPair;
+}
+
+// ===================================================================
+//  BREEDING PLANNER
+// ===================================================================
+function findBestPair() {
+  var species = getSSValue('pairSpecies');
+  var el = document.getElementById('pairResults');
+  if (!species) { el.innerHTML = '<div class="empty"><div class="empty-title">S\u00e9lectionne une esp\u00e8ce</div></div>'; return; }
+  var dinos = DB.creatures.filter(function(c) { return c.species === species; });
+  var males = dinos.filter(function(d) { return d.sex === 'M'; });
+  var females = dinos.filter(function(d) { return d.sex === 'F'; });
+
+  if (males.length === 0 || females.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-title">Besoin d\'au moins 1 ♂ et 1 ♀ ' + escH(species) + '</div></div>';
+    return;
+  }
+
+  var pair = findOptimalPair(males, females);
+  if (!pair) return;
+
+  // Calculate expected baby stats
+  var html = '<div class="card">';
+  html += '<div class="card-head"><span class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22M18 2H6v7a6 6 0 1 0 12 0V2Z"/></svg> Meilleur Couple</span></div>';
+  html += '<div style="font-size:12px;margin-bottom:8px">';
+  html += '<span style="color:var(--male);font-weight:700">♂ ' + escH(pair.male.name) + '</span>';
+  html += ' × <span style="color:var(--female);font-weight:700">♀ ' + escH(pair.female.name) + '</span>';
+  html += ' — Score: <span style="color:var(--accent);font-weight:700">' + pair.score + '</span></div>';
+
+  html += '<table class="data-table"><thead><tr><th>Stat</th><th>♂</th><th>♀</th><th>Best</th><th>Chance</th></tr></thead><tbody>';
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    var mv = pair.male.wildLevels[k] || 0;
+    var fv = pair.female.wildLevels[k] || 0;
+    var best = Math.max(mv, fv);
+    var chance = mv === fv ? 100 : 55;
+    var cls = chance === 100 ? 'top-stat' : (chance >= 55 ? 'good-stat' : '');
+    html += '<tr><td class="t-name">' + (STAT_LABELS[k]||k) + '</td>';
+    html += '<td class="t-stat" style="color:var(--male)">' + mv + '</td>';
+    html += '<td class="t-stat" style="color:var(--female)">' + fv + '</td>';
+    html += '<td class="' + cls + '">' + best + '</td>';
+    html += '<td>' + chance + '%</td></tr>';
+  });
+  html += '</tbody></table>';
+
+  // Probability of perfect baby (all best stats)
+  var perfectChance = 1;
+  STAT_KEYS.forEach(function(k) {
+    var mv = pair.male.wildLevels[k] || 0;
+    var fv = pair.female.wildLevels[k] || 0;
+    if (mv !== fv) perfectChance *= 0.55;
+  });
+  html += '<div style="margin-top:10px;font-size:11px;color:#888">Chance de bébé parfait (toutes meilleures stats): <span style="color:#4ade80;font-weight:700">' + (perfectChance * 100).toFixed(2) + '%</span>';
+  html += ' (~1/' + Math.round(1/perfectChance) + ' bébés)</div>';
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function simulateBreed(count) {
+  var maleId = parseInt(document.getElementById('breedMale').value);
+  var femaleId = parseInt(document.getElementById('breedFemale').value);
+  var male = DB.creatures.find(function(c) { return c.id === maleId; });
+  var female = DB.creatures.find(function(c) { return c.id === femaleId; });
+  var el = document.getElementById('breedResults');
+
+  if (!male || !female) { el.innerHTML = '<div class="empty"><div class="empty-title">Sélectionne un ♂ et une ♀</div></div>'; return; }
+
+  if (count === 1) {
+    var baby = simulateSingleBreed(male, female);
+    var html = '<div class="breed-result">';
+    html += '<div class="breed-result-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M9 12h.01M15 12h.01M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg> ' + escH(baby.name) + ' ' + (baby.sex==='M'?'\u2642':'\u2640') + '</div>';
+    html += '<div class="stat-grid">';
+    STAT_KEYS_DISPLAY.forEach(function(k) {
+      var v = baby.wildLevels[k] || 0;
+      var best = Math.max(male.wildLevels[k]||0, female.wildLevels[k]||0);
+      var cls = v > best ? ' highlight' : (v >= best ? ' best' : ' worse');
+      html += '<div class="stat-cell"><div class="stat-name">' + (STAT_LABELS[k]||k) + '</div><div class="stat-val' + cls + '">' + v + '</div></div>';
+    });
+    html += '</div>';
+    if (baby.mutations.length > 0) html += '<div style="margin-top:6px;font-size:11px;color:#a78bfa;font-weight:700">🧬 Mutations: ' + baby.mutations.join(', ') + '</div>';
+    html += '<div class="btn-row"><button class="btn success" onclick="registerBaby()">💾 Enregistrer</button></div>';
+    html += '</div>';
+    el.innerHTML = html;
+    window._lastBaby = baby;
+  } else {
+    runMonteCarlo(male, female, count, el);
+  }
+}
+
+function simulateSingleBreed(male, female) {
+  var baby = { species: male.species, name: male.species + ' Baby', sex: Math.random()<0.5?'M':'F',
+    wildLevels: {}, mutations: [], mutaPat: (male.mutaPat||0)+(male.mutaMat||0),
+    mutaMat: (female.mutaPat||0)+(female.mutaMat||0), bred: true, tamed: true,
+    parentMale: male.name, parentFemale: female.name, parentMaleId: male.id, parentFemaleId: female.id };
+  var statKeys7 = STAT_KEYS.slice(0,7);
+  STAT_KEYS.forEach(function(k) {
+    var mv = male.wildLevels[k]||0, fv = female.wildLevels[k]||0;
+    baby.wildLevels[k] = mv === fv ? mv : (Math.random() < 0.55 ? Math.max(mv,fv) : Math.min(mv,fv));
+  });
+  // Mutation chance ~7.13% per parent if under cap
+  for (var i = 0; i < 3; i++) {
+    if (Math.random() < 0.0713) {
+      var ms = statKeys7[Math.floor(Math.random()*7)];
+      baby.wildLevels[ms] = (baby.wildLevels[ms]||0) + 2;
+      baby.mutations.push(ms);
+    }
+  }
+  return baby;
+}
+
+function registerBaby() {
+  if (!window._lastBaby) return;
+  var b = window._lastBaby;
+  b.id = DB.nextId++;
+  b.name = prompt('Nom:', b.name) || b.name;
+  b.level = 0; STAT_KEYS.forEach(function(k) { b.level += (b.wildLevels[k]||0); }); b.level++;
+  DB.creatures.push(b);
+  saveDB();
+  window._lastBaby = null;
+  document.getElementById('breedResults').innerHTML = '<div style="color:#4ade80;font-size:11px;font-weight:700;padding:10px">✅ Enregistré !</div>';
+}
+
+function runMonteCarlo(male, female, count, el) {
+  var stats = {};
+  STAT_KEYS_DISPLAY.forEach(function(k) { stats[k] = {bestCount:0, mutaCount:0}; });
+  var mutaTotal = 0;
+  for (var i = 0; i < count; i++) {
+    var baby = simulateSingleBreed(male, female);
+    STAT_KEYS_DISPLAY.forEach(function(k) {
+      if ((baby.wildLevels[k]||0) >= Math.max(male.wildLevels[k]||0, female.wildLevels[k]||0)) stats[k].bestCount++;
+      if (baby.mutations.indexOf(k) >= 0) stats[k].mutaCount++;
+    });
+    if (baby.mutations.length > 0) mutaTotal++;
+  }
+  var html = '<div class="breed-result"><div class="breed-result-title">📊 Monte Carlo — ' + count + ' simulations</div>';
+  html += '<div style="font-size:11px;color:#4ade80;font-weight:700;margin-bottom:10px">🧬 Avec mutation: ' + (mutaTotal/count*100).toFixed(1) + '%</div>';
+  html += '<div class="mc-results">';
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    var pct = (stats[k].bestCount/count*100);
+    var cls = pct >= 55 ? 'high' : (pct >= 45 ? 'mid' : 'low');
+    html += '<div class="mc-stat"><div class="mc-stat-name">' + (STAT_LABELS[k]||k) + '</div>';
+    html += '<div class="mc-stat-pct ' + cls + '">' + pct.toFixed(1) + '%</div>';
+    html += '<div style="font-size:8px;color:#444">muta: ' + (stats[k].mutaCount/count*100).toFixed(1) + '%</div>';
+    html += '<div class="prob-bar"><div class="prob-fill" style="width:' + pct + '%;background:' + (cls==='high'?'#4ade80':(cls==='mid'?'#f59e0b':'#ef4444')) + '"></div></div></div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+function runMonteCarloAll() {
+  var species = getSSValue('mcSpecies');
+  if (!species) return;
+  var count = parseInt(document.getElementById('mcCount').value) || 1000;
+  var dinos = DB.creatures.filter(function(c) { return c.species === species; });
+  var males = dinos.filter(function(d) { return d.sex === 'M'; });
+  var females = dinos.filter(function(d) { return d.sex === 'F'; });
+  var el = document.getElementById('mcResults');
+  if (males.length === 0 || females.length === 0) { el.innerHTML = '<div class="empty"><div class="empty-title">Besoin ♂ + ♀</div></div>'; return; }
+  var pair = findOptimalPair(males, females);
+  if (pair) runMonteCarlo(pair.male, pair.female, count, el);
+}
+
+// ===================================================================
+//  PEDIGREE
+// ===================================================================
+function renderPedigree() {
+  var id = parseInt(getSSValue('pedSelect'));
+  var c = DB.creatures.find(function(x) { return x.id === id; });
+  var el = document.getElementById('pedigreeView');
+  if (!c) { el.innerHTML = ''; return; }
+
+  function makeNode(creature, depth) {
+    if (!creature || depth > 4) return '';
+    var sexCol = creature.sex === 'M' ? 'var(--male)' : 'var(--female)';
+    var html = '<div class="lineage-node" style="border-color:' + sexCol + '">';
+    html += '<div class="l-name" style="color:' + sexCol + '">' + (creature.sex==='M'?'♂':'♀') + ' ' + escH(creature.name) + '</div>';
+    var total = 0; STAT_KEYS_DISPLAY.forEach(function(k) { total += (creature.wildLevels[k]||0); });
+    html += '<div style="font-size:8px;color:#666">' + creature.species + ' | ' + total + ' pts</div>';
+    html += '</div>';
+
+    // Find parents
+    var dad = creature.parentMaleId ? DB.creatures.find(function(x) { return x.id === creature.parentMaleId; }) : null;
+    var mom = creature.parentFemaleId ? DB.creatures.find(function(x) { return x.id === creature.parentFemaleId; }) : null;
+
+    if (dad || mom) {
+      html += '<div style="display:flex;gap:8px;margin-left:20px;margin-top:4px;padding-left:10px;border-left:2px solid #1a1a1a">';
+      if (dad) html += makeNode(dad, depth+1);
+      if (mom) html += makeNode(mom, depth+1);
+      html += '</div>';
+    }
+    return html;
+  }
+
+  el.innerHTML = makeNode(c, 0);
+}
+
+// ===================================================================
+//  BREED TAB SWITCH
+// ===================================================================
+function switchBreedTab(tab, btn) {
+  document.querySelectorAll('#panel-breed .sub-tab').forEach(function(t) { t.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  document.getElementById('breedPair').style.display = tab === 'pair' ? '' : 'none';
+  document.getElementById('breedManual').style.display = tab === 'manual' ? '' : 'none';
+  document.getElementById('breedMonte').style.display = tab === 'monte' ? '' : 'none';
+  if (tab === 'manual') populateBreedSelects();
+}
+
+// ===================================================================
+//  NAVIGATION
+// ===================================================================
+function switchPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  var panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'library') { populateLibFilter(); renderLibrary(); }
+  if (name === 'bestof') { populateSpeciesSelects(); renderBestStats(); }
+  if (name === 'breed') populateSpeciesSelects();
+  if (name === 'pedigree') populatePedSelect();
+  if (name === 'advisor') renderAdvisor();
+  if (name === 'config') loadConfigUI();
+}
+
+// ===================================================================
+//  GENERIC SEARCHABLE SPECIES SELECTOR (SS)
+// ===================================================================
+var ssValues = {}; // { id: selectedValue }
+
+function openSS(id) {
+  var input = document.getElementById(id + 'Input');
+  var dropdown = document.getElementById(id + 'Dropdown');
+  var query = input.value.toLowerCase();
+
+  // For pedSelect, use creatures; for libFilter, use species with creatures + "all"; for others, use ASB species
+  var items = [];
+  if (id === 'pedSelect') {
+    items = DB.creatures.map(function(c) { return { key: String(c.id), label: c.name + ' (' + c.species + ')', species: c.species }; });
+    var filtered = query ? items.filter(function(i) { return i.label.toLowerCase().indexOf(query) !== -1; }) : items;
+    dropdown.innerHTML = filtered.length === 0 ? '<div class="ss-empty">Aucune cr\u00e9ature</div>' :
+      filtered.slice(0, 40).map(function(i) {
+        return '<div class="ss-option" onclick="pickSS(\'' + id + '\',\'' + escH(i.key).replace(/'/g,"\\'") + '\',\'' + escH(i.label).replace(/'/g,"\\'") + '\',\'' + escH(i.species).replace(/'/g,"\\'") + '\')">' +
+          '<img src="' + getIconUrl(i.species) + '" width="24" height="24" onerror="this.style.display=\'none\'">' +
+          '<span>' + escH(i.label) + '</span></div>';
+      }).join('');
+  } else if (id === 'libFilter') {
+    var speciesWithDinos = {};
+    DB.creatures.forEach(function(c) { speciesWithDinos[c.species] = true; });
+    items = Object.keys(speciesWithDinos).sort();
+    var filtered = query ? items.filter(function(n) { return n.toLowerCase().indexOf(query) !== -1; }) : items;
+    dropdown.innerHTML = filtered.length === 0 ? '<div class="ss-empty">Aucune esp\u00e8ce</div>' :
+      filtered.slice(0, 40).map(function(name) {
+        return '<div class="ss-option" onclick="pickSS(\'' + id + '\',\'' + escH(name).replace(/'/g,"\\'") + '\',\'' + escH(name).replace(/'/g,"\\'") + '\',\'' + escH(name).replace(/'/g,"\\'") + '\')">' +
+          '<img src="' + getIconUrl(name) + '" width="24" height="24" onerror="this.style.display=\'none\'">' +
+          '<span>' + escH(name) + '</span></div>';
+      }).join('');
+  } else {
+    var filtered = query ? allSpeciesNames.filter(function(n) { return n.toLowerCase().indexOf(query) !== -1; }) : allSpeciesNames;
+    dropdown.innerHTML = filtered.length === 0 ? '<div class="ss-empty">Aucune esp\u00e8ce</div>' :
+      filtered.slice(0, 60).map(function(name) {
+        return '<div class="ss-option" onclick="pickSS(\'' + id + '\',\'' + escH(name).replace(/'/g,"\\'") + '\',\'' + escH(name).replace(/'/g,"\\'") + '\',\'' + escH(name).replace(/'/g,"\\'") + '\')">' +
+          '<img src="' + getIconUrl(name) + '" width="24" height="24" onerror="this.style.display=\'none\'">' +
+          '<span>' + escH(name) + '</span></div>';
+      }).join('');
+  }
+  dropdown.style.display = 'block';
+}
+
+function pickSS(id, value, label, species) {
+  ssValues[id] = value;
+  document.getElementById(id + 'Input').value = '';
+  document.getElementById(id + 'Input').style.display = 'none';
+  var sel = document.getElementById(id + 'Selected');
+  sel.style.display = 'flex';
+  var icon = document.getElementById(id + 'Icon');
+  icon.src = getIconUrl(species);
+  icon.onerror = function() { this.style.display = 'none'; };
+  icon.style.display = '';
+  document.getElementById(id + 'Name').textContent = label;
+  document.getElementById(id + 'Dropdown').style.display = 'none';
+  // Callbacks
+  if (id === 'bestSpecies') renderBestStats();
+  if (id === 'pairSpecies') findBestPair();
+  if (id === 'libFilter') renderLibrary();
+  if (id === 'pedSelect') renderPedigree();
+}
+
+function clearSS(id) {
+  ssValues[id] = null;
+  document.getElementById(id + 'Input').style.display = '';
+  document.getElementById(id + 'Selected').style.display = 'none';
+  document.getElementById(id + 'Input').value = '';
+}
+
+function getSSValue(id) { return ssValues[id] || null; }
+
+// Close all dropdowns on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.ss-wrap')) {
+    document.querySelectorAll('.ss-dropdown').forEach(function(dd) { dd.style.display = 'none'; });
+  }
+});
+
+function populateSpeciesSelects() {
+  // Auto-pick first species that has creatures
+  var speciesWithDinos = {};
+  DB.creatures.forEach(function(c) { speciesWithDinos[c.species] = true; });
+  var first = Object.keys(speciesWithDinos).sort()[0];
+  if (first) {
+    ['bestSpecies','pairSpecies','mcSpecies'].forEach(function(id) {
+      pickSS(id, first, first, first);
+    });
+  }
+}
+
+function populateBreedSelects() {
+  var mSel = document.getElementById('breedMale');
+  var fSel = document.getElementById('breedFemale');
+  mSel.innerHTML = '<option value="">-- ♂ Mâle --</option>';
+  fSel.innerHTML = '<option value="">-- ♀ Femelle --</option>';
+  DB.creatures.forEach(function(c) {
+    var total = 0; STAT_KEYS.forEach(function(k) { total += (c.wildLevels[k]||0); });
+    var label = escH(c.name) + ' (' + c.species + ', ' + total + ' pts)';
+    if (c.sex === 'M') mSel.innerHTML += '<option value="' + c.id + '">' + label + '</option>';
+    if (c.sex === 'F') fSel.innerHTML += '<option value="' + c.id + '">' + label + '</option>';
+  });
+}
+
+function populateLibFilter() {
+  // libFilter is now a searchable input, no populate needed
+}
+
+function populatePedSelect() {
+  // pedSelect is now a searchable input, no populate needed
+}
+
+function updateBreedPreview() {
+  var mId = parseInt(document.getElementById('breedMale').value);
+  var fId = parseInt(document.getElementById('breedFemale').value);
+  renderMiniCard('breedMalePreview', DB.creatures.find(function(c){return c.id===mId;}));
+  renderMiniCard('breedFemalePreview', DB.creatures.find(function(c){return c.id===fId;}));
+}
+
+function renderMiniCard(containerId, c) {
+  var el = document.getElementById(containerId);
+  if (!c) { el.innerHTML = ''; return; }
+  var html = '<div class="card" style="padding:8px"><div class="stat-grid">';
+  STAT_KEYS.forEach(function(k) {
+    html += '<div class="stat-cell"><div class="stat-name">' + (STAT_LABELS[k]||k) + '</div><div class="stat-val" style="font-size:11px">' + (c.wildLevels[k]||0) + '</div></div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+// ===================================================================
+//  CONFIG
+// ===================================================================
+function loadConfigUI() {
+  document.getElementById('cfgMating').value = DB.config.matingInterval || 1;
+  document.getElementById('cfgHatch').value = DB.config.eggHatchSpeed || 1;
+  document.getElementById('cfgMature').value = DB.config.babyMatureSpeed || 1;
+  document.getElementById('cfgCuddle').value = DB.config.babyCuddleInterval || 1;
+  document.getElementById('cfgImprint').value = DB.config.babyImprintAmount || 1;
+  document.getElementById('cfgFood').value = DB.config.babyFoodConsumption || 1;
+  document.getElementById('cfgTaM').value = DB.config.tamingEffMult || 1;
+  document.getElementById('cfgMaxWild').value = DB.config.maxWildLevel || 150;
+  document.getElementById('cfgImpMult').value = DB.config.imprintStatMult || 1;
+}
+function saveConfig() {
+  DB.config.matingInterval = parseFloat(document.getElementById('cfgMating').value)||1;
+  DB.config.eggHatchSpeed = parseFloat(document.getElementById('cfgHatch').value)||1;
+  DB.config.babyMatureSpeed = parseFloat(document.getElementById('cfgMature').value)||1;
+  DB.config.babyCuddleInterval = parseFloat(document.getElementById('cfgCuddle').value)||1;
+  DB.config.babyImprintAmount = parseFloat(document.getElementById('cfgImprint').value)||1;
+  DB.config.babyFoodConsumption = parseFloat(document.getElementById('cfgFood').value)||1;
+  DB.config.tamingEffMult = parseFloat(document.getElementById('cfgTaM').value)||1;
+  DB.config.maxWildLevel = parseInt(document.getElementById('cfgMaxWild').value)||150;
+  DB.config.imprintStatMult = parseFloat(document.getElementById('cfgImpMult').value)||1;
+  saveDB();
+}
+function resetConfig() {
+  DB.config = {matingInterval:1,eggHatchSpeed:1,babyMatureSpeed:1,babyCuddleInterval:1,babyImprintAmount:1,babyFoodConsumption:1,tamingEffMult:1,maxWildLevel:150,imprintStatMult:1};
+  saveDB(); loadConfigUI();
+}
+
+// ===================================================================
+//  EXPORT
+// ===================================================================
+function exportData() {
+  if (window.api && window.api.exportBreedingData) {
+    window.api.exportBreedingData().then(function(filePath) {
+      if (!filePath) return;
+      var content = JSON.stringify(DB, null, 2);
+      if (window.api.writeExportFile) window.api.writeExportFile(filePath, content);
+    });
+  }
+}
+
+// ===================================================================
+//  PIN
+// ===================================================================
+function togglePin() {
+  if (window.api && window.api.breedingTogglePin) window.api.breedingTogglePin();
+}
+if (window.api && window.api.onBreedingPinChanged) {
+  window.api.onBreedingPinChanged(function(v) { document.getElementById('pinBtn').classList.toggle('active', v); });
+}
+
+// ===================================================================
+//  UTILITIES
+// ===================================================================
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDuration(sec) {
+  sec = Math.abs(Math.round(sec));
+  if (sec < 60) return sec + 's';
+  if (sec < 3600) return Math.floor(sec/60) + 'm';
+  var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+  if (h < 24) return h + 'h ' + m + 'm';
+  var d = Math.floor(h/24); h = h%24;
+  return d + 'j ' + h + 'h';
+}
+
+// ===================================================================
+//  RENDER ALL & INIT
+// ===================================================================
+function renderAll() { renderLibrary(); }
+
+// ===================================================================
+//  ALL_SPECIES LIST (for manual add autocomplete)
+// ===================================================================
+var ALL_SPECIES = ['Achatina','Allosaurus','Amargasaurus','Andrewsarchus','Ankylosaurus','Araneo','Archaeopteryx','Argentavis','Baryonyx','Basilosaurus','Beelzebufo','Brontosaurus','Carbonemys','Carnotaurus','Castoroides','Chalicotherium','Compsognathus','Daeodon','Deinonychus','Dilophosaur','Dimetrodon','Dimorphodon','Diplodocus','Dire Bear','Direwolf','Dodo','Doedicurus','Dung Beetle','Equus','Gallimimus','Giganotosaurus','Gigantopithecus','Griffin','Ichthyornis','Ichthyosaurus','Iguanodon','Jerboa','Kairuku','Kaprosuchus','Kentrosaurus','Lystrosaurus','Mammoth','Managarmr','Manta','Megalania','Megaloceros','Megalodon','Megalosaurus','Megatherium','Mesopithecus','Morellatops','Mosasaurus','Onyc','Oviraptor','Pachy','Pachyrhinosaurus','Parasaur','Pegomastax','Pelagornis','Phiomia','Plesiosaur','Procoptodon','Pteranodon','Pulmonoscorpius','Quetzal','Raptor','Rex','Rock Drake','Sarco','Snow Owl','Spino','Stegosaurus','Tapejara','Terror Bird','Therizinosaurus','Thylacoleo','Triceratops','Tropeognathus','Woolly Rhino','Yutyrannus','Pyromane','Draconis Araneomorphus','Gigadesmodus','Ceratosaurus','Xiphactinus','Fasolasuchus','Shastasaurus','Aureliax','Dreadmear','Drakling'];
+
+// ===================================================================
+//  EDIT CREATURE IN LIBRARY
+// ===================================================================
+function editDino(id) {
+  var c = DB.creatures.find(function(x) { return x.id === id; });
+  if (!c) return;
+  var container = document.getElementById('editForm_' + id);
+  if (!container) return;
+  // Toggle off if already open
+  if (container.innerHTML !== '') { container.innerHTML = ''; return; }
+
+  var html = '<div class="edit-form">';
+  html += '<div class="form-grid">';
+  html += '<div class="form-group"><span class="form-label">Nom</span><input class="form-input" id="editName_' + id + '" value="' + escH(c.name) + '"></div>';
+  html += '<div class="form-group"><span class="form-label">Espèce</span>';
+  html += '<div class="ac-wrap"><input class="form-input" id="editSpecies_' + id + '" value="' + escH(c.species) + '" oninput="filterEditSpecies(' + id + ')" onfocus="filterEditSpecies(' + id + ')" autocomplete="off">';
+  html += '<div class="ac-dropdown" id="editSpeciesDD_' + id + '"></div></div></div>';
+  html += '<div class="form-group"><span class="form-label">Sexe</span>';
+  html += '<div class="edit-sex-toggle">';
+  html += '<button class="edit-sex-btn' + (c.sex==='M'?' active-male':'') + '" onclick="setEditSex(' + id + ',\'M\',this)">&#9794; M</button>';
+  html += '<button class="edit-sex-btn' + (c.sex==='F'?' active-female':'') + '" onclick="setEditSex(' + id + ',\'F\',this)">&#9792; F</button>';
+  html += '</div></div>';
+  html += '<div class="form-group"><span class="form-label">Niveau</span><input class="form-input" id="editLevel_' + id + '" type="number" value="' + (c.level||0) + '"></div>';
+  html += '</div>';
+  html += '<div class="section-title" style="margin-top:8px">Wild Levels</div>';
+  html += '<div class="form-grid cols-3">';
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    html += '<div class="form-group"><span class="form-label">' + (STAT_LABELS[k]||k) + '</span><input class="form-input" id="editWL_' + id + '_' + k + '" type="number" value="' + (c.wildLevels[k]||0) + '"></div>';
+  });
+  html += '</div>';
+  html += '<div class="btn-row" style="margin-top:8px">';
+  html += '<button class="btn success" onclick="saveEdit(' + id + ')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M20 6 9 17l-5-5"/></svg> Sauvegarder</button>';
+  html += '<button class="btn" onclick="document.getElementById(\'editForm_' + id + '\').innerHTML=\'\'">Annuler</button>';
+  html += '</div></div>';
+  container.innerHTML = html;
+  // Store sex in a data attr
+  container.dataset.sex = c.sex;
+}
+
+function setEditSex(id, sex, btn) {
+  var container = document.getElementById('editForm_' + id);
+  if (container) container.dataset.sex = sex;
+  var toggle = btn.parentElement;
+  toggle.querySelectorAll('.edit-sex-btn').forEach(function(b) { b.className = 'edit-sex-btn'; });
+  btn.className = 'edit-sex-btn ' + (sex === 'M' ? 'active-male' : 'active-female');
+}
+
+function filterEditSpecies(id) {
+  var input = document.getElementById('editSpecies_' + id);
+  var dd = document.getElementById('editSpeciesDD_' + id);
+  var q = input.value.toLowerCase();
+  var combined = ALL_SPECIES.concat(allSpeciesNames).filter(function(v, i, a) { return a.indexOf(v) === i; }).sort();
+  var filtered = q ? combined.filter(function(n) { return n.toLowerCase().indexOf(q) !== -1; }) : combined;
+  if (filtered.length === 0) {
+    dd.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-3);font-size:10px">Aucune espèce</div>';
+  } else {
+    dd.innerHTML = filtered.slice(0, 40).map(function(name) {
+      return '<div class="ac-option" onclick="document.getElementById(\'editSpecies_' + id + '\').value=\'' + escH(name).replace(/'/g,"\\'") + '\';document.getElementById(\'editSpeciesDD_' + id + '\').style.display=\'none\'">' +
+        '<img src="' + getIconUrl(name) + '" width="24" height="24" onerror="this.style.display=\'none\'">' +
+        '<span>' + escH(name) + '</span></div>';
+    }).join('');
+  }
+  dd.style.display = 'block';
+}
+
+function saveEdit(id) {
+  var c = DB.creatures.find(function(x) { return x.id === id; });
+  if (!c) return;
+  c.name = document.getElementById('editName_' + id).value || c.name;
+  c.species = document.getElementById('editSpecies_' + id).value || c.species;
+  var container = document.getElementById('editForm_' + id);
+  c.sex = (container && container.dataset.sex) || c.sex;
+  c.level = parseInt(document.getElementById('editLevel_' + id).value) || c.level;
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    var val = parseInt(document.getElementById('editWL_' + id + '_' + k).value);
+    if (!isNaN(val)) c.wildLevels[k] = val;
+  });
+  saveDB();
+  renderLibrary();
+}
+
+// ===================================================================
+//  MANUAL ADD CREATURE
+// ===================================================================
+var addCreatureSex = 'M';
+var addCreatureSpeciesValue = '';
+
+function toggleAddCreatureForm() {
+  var form = document.getElementById('addCreatureForm');
+  form.classList.toggle('visible');
+  if (form.classList.contains('visible')) {
+    document.getElementById('addSpeciesInput').value = '';
+    document.getElementById('addName').value = '';
+    document.getElementById('addLevel').value = '';
+    addCreatureSex = 'M';
+    addCreatureSpeciesValue = '';
+    STAT_KEYS_DISPLAY.forEach(function(k) { document.getElementById('addWL_' + k).value = ''; });
+    // Reset sex toggle
+    var btns = document.getElementById('addSexToggle').querySelectorAll('.edit-sex-btn');
+    btns[0].className = 'edit-sex-btn active-male';
+    btns[1].className = 'edit-sex-btn';
+  }
+}
+
+function setAddSex(sex, btn) {
+  addCreatureSex = sex;
+  var toggle = btn.parentElement;
+  toggle.querySelectorAll('.edit-sex-btn').forEach(function(b) { b.className = 'edit-sex-btn'; });
+  btn.className = 'edit-sex-btn ' + (sex === 'M' ? 'active-male' : 'active-female');
+}
+
+function filterAddSpecies() {
+  var input = document.getElementById('addSpeciesInput');
+  var dd = document.getElementById('addSpeciesDropdown');
+  var q = input.value.toLowerCase();
+  var combined = ALL_SPECIES.concat(allSpeciesNames).filter(function(v, i, a) { return a.indexOf(v) === i; }).sort();
+  var filtered = q ? combined.filter(function(n) { return n.toLowerCase().indexOf(q) !== -1; }) : combined;
+  if (filtered.length === 0) {
+    dd.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-3);font-size:10px">Aucune espèce</div>';
+  } else {
+    dd.innerHTML = filtered.slice(0, 40).map(function(name) {
+      return '<div class="ac-option" onclick="pickAddSpecies(\'' + escH(name).replace(/'/g,"\\'") + '\')">' +
+        '<img src="' + getIconUrl(name) + '" width="24" height="24" onerror="this.style.display=\'none\'">' +
+        '<span>' + escH(name) + '</span></div>';
+    }).join('');
+  }
+  dd.style.display = 'block';
+}
+
+function pickAddSpecies(name) {
+  addCreatureSpeciesValue = name;
+  document.getElementById('addSpeciesInput').value = name;
+  document.getElementById('addSpeciesDropdown').style.display = 'none';
+}
+
+function addCreatureManual() {
+  var species = addCreatureSpeciesValue || document.getElementById('addSpeciesInput').value;
+  if (!species) { alert('Sélectionne une espèce'); return; }
+  var name = document.getElementById('addName').value || (species + ' #' + DB.nextId);
+  var level = parseInt(document.getElementById('addLevel').value) || 0;
+  var wl = {};
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    wl[k] = parseInt(document.getElementById('addWL_' + k).value) || 0;
+  });
+  wl.Speed = 0;
+  wl.Torpor = 0;
+  var c = {
+    id: DB.nextId++,
+    species: species,
+    name: name,
+    sex: addCreatureSex,
+    level: level,
+    wildLevels: wl,
+    tamed: true,
+    bred: false,
+    TE: 100,
+    imprint: 0,
+    mutaPat: 0, mutaMat: 0,
+    parentMale: '', parentFemale: '',
+    addedAt: Date.now()
+  };
+  DB.creatures.push(c);
+  saveDB();
+  toggleAddCreatureForm();
+  renderLibrary();
+}
+
+// Close add/edit dropdowns on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.ac-wrap')) {
+    document.querySelectorAll('.ac-dropdown').forEach(function(dd) { dd.style.display = 'none'; });
+  }
+});
+
+// ===================================================================
+//  BREEDING ADVISOR
+// ===================================================================
+function renderAdvisor() {
+  var el = document.getElementById('advisorContent');
+  if (DB.creatures.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-ico"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></div><div class="empty-title">Bibliothèque vide</div><div class="empty-sub">Ajoute des créatures pour obtenir des recommandations</div></div>';
+    return;
+  }
+
+  // Group by species
+  var speciesMap = {};
+  DB.creatures.forEach(function(c) {
+    if (!speciesMap[c.species]) speciesMap[c.species] = [];
+    speciesMap[c.species].push(c);
+  });
+
+  // Build priority list
+  var entries = [];
+  Object.keys(speciesMap).sort().forEach(function(sp) {
+    var dinos = speciesMap[sp];
+    var males = dinos.filter(function(d) { return d.sex === 'M'; });
+    var females = dinos.filter(function(d) { return d.sex === 'F'; });
+    var entry = { species: sp, dinos: dinos, males: males, females: females };
+
+    if (males.length === 0 || females.length === 0) {
+      entry.priority = 'need';
+      entry.priorityLabel = 'BESOIN ' + (males.length === 0 ? '♂' : '♀');
+      entry.priorityOrder = 2;
+    } else {
+      // Find best stat per stat across all dinos of this species
+      var bestPerStat = {};
+      STAT_KEYS_DISPLAY.forEach(function(k) {
+        var best = 0;
+        dinos.forEach(function(d) { best = Math.max(best, d.wildLevels[k] || 0); });
+        bestPerStat[k] = best;
+      });
+
+      // Find the optimal pair
+      var pair = findOptimalPair(males, females);
+      entry.pair = pair;
+      entry.bestPerStat = bestPerStat;
+
+      // Check stat coverage: for each stat, does the pair have the best?
+      var locked = 0;
+      var statDetails = [];
+      STAT_KEYS_DISPLAY.forEach(function(k) {
+        var mv = pair.male.wildLevels[k] || 0;
+        var fv = pair.female.wildLevels[k] || 0;
+        var pairBest = Math.max(mv, fv);
+        var speciesBest = bestPerStat[k];
+        var isLocked = mv === fv && mv === speciesBest;
+        var isCovered = pairBest === speciesBest;
+        if (isLocked) locked++;
+        statDetails.push({ stat: k, male: mv, female: fv, best: speciesBest, pairBest: pairBest, locked: isLocked, covered: isCovered });
+      });
+      entry.statDetails = statDetails;
+      entry.lockedCount = locked;
+      entry.totalStats = STAT_KEYS_DISPLAY.length;
+      entry.completionPct = Math.round((locked / STAT_KEYS_DISPLAY.length) * 100);
+
+      if (locked === STAT_KEYS_DISPLAY.length) {
+        entry.priority = 'done';
+        entry.priorityLabel = 'PARFAIT';
+        entry.priorityOrder = 3;
+      } else {
+        entry.priority = 'high';
+        entry.priorityLabel = 'PRIORITÉ HAUTE';
+        entry.priorityOrder = 1;
+      }
+    }
+    entries.push(entry);
+  });
+
+  // Sort: high priority first, then need, then done
+  entries.sort(function(a, b) { return a.priorityOrder - b.priorityOrder; });
+
+  var html = '<div class="advisor-section">';
+  html += '<div class="advisor-header"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg> Conseiller d\'Élevage</div>';
+
+  // Summary
+  var highCount = entries.filter(function(e) { return e.priority === 'high'; }).length;
+  var doneCount = entries.filter(function(e) { return e.priority === 'done'; }).length;
+  var needCount = entries.filter(function(e) { return e.priority === 'need'; }).length;
+  html += '<div class="config-grid" style="margin-bottom:12px">';
+  html += '<div class="config-card"><div class="cc-label">À Reproduire</div><div class="cc-val" style="color:var(--warning)">' + highCount + '</div></div>';
+  html += '<div class="config-card"><div class="cc-label">Parfaits</div><div class="cc-val" style="color:var(--success)">' + doneCount + '</div></div>';
+  html += '<div class="config-card"><div class="cc-label">Besoin Sexe</div><div class="cc-val" style="color:var(--danger)">' + needCount + '</div></div>';
+  html += '</div>';
+
+  entries.forEach(function(entry) {
+    html += '<div class="advisor-species-card">';
+    html += '<div class="advisor-species-header">';
+    html += '<img src="' + getIconUrl(entry.species) + '" class="advisor-species-ico" onerror="this.style.display=\'none\'">';
+    html += '<span class="advisor-species-name">' + escH(entry.species) + '</span>';
+    html += '<span style="font-size:9px;color:var(--text-3)">' + entry.males.length + '♂ / ' + entry.females.length + '♀</span>';
+    html += '<span class="advisor-priority ' + entry.priority + '">' + entry.priorityLabel + '</span>';
+    html += '</div>';
+
+    if (entry.priority === 'need') {
+      // Show existing dinos
+      html += '<div style="font-size:10px;color:var(--text-3);padding:4px 0">Créatures disponibles: ';
+      entry.dinos.forEach(function(d, i) {
+        if (i > 0) html += ', ';
+        html += '<span style="color:' + (d.sex==='M'?'var(--male)':'var(--female)') + '">' + (d.sex==='M'?'♂':'♀') + ' ' + escH(d.name) + '</span>';
+      });
+      html += '</div>';
+    } else if (entry.pair) {
+      // Show pair
+      html += '<div class="advisor-pair">';
+      html += '<div class="advisor-parent male">♂ ' + escH(entry.pair.male.name);
+      var mStats = [];
+      STAT_KEYS_DISPLAY.forEach(function(k) { mStats.push(STAT_LABELS[k] + ':' + (entry.pair.male.wildLevels[k]||0)); });
+      html += '<div style="font-size:8px;margin-top:2px;color:var(--text-3)">' + mStats.join(' ') + '</div></div>';
+      html += '<div class="advisor-vs">\u00d7</div>';
+      html += '<div class="advisor-parent female">♀ ' + escH(entry.pair.female.name);
+      var fStats = [];
+      STAT_KEYS_DISPLAY.forEach(function(k) { fStats.push(STAT_LABELS[k] + ':' + (entry.pair.female.wildLevels[k]||0)); });
+      html += '<div style="font-size:8px;margin-top:2px;color:var(--text-3)">' + fStats.join(' ') + '</div></div>';
+      html += '</div>';
+
+      // Stat grid
+      html += '<div class="advisor-stats-grid">';
+      entry.statDetails.forEach(function(sd) {
+        var cellClass = sd.locked ? 'locked' : (sd.covered ? '' : 'unlocked');
+        var valClass = '';
+        if (sd.locked) valClass = 'best-both';
+        else if (sd.male > sd.female) valClass = 'best-m';
+        else if (sd.female > sd.male) valClass = 'best-f';
+        else valClass = 'best-both';
+
+        html += '<div class="advisor-stat-cell ' + cellClass + '">';
+        html += '<div class="advisor-stat-label">' + (STAT_LABELS[sd.stat]||sd.stat) + '</div>';
+        html += '<div class="advisor-stat-val ' + valClass + '">' + sd.pairBest + '</div>';
+        if (sd.locked) {
+          html += '<div style="font-size:7px;color:var(--success)">&#x1f512;</div>';
+        } else if (!sd.covered) {
+          html += '<div style="font-size:7px;color:var(--warning)">best:' + sd.best + '</div>';
+        } else {
+          html += '<div style="font-size:7px;color:var(--text-3)">' + sd.male + '/' + sd.female + '</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+
+      // Completion bar
+      var pct = entry.completionPct;
+      var barColor = pct === 100 ? 'var(--success)' : (pct >= 50 ? 'var(--warning)' : 'var(--danger)');
+      html += '<div class="advisor-completion">';
+      html += '<span>Completion: ' + pct + '% (' + entry.lockedCount + '/' + entry.totalStats + ' stats verrouillés)</span>';
+      html += '<div class="advisor-completion-bar"><div class="advisor-completion-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
+      html += '</div>';
+
+      // Score
+      html += '<div style="font-size:9px;color:var(--text-3);margin-top:4px">Score du couple: <span style="color:var(--accent-l);font-weight:700">' + entry.pair.score + '</span></div>';
+    }
+    html += '</div>';
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ===================================================================
+//  SEARCHABLE SPECIES SELECTOR
+// ===================================================================
+var allSpeciesNames = [];
+
+function initSpeciesSearch() {
+  allSpeciesNames = Object.keys(ASB_DATA).sort();
+  // Auto-select first species
+  if (allSpeciesNames.length > 0) selectSpecies(allSpeciesNames[0]);
+}
+
+function filterSpeciesDropdown() {
+  var input = document.getElementById('exSpeciesInput');
+  var dropdown = document.getElementById('exSpeciesDropdown');
+  var query = input.value.toLowerCase();
+  var filtered = query ? allSpeciesNames.filter(function(n) { return n.toLowerCase().indexOf(query) !== -1; }) : allSpeciesNames;
+
+  if (filtered.length === 0) {
+    dropdown.innerHTML = '<div class="ss-empty">Aucune esp\u00e8ce trouv\u00e9e</div>';
+  } else {
+    dropdown.innerHTML = filtered.slice(0, 60).map(function(name) {
+      return '<div class="ss-option" onclick="selectSpecies(\'' + escH(name).replace(/'/g, "\\'") + '\')">' +
+        '<img src="' + getIconUrl(name) + '" width="24" height="24" onerror="this.style.display=\'none\'">' +
+        '<span>' + escH(name) + '</span></div>';
+    }).join('');
+  }
+  dropdown.style.display = 'block';
+}
+
+function selectSpecies(name) {
+  selectedSpeciesName = name;
+  document.getElementById('exSpeciesInput').value = '';
+  document.getElementById('exSpeciesInput').style.display = 'none';
+  var sel = document.getElementById('exSpeciesSelected');
+  sel.style.display = 'flex';
+  var icon = document.getElementById('exSpeciesIcon');
+  icon.src = getIconUrl(name);
+  icon.onerror = function() { this.style.display = 'none'; };
+  icon.style.display = '';
+  document.getElementById('exSpeciesName').textContent = name;
+  document.getElementById('exSpeciesDropdown').style.display = 'none';
+  // Show creature preview with fallback images
+  var preview = document.getElementById('exCreaturePreview');
+  var previewImg = document.getElementById('exCreatureImg');
+  var previewName = document.getElementById('exCreaturePreviewName');
+  preview.style.display = 'flex';
+  var fallbacks = getImageFallbacks(name);
+  var fbIdx = 0;
+  previewImg.style.filter = '';
+  previewImg.style.padding = '';
+  previewImg.style.objectFit = 'cover';
+  previewImg.src = fallbacks[0];
+  previewImg.onerror = function() {
+    fbIdx++;
+    if (fbIdx < fallbacks.length) {
+      this.src = fallbacks[fbIdx];
+      if (fbIdx === fallbacks.length - 1) {
+        this.style.filter = 'invert(1) brightness(1.8)';
+        this.style.objectFit = 'contain';
+        this.style.padding = '12px';
+      }
+    }
+  };
+  previewName.textContent = name;
+  onExtractSpeciesChange();
+}
+
+function clearSpeciesSelection() {
+  selectedSpeciesName = null;
+  document.getElementById('exSpeciesInput').style.display = '';
+  document.getElementById('exSpeciesSelected').style.display = 'none';
+  document.getElementById('exSpeciesInput').focus();
+  document.getElementById('exCreaturePreview').style.display = 'none';
+}
+
+// exSpecies dropdown close is handled by global SS click handler
+
+// ===================================================================
+//  INIT
+// ===================================================================
+initSpeciesSearch();
+loadDB();
+renderAll();
+onExtractChange();
+
+// ===== OCR STATS INTEGRATION =====
+if (window.api && window.api.onOCRStatsReceived) {
+  window.api.onOCRStatsReceived(function(stats) {
+    switchPanel('extractor');
+    document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelector('.nav-btn').classList.add('active');
+    // Map OCR stat keys to extractor fields
+    var map = {'Health':'exHP','Stamina':'exStam','Oxygen':'exOxy','Food':'exFood','Weight':'exWeight','Melee Damage':'exMelee','Movement Speed':'exSpeed','Torpidity':'exTorpor'};
+    Object.keys(map).forEach(function(key) {
+      if (stats[key] !== undefined) {
+        var el = document.getElementById(map[key]);
+        if (el) el.value = stats[key];
+      }
+    });
+    if (stats.Level) document.getElementById('exLevel').value = stats.Level;
+  });
+}
+</script>
+</body>
+</html>
