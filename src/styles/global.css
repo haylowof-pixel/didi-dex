@@ -499,8 +499,9 @@ body {
   position: relative;
   width: 56px; height: 56px;
   flex-shrink: 0;
-  overflow: hidden;
-  border-radius: var(--r-lg);
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
 }
 .ark-logo-img {
   width: 100%; height: 100%;
@@ -518,13 +519,7 @@ body {
 }
 /* Pulsing glow ring behind logo */
 .ark-logo-glow-ring {
-  position: absolute;
-  left: -8px; top: -8px;
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(123,147,248,0.2) 0%, transparent 70%);
-  animation: logoPulse 3s ease-in-out infinite;
-  pointer-events: none;
+  display: none;
 }
 /* Spinning ring border */
 .ark-logo-glow-ring::after {
