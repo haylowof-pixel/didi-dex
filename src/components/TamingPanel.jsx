@@ -57,7 +57,7 @@ export default function TamingPanel({ result, dino, level }) {
     if (starveRunning) {
       starveInterval.current = setInterval(() => {
         setStarveTimeLeft(prev => {
-          if (prev <= 1) { clearInterval(starveInterval.current); setStarveRunning(false); playAlert(); window.api?.showNotification({ title: 'DIDI DEX - Starve Timer', body: 'Le starve timer est terminé ! Nourris le dino maintenant.' }); return 0; }
+          if (prev <= 1) { clearInterval(starveInterval.current); setStarveRunning(false); playAlert(); window.api?.showNotification({ title: 'OVERSEER - Starve Timer', body: 'Le starve timer est terminé ! Nourris le dino maintenant.' }); return 0; }
           return prev - 1;
         });
       }, 1000);

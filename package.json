@@ -1,7 +1,7 @@
 {
-  "name": "didi-dex",
-  "version": "2.3.0",
-  "description": "DIDI DEX - ARK companion app with taming calculator, breeding, maps & more",
+  "name": "overseer",
+  "version": "3.0.0",
+  "description": "OVERSEER - ARK companion app with taming calculator, breeding, maps & more",
   "main": "electron/main.js",
   "scripts": {
     "start": "vite build && electron .",
@@ -20,8 +20,8 @@
   "license": "ISC",
   "type": "commonjs",
   "build": {
-    "appId": "com.dididex.app",
-    "productName": "DIDI DEX",
+    "appId": "com.overseer.app",
+    "productName": "OVERSEER",
     "directories": {
       "output": "release"
     },
@@ -44,7 +44,7 @@
       "allowElevation": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "DIDI DEX"
+      "shortcutName": "OVERSEER"
     },
     "publish": {
       "provider": "github",

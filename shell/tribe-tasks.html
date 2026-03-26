@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>DIDI DEX — Tribu</title>
+<title>OVERSEER — Tribu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -379,7 +379,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
 <!-- TITLE BAR -->
 <div class="bar">
-  <span class="bar-title"><span class="dot"></span>DIDI DEX — TRIBU</span>
+  <span class="bar-title"><span class="dot"></span>OVERSEER — TRIBU</span>
   <div class="bar-spacer"></div>
   <button class="bar-btn" id="pinBtn" onclick="togglePin()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button>
   <button class="bar-close" onclick="window.api?.tribeClose()">&#10005;</button>
@@ -1378,13 +1378,13 @@ function stopSync() {
 // =============================================
 function saveLocal() {
   try {
-    localStorage.setItem('didi-tribe', JSON.stringify(STATE));
+    localStorage.setItem('overseer-tribe', JSON.stringify(STATE));
     if (window.api && window.api.saveTribeData) window.api.saveTribeData(STATE);
   } catch(e) {}
 }
 function loadLocal() {
   try {
-    var s = localStorage.getItem('didi-tribe');
+    var s = localStorage.getItem('overseer-tribe');
     if (s) return JSON.parse(s);
   } catch(e) {}
   return null;
@@ -2117,7 +2117,7 @@ function copyCode() {
 function leaveTribe() {
   if (!confirm('Quitter la tribu ?')) return;
   stopSync();
-  localStorage.removeItem('didi-tribe');
+  localStorage.removeItem('overseer-tribe');
   STATE = {pseudo:'',tribeName:'',tribeCode:null,cloudId:null,tasks:[],members:[],roles:{},customCategories:[],activityLog:[],stats:{},breedingLibrary:[],lastSync:0};
   cloudId = null;
   document.getElementById('tribeScreen').style.display = 'none';

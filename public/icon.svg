@@ -51,7 +51,7 @@
   </g>
 
   <g filter='url(#shadow)'>
-    <text x='256' y='420' text-anchor='middle' font-family='Arial Black,Impact,Arial,sans-serif' font-weight='900' font-size='52' fill='url(#glow)' letter-spacing='8'>DIDI DEX</text>
+    <text x='256' y='420' text-anchor='middle' font-family='Arial Black,Impact,Arial,sans-serif' font-weight='900' font-size='52' fill='url(#glow)' letter-spacing='8'>OVERSEER</text>
     <rect x='145' y='435' width='222' height='3' rx='1.5' fill='url(#accent)' opacity='0.6'/>
   </g>
 

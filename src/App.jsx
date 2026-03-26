@@ -80,15 +80,15 @@ export default function App() {
   const [activePage, setActivePage] = useState(null);
   const [isOverlay, setIsOverlay] = useState(false);
   const [preloadPath, setPreloadPath] = useState('');
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('didi-dex-favorites') || '[]'));
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('overseer-favorites') || '[]'));
   const [showSearch, setShowSearch] = useState(false);
   const [globalQuery, setGlobalQuery] = useState('');
-  const [lightTheme, setLightTheme] = useState(() => localStorage.getItem('didi-dex-theme') === 'light');
+  const [lightTheme, setLightTheme] = useState(() => localStorage.getItem('overseer-theme') === 'light');
 
   const toggleTheme = useCallback(() => {
     setLightTheme(prev => {
       const next = !prev;
-      localStorage.setItem('didi-dex-theme', next ? 'light' : 'dark');
+      localStorage.setItem('overseer-theme', next ? 'light' : 'dark');
       return next;
     });
   }, []);
@@ -98,7 +98,7 @@ export default function App() {
       const next = prev.includes(dinoId)
         ? prev.filter(id => id !== dinoId)
         : [...prev, dinoId];
-      localStorage.setItem('didi-dex-favorites', JSON.stringify(next));
+      localStorage.setItem('overseer-favorites', JSON.stringify(next));
       return next;
     });
   }, []);

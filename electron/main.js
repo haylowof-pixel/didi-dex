@@ -8,7 +8,7 @@ const APP_ICON = path.join(__dirname, '..', 'public', process.platform === 'win3
 
 // Force Windows to use our icon when pinned to taskbar
 if (process.platform === 'win32') {
-  app.setAppUserModelId('com.dididex.app');
+  app.setAppUserModelId('com.overseer.app');
 }
 
 let mainWindow;
@@ -193,7 +193,7 @@ function setupAutoUpdater() {
     // Show dialog
     dialog.showMessageBox(mainWindow, {
       type: 'info',
-      title: 'DIDI DEX — Mise à jour',
+      title: 'OVERSEER — Mise à jour',
       message: `La version ${info.version} est prête !`,
       detail: 'L\'application va redémarrer pour installer la mise à jour.',
       buttons: ['Redémarrer maintenant', 'Plus tard'],
@@ -1177,7 +1177,7 @@ ipcMain.handle('capture-screen', async () => {
 // One-click screenshot: hide OCR overlay briefly, capture screen via PowerShell, restore
 ipcMain.handle('take-screenshot', async () => {
   const { exec } = require('child_process');
-  const tmpPath = path.join(app.getPath('temp'), 'dididex-screenshot.png');
+  const tmpPath = path.join(app.getPath('temp'), 'overseer-screenshot.png');
 
   // Only hide the OCR overlay briefly so it doesn't appear in screenshot
   const ocrWasVisible = isOCRAlive() && ocrWindow.isVisible();

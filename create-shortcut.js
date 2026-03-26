@@ -2,9 +2,9 @@ const { execSync } = require('child_process');
 const path = require('path');
 const os = require('os');
 
-const exePath = path.resolve('release/win-unpacked/DIDI DEX.exe');
+const exePath = path.resolve('release/win-unpacked/OVERSEER.exe');
 const icoPath = path.resolve('public/icon.ico');
-const lnkPath = path.join(os.homedir(), 'Desktop', 'DIDI DEX.lnk');
+const lnkPath = path.join(os.homedir(), 'Desktop', 'OVERSEER.lnk');
 
 const psScript = `
 $ws = New-Object -ComObject WScript.Shell

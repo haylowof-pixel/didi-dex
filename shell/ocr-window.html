@@ -955,7 +955,7 @@ function startScan() {
   detectedSex = null;
   rawOCRText = '';
 
-  // Step 1: Tell main process to minimize all DIDI DEX windows, wait, then screenshot
+  // Step 1: Tell main process to minimize all OVERSEER windows, wait, then screenshot
   if (window.api && window.api.takeScreenshot) {
     window.api.takeScreenshot().then(function(dataUrl) {
       if (!dataUrl) {

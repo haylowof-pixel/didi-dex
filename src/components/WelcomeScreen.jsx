@@ -22,7 +22,7 @@ function ArkLogo() {
         <div className="ark-logo-scan-line" />
       </div>
       <div className="ark-logo-label">
-        <span className="ark-logo-text">DIDI DEX</span>
+        <span className="ark-logo-text">OVERSEER</span>
         <span className="ark-logo-sub">Survival Companion</span>
       </div>
     </motion.div>
