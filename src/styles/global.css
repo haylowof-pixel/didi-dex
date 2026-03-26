@@ -499,9 +499,17 @@ body {
   position: relative;
   width: 56px; height: 56px;
   flex-shrink: 0;
-  overflow: visible;
-  border-radius: 0;
+  overflow: hidden;
   background: transparent;
+  /* Clip scan-line to the logo shape only */
+  -webkit-mask-image: url('./icon.png');
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-image: url('./icon.png');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 .ark-logo-img {
   width: 100%; height: 100%;
@@ -509,11 +517,11 @@ body {
   filter: drop-shadow(0 0 12px rgba(123,147,248,0.4));
   position: relative; z-index: 1;
 }
-/* Scan line across logo image */
+/* Scan line clipped to logo shape */
 .ark-logo-scan-line {
   position: absolute; top: 0; left: -40%; z-index: 2;
   width: 40%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), rgba(157,143,245,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), rgba(157,143,245,0.4), transparent);
   pointer-events: none;
   animation: logoScan 4s ease-in-out infinite;
 }
