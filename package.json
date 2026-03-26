@@ -1,6 +1,6 @@
 {
   "name": "didi-dex",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "DIDI DEX - ARK companion app with taming calculator, breeding, maps & more",
   "main": "electron/main.js",
   "scripts": {
@@ -33,13 +33,15 @@
     ],
     "win": {
       "target": ["nsis"],
-      "icon": "public/icon.ico",
-      "signAndEditExecutable": false
+      "icon": "public/icon.ico"
     },
     "nsis": {
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
-      "allowElevation": true
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DIDI DEX"
     },
     "publish": {
       "provider": "github",
