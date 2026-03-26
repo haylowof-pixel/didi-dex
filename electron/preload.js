@@ -103,7 +103,7 @@ contextBridge.exposeInMainWorld('api', {
   // Preload path (for webview tags)
   getPreloadPath:    () => ipcRenderer.invoke('get-preload-path'),
   // Auto-Update
-  checkForUpdates:   () => ipcRenderer.send('check-for-updates'),
+  checkForUpdates:   () => ipcRenderer.invoke('check-for-updates'),
   installUpdate:     () => ipcRenderer.send('install-update'),
   getAppVersion:     () => ipcRenderer.invoke('get-app-version'),
   onUpdateStatus:    (cb) => ipcRenderer.on('update-status', (_, data) => cb(data)),

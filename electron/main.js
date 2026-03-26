@@ -160,30 +160,35 @@ function setupAutoUpdater() {
   autoUpdater.on('checking-for-update', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('update-status', { status: 'checking' });
+      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'checking' }); } catch (e) {}
     }
   });
 
   autoUpdater.on('update-available', (info) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('update-status', { status: 'available', version: info.version });
+      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'available', version: info.version }); } catch (e) {}
     }
   });
 
   autoUpdater.on('update-not-available', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('update-status', { status: 'up-to-date' });
+      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'up-to-date' }); } catch (e) {}
     }
   });
 
   autoUpdater.on('download-progress', (progress) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('update-status', { status: 'downloading', percent: Math.round(progress.percent) });
+      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'downloading', percent: Math.round(progress.percent) }); } catch (e) {}
     }
   });
 
   autoUpdater.on('update-downloaded', (info) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('update-status', { status: 'ready', version: info.version });
+      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'ready', version: info.version }); } catch (e) {}
     }
     // Show dialog
     dialog.showMessageBox(mainWindow, {
@@ -203,6 +208,7 @@ function setupAutoUpdater() {
   autoUpdater.on('error', (err) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('update-status', { status: 'error', message: err.message });
+      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'error', message: err.message }); } catch (e) {}
     }
   });
 
