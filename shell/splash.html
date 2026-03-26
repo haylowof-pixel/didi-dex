@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIDI DEX</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 400px;
+    height: 300px;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  .splash-container {
+    width: 400px;
+    height: 300px;
+    background: #000;
+    border-radius: 12px;
+    border: 1px solid rgba(123,147,248,0.3);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Animated gradient background */
+  .bg-gradient {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(123,147,248,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(90,60,200,0.06) 0%, transparent 60%);
+    animation: gradientShift 4s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+
+  @keyframes gradientShift {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* Floating particles */
+  .particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    background: rgba(123,147,248,0.15);
+    opacity: 0;
+    animation: floatParticle linear infinite;
+  }
+
+  @keyframes floatParticle {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.2; }
+    100% { transform: translateY(-320px) translateX(30px); opacity: 0; }
+  }
+
+  /* Logo */
+  .logo {
+    position: relative;
+    z-index: 2;
+    width: 80px;
+    height: 80px;
+    animation: logoIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    filter: drop-shadow(0 0 15px rgba(123,147,248,0.5));
+  }
+
+  @keyframes logoIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes logoGlow {
+    0%, 100% { filter: drop-shadow(0 0 12px rgba(123,147,248,0.4)); }
+    50% { filter: drop-shadow(0 0 22px rgba(123,147,248,0.7)); }
+  }
+
+  .logo.glowing {
+    animation: logoIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+               logoGlow 2.5s ease-in-out 0.8s infinite;
+  }
+
+  /* Title */
+  .title {
+    position: relative;
+    z-index: 2;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 14px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(123,147,248,0.5), 0 0 40px rgba(123,147,248,0.2);
+    animation: textSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  .subtitle {
+    position: relative;
+    z-index: 2;
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 6px;
+    letter-spacing: 1.5px;
+    font-weight: 400;
+    animation: textSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  @keyframes textSlideUp {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Loading bar */
+  .loading-bar-track {
+    position: absolute;
+    bottom: 24px;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    z-index: 2;
+    overflow: hidden;
+    animation: textSlideUp 0.5s ease 0.6s forwards;
+    opacity: 0;
+  }
+
+  .loading-bar {
+    width: 40%;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #7B93F8, #97ADFF, #7B93F8);
+    animation: loadingSlide 1.4s ease-in-out infinite;
+  }
+
+  @keyframes loadingSlide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(350%); }
+  }
+
+  /* Version */
+  .version {
+    position: absolute;
+    bottom: 8px;
+    right: 14px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
+    z-index: 2;
+    letter-spacing: 0.5px;
+    animation: textSlideUp 0.5s ease 0.8s forwards;
+    opacity: 0;
+  }
+
+  /* Fade out */
+  .splash-container.fade-out {
+    animation: fadeOut 0.4s ease forwards;
+  }
+
+  @keyframes fadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.96); }
+  }
+</style>
+</head>
+<body>
+  <div class="splash-container" id="splashContainer">
+    <div class="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+
+    <img class="logo glowing" src="../public/new-icon.png" width="80" height="80" alt="DIDI DEX">
+    <div class="title">DIDI DEX</div>
+    <div class="subtitle">ARK: Survival Ascended Companion</div>
+
+    <div class="loading-bar-track">
+      <div class="loading-bar"></div>
+    </div>
+
+    <div class="version">v2.0.0</div>
+  </div>
+
+  <script>
+    // Generate floating particles
+    (function() {
+      const container = document.getElementById('particles');
+      const count = 18;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 4 + 2;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (Math.random() * 6 + 5) + 's';
+        p.style.animationDelay = (Math.random() * 4) + 's';
+        container.appendChild(p);
+      }
+    })();
+
+    // Listen for fade-out event from main process
+    if (window.electronAPI && window.electronAPI.onSplashFadeOut) {
+      window.electronAPI.onSplashFadeOut(() => {
+        document.getElementById('splashContainer').classList.add('fade-out');
+      });
+    }
+
+    // Also listen via generic ipcRenderer if available
+    try {
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.on('fade-out', () => {
+        document.getElementById('splashContainer').classList.add('fade-out');
+      });
+    } catch(e) {
+      // No node integration - use window message fallback
+      window.addEventListener('message', (event) => {
+        if (event.data === 'fade-out') {
+          document.getElementById('splashContainer').classList.add('fade-out');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

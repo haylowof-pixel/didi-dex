@@ -8,27 +8,30 @@
 <style>
 /* ===== THEME VARIABLES ===== */
 :root {
-  --accent:#7c6aef; --accent-l:#9d8ff5; --accent-d:#6354c4;
-  --accent-glow:rgba(124,106,239,0.15); --accent-bg:rgba(124,106,239,0.08);
-  --accent-border:rgba(124,106,239,0.22);
-  --success:#2dd4a0; --danger:#ef4444; --warning:#f59e0b; --info:#60a5fa;
-  --bg-0:#000000; --bg-1:#0a0a0a; --bg-2:#111111; --bg-3:#181818;
-  --text-0:#edeef3; --text-1:#b8bac4; --text-2:#7d808e; --text-3:#4e5160;
-  --border-s:rgba(255,255,255,0.04); --border-m:rgba(255,255,255,0.07); --border-h:rgba(255,255,255,0.12);
+  --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
+  --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
   --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
   --bar-h:34px;
-  --r-sm:6px; --r-md:8px; --r-lg:12px;
-  --male:#60a5fa; --female:#f472b6;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: transparent; color: var(--text-1); -webkit-font-smoothing: antialiased; }
-#app { display: flex; flex-direction: column; height: 100vh; background: rgba(0,0,0,0.88); border-radius: 12px; border: 1px solid rgba(124,106,239,0.25); overflow: hidden; backdrop-filter: blur(12px); }
+#app { display: flex; flex-direction: column; height: 100vh; background: rgba(2,2,8,0.88); border-radius: 12px; border: 1px solid rgba(123,147,248,0.25); overflow: hidden; backdrop-filter: blur(12px); position:relative;z-index:1; }
 
 /* ===== TITLE BAR ===== */
 #ocr-bar {
   display: flex; align-items: center; height: var(--bar-h); padding: 0 12px;
-  background: var(--bg-1); border-bottom: 1px solid var(--border-s);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(123,147,248,0.08);
   -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
 }
 .bar-title { font-size: 12px; font-weight: 700; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
@@ -36,8 +39,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .bar-spacer { flex: 1; }
 .bar-btn {
   -webkit-app-region: no-drag; height: 24px; padding: 0 10px;
-  border: 1px solid var(--border-m); border-radius: var(--r-sm);
-  background: var(--bg-2); color: var(--text-2); font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border-1); border-radius: var(--r-sm);
+  background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); color: var(--text-2); font-size: 10px; font-weight: 600;
   cursor: pointer; font-family: inherit; transition: all .15s;
   display: flex; align-items: center; gap: 4px;
 }
@@ -50,7 +53,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .ocr-close:hover { background: #c42b1c; color: #fff; }
 
 /* ===== CONTENT ===== */
-#content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+#content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position:relative;z-index:1; }
 
 /* ===== SCAN SECTION ===== */
 #scan-section {
@@ -60,10 +63,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 
 .scan-placeholder {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 14px; padding: 40px 24px; border: 2px dashed var(--border-m); border-radius: var(--r-lg);
+  gap: 14px; padding: 40px 24px; border: 2px dashed var(--border-1); border-radius: var(--r-lg);
   text-align: center; width: 100%; transition: border-color .2s;
 }
-.scan-placeholder:hover { border-color: rgba(124,106,239,0.30); }
+.scan-placeholder:hover { border-color: rgba(123,147,248,0.30); }
 .scan-placeholder.hidden { display: none; }
 .scan-ico { font-size: 48px; opacity: 0.4; }
 .scan-title { font-size: 15px; font-weight: 700; color: var(--text-0); }
@@ -77,26 +80,26 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
   font-family: inherit; transition: all .2s;
   text-transform: uppercase; letter-spacing: 0.5px;
-  box-shadow: 0 4px 20px rgba(124,106,239,0.3);
+  box-shadow: 0 4px 20px rgba(123,147,248,0.3), 0 4px 16px rgba(123,147,248,0.2);
   display: flex; align-items: center; gap: 8px;
 }
-.scan-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,106,239,0.4); }
+.scan-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(123,147,248,0.4); }
 .scan-btn:active { transform: translateY(0) scale(0.98); }
 .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
 /* ===== STATUS BAR ===== */
 .ocr-status {
   display: flex; align-items: center; gap: 8px; padding: 8px 16px;
-  background: var(--bg-1); border-top: 1px solid var(--border-s);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-top: 1px solid rgba(123,147,248,0.08);
   font-size: 10px; color: var(--text-3); flex-shrink: 0;
 }
 .status-dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--text-3);
   transition: background .3s;
 }
-.status-dot.processing { background: var(--warning); animation: pulse 1s infinite; }
-.status-dot.done { background: var(--success); }
-.status-dot.error { background: var(--danger); }
+.status-dot.processing { background: var(--orange); animation: pulse 1s infinite; }
+.status-dot.done { background: var(--green); }
+.status-dot.error { background: var(--red); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 .progress-bar {
@@ -116,8 +119,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 /* Species header */
 .species-header {
   display: flex; align-items: center; gap: 12px; padding: 12px 14px;
-  background: var(--bg-1); border: 1px solid var(--border-s); border-radius: var(--r-lg);
+  background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border: 1px solid var(--border-0); border-radius: var(--r-lg);
+  transition: box-shadow .2s;
 }
+.species-header:hover { box-shadow: 0 0 16px rgba(123,147,248,0.08); }
 .species-icon { width: 48px; height: 48px; border-radius: var(--r-md); background: var(--bg-2); object-fit: contain; }
 .species-info { flex: 1; }
 .species-name { font-size: 16px; font-weight: 800; color: var(--text-0); }
@@ -129,59 +134,59 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   display: flex; gap: 8px; align-items: center;
 }
 .edit-input {
-  flex: 1; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border-m);
+  flex: 1; padding: 8px 12px; background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); border: 1px solid var(--border-1);
   border-radius: var(--r-sm); color: var(--text-0); font-size: 12px; font-weight: 600;
-  font-family: inherit; outline: none; transition: border-color .15s;
+  font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s;
 }
-.edit-input:focus { border-color: var(--accent); }
+.edit-input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(123,147,248,0.15); }
 
 .sex-toggle {
-  display: flex; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--border-m);
+  display: flex; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--border-1);
 }
 .sex-btn {
   padding: 8px 14px; border: none; font-size: 12px; font-weight: 700;
   cursor: pointer; font-family: inherit; transition: all .15s;
-  background: var(--bg-2); color: var(--text-3);
+  background: rgba(6,6,16,0.6); color: var(--text-3);
 }
-.sex-btn.active-male { background: rgba(96,165,250,0.15); color: var(--male); }
-.sex-btn.active-female { background: rgba(244,114,182,0.15); color: var(--female); }
+.sex-btn.active-male { background: rgba(96,165,250,0.15); color: var(--blue); }
+.sex-btn.active-female { background: rgba(244,114,182,0.15); color: var(--pink); }
 .sex-btn:hover { background: var(--bg-3); color: var(--text-1); }
 
 /* Stats grid */
 .stats-card {
-  background: var(--bg-1); border: 1px solid var(--border-s); border-radius: var(--r-lg); overflow: hidden;
+  background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border: 1px solid var(--border-0); border-radius: var(--r-lg); overflow: hidden;
 }
 .stats-card-header {
   padding: 8px 12px; font-size: 10px; font-weight: 700; color: var(--text-2);
   text-transform: uppercase; letter-spacing: 0.5px;
-  background: var(--bg-2); border-bottom: 1px solid var(--border-s);
+  background: rgba(10,10,24,0.4); border-bottom: 1px solid var(--border-0);
   display: flex; align-items: center; gap: 6px;
 }
 
 .stat-row {
   display: flex; align-items: center; padding: 7px 12px;
-  border-bottom: 1px solid var(--border-s); transition: background .1s;
+  border-bottom: 1px solid var(--border-0); transition: background .1s;
 }
-.stat-row:hover { background: rgba(124,106,239,0.04); }
+.stat-row:hover { background: rgba(123,147,248,0.04); }
 .stat-row:last-child { border-bottom: none; }
 .stat-row.stat-missing { background: rgba(239,68,68,0.04); }
 .stat-ico-wrap { width: 28px; text-align: center; display: flex; align-items: center; justify-content: center; }
 .stat-ico-wrap img.stat-ico { width: 20px; height: 20px; filter: invert(1) brightness(1.5); }
 .stat-label { font-size: 11px; font-weight: 600; color: var(--text-2); flex: 1; }
 .stat-input {
-  width: 90px; padding: 4px 8px; background: var(--bg-2); border: 1px solid var(--border-m);
+  width: 90px; padding: 4px 8px; background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); border: 1px solid var(--border-1);
   border-radius: var(--r-sm); color: var(--accent-l); font-size: 13px; font-weight: 700;
   font-family: inherit; text-align: right; outline: none;
-  font-variant-numeric: tabular-nums; transition: border-color .15s;
+  font-variant-numeric: tabular-nums; transition: border-color .15s, box-shadow .15s;
 }
-.stat-input:focus { border-color: var(--accent); }
+.stat-input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(123,147,248,0.15); }
 .stat-confidence {
   font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
   margin-left: 6px; min-width: 30px; text-align: center;
 }
-.conf-high { background: rgba(45,212,160,0.10); color: var(--success); }
-.conf-mid { background: rgba(245,158,11,0.10); color: var(--warning); }
-.conf-low { background: rgba(239,68,68,0.10); color: var(--danger); }
+.conf-high { background: rgba(45,212,160,0.10); color: var(--green); }
+.conf-mid { background: rgba(245,158,11,0.10); color: var(--orange); }
+.conf-low { background: rgba(239,68,68,0.10); color: var(--red); }
 
 /* Raw text toggle */
 .raw-toggle {
@@ -193,33 +198,33 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   display: none; padding: 8px 12px; font-family: 'Consolas', 'SF Mono', monospace;
   font-size: 10px; color: var(--text-2); white-space: pre-wrap;
   max-height: 80px; overflow-y: auto; word-break: break-all;
-  background: var(--bg-2); border-radius: var(--r-sm); margin-top: 4px;
+  background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); border-radius: var(--r-sm); margin-top: 4px;
 }
 .raw-text.show { display: block; }
 
 /* Actions */
 .result-actions {
   display: none; gap: 6px; padding: 12px 16px;
-  border-top: 1px solid var(--border-s); flex-shrink: 0;
+  border-top: 1px solid rgba(123,147,248,0.08); flex-shrink: 0;
 }
 .result-actions.show { display: flex; }
 .action-btn {
   flex: 1; padding: 10px 14px; border-radius: var(--r-md);
-  font-size: 11px; font-weight: 700; font-family: inherit; border: 1px solid var(--border-m);
-  cursor: pointer; background: var(--bg-2); color: var(--text-2);
+  font-size: 11px; font-weight: 700; font-family: inherit; border: 1px solid var(--border-1);
+  cursor: pointer; background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); color: var(--text-2);
   transition: all .15s; text-transform: uppercase; letter-spacing: 0.3px;
   display: flex; align-items: center; justify-content: center; gap: 5px;
 }
 .action-btn:hover { background: var(--bg-3); color: var(--text-0); border-color: rgba(255,255,255,0.15); }
-.action-btn.primary { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); }
-.action-btn.primary:hover { background: rgba(124,106,239,0.14); color: var(--accent-l); }
-.action-btn.success { background: rgba(45,212,160,0.10); color: var(--success); border-color: rgba(45,212,160,0.20); }
+.action-btn.primary { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); box-shadow: 0 4px 16px rgba(123,147,248,0.2); }
+.action-btn.primary:hover { background: rgba(123,147,248,0.14); color: var(--accent-l); }
+.action-btn.success { background: rgba(45,212,160,0.10); color: var(--green); border-color: rgba(45,212,160,0.20); }
 .action-btn.success:hover { background: rgba(45,212,160,0.16); }
 
 /* Toast notification */
 .toast {
   position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
-  background: var(--success); color: #000; font-size: 11px; font-weight: 700;
+  background: var(--green); color: #000; font-size: 11px; font-weight: 700;
   padding: 8px 20px; border-radius: 20px; opacity: 0; transition: opacity .3s;
   pointer-events: none; z-index: 1000;
 }
@@ -228,11 +233,14 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
+body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
 </head>
 <body>
 <div id="app">
+  <canvas id="bgCanvas" style="position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:12px"></canvas>
   <!-- Title bar -->
   <div id="ocr-bar">
     <span class="bar-title"><span class="dot"></span>OCR Scanner</span>
@@ -251,7 +259,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
         <div class="scan-sub">Capture automatique + OCR en un clic</div>
         <div class="scan-steps">
           <span>1.</span> Ouvre l'inventaire/stats du dino dans ARK<br>
-          <span>2.</span> Clique le bouton ou appuie sur <kbd style="background:var(--bg-3);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--accent-l);border:1px solid var(--border-h)">F8</kbd><br>
+          <span>2.</span> Clique le bouton ou appuie sur <kbd style="background:var(--bg-3);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--accent-l);border:1px solid var(--border-2)">F8</kbd><br>
           <span>3.</span> Screenshot automatique + analyse OCR
         </div>
         <button class="scan-btn" id="scanBtn" onclick="startScan()">&#128247; Scanner le Dino <span style="font-size:10px;opacity:0.6;margin-left:6px">(F8)</span></button>
@@ -272,7 +280,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
       <!-- Species correction -->
       <div style="position:relative;margin:4px 10px 0">
         <input type="text" id="speciesCorrect" class="edit-input" placeholder="Corriger l'espèce..." style="font-size:11px;padding:4px 8px;width:100%" oninput="filterSpeciesCorrect()">
-        <div id="speciesCorrDropdown" style="display:none;position:absolute;left:0;right:0;top:100%;max-height:150px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-h);border-radius:0 0 var(--r-sm) var(--r-sm);z-index:100"></div>
+        <div id="speciesCorrDropdown" style="display:none;position:absolute;left:0;right:0;top:100%;max-height:150px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-2);border-radius:0 0 var(--r-sm) var(--r-sm);z-index:100"></div>
       </div>
 
       <!-- Name & Sex -->
@@ -307,8 +315,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 
   <!-- Action buttons -->
   <div class="result-actions" id="resultActions">
-    <button class="action-btn" onclick="startScan()">&#128247; Nouveau scan</button>
-    <button class="action-btn success" onclick="sendToBreeding()">&#129516; Envoyer au Breeding</button>
+    <button class="action-btn" onclick="startScan()">&#128247; Rescan</button>
+    <button class="action-btn primary" onclick="copyStats()">&#128203; Copier</button>
+    <button class="action-btn success" onclick="sendToBreeding()">&#129516; Breeding</button>
   </div>
 </div>
 
@@ -419,33 +428,53 @@ var DINO_NAMES = [
 // ===== STAT PATTERNS =====
 var N = '(\\d+\\.?\\d*)';
 var SEP = '[\\s.:]+';
+// Triple format: wild/mutated/allocated (TEK binoculars) — captures 3 groups via optional /N/N
+var TRIPLE = '(?:\\s*[/|]\\s*' + N + ')?';
 
 var STAT_PATTERNS = [
   { name: 'Health', key: 'Health', ico: '<img src="https://ark.wiki.gg/images/Health.png" class="stat-ico">', icoFallback: 'HP',
     aliases: ['health','hp','vie','sant'],
-    regex: new RegExp('health' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+    regex: new RegExp('health' + SEP + N + TRIPLE + TRIPLE, 'i')
   },
   { name: 'Stamina', key: 'Stamina', ico: '<img src="https://ark.wiki.gg/images/Stamina.png" class="stat-ico">', icoFallback: 'Stam',
     aliases: ['stamina','stam','endurance'],
-    regex: new RegExp('stam(?:ina|na)?' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+    regex: new RegExp('stam(?:ina|na)?' + SEP + N + TRIPLE + TRIPLE, 'i')
   },
   { name: 'Oxygen', key: 'Oxygen', ico: '<img src="https://ark.wiki.gg/images/Oxygen.png" class="stat-ico">', icoFallback: 'Oxy',
     aliases: ['oxygen','oxy','oxyg'],
-    regex: new RegExp('oxy(?:gen|g[eè]ne?)?' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+    regex: new RegExp('oxy(?:gen|g[eè]ne?)?' + SEP + N + TRIPLE + TRIPLE, 'i')
   },
   { name: 'Food', key: 'Food', ico: '<img src="https://ark.wiki.gg/images/Food.png" class="stat-ico">', icoFallback: 'Food',
     aliases: ['food','nourriture','nourr'],
-    regex: new RegExp('food' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+    regex: new RegExp('(?:food|nourriture)' + SEP + N + TRIPLE + TRIPLE, 'i')
   },
   { name: 'Weight', key: 'Weight', ico: '<img src="https://ark.wiki.gg/images/Weight.png" class="stat-ico">', icoFallback: 'Weight',
     aliases: ['weight','poids','weigh'],
-    regex: new RegExp('weig?h?t' + SEP + N + '(?:\\s*/\\s*' + N + ')?', 'i')
+    regex: new RegExp('(?:weig?h?t|poids)' + SEP + N + TRIPLE + TRIPLE, 'i')
   },
   { name: 'Melee Damage', key: 'Melee Damage', ico: '<img src="https://ark.wiki.gg/images/Melee_Damage.png" class="stat-ico">', icoFallback: 'Melee', isPct: true,
-    aliases: ['melee damage','melee','damage','corps'],
-    regex: new RegExp('melee(?:\\s*damage)?' + SEP + N + '\\s*%?', 'i')
+    aliases: ['melee damage','melee','damage','degats','corps'],
+    regex: new RegExp('melee(?:\\s*damage)?' + SEP + N + '\\s*%?' + TRIPLE + TRIPLE, 'i')
+  },
+  { name: 'Movement Speed', key: 'Movement Speed', ico: '<img src="https://ark.wiki.gg/images/Movement_Speed.png" class="stat-ico">', icoFallback: 'Speed', isPct: true,
+    aliases: ['movement speed','speed','vitesse','movement','mouvement'],
+    regex: new RegExp('(?:movement\\s*)?speed' + SEP + N + '\\s*%?' + TRIPLE + TRIPLE, 'i')
+  },
+  { name: 'Torpidity', key: 'Torpidity', ico: '<img src="https://ark.wiki.gg/images/Torpidity.png" class="stat-ico">', icoFallback: 'Torpor',
+    aliases: ['torpidity','torpor','torpeur','torp'],
+    regex: new RegExp('torp(?:idity|or|eur)?' + SEP + N + TRIPLE + TRIPLE, 'i')
   },
 ];
+
+// Mutation counter patterns
+var MUTA_PAT_REGEX = /(?:pat(?:ri(?:lin[eé]ai?re?)?)?|p[eè]re|father)\s*[:.]?\s*(\d+)\s*\/\s*20/i;
+var MUTA_MAT_REGEX = /(?:mat(?:ri(?:lin[eé]ai?re?)?)?|m[eè]re|mother)\s*[:.]?\s*(\d+)\s*\/\s*20/i;
+var MUTA_GENERIC_REGEX = /(\d+)\s*\/\s*20\s*[-–—]\s*(\d+)\s*\/\s*20/;
+
+// Detected mutation counters
+var detectedMutaPat = null;
+var detectedMutaMat = null;
+var tripleMode = false; // true if TEK binoculars format detected
 
 // ===== HELPERS =====
 function setStatus(state, text) {
@@ -495,6 +524,15 @@ function preprocessOCRText(text) {
   t = t.replace(/t0rpor/gi, 'Torpor'); t = t.replace(/t0rpidity/gi, 'Torpidity');
   t = t.replace(/([a-zA-Z\u00e9\u00e8\u00ea\u00e0])\s*;\s*(\d)/g, '$1: $2');
   t = t.replace(/[ \t]{2,}/g, ' ');
+  // TEK binoculars specific: normalize separators for triple format
+  // OCR might read / as l, 1, I, or |
+  t = t.replace(/(\d)\s*[lI]\s*(\d)/g, '$1/$2'); // l or I between digits → /
+  // Normalize mutation-related text
+  t = t.replace(/mut[eé]e?s?/gi, 'muté');
+  t = t.replace(/sauvages?/gi, 'sauvage');
+  t = t.replace(/attribu[eé]e?s?/gi, 'attribué');
+  t = t.replace(/patrilin[eé]ai?re?/gi, 'patrilinéaire');
+  t = t.replace(/matrilin[eé]ai?re?/gi, 'matrilinéaire');
   return t;
 }
 
@@ -657,25 +695,38 @@ function detectSex(text) {
 // ===== PARSE STATS =====
 function parseStats(text, globalConf) {
   parsedStats = {};
+  tripleMode = false;
+  detectedMutaPat = null;
+  detectedMutaMat = null;
 
+  // Pass 1: regex matching with triple format support
   for (var j = 0; j < STAT_PATTERNS.length; j++) {
     var pat = STAT_PATTERNS[j];
     var match = pat.regex.exec(text);
     if (match) {
-      var rawVal = match[1];
-      var rawMax = match[2];
-      var val = cleanNumber(rawVal);
-      if (rawMax) {
-        var maxVal = cleanNumber(rawMax);
-        if (!isNaN(maxVal) && maxVal > 0) val = maxVal;
-      }
-      if (!isNaN(val) && val >= 0.1) {
-        parsedStats[pat.key] = { value: val, confidence: Math.min(95, globalConf + 5) };
+      var v1 = cleanNumber(match[1]);
+      var v2 = match[2] ? cleanNumber(match[2]) : null;
+      var v3 = match[3] ? cleanNumber(match[3]) : null;
+
+      if (!isNaN(v1) && v1 >= 0) {
+        if (v2 !== null && !isNaN(v2) && v3 !== null && !isNaN(v3)) {
+          // Triple format: wild / mutated / allocated (TEK binoculars)
+          tripleMode = true;
+          parsedStats[pat.key] = {
+            value: v1, wild: v1, mutated: v2, allocated: v3,
+            tripleMode: true, confidence: Math.min(95, globalConf + 10)
+          };
+        } else if (v2 !== null && !isNaN(v2) && v2 > 0) {
+          // current / max format — use max
+          parsedStats[pat.key] = { value: v2, confidence: Math.min(95, globalConf + 5) };
+        } else if (v1 >= 0.1) {
+          parsedStats[pat.key] = { value: v1, confidence: Math.min(95, globalConf + 5) };
+        }
       }
     }
   }
 
-  // Fallback: line-by-line alias matching
+  // Pass 2: fallback line-by-line alias matching (for undetected stats)
   var lines = text.split('\n');
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
@@ -692,12 +743,23 @@ function parseStats(text, globalConf) {
       }
       if (!found) continue;
 
+      // Check for triple format: N/N/N on this line
+      var tripleMatch = line.match(/(\d+)\s*[/|]\s*(\d+)\s*[/|]\s*(\d+)/);
+      if (tripleMatch) {
+        tripleMode = true;
+        parsedStats[pat2.key] = {
+          value: parseInt(tripleMatch[1]), wild: parseInt(tripleMatch[1]),
+          mutated: parseInt(tripleMatch[2]), allocated: parseInt(tripleMatch[3]),
+          tripleMode: true, confidence: Math.max(50, globalConf)
+        };
+        continue;
+      }
+
       var numRegex = /(\d+[.,]\d+|\d+)/g;
       var nums = []; var m;
       while ((m = numRegex.exec(line)) !== null) nums.push(m[1]);
       if (nums.length === 0) continue;
 
-      // For "current / max" format, prefer max (last number or after /)
       var bestVal = null;
       if (line.indexOf('/') !== -1) {
         var parts = line.split('/');
@@ -716,6 +778,17 @@ function parseStats(text, globalConf) {
         parsedStats[pat2.key] = { value: bestVal, confidence: Math.max(30, globalConf - 15) };
       }
     }
+  }
+
+  // Pass 3: detect mutation counters
+  var mPat = MUTA_PAT_REGEX.exec(text);
+  if (mPat) detectedMutaPat = parseInt(mPat[1]);
+  var mMat = MUTA_MAT_REGEX.exec(text);
+  if (mMat) detectedMutaMat = parseInt(mMat[1]);
+  // Generic format: "X/20 - Y/20"
+  if (detectedMutaPat === null && detectedMutaMat === null) {
+    var mGen = MUTA_GENERIC_REGEX.exec(text);
+    if (mGen) { detectedMutaPat = parseInt(mGen[1]); detectedMutaMat = parseInt(mGen[2]); }
   }
 }
 
@@ -739,7 +812,7 @@ function filterSpeciesCorrect() {
     var name = DINO_NAMES[i].name;
     if (name.toLowerCase().indexOf(q) !== -1) {
       var wn = name.replace(/ /g, '_');
-      html += '<div onclick="pickSpeciesCorrect(\'' + name.replace(/'/g, "\\'") + '\')" style="padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:11px;border-bottom:1px solid var(--border-s);transition:background .1s" onmouseover="this.style.background=\'rgba(124,106,239,0.1)\'" onmouseout="this.style.background=\'transparent\'">';
+      html += '<div onclick="pickSpeciesCorrect(\'' + name.replace(/'/g, "\\'") + '\')" style="padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:11px;border-bottom:1px solid var(--border-0);transition:background .1s" onmouseover="this.style.background=\'rgba(123,147,248,0.1)\'" onmouseout="this.style.background=\'transparent\'">';
       html += '<img src="https://ark.wiki.gg/images/thumb/' + wn + '.png/24px-' + wn + '.png" style="width:20px;height:20px;filter:invert(1) brightness(1.8)" onerror="this.style.display=\'none\'">';
       html += '<span style="color:var(--text-0)">' + name + '</span></div>';
       count++;
@@ -801,31 +874,57 @@ function showResults() {
   var nameInput = document.getElementById('dinoName');
   nameInput.value = detectedSpecies ? detectedSpecies + (detectedLevel ? ' Lv' + detectedLevel : '') : '';
 
-  // Stats
+  // Stats — triple format header if TEK mode detected
   var html = '';
+  if (tripleMode) {
+    html += '<div style="display:grid;grid-template-columns:28px 90px 1fr 1fr 1fr 50px;gap:4px;padding:4px 8px;font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border-0);margin-bottom:4px">';
+    html += '<span></span><span></span><span style="color:#4ade80;text-align:center">Sauvage</span><span style="color:#7B93F8;text-align:center">Muté</span><span style="color:#666;text-align:center">Attribué</span><span></span></div>';
+  }
   for (var i = 0; i < STAT_PATTERNS.length; i++) {
     var pat = STAT_PATTERNS[i];
     var stat = parsedStats[pat.key];
-    var val = stat ? stat.value : '';
     var conf = stat ? stat.confidence : 0;
     var confClass = conf >= 70 ? 'conf-high' : (conf >= 40 ? 'conf-mid' : 'conf-low');
     var missing = !stat ? ' stat-missing' : '';
 
-    html += '<div class="stat-row' + missing + '">';
-    html += '<span class="stat-ico-wrap">' + pat.ico + '</span>';
-    html += '<span class="stat-label">' + pat.name + '</span>';
-    html += '<input type="number" class="stat-input" data-stat="' + pat.key + '" value="' + val + '" step="0.1">';
-    if (stat) {
-      html += '<span class="stat-confidence ' + confClass + '">' + conf + '%</span>';
+    if (stat && stat.tripleMode) {
+      // Triple format: 3 inputs
+      html += '<div class="stat-row' + missing + '" style="display:grid;grid-template-columns:28px 90px 1fr 1fr 1fr 50px;gap:4px;align-items:center">';
+      html += '<span class="stat-ico-wrap">' + pat.ico + '</span>';
+      html += '<span class="stat-label">' + pat.name + '</span>';
+      html += '<input type="number" class="stat-input stat-input-wild" data-stat="' + pat.key + '" data-type="wild" value="' + (stat.wild||0) + '" style="border-color:rgba(74,237,196,0.2);text-align:center">';
+      html += '<input type="number" class="stat-input stat-input-muta" data-stat="' + pat.key + '" data-type="mutated" value="' + (stat.mutated||0) + '" style="border-color:rgba(123,147,248,0.2);text-align:center">';
+      html += '<input type="number" class="stat-input stat-input-alloc" data-stat="' + pat.key + '" data-type="allocated" value="' + (stat.allocated||0) + '" style="border-color:rgba(255,255,255,0.05);text-align:center">';
+      if (stat) html += '<span class="stat-confidence ' + confClass + '">' + conf + '%</span>';
+      html += '</div>';
+    } else {
+      // Legacy single value
+      var val = stat ? stat.value : '';
+      html += '<div class="stat-row' + missing + '">';
+      html += '<span class="stat-ico-wrap">' + pat.ico + '</span>';
+      html += '<span class="stat-label">' + pat.name + '</span>';
+      html += '<input type="number" class="stat-input" data-stat="' + pat.key + '" data-type="value" value="' + val + '" step="0.1">';
+      if (stat) html += '<span class="stat-confidence ' + confClass + '">' + conf + '%</span>';
+      html += '</div>';
     }
+  }
+
+  // Mutation counters if detected
+  if (detectedMutaPat !== null || detectedMutaMat !== null) {
+    html += '<div style="display:flex;gap:8px;margin-top:8px;padding:8px;border-radius:6px;background:rgba(6,6,16,0.4);border:1px solid var(--border-0)">';
+    html += '<span style="font:700 10px var(--font);color:var(--text-2)">Mutations:</span>';
+    html += '<span style="font:700 10px var(--font);color:#60a5fa">Pat: <input type="number" id="ocrMutaPat" value="' + (detectedMutaPat||0) + '" style="width:40px;background:rgba(6,6,16,0.5);border:1px solid rgba(96,165,250,0.2);border-radius:4px;color:#60a5fa;font:700 11px var(--font);text-align:center;padding:2px">/20</span>';
+    html += '<span style="font:700 10px var(--font);color:#d946ef">Mat: <input type="number" id="ocrMutaMat" value="' + (detectedMutaMat||0) + '" style="width:40px;background:rgba(6,6,16,0.5);border:1px solid rgba(217,70,239,0.2);border-radius:4px;color:#d946ef;font:700 11px var(--font);text-align:center;padding:2px">/20</span>';
     html += '</div>';
   }
+
   document.getElementById('statsRows').innerHTML = html;
 
   // Raw text
   document.getElementById('rawText').textContent = rawOCRText;
 
-  setStatus('done', 'Scan termine - ' + Object.keys(parsedStats).length + '/' + STAT_PATTERNS.length + ' stats detectees');
+  var modeLabel = tripleMode ? ' (Mode TEK)' : '';
+  setStatus('done', 'Scan termine - ' + Object.keys(parsedStats).length + '/' + STAT_PATTERNS.length + ' stats' + modeLabel);
 }
 
 // ===== START SCAN (ONE-CLICK FLOW) =====
@@ -934,6 +1033,9 @@ function resetScan() {
   detectedSpecies = null;
   detectedLevel = null;
   detectedSex = null;
+  detectedMutaPat = null;
+  detectedMutaMat = null;
+  tripleMode = false;
   rawOCRText = '';
 
   document.getElementById('results-area').classList.remove('show');
@@ -948,16 +1050,41 @@ function resetScan() {
 
 // ===== SEND TO BREEDING =====
 function sendToBreeding() {
-  // Collect stat values from inputs
-  var wildLevels = {};
+  // Collect stat values from inputs — handle both triple and single mode
+  var wildLevels = {}, mutatedLevels = {}, allocatedLevels = {};
+  var hasTriple = false;
+
   var inputs = document.querySelectorAll('.stat-input');
   inputs.forEach(function(inp) {
     var key = inp.getAttribute('data-stat');
+    var type = inp.getAttribute('data-type') || 'value';
     var val = parseFloat(inp.value);
-    if (!isNaN(val)) {
-      // Store the raw value - the breeding window can do level extraction
+    if (isNaN(val)) val = 0;
+
+    if (type === 'wild') {
+      wildLevels[key] = val;
+      hasTriple = true;
+    } else if (type === 'mutated') {
+      mutatedLevels[key] = val;
+    } else if (type === 'allocated') {
+      allocatedLevels[key] = val;
+    } else {
+      // Single mode — value goes to wildLevels (raw stat for extractor)
       wildLevels[key] = val;
     }
+  });
+
+  // Get mutation counters from OCR results
+  var mutaPat = 0, mutaMat = 0;
+  var mpEl = document.getElementById('ocrMutaPat');
+  var mmEl = document.getElementById('ocrMutaMat');
+  if (mpEl) mutaPat = parseInt(mpEl.value) || 0;
+  if (mmEl) mutaMat = parseInt(mmEl.value) || 0;
+
+  // Compute mutaPerStat from mutatedLevels (each mutation = +2 pts)
+  var mutaPerStat = {};
+  Object.keys(mutatedLevels).forEach(function(k) {
+    mutaPerStat[k] = Math.ceil((mutatedLevels[k] || 0) / 2);
   });
 
   var creatureData = {
@@ -966,14 +1093,35 @@ function sendToBreeding() {
     sex: detectedSex || 'M',
     level: detectedLevel || 0,
     wildLevels: wildLevels,
+    mutatedLevels: hasTriple ? mutatedLevels : {Health:0,Stamina:0,Oxygen:0,Food:0,Weight:0,Melee:0,Speed:0},
+    allocatedLevels: hasTriple ? allocatedLevels : {Health:0,Stamina:0,Oxygen:0,Food:0,Weight:0,Melee:0,Speed:0},
+    mutaPerStat: hasTriple ? mutaPerStat : {Health:0,Stamina:0,Oxygen:0,Food:0,Weight:0,Melee:0,Speed:0},
+    genes: [],
+    colorRegions: {0:null,1:null,2:null,3:null,4:null,5:null},
     tamed: true,
-    bred: false,
-    mutaPat: 0,
-    mutaMat: 0,
+    bred: hasTriple && (mutaPat > 0 || mutaMat > 0),
+    mutaPat: mutaPat,
+    mutaMat: mutaMat,
     parentMale: '',
     parentFemale: '',
     addedAt: Date.now()
   };
+
+  // Build flat stats map for breeding extractor (includes triple data if available)
+  var flatStats = {};
+  Object.keys(wildLevels).forEach(function(key) {
+    flatStats[key] = wildLevels[key];
+  });
+  if (detectedLevel) flatStats.Level = detectedLevel;
+  // Attach triple mode data for the breeding extractor's TEK mode
+  if (hasTriple) {
+    flatStats._tripleMode = true;
+    flatStats._wildLevels = wildLevels;
+    flatStats._mutatedLevels = mutatedLevels;
+    flatStats._allocatedLevels = allocatedLevels;
+    flatStats._mutaPat = mutaPat;
+    flatStats._mutaMat = mutaMat;
+  }
 
   if (window.api && window.api.sendToBreeding) {
     window.api.sendToBreeding(creatureData).then(function(result) {
@@ -981,15 +1129,47 @@ function sendToBreeding() {
         showToast('Envoye au Breeding Library ! (ID: ' + result.id + ')');
         setStatus('done', 'Creature ajoutee a la bibliotheque');
       }
+      // Also send flat stats to pre-fill breeding extractor
+      if (window.api.sendOCRToBreeding) {
+        window.api.sendOCRToBreeding(flatStats);
+      }
     }).catch(function(err) {
       setStatus('error', 'Erreur: ' + err.message);
     });
+  } else if (window.api && window.api.sendOCRToBreeding) {
+    window.api.sendOCRToBreeding(flatStats);
+    showToast('Envoye au Breeding !');
+  }
+}
+
+// ===== COPY STATS TO CLIPBOARD =====
+function copyStats() {
+  var lines = [];
+  if (detectedSpecies) lines.push('Species: ' + detectedSpecies);
+  if (detectedLevel) lines.push('Level: ' + detectedLevel);
+  if (detectedSex) lines.push('Sex: ' + detectedSex);
+  lines.push('');
+
+  var inputs = document.querySelectorAll('.stat-input');
+  inputs.forEach(function(inp) {
+    var key = inp.getAttribute('data-stat');
+    var val = inp.value;
+    if (val) lines.push(key + ': ' + val);
+  });
+
+  var text = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('Stats copiees !');
+    });
   } else {
-    // Fallback: use old IPC
-    if (window.api && window.api.sendOCRToBreeding) {
-      window.api.sendOCRToBreeding(creatureData);
-      showToast('Envoye au Breeding !');
-    }
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Stats copiees !');
   }
 }
 
@@ -1006,6 +1186,25 @@ if (window.api && window.api.onTriggerScan) {
     startScan();
   });
 }
+
+// === ANIMATED CANVAS BACKGROUND ===
+(function(){
+  var c=document.getElementById('bgCanvas'),ctx=c.getContext('2d'),W,H;
+  function resize(){var app=document.getElementById('app');W=c.width=app.clientWidth;H=c.height=app.clientHeight}
+  resize();window.addEventListener('resize',resize);
+  var particles=[];for(var i=0;i<35;i++)particles.push({x:Math.random()*800,y:Math.random()*600,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,r:Math.random()*1.2+0.3,a:Math.random()*0.25+0.08,col:['123,147,248','96,165,250','45,212,160','217,70,239'][Math.floor(Math.random()*4)]});
+  var blobs=[{x:0.15,y:0.2,r:160,col:'123,147,248',ph:0,sp:0.003},{x:0.8,y:0.35,r:140,col:'96,165,250',ph:2,sp:0.004},{x:0.5,y:0.8,r:150,col:'45,212,160',ph:4,sp:0.002}];
+  var t=0;
+  function draw(){
+    t++;ctx.clearRect(0,0,W,H);
+    for(var b of blobs){var ox=Math.sin(t*b.sp+b.ph)*25,oy=Math.cos(t*b.sp*0.7+b.ph)*18;var g=ctx.createRadialGradient(b.x*W+ox,b.y*H+oy,0,b.x*W+ox,b.y*H+oy,b.r);g.addColorStop(0,'rgba('+b.col+',0.04)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+    for(var p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.col+','+p.a+')';ctx.fill()}
+    for(var i=0;i<particles.length;i++)for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(123,147,248,'+(0.04*(1-d/100))+')';ctx.lineWidth=0.5;ctx.stroke()}}
+    requestAnimationFrame(draw)
+  }
+  draw();
+})();
 </script>
+<script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>
 </html>

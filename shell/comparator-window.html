@@ -6,31 +6,31 @@
 <style>
 /* ===== THEME VARIABLES ===== */
 :root {
-  --accent:#8b5cf6; --accent-hover:#a78bfa; --accent-dim:#6d45d4;
-  --accent-glow:rgba(139,92,246,0.25); --accent-bg:#1a1028;
-  --accent-bg-hover:#251540; --accent-border:#2a1a40; --accent-text:#c4b5fd;
-  --success:#4ade80; --success-bg:#0a1a14; --success-border:#153020;
-  --danger:#ef4444; --danger-bg:#1a0a0a; --danger-border:#2a1515;
-  --warning:#f59e0b; --warning-bg:#1a1408; --warning-border:#302010;
-  --info:#60a5fa;
-  --bg-0:#000; --bg-1:#050505; --bg-2:#080808; --bg-3:#0a0a0a;
-  --bg-4:#0d0d0d; --bg-5:#111; --bg-6:#151515; --bg-7:#1a1a1a;
-  --text-0:#e0e0e0; --text-1:#ccc; --text-2:#888; --text-3:#555; --text-4:#333;
-  --border-s:rgba(255,255,255,0.04); --border-1:#1a1a1a; --border-2:#2a2a2a;
-  --bar-h:34px; --font:'Segoe UI Variable','Segoe UI',system-ui,sans-serif;
-  --r-sm:4px; --r-md:6px; --r-lg:8px;
-  --starve:#4aedc4; --torpor:#b088dd;
+  --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
+  --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --bar-h:34px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: var(--bg-0); color: #d0d0d0; }
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: #020208; color: #d0d0d0; }
 
-#app { display: flex; flex-direction: column; height: 100vh; }
+#app { display: flex; flex-direction: column; height: 100vh; position:relative;z-index:1; }
 
 /* Title bar */
 #cmp-bar {
   display: flex; align-items: center; height: var(--bar-h); padding: 0 12px;
-  background: var(--bg-3); border-bottom: 1px solid var(--border-s);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(123,147,248,0.08);
   -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
 }
 .cmp-title { font-size: 12px; font-weight: 600; color: #666; }
@@ -38,11 +38,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .cmp-btn {
   -webkit-app-region: no-drag; height: 24px; padding: 0 10px;
   border: 1px solid #222; border-radius: 5px;
-  background: #111; color: #888; font-size: 10px; font-weight: 600;
+  background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); color: #888; font-size: 10px; font-weight: 600;
   cursor: pointer; font-family: inherit; transition: all .1s;
 }
 .cmp-btn:hover { background: #1a1a1a; color: #ccc; }
-.cmp-btn.pin { background: var(--accent-bg); color: var(--accent-hover); border-color: var(--accent-border); }
+.cmp-btn.pin { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); box-shadow: 0 4px 16px rgba(123,147,248,0.2); }
 .cmp-close {
   -webkit-app-region: no-drag; width: 34px; height: 28px; border: none;
   background: transparent; color: #555; font-size: 12px; cursor: pointer;
@@ -60,8 +60,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   flex: 1; display: flex; flex-direction: column; gap: 6px;
   padding: 12px; border-radius: 10px;
 }
-.dino-col.left { background: #0a0d14; border: 1px solid #151a28; margin-right: 6px; }
-.dino-col.right { background: #0a140d; border: 1px solid #152818; margin-left: 6px; }
+.dino-col.left { background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(123,147,248,0.08); margin-right: 6px; }
+.dino-col.right { background: rgba(10,10,24,0.4); backdrop-filter: blur(12px); border: 1px solid rgba(45,212,160,0.08); margin-left: 6px; }
 
 .vs-divider {
   display: flex; align-items: center; justify-content: center;
@@ -79,22 +79,30 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .stat-row-cmp {
   display: flex; align-items: center; justify-content: space-between;
   padding: 5px 8px; border-radius: 5px;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255,255,255,0.02); transition: box-shadow .2s;
 }
 .stat-row-cmp:nth-child(even) { background: rgba(255,255,255,0.04); }
+.stat-row-cmp:hover { box-shadow: 0 0 16px rgba(123,147,248,0.08); }
 .stat-name-cmp { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
 .stat-val-cmp { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.stat-val-cmp.better { color: var(--success); }
-.stat-val-cmp.worse { color: var(--danger); }
+.stat-val-cmp.better { color: var(--green); }
+.stat-val-cmp.worse { color: var(--red); }
 .stat-val-cmp.neutral { color: #888; }
 
 .empty-state {
   display: flex; align-items: center; justify-content: center;
   flex: 1; color: #333; font-size: 12px; text-align: center; padding: 20px;
 }
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
+body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
 </head>
 <body>
+<canvas id="bgCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
 <div id="app">
   <div id="cmp-bar">
     <span class="cmp-title">⚖️ Comparateur de Dinos</span>
@@ -108,7 +116,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
     <div class="dino-col left" id="col1">
       <div class="dino-header">
         <div class="dino-header-name" id="name1">—</div>
-        <div class="dino-header-sub">PINNED</div>
+        <div class="dino-header-sub">FIXÉ</div>
       </div>
       <div id="stats1" class="empty-state">Navigue vers un dino<br>puis clique 📌 Pin</div>
     </div>
@@ -116,7 +124,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
     <div class="dino-col right" id="col2">
       <div class="dino-header">
         <div class="dino-header-name" id="name2">—</div>
-        <div class="dino-header-sub">CURRENT</div>
+        <div class="dino-header-sub">ACTUEL</div>
       </div>
       <div id="stats2" class="empty-state">En attente de données...</div>
     </div>
@@ -199,6 +207,25 @@ if (window.api && window.api.onComparatorPinChanged) {
     btn.classList.toggle('pin', val);
   });
 }
+
+// === ANIMATED CANVAS BACKGROUND ===
+(function(){
+  var c=document.getElementById('bgCanvas'),ctx=c.getContext('2d'),W,H;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  var particles=[];for(var i=0;i<35;i++)particles.push({x:Math.random()*800,y:Math.random()*600,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,r:Math.random()*1.2+0.3,a:Math.random()*0.25+0.08,col:['123,147,248','96,165,250','45,212,160','217,70,239'][Math.floor(Math.random()*4)]});
+  var blobs=[{x:0.15,y:0.2,r:160,col:'123,147,248',ph:0,sp:0.003},{x:0.8,y:0.35,r:140,col:'96,165,250',ph:2,sp:0.004},{x:0.5,y:0.8,r:150,col:'45,212,160',ph:4,sp:0.002}];
+  var t=0;
+  function draw(){
+    t++;ctx.clearRect(0,0,W,H);
+    for(var b of blobs){var ox=Math.sin(t*b.sp+b.ph)*25,oy=Math.cos(t*b.sp*0.7+b.ph)*18;var g=ctx.createRadialGradient(b.x*W+ox,b.y*H+oy,0,b.x*W+ox,b.y*H+oy,b.r);g.addColorStop(0,'rgba('+b.col+',0.04)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+    for(var p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.col+','+p.a+')';ctx.fill()}
+    for(var i=0;i<particles.length;i++)for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(123,147,248,'+(0.04*(1-d/100))+')';ctx.lineWidth=0.5;ctx.stroke()}}
+    requestAnimationFrame(draw)
+  }
+  draw();
+})();
 </script>
+<script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>
 </html>

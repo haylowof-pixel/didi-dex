@@ -7,170 +7,273 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;
+  --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7c6aef;--accent-l:#9d8ff5;--accent-d:#6354c4;
-  --accent-bg:rgba(124,106,239,0.08);--accent-border:rgba(124,106,239,0.22);
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
-  --font:'Inter',system-ui,sans-serif;
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --bar-h:34px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);background:var(--bg-0);color:var(--text-0);font-size:12px;overflow:hidden;height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12px;overflow:hidden;height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;position:relative}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.14)}
+::-webkit-scrollbar-thumb{background:rgba(123,147,248,0.15);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(123,147,248,0.25)}
 
-/* Title bar */
-.bar{display:flex;align-items:center;height:38px;padding:0 8px 0 14px;-webkit-app-region:drag;background:var(--bg-1);border-bottom:1px solid var(--border-0);flex-shrink:0}
+/* ===== ANIMATED BACKGROUND BUBBLES ===== */
+.bg-bubbles{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:0;pointer-events:none}
+.bg-bubbles .bubble{position:absolute;bottom:-60px;border-radius:50%;opacity:0.05;animation:floatBubble linear infinite}
+@keyframes floatBubble{
+  0%{transform:translateY(0) translateX(0);opacity:0.04}
+  25%{transform:translateY(-25vh) translateX(15px);opacity:0.07}
+  50%{transform:translateY(-50vh) translateX(-10px);opacity:0.05}
+  75%{transform:translateY(-75vh) translateX(20px);opacity:0.06}
+  100%{transform:translateY(-110vh) translateX(-5px);opacity:0.02}
+}
+
+/* ===== GLASS MORPHISM ===== */
+.glass{background:rgba(6,6,16,0.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06)}
+
+/* ===== TITLE BAR ===== */
+.bar{display:flex;align-items:center;height:var(--bar-h);padding:0 8px 0 14px;-webkit-app-region:drag;background:rgba(4,4,12,0.7);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-bottom:1px solid rgba(123,147,248,0.08);flex-shrink:0;z-index:10;position:relative}
 .bar-title{font-weight:700;font-size:11px;letter-spacing:0.5px;color:var(--text-1);display:flex;align-items:center;gap:8px}
-.bar-title .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.bar-title .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#7B93F8,#60a5fa)}
 .bar-spacer{flex:1}
 .bar-btn{-webkit-app-region:no-drag;border:none;background:rgba(255,255,255,0.03);color:var(--text-2);padding:4px 10px;border-radius:var(--r-sm);cursor:pointer;font:600 10px var(--font);display:flex;align-items:center;gap:4px;margin-left:6px;border:1px solid var(--border-0);transition:all .15s}
 .bar-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-0)}
 .bar-close{-webkit-app-region:no-drag;border:none;background:transparent;color:var(--text-3);font-size:14px;cursor:pointer;width:32px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);margin-left:6px;transition:all .15s}
 .bar-close:hover{background:#c42b1c;color:white}
 
-/* Main layout */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* ===== MAIN LAYOUT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;z-index:1;position:relative}
 
-/* Setup screen */
-.setup{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px}
-.setup-title{font-size:18px;font-weight:800;letter-spacing:0.5px}
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast-container{position:fixed;top:46px;right:12px;z-index:1000;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:rgba(20,20,30,0.92);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--r-md);padding:10px 16px;font:500 11px var(--font);color:var(--text-0);display:flex;align-items:center;gap:8px;min-width:220px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:toastIn .3s ease forwards;pointer-events:auto}
+.toast.out{animation:toastOut .4s ease forwards}
+.toast-icon{font-size:14px;flex-shrink:0}
+.toast-body{flex:1;line-height:1.4}
+.toast-member{font-weight:700;color:var(--accent-l)}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+
+/* ===== SETUP SCREEN ===== */
+.setup{flex:1;display:flex;flex-direction:column;align-items:center;gap:20px;padding:30px 20px;overflow-y:auto;background:transparent}
+.setup-title{font-size:18px;font-weight:800;letter-spacing:0.5px;background:linear-gradient(135deg,#7B93F8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .setup-sub{color:var(--text-2);font-size:12px;text-align:center;max-width:360px;line-height:1.6}
 .setup-row{display:flex;gap:8px;align-items:center}
-.setup-input{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-md);padding:10px 14px;color:var(--text-0);font:600 13px var(--font);width:220px;outline:none;text-align:center;letter-spacing:1px}
-.setup-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.setup-input{background:rgba(6,6,16,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-1);border-radius:var(--r-md);padding:10px 14px;color:var(--text-0);font:600 13px var(--font);width:220px;outline:none;text-align:center;letter-spacing:1px;transition:all .2s}
+.setup-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg),0 0 20px rgba(123,147,248,0.15)}
 .setup-input::placeholder{color:var(--text-3);letter-spacing:0;font-weight:400}
-.btn-primary{background:var(--accent);color:white;border:none;padding:10px 20px;border-radius:var(--r-md);font:700 12px var(--font);cursor:pointer;transition:all .15s}
-.btn-primary:hover{background:var(--accent-l)}
+.btn-primary{background:linear-gradient(135deg,#7B93F8,#60a5fa);color:white;border:none;padding:10px 20px;border-radius:var(--r-md);font:700 12px var(--font);cursor:pointer;transition:all .15s;box-shadow:0 4px 16px rgba(123,147,248,0.25)}
+.btn-primary:hover{filter:brightness(1.1);transform:scale(1.02);box-shadow:0 6px 24px rgba(123,147,248,0.35)}
+.btn-primary:active{transform:scale(0.96)}
 .btn-secondary{background:rgba(255,255,255,0.04);color:var(--text-1);border:1px solid var(--border-1);padding:10px 20px;border-radius:var(--r-md);font:600 12px var(--font);cursor:pointer;transition:all .15s}
 .btn-secondary:hover{background:rgba(255,255,255,0.08);color:var(--text-0)}
+.btn-secondary:active{transform:scale(0.96)}
 .setup-or{color:var(--text-3);font-size:11px;font-weight:600}
 .setup-pseudo{display:flex;flex-direction:column;gap:6px;align-items:center}
 .setup-pseudo label{font-size:10px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.setup-card{width:100%;max-width:340px;border-radius:var(--r-lg);padding:16px;background:rgba(6,6,16,0.4);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06);transition:all .2s}
+.setup-card:hover{border-color:var(--accent-border)}
 
-/* Tribe header */
-.tribe-header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg-1);border-bottom:1px solid var(--border-0);flex-shrink:0}
-.tribe-code{font:700 11px var(--font);color:var(--accent-l);background:var(--accent-bg);border:1px solid var(--accent-border);padding:3px 10px;border-radius:var(--r-sm);letter-spacing:1.5px;cursor:pointer;transition:all .15s}
+/* ===== TRIBE HEADER ===== */
+.tribe-header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(6,6,16,0.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border-0);flex-shrink:0;flex-wrap:wrap}
+.tribe-name-display{font:800 14px var(--font);color:var(--text-0);display:flex;align-items:center;gap:6px}
+.tribe-name-display .tribe-ico{font-size:16px}
+.tribe-code{font:700 10px var(--font);color:var(--accent-l);background:var(--accent-bg);border:1px solid var(--accent-border);padding:2px 8px;border-radius:var(--r-sm);letter-spacing:1.5px;cursor:pointer;transition:all .15s}
 .tribe-code:hover{background:var(--accent);color:white}
 .tribe-code.copied{background:var(--green);border-color:var(--green-border);color:white}
-.tribe-user{font-size:10px;color:var(--text-2);font-weight:600}
+.tribe-user{font-size:10px;color:var(--text-2);font-weight:600;display:flex;align-items:center;gap:4px}
+.tribe-user .user-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}
 .tribe-status{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600}
 .tribe-status .dot-online{width:6px;height:6px;border-radius:50%;background:var(--green)}
 .btn-leave{background:transparent;border:1px solid var(--red-border);color:var(--red);padding:3px 10px;border-radius:var(--r-sm);font:600 10px var(--font);cursor:pointer;transition:all .15s}
 .btn-leave:hover{background:var(--red-bg)}
+.btn-leave:active{transform:scale(0.96)}
 
-/* Add task area */
+/* ===== MEMBERS BAR ===== */
+.tribe-members-bar{display:flex;align-items:center;gap:6px;padding:6px 16px;background:rgba(2,2,8,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border-0);flex-shrink:0;overflow-x:auto}
+.tribe-members-bar::-webkit-scrollbar{height:3px}
+.member-chip{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font:600 10px var(--font);background:rgba(6,6,16,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-1);color:var(--text-1);white-space:nowrap;flex-shrink:0;cursor:default;transition:all .15s}
+.member-chip:hover{border-color:var(--border-2)}
+.member-chip .m-dot{width:5px;height:5px;border-radius:50%;background:var(--text-3)}
+.member-chip.me{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent-l)}
+.member-chip.me .m-dot{background:var(--green)}
+.member-chip .role-badge{font-size:9px;margin-left:2px}
+.members-count{font:600 9px var(--font);color:var(--text-3);margin-left:auto;white-space:nowrap}
+
+/* ===== TABS ===== */
+.tabs-bar{display:flex;align-items:center;gap:4px;padding:6px 16px;background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border-0);flex-shrink:0;overflow-x:auto}
+.tab-btn{padding:6px 14px;border-radius:99px;font:600 11px var(--font);color:var(--text-2);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.tab-btn:hover{color:var(--text-0);background:rgba(255,255,255,0.04)}
+.tab-btn:active{transform:scale(0.96)}
+.tab-btn.active{background:linear-gradient(135deg,rgba(123,147,248,0.15),rgba(96,165,250,0.1));color:var(--text-0);border-color:var(--accent-border)}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:0;flex-direction:column}
+.tab-panel.active{display:flex}
+.filter-btn{padding:4px 10px;border-radius:99px;font:600 10px var(--font);color:var(--text-3);background:transparent;border:1px solid var(--border-0);cursor:pointer;transition:all .15s;margin-left:auto}
+.filter-btn:hover{color:var(--text-1);border-color:var(--border-1)}
+.filter-btn.active{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border)}
+
+/* ===== ADD TASK AREA ===== */
 .add-task-area{border-bottom:1px solid var(--border-0);flex-shrink:0}
-.add-task-row{display:flex;gap:8px;padding:10px 16px 6px}
-.add-task-row input{flex:1;background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:8px 12px;color:var(--text-0);font:500 12px var(--font);outline:none}
-.add-task-row input:focus{border-color:var(--accent)}
+.add-task-row{display:flex;gap:6px;padding:10px 16px 6px;flex-wrap:wrap}
+.add-task-row input{flex:1;min-width:120px;background:rgba(6,6,16,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:8px 12px;color:var(--text-0);font:500 12px var(--font);outline:none;transition:all .2s}
+.add-task-row input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
 .add-task-row input::placeholder{color:var(--text-3)}
-.add-task-row select{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:8px;color:var(--text-1);font:500 11px var(--font);outline:none;cursor:pointer}
+.add-task-row select{background:rgba(6,6,16,0.5);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:8px;color:var(--text-1);font:500 11px var(--font);outline:none;cursor:pointer;transition:all .2s}
 .add-task-row select:focus{border-color:var(--accent)}
-.btn-add{background:var(--accent);color:white;border:none;padding:8px 14px;border-radius:var(--r-sm);font:700 11px var(--font);cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn-add:hover{background:var(--accent-l)}
+.btn-add{background:linear-gradient(135deg,#7B93F8,#60a5fa);color:white;border:none;padding:8px 14px;border-radius:var(--r-sm);font:700 11px var(--font);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-add:hover{filter:brightness(1.1)}
+.btn-add:active{transform:scale(0.96)}
 
-/* Items requis section */
+/* ===== TASK OPTIONS ROW ===== */
+.task-options-row{display:flex;gap:6px;padding:0 16px 6px;flex-wrap:wrap;align-items:center}
+.task-opt-btn{padding:4px 10px;border-radius:var(--r-sm);font:500 10px var(--font);color:var(--text-2);background:rgba(6,6,16,0.5);border:1px solid var(--border-1);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.task-opt-btn:hover{color:var(--text-0);border-color:var(--border-2)}
+.task-opt-btn:active{transform:scale(0.96)}
+.task-opt-btn.active{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border)}
+.opt-select{background:rgba(6,6,16,0.5);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:4px 8px;color:var(--text-1);font:500 10px var(--font);outline:none;cursor:pointer}
+.opt-input{background:rgba(6,6,16,0.5);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:4px 8px;color:var(--text-0);font:500 10px var(--font);outline:none;width:50px;text-align:center}
+.custom-cat-popup{position:absolute;top:100%;left:0;background:rgba(6,6,16,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border-2);border-radius:var(--r-md);padding:10px;z-index:50;display:none;flex-direction:column;gap:6px;min-width:200px}
+.custom-cat-popup.show{display:flex}
+
+/* ===== ITEMS SECTION (form) ===== */
 .items-section{padding:4px 16px 10px}
 .items-section-label{font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.items-section-label svg{opacity:0.5}
 .items-add-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;position:relative}
-.items-add-row input[type="text"]{flex:1;background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:6px 10px;color:var(--text-0);font:500 11px var(--font);outline:none}
+.items-add-row input[type="text"]{flex:1;background:rgba(6,6,16,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:6px 10px;color:var(--text-0);font:500 11px var(--font);outline:none;transition:all .2s}
 .items-add-row input[type="text"]:focus{border-color:var(--accent)}
 .items-add-row input[type="text"]::placeholder{color:var(--text-3)}
-.items-add-row input[type="number"]{width:60px;background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:6px 8px;color:var(--text-0);font:500 11px var(--font);outline:none;text-align:center}
+.items-add-row input[type="number"]{width:60px;background:rgba(6,6,16,0.5);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:6px 8px;color:var(--text-0);font:500 11px var(--font);outline:none;text-align:center}
 .items-add-row input[type="number"]:focus{border-color:var(--accent)}
-.btn-icon{width:28px;height:28px;border:1px solid var(--border-1);background:var(--bg-2);color:var(--text-1);border-radius:var(--r-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.btn-icon{width:28px;height:28px;border:1px solid var(--border-1);background:rgba(6,6,16,0.5);color:var(--text-1);border-radius:var(--r-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .btn-icon:hover{background:var(--accent);color:white;border-color:var(--accent)}
+.btn-icon:active{transform:scale(0.96)}
 .btn-icon.btn-remove:hover{background:var(--red);border-color:var(--red);color:white}
-
-/* Pending items list in form */
 .pending-items{display:flex;flex-direction:column;gap:3px}
-.pending-item{display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--bg-2);border:1px solid var(--border-0);border-radius:var(--r-sm)}
+.pending-item{display:flex;align-items:center;gap:8px;padding:4px 8px;background:rgba(6,6,16,0.4);border:1px solid var(--border-0);border-radius:var(--r-sm);animation:fadeSlideIn .2s ease}
 .pending-item-icon{width:20px;height:20px;object-fit:contain;filter:invert(1) brightness(1.5);flex-shrink:0}
 .pending-item-icon.broken{display:none}
 .pending-item-name{font:500 11px var(--font);color:var(--text-0);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pending-item-qty{font:700 11px var(--font);color:var(--accent-l);white-space:nowrap}
 
-/* Autocomplete dropdown */
-.autocomplete-dropdown{position:absolute;top:100%;left:0;right:66px;max-height:180px;overflow-y:auto;background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r-sm);z-index:100;margin-top:2px;display:none}
+/* ===== AUTOCOMPLETE ===== */
+.autocomplete-dropdown{position:absolute;top:100%;left:0;right:66px;max-height:180px;overflow-y:auto;background:rgba(6,6,16,0.7);border:1px solid var(--border-2);border-radius:var(--r-sm);z-index:100;margin-top:2px;display:none;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .autocomplete-dropdown.show{display:block}
 .autocomplete-item{padding:6px 10px;font:500 11px var(--font);color:var(--text-1);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s}
 .autocomplete-item:hover,.autocomplete-item.active{background:var(--accent-bg);color:var(--text-0)}
 .autocomplete-item img{width:18px;height:18px;object-fit:contain;filter:invert(1) brightness(1.5);flex-shrink:0}
 .autocomplete-item img.broken{display:none}
 
-/* Task list */
+/* ===== TASK LIST ===== */
 .task-list{flex:1;overflow-y:auto;padding:8px}
-.task-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-3);gap:8px}
-.task-empty svg{opacity:0.3}
-.task-empty-title{font-weight:700;font-size:13px;color:var(--text-2)}
+.task-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-3);gap:12px;padding:40px}
+.task-empty svg{opacity:0.2}
+.task-empty-title{font-weight:700;font-size:14px;color:var(--text-2)}
+.task-empty-sub{font-size:11px;color:var(--text-3)}
 
-/* Task card */
-.task{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:4px;border-radius:var(--r-md);background:var(--bg-1);border:1px solid var(--border-0);transition:all .15s;flex-wrap:wrap}
-.task:hover{border-color:var(--border-1);background:var(--bg-2)}
-.task.done{opacity:0.5}
-.task.done .task-title{text-decoration:line-through;color:var(--text-3)}
+/* ===== TASK CARD ===== */
+.task-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:6px;border-radius:var(--r-lg);background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);transition:all .25s ease;flex-wrap:wrap;position:relative;overflow:hidden;animation:fadeSlideIn .3s ease backwards}
+.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.task-card.cat-farming::before{background:var(--green)}
+.task-card.cat-taming::before{background:var(--blue)}
+.task-card.cat-building::before{background:var(--orange)}
+.task-card.cat-raid::before{background:var(--red)}
+.task-card.cat-breeding::before{background:var(--pink)}
+.task-card.cat-autre::before{background:var(--accent-l)}
+.task-card:hover{border-color:rgba(123,147,248,0.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3),0 0 20px rgba(123,147,248,0.06)}
+.task-card.done{opacity:0.5}
+.task-card.done .task-title{text-decoration:line-through;color:var(--text-3)}
+.task-card.prio-haute-glow{box-shadow:0 0 20px rgba(239,68,68,0.15)}
+.task-card.prio-haute-glow .prio-dot{animation:prioPulse 1.5s ease infinite}
+.task-card.near-complete{border-color:rgba(45,212,160,0.2)}
+.task-card.deadline-urgent{animation:urgentPulse 2s ease infinite}
+@keyframes urgentPulse{0%,100%{box-shadow:0 0 20px rgba(239,68,68,0.1)}50%{box-shadow:0 0 30px rgba(239,68,68,0.3)}}
+@keyframes prioPulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideRight{to{opacity:0;transform:translateX(60px)}}
 
-.task-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--border-2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
-.task-check:hover{border-color:var(--accent)}
-.task-check.checked{background:var(--green);border-color:var(--green)}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border-2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px}
+.task-check:hover{border-color:var(--accent);background:var(--accent-bg)}
+.task-check.checked{background:var(--green);border-color:var(--green);animation:checkBounce .3s ease}
 .task-check.checked::after{content:'';display:block;width:10px;height:10px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");background-size:contain;background-repeat:no-repeat}
+@keyframes checkBounce{0%{transform:scale(0.7)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
 
 .task-body{flex:1;min-width:0}
-.task-title-row{display:flex;align-items:center;gap:6px}
+.task-title-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .task-title{font-weight:600;font-size:12px;color:var(--text-0);line-height:1.4}
+.task-badges{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.prio-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.prio-dot.haute{background:var(--red)}
+.prio-dot.moyenne{background:var(--orange)}
+.prio-dot.basse{background:var(--text-3)}
+
+/* Progress ring */
+.progress-ring{flex-shrink:0}
+.progress-ring circle{transition:stroke-dashoffset .3s ease}
+
 .task-progress-badge{font:700 9px var(--font);padding:1px 6px;border-radius:99px;background:var(--accent-bg);color:var(--accent-l);border:1px solid var(--accent-border);white-space:nowrap}
 .task-progress-badge.complete{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
-.task-meta{display:flex;align-items:center;gap:6px;margin-top:4px}
+.recur-badge{font-size:11px;cursor:default;title:string}
+.assign-chip{font:600 9px var(--font);padding:2px 7px;border-radius:99px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);display:flex;align-items:center;gap:3px;white-space:nowrap}
+.assign-chip .assign-initial{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#7B93F8,#60a5fa);color:white;font:700 8px var(--font);display:flex;align-items:center;justify-content:center}
+.deadline-badge{font:600 9px var(--font);padding:2px 7px;border-radius:99px;background:rgba(255,255,255,0.04);color:var(--text-2);border:1px solid var(--border-0);white-space:nowrap;display:flex;align-items:center;gap:3px}
+.deadline-badge.urgent{background:var(--red-bg);color:var(--red);border-color:var(--red-border);animation:prioPulse 1.5s ease infinite}
+.coords-badge{font:500 9px var(--font);padding:2px 7px;border-radius:99px;background:rgba(255,255,255,0.04);color:var(--text-2);border:1px solid var(--border-0);cursor:pointer;white-space:nowrap;transition:all .15s}
+.coords-badge:hover{color:var(--accent-l);border-color:var(--accent-border)}
+.task-meta{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
 .task-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:0.3px}
 .tag-farming{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.tag-taming{background:var(--accent-bg);color:var(--accent-l);border:1px solid var(--accent-border)}
+.tag-taming{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
 .tag-building{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border)}
 .tag-raid{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
-.tag-autre{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,0.22)}
+.tag-breeding{background:var(--pink-bg);color:var(--pink);border:1px solid var(--pink-border)}
+.tag-autre{background:var(--accent-bg);color:var(--accent-l);border:1px solid var(--accent-border)}
 .task-author{font-size:9px;color:var(--text-3);font-weight:500}
 .task-time{font-size:9px;color:var(--text-3)}
 .task-prio{font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px}
 .prio-haute{background:var(--red-bg);color:var(--red)}
 .prio-moyenne{background:var(--orange-bg);color:var(--orange)}
 .prio-basse{background:rgba(255,255,255,0.04);color:var(--text-2)}
+.task-actions{display:flex;gap:3px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.task-card:hover .task-actions{opacity:1}
+.task-act-btn{border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:12px;padding:3px 4px;border-radius:4px;transition:all .15s}
+.task-act-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-0)}
+.task-act-btn.del:hover{background:var(--red-bg);color:var(--red)}
+.task-act-btn:active{transform:scale(0.9)}
 
-.task-delete{border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:all .15s;flex-shrink:0;opacity:0}
-.task:hover .task-delete{opacity:1}
-.task-delete:hover{background:var(--red-bg);color:var(--red)}
-
-/* Task items section (collapsible) */
-.task-items-toggle{width:100%;display:flex;align-items:center;gap:6px;padding:6px 0 2px 28px;cursor:pointer;background:none;border:none;color:var(--text-2);font:600 10px var(--font);text-transform:uppercase;letter-spacing:0.3px;transition:color .15s}
+/* ===== TASK ITEMS ===== */
+.task-items-toggle{width:100%;display:flex;align-items:center;gap:6px;padding:6px 0 2px 30px;cursor:pointer;background:none;border:none;color:var(--text-2);font:600 10px var(--font);text-transform:uppercase;letter-spacing:0.3px;transition:color .15s}
 .task-items-toggle:hover{color:var(--text-0)}
-.task-items-toggle svg{transition:transform .15s}
+.task-items-toggle svg{transition:transform .2s}
 .task-items-toggle.open svg{transform:rotate(90deg)}
-
-/* Overall progress bar */
-.task-progress-bar{width:calc(100% - 28px);margin-left:28px;height:3px;background:var(--border-1);border-radius:2px;overflow:hidden;margin-top:2px}
-.task-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease}
-.task-progress-fill.complete{background:var(--green)}
-
-.task-items-container{width:100%;padding:4px 0 2px 28px;display:none}
+.task-progress-bar{width:calc(100% - 30px);margin-left:30px;height:3px;background:var(--border-1);border-radius:2px;overflow:hidden;margin-top:2px}
+.task-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:2px;transition:width .4s ease}
+.task-progress-fill.complete{background:linear-gradient(90deg,var(--green),#34d399)}
+.task-items-container{width:100%;padding:4px 0 2px 30px;display:none;animation:fadeSlideIn .2s ease}
 .task-items-container.open{display:block}
-
-.task-item-row{display:flex;align-items:center;gap:6px;padding:5px 8px;margin-bottom:3px;border-radius:var(--r-sm);border:1px solid var(--border-0);background:var(--bg-1);transition:all .12s;user-select:none;flex-wrap:wrap}
-.task-item-row:hover{border-color:var(--border-1);background:var(--bg-2)}
+.task-item-row{display:flex;align-items:center;gap:6px;padding:5px 8px;margin-bottom:3px;border-radius:var(--r-sm);border:1px solid var(--border-0);background:rgba(255,255,255,0.015);transition:all .15s;user-select:none;flex-wrap:wrap}
+.task-item-row:hover{border-color:var(--border-1);background:rgba(255,255,255,0.03)}
 .task-item-row.collected{background:rgba(45,212,160,0.04);border-color:var(--green-border)}
 .task-item-row.collected .task-item-name{text-decoration:line-through;color:var(--text-3)}
 .task-item-icon{width:20px;height:20px;object-fit:contain;filter:invert(1) brightness(1.5);flex-shrink:0}
 .task-item-icon.broken{display:none}
 .task-item-name{font:500 11px var(--font);color:var(--text-0);flex:1;min-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .task-item-actions{display:flex;align-items:center;gap:3px;flex-shrink:0}
-.item-btn{width:22px;height:20px;border:1px solid var(--border-1);border-radius:3px;background:var(--bg-2);color:var(--text-2);font:700 10px var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;padding:0}
-.item-btn:hover{background:var(--bg-3);border-color:var(--border-2);color:var(--text-0)}
+.item-btn{width:22px;height:20px;border:1px solid var(--border-1);border-radius:3px;background:rgba(6,6,16,0.5);color:var(--text-2);font:700 10px var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;padding:0}
+.item-btn:hover{background:rgba(6,6,16,0.7);border-color:var(--border-2);color:var(--text-0)}
+.item-btn:active{transform:scale(0.9)}
 .item-btn.item-minus:hover{border-color:var(--red-border);color:var(--red)}
 .item-btn.item-plus:hover,.item-btn.item-plus10:hover{border-color:var(--green-border);color:var(--green)}
 .item-btn.item-plus10{width:28px;font-size:9px}
@@ -180,118 +283,268 @@ body{font-family:var(--font);background:var(--bg-0);color:var(--text-0);font-siz
 .task-item-progress:hover{background:var(--accent-bg)}
 .task-item-progress .current{color:var(--accent-l)}
 .task-item-row.collected .task-item-progress .current{color:var(--green)}
+/* Inline edit input */
+.item-inline-edit{width:70px;background:rgba(6,6,16,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--accent);border-radius:4px;padding:3px 6px;color:var(--accent-l);font:700 12px var(--font);text-align:center;outline:none;animation:inlineEditPop .15s ease}
+@keyframes inlineEditPop{0%{transform:scale(0.85);opacity:0}100%{transform:scale(1);opacity:1}}
 .task-item-bar{width:100%;height:2px;background:var(--border-0);border-radius:1px;overflow:hidden;flex-basis:100%;margin-top:1px}
 .task-item-bar-fill{height:100%;border-radius:1px;transition:width .3s ease}
 .task-item-check{width:14px;height:14px;flex-shrink:0;color:var(--green);display:none}
 .task-item-row.collected .task-item-check{display:block}
 .task-item-hint{font:400 9px var(--font);color:var(--text-3);padding:2px 8px 4px;margin-top:-2px}
-
-/* Auto-suggest done banner */
-.task-suggest-done{width:calc(100% - 28px);margin-left:28px;padding:4px 10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--r-sm);display:flex;align-items:center;gap:6px;margin-top:4px}
+.task-suggest-done{width:calc(100% - 30px);margin-left:30px;padding:6px 10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--r-sm);display:flex;align-items:center;gap:6px;margin-top:4px;animation:fadeSlideIn .3s ease}
 .task-suggest-done span{font:600 10px var(--font);color:var(--green);flex:1}
 .task-suggest-done button{background:var(--green);color:white;border:none;padding:3px 10px;border-radius:var(--r-sm);font:700 10px var(--font);cursor:pointer;transition:all .15s}
-.task-suggest-done button:hover{opacity:0.85}
+.task-suggest-done button:hover{filter:brightness(1.1)}
 
-/* Sync indicator */
-.sync-bar{padding:4px 16px;background:var(--bg-1);border-top:1px solid var(--border-0);display:flex;align-items:center;gap:6px;font-size:9px;color:var(--text-3);flex-shrink:0}
+/* ===== CRAFT CALCULATOR POPUP ===== */
+.craft-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(6,6,16,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-lg);padding:20px;z-index:500;width:90%;max-width:400px;max-height:70vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:fadeSlideIn .2s ease}
+.craft-popup-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:499}
+.craft-popup h3{font:700 14px var(--font);color:var(--text-0);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.craft-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border-0)}
+.craft-row:last-child{border-bottom:none}
+.craft-name{font:500 11px var(--font);color:var(--text-0);flex:1}
+.craft-qty{font:700 11px var(--font);color:var(--accent-l)}
+
+/* ===== TEMPLATES TAB ===== */
+.templates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;padding:12px}
+.template-card{border-radius:var(--r-lg);padding:12px;background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all .25s;animation:fadeSlideIn .3s ease backwards}
+.template-card:hover{border-color:var(--accent-border);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.template-card:active{transform:scale(0.98)}
+.template-card .tpl-title{font:700 12px var(--font);color:var(--text-0);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.template-card .tpl-desc{font:400 10px var(--font);color:var(--text-2);margin-bottom:8px;line-height:1.4}
+.template-card .tpl-items{display:flex;flex-wrap:wrap;gap:3px}
+.template-card .tpl-item{font:500 9px var(--font);color:var(--text-1);padding:2px 6px;background:rgba(6,6,16,0.4);border-radius:var(--r-sm);border:1px solid var(--border-0)}
+.template-card .tpl-cat{font:700 9px var(--font);padding:2px 6px;border-radius:99px;text-transform:uppercase}
+
+/* ===== JOURNAL TAB ===== */
+.journal-list{padding:12px;display:flex;flex-direction:column;gap:4px}
+.journal-entry{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-md);background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);animation:fadeSlideIn .2s ease backwards;transition:all .15s}
+.journal-entry:hover{border-color:var(--border-1)}
+.journal-icon{font-size:14px;flex-shrink:0}
+.journal-body{flex:1;min-width:0}
+.journal-text{font:500 11px var(--font);color:var(--text-0);line-height:1.4}
+.journal-text .j-member{font-weight:700;color:var(--accent-l)}
+.journal-time{font:500 9px var(--font);color:var(--text-3);flex-shrink:0;white-space:nowrap}
+.journal-type{font:700 8px var(--font);padding:1px 5px;border-radius:99px;text-transform:uppercase;flex-shrink:0}
+.jtype-create{background:var(--green-bg);color:var(--green)}
+.jtype-complete{background:var(--blue-bg);color:var(--blue)}
+.jtype-farm{background:var(--orange-bg);color:var(--orange)}
+.jtype-join{background:var(--accent-bg);color:var(--accent-l)}
+.jtype-delete{background:var(--red-bg);color:var(--red)}
+
+/* ===== STATS TAB ===== */
+.stats-container{padding:12px;display:flex;flex-direction:column;gap:12px}
+.stats-section{border-radius:var(--r-lg);padding:14px;background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);animation:fadeSlideIn .3s ease backwards}
+.stats-title{font:700 13px var(--font);color:var(--text-0);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.leaderboard-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border-0)}
+.leaderboard-row:last-child{border-bottom:none}
+.lb-rank{font:700 14px var(--font);width:28px;text-align:center;flex-shrink:0}
+.lb-name{font:600 12px var(--font);color:var(--text-0);flex:1}
+.lb-score{font:700 12px var(--font);color:var(--accent-l)}
+.bar-chart{display:flex;flex-direction:column;gap:6px}
+.bar-chart-row{display:flex;align-items:center;gap:8px}
+.bar-chart-label{font:500 10px var(--font);color:var(--text-1);width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-chart-track{flex:1;height:16px;background:rgba(6,6,16,0.5);border-radius:var(--r-sm);overflow:hidden;position:relative}
+.bar-chart-fill{height:100%;border-radius:var(--r-sm);transition:width .5s ease;background:linear-gradient(90deg,var(--accent),var(--blue))}
+.bar-chart-val{position:absolute;right:6px;top:50%;transform:translateY(-50%);font:700 9px var(--font);color:var(--text-0)}
+
+/* ===== SYNC BAR ===== */
+.sync-bar{padding:4px 16px;background:rgba(4,4,12,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border-0);display:flex;align-items:center;gap:6px;font-size:9px;color:var(--text-3);flex-shrink:0;z-index:1;position:relative}
 .sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .sync-bar.error .sync-dot{background:var(--red);animation:none}
+.sync-spinner{width:10px;height:10px;border:2px solid var(--border-1);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:400;display:flex;align-items:center;justify-content:center}
+.modal-box{background:rgba(6,6,16,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-lg);padding:20px;width:90%;max-width:320px;animation:fadeSlideIn .2s ease}
+.modal-box h3{font:700 14px var(--font);color:var(--text-0);margin-bottom:10px}
+.modal-box input{width:100%;background:rgba(6,6,16,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:8px 12px;color:var(--text-0);font:500 12px var(--font);outline:none;margin-bottom:8px}
+.modal-box input:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
 </head>
 <body>
 
-<!-- Title bar -->
+<!-- ANIMATED CANVAS BACKGROUND -->
+<canvas id="bgCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- TITLE BAR -->
 <div class="bar">
   <span class="bar-title"><span class="dot"></span>DIDI DEX — TRIBU</span>
   <div class="bar-spacer"></div>
   <button class="bar-btn" id="pinBtn" onclick="togglePin()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button>
-  <button class="bar-close" onclick="window.api.tribeClose()">&#10005;</button>
+  <button class="bar-close" onclick="window.api?.tribeClose()">&#10005;</button>
 </div>
 
 <div class="main" id="app">
   <!-- SETUP SCREEN -->
   <div class="setup" id="setupScreen">
+    <div style="font-size:32px;margin-bottom:4px">&#9876;&#65039;</div>
     <div class="setup-title">Planificateur de Tribu</div>
-    <div class="setup-sub">Crée ou rejoins une tribu pour partager des tâches avec tes coéquipiers en temps réel.</div>
-
+    <div class="setup-sub">Cree ou rejoins une tribu pour partager des taches avec tes coequipiers en temps reel.</div>
     <div class="setup-pseudo">
       <label>Ton pseudo</label>
-      <input class="setup-input" id="pseudoInput" placeholder="Ex: Hilal" style="width:180px;letter-spacing:0">
+      <input class="setup-input" id="pseudoInput" placeholder="Ex: Hilal" style="width:200px;letter-spacing:0">
     </div>
-
-    <button class="btn-primary" onclick="createTribe()">Créer une tribu</button>
-
-    <div class="setup-or">— ou —</div>
-
-    <div class="setup-row">
-      <input class="setup-input" id="joinCode" placeholder="Colle le code tribu ici" style="width:280px;font-size:11px;letter-spacing:0">
-      <button class="btn-secondary" onclick="joinTribe()">Rejoindre</button>
+    <div class="setup-card">
+      <div style="font:700 12px var(--font);color:var(--text-0);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="font-size:14px">&#127984;</span> Creer une tribu
+      </div>
+      <div class="setup-pseudo" style="margin-bottom:10px">
+        <label>Nom de la tribu</label>
+        <input class="setup-input" id="tribeNameInput" placeholder="Ex: Les Raptors" style="width:100%;letter-spacing:0">
+      </div>
+      <button class="btn-primary" onclick="createTribe()" style="width:100%">Creer</button>
+    </div>
+    <div class="setup-or">&mdash; ou &mdash;</div>
+    <div class="setup-card">
+      <div style="font:700 12px var(--font);color:var(--text-0);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="font-size:14px">&#128279;</span> Rejoindre une tribu
+      </div>
+      <div class="setup-row" style="width:100%">
+        <input class="setup-input" id="joinCode" placeholder="Colle le code tribu ici" style="flex:1;font-size:11px;letter-spacing:0">
+        <button class="btn-secondary" onclick="joinTribe()">Rejoindre</button>
+      </div>
     </div>
   </div>
 
   <!-- TRIBE SCREEN -->
-  <div id="tribeScreen" style="display:none;flex:1;display:none;flex-direction:column;overflow:hidden">
-    <!-- Header -->
+  <div id="tribeScreen" style="display:none;flex-direction:column;overflow:hidden;flex:1">
     <div class="tribe-header">
-      <span class="tribe-code" id="tribeCodeDisplay" onclick="copyCode()" title="Cliquer pour copier"></span>
-      <span class="tribe-user" id="tribeUser"></span>
+      <span class="tribe-name-display"><span class="tribe-ico">&#9876;&#65039;</span><span id="tribeNameDisplay"></span></span>
+      <span class="tribe-code" id="tribeCodeDisplay" onclick="copyCode()" title="Cliquer pour copier le code"></span>
       <div class="tribe-status">
         <span class="dot-online"></span>
-        <span id="syncStatus">Connecté</span>
+        <span id="syncStatus">Connecte</span>
       </div>
       <button class="btn-leave" onclick="leaveTribe()">Quitter</button>
     </div>
+    <div class="tribe-members-bar" id="membersBar"></div>
 
-    <!-- Add task area -->
-    <div class="add-task-area">
-      <div class="add-task-row">
-        <input id="taskInput" placeholder="Nouvelle tâche..." onkeydown="if(event.key==='Enter')addTask()">
-        <select id="taskCategory">
-          <option value="farming">Farming</option>
-          <option value="taming">Taming</option>
-          <option value="building">Building</option>
-          <option value="raid">Raid</option>
-          <option value="autre">Autre</option>
-        </select>
-        <select id="taskPriority">
-          <option value="moyenne">Moyenne</option>
-          <option value="haute">Haute</option>
-          <option value="basse">Basse</option>
-        </select>
-        <button class="btn-add" onclick="addTask()">+ Ajouter</button>
+    <!-- TABS -->
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="tasks" onclick="switchTab('tasks')">&#128203; Taches</button>
+      <button class="tab-btn" data-tab="templates" onclick="switchTab('templates')">&#128203; Templates</button>
+      <button class="tab-btn" data-tab="journal" onclick="switchTab('journal')">&#128220; Journal</button>
+      <button class="tab-btn" data-tab="stats" onclick="switchTab('stats')">&#128202; Stats</button>
+      <button class="tab-btn" data-tab="breeding" onclick="switchTab('breeding')">&#129516; Breeding</button>
+      <button class="filter-btn" id="filterMyTasks" onclick="toggleMyTasksFilter()">Mes taches</button>
+    </div>
+
+    <!-- TAB: TASKS -->
+    <div class="tab-panel active" id="panel-tasks" style="display:flex;flex-direction:column;overflow:hidden;flex:1">
+      <div class="add-task-area">
+        <div class="add-task-row">
+          <input id="taskInput" placeholder="Nouvelle tache..." onkeydown="if(event.key==='Enter')addTask()">
+          <select id="taskCategory">
+            <option value="farming">Farming</option>
+            <option value="taming">Taming</option>
+            <option value="building">Building</option>
+            <option value="raid">Raid</option>
+            <option value="breeding">Breeding</option>
+            <option value="autre">Autre</option>
+          </select>
+          <button class="task-opt-btn" id="addCatBtn" onclick="showAddCategoryModal()" title="Categorie personnalisee">+</button>
+          <select id="taskPriority">
+            <option value="moyenne">Moyenne</option>
+            <option value="haute">Haute</option>
+            <option value="basse">Basse</option>
+          </select>
+          <button class="btn-add" onclick="addTask()">+ Ajouter</button>
+        </div>
+        <div class="task-options-row">
+          <select class="opt-select" id="taskAssign" title="Assigner a">
+            <option value="">Tous</option>
+          </select>
+          <select class="opt-select" id="taskDeadline" title="Deadline">
+            <option value="">Pas de deadline</option>
+            <option value="3600000">Dans 1h</option>
+            <option value="7200000">Dans 2h</option>
+            <option value="21600000">Dans 6h</option>
+            <option value="43200000">Dans 12h</option>
+            <option value="86400000">Dans 24h</option>
+            <option value="259200000">Dans 3j</option>
+          </select>
+          <button class="task-opt-btn" id="recurToggle" onclick="toggleRecurOptions()">&#128260; Recurrente</button>
+          <select class="opt-select" id="recurType" style="display:none">
+            <option value="daily">Quotidienne</option>
+            <option value="weekly">Hebdomadaire</option>
+            <option value="custom">Personnalisee</option>
+          </select>
+          <input class="opt-input" id="recurCustomH" type="number" min="1" placeholder="Xh" style="display:none">
+          <button class="task-opt-btn" id="coordsToggle" onclick="toggleCoordsInput()">&#128205; Position</button>
+          <input class="opt-input" id="coordX" type="number" min="0" max="100" placeholder="X" style="display:none;width:40px">
+          <input class="opt-input" id="coordY" type="number" min="0" max="100" placeholder="Y" style="display:none;width:40px">
+        </div>
+        <div class="items-section">
+          <div class="items-section-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            Items requis (optionnel)
+          </div>
+          <div class="items-add-row">
+            <input type="text" id="itemNameInput" placeholder="Nom de l'item..." autocomplete="off">
+            <input type="number" id="itemQtyInput" placeholder="Qte" min="1" value="1">
+            <button class="btn-icon" onclick="addPendingItem()" title="Ajouter l'item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+          </div>
+          <div class="pending-items" id="pendingItems"></div>
+        </div>
       </div>
-
-      <!-- Items requis section -->
-      <div class="items-section">
-        <div class="items-section-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-          Items requis (optionnel)
+      <div class="task-list" id="taskList">
+        <div class="task-empty" id="taskEmpty">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/>
+          </svg>
+          <div class="task-empty-title">Aucune tache</div>
+          <div class="task-empty-sub">Ajoute une tache pour commencer ou utilise un template</div>
         </div>
-        <div class="items-add-row">
-          <input type="text" id="itemNameInput" placeholder="Nom de l'item..." autocomplete="off">
-          <input type="number" id="itemQtyInput" placeholder="Qté" min="1" value="1">
-          <button class="btn-icon" id="addItemBtn" onclick="addPendingItem()" title="Ajouter l'item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
-        </div>
-        <div class="pending-items" id="pendingItems"></div>
       </div>
     </div>
 
-    <!-- Task list -->
-    <div class="task-list" id="taskList">
-      <div class="task-empty" id="taskEmpty">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/>
-        </svg>
-        <div class="task-empty-title">Aucune tâche</div>
-        <div>Ajoute une tâche pour commencer</div>
+    <!-- TAB: TEMPLATES -->
+    <div class="tab-panel" id="panel-templates">
+      <div class="templates-grid" id="templatesGrid"></div>
+    </div>
+
+    <!-- TAB: JOURNAL -->
+    <div class="tab-panel" id="panel-journal">
+      <div class="journal-list" id="journalList">
+        <div class="task-empty" style="padding:40px"><div class="task-empty-title">Aucune activite</div><div class="task-empty-sub">Le journal se remplira au fur et a mesure des actions</div></div>
       </div>
     </div>
 
-    <!-- Sync bar -->
+    <!-- TAB: STATS -->
+    <div class="tab-panel" id="panel-stats">
+      <div class="stats-container" id="statsContainer">
+        <div class="task-empty" style="padding:40px"><div class="task-empty-title">Pas encore de stats</div><div class="task-empty-sub">Commence a travailler pour voir les contributions</div></div>
+      </div>
+    </div>
+
+    <!-- TAB: BREEDING -->
+    <div class="tab-panel" id="panel-breeding">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border-0);display:flex;align-items:center;gap:10px;flex-shrink:0;background:rgba(6,6,16,0.4);backdrop-filter:blur(12px)">
+        <div style="flex:1">
+          <div style="font:800 14px var(--font);color:var(--text-0)">&#129516; Bibliothèque de Breeding</div>
+          <div style="font:500 10px var(--font);color:var(--text-3);margin-top:2px">Créatures partagées par les membres de la tribu</div>
+        </div>
+        <button class="btn-primary" style="padding:6px 14px;font-size:10px;border-radius:var(--r-sm)" onclick="refreshBreedingLib()">&#128260; Rafraîchir</button>
+      </div>
+      <div id="breedingLibContent" style="flex:1;overflow-y:auto;padding:12px 16px">
+        <div class="task-empty" style="padding:40px">
+          <div class="task-empty-title">Aucune créature partagée</div>
+          <div class="task-empty-sub">Les membres peuvent synchroniser leur bibliothèque depuis le Breeding Manager</div>
+        </div>
+      </div>
+    </div>
+
     <div class="sync-bar" id="syncBar">
       <span class="sync-dot"></span>
       <span id="syncText">Synchronisation active</span>
@@ -299,12 +552,14 @@ body{font-family:var(--font);background:var(--bg-0);color:var(--text-0);font-siz
   </div>
 </div>
 
+<!-- MODAL CONTAINER -->
+<div id="modalContainer"></div>
+
 <script>
 // =============================================
 // ARK ITEMS DATABASE
 // =============================================
 var ARK_ITEMS = [
-  // ===== BOSS TRIBUTES (Island) =====
   "Artifact of the Hunter","Artifact of the Pack","Artifact of the Massive","Artifact of the Devious",
   "Artifact of the Clever","Artifact of the Skylord","Artifact of the Immune","Artifact of the Strong",
   "Artifact of the Brute","Artifact of the Cunning","Artifact of the Lost","Artifact of the Shadows",
@@ -317,23 +572,17 @@ var ARK_ITEMS = [
   "Alpha Dragon Trophy","Alpha Broodmother Trophy","Alpha Megapithecus Trophy","Alpha Manticore Trophy",
   "Alpha Crystal Wyvern Queen Trophy",
   "Giganotosaurus Heart","Golden Nugget","Dermis",
-  // ===== SCORCHED EARTH =====
   "Deathworm Horn","Mantis Claw","Wyvern Talon","Fire Wyvern Talon","Lightning Wyvern Talon",
   "Poison Wyvern Talon","Ice Wyvern Talon",
-  // ===== ABERRATION =====
   "Reaper Pheromone Gland","Rock Drake Feather","Nameless Venom","Charge Battery",
-  // ===== EXTINCTION =====
   "Corrupt Heart","Titan Trophy","Mek Blueprint","Element Ore",
-  // ===== METAL & ORE =====
   "Metal","Metal Ingot","Scrap Metal","Scrap Metal Ingot","Iron","Iron Ingot",
   "Copper","Copper Ingot","Raw Salt","Cooked Salt",
-  // ===== BASIC RESOURCES =====
   "Fiber","Thatch","Wood","Stone","Flint","Sand","Clay",
   "Hide","Pelt","Chitin","Keratin","Bone","Shell Fragment",
   "Crystal","Obsidian","Silica Pearls","Black Pearl","White Pearl",
   "Polymer","Organic Polymer","Hard Polymer","Corrupted Nodule",
-  // ===== ADVANCED RESOURCES =====
-  "Element","Element Dust","Element Shard","Element Ore",
+  "Element","Element Dust","Element Shard",
   "Cementing Paste","Achatina Paste","Absorbent Substrate",
   "Electronics","Tek Structures","Unstable Element","Unstable Element Shard",
   "Oil","Gasoline","Propellant",
@@ -344,11 +593,8 @@ var ARK_ITEMS = [
   "Blue Gem","Red Gem","Green Gem","Congealed Gas Ball","Fungal Wood",
   "Anglerfish Gel","Bio Toxin","Leech Blood","Horns",
   "Sulfur","Fragmented Green Gem","Primal Crystal",
-  // ===== INGOTS & CRAFTED =====
-  "Cementing Paste","Narcotic","Stimulant","Sparkpowder","Gunpowder",
   "Charcoal","Cooked Meat Jerky","Prime Meat Jerky",
   "Dye","Preserving Salt",
-  // ===== SADDLES =====
   "Rex Saddle","Spino Saddle","Yutyrannus Saddle","Giganotosaurus Saddle","Therizinosaurus Saddle",
   "Rock Drake Saddle","Desmodus Saddle","Argentavis Saddle","Tropeognathus Saddle",
   "Pteranodon Saddle","Tapejara Saddle","Quetzal Saddle","Ankylosaurus Saddle",
@@ -356,43 +602,35 @@ var ARK_ITEMS = [
   "Mammoth Saddle","Woolly Rhino Saddle","Basilosaurus Saddle","Mosasaur Saddle",
   "Plesiosaur Saddle","Megalodon Saddle","Tek Rex Saddle","Tek Tapejara Saddle",
   "Tek Quetzal Saddle","Tek Giganotosaurus Saddle","Tek Mosasaur Saddle",
-  // ===== KIBBLE =====
   "Kibble (Exceptional)","Kibble (Extraordinary)","Kibble (Superior)","Kibble (Regular)",
   "Kibble (Simple)","Kibble (Basic)",
-  // ===== EGGS =====
   "Rex Egg","Spino Egg","Yutyrannus Egg","Argentavis Egg","Dimetrodon Egg","Quetzal Egg",
   "Allosaurus Egg","Carnotaurus Egg","Raptor Egg","Pteranodon Egg","Stegosaurus Egg",
   "Triceratops Egg","Parasaur Egg","Dodo Egg","Bronto Egg","Carbonemys Egg",
   "Rock Drake Egg","Wyvern Egg","Deinonychus Egg","Magmasaur Egg",
   "Giganotosaurus Egg","Tropeognathus Egg",
-  // ===== RAW FOOD =====
   "Raw Meat","Raw Prime Meat","Raw Mutton","Raw Fish Meat","Raw Prime Fish Meat",
   "Spoiled Meat","Raw Lamb Leg",
-  // ===== COOKED FOOD =====
   "Cooked Meat","Cooked Prime Meat","Cooked Lamb Chop","Cooked Fish Meat","Cooked Prime Fish Meat",
-  "Cooked Meat Jerky","Prime Meat Jerky","Focal Chili","Lazarus Chowder","Enduro Stew",
+  "Focal Chili","Lazarus Chowder","Enduro Stew",
   "Fria Curry","Calien Soup","Shadow Steak Saute","Battle Tartare","Mindwipe Tonic",
   "Broth of Enlightenment","Energy Brew","Medical Brew","Sweet Veggie Cake",
   "Extraordinary Kibble","Exceptional Kibble",
-  // ===== BERRIES & CROPS =====
   "Mejoberry","Narcoberry","Stimberry","Tintoberry","Amarberry","Azulberry",
   "Citronal","Longrass","Rockarrot","Savoroot",
   "Berry Seed","Citronal Seed","Longrass Seed","Rockarrot Seed","Savoroot Seed",
-  // ===== AMMO =====
   "Stone Arrow","Tranq Arrow","Flame Arrow","Grappling Hook",
   "Simple Bullet","Simple Rifle Ammo","Simple Shotgun Ammo",
   "Advanced Bullet","Advanced Rifle Bullet","Advanced Sniper Bullet",
   "Shotgun Ammo","Fabricated Sniper Bullet",
   "Rocket Propelled Grenade","Homing Missile","C4 Charge","C4 Remote Detonator",
   "Cannon Ball","Ballista Bolt","Boulder","Chain Bola","Bola","Net Projectile",
-  "Tranq Dart","Shocking Tranq Dart","Tek Rifle Element","Element Shard",
+  "Tranq Dart","Shocking Tranq Dart","Tek Rifle Element",
   "Flare Gun Ammo","Spear Bolt","Compound Bow Arrow","Metal Arrow",
-  // ===== WEAPONS =====
   "Pike","Sword","Metal Hatchet","Metal Pick","Fabricated Pistol","Longneck Rifle",
   "Pump-Action Shotgun","Fabricated Sniper Rifle","Assault Rifle","Rocket Launcher",
   "Tek Rifle","Tek Sword","Tek Bow","Compound Bow","Crossbow",
   "C4 Detonator","Flamethrower","Minigun","Tek Railgun",
-  // ===== ARMOR =====
   "Flak Helmet","Flak Chestpiece","Flak Gauntlets","Flak Leggings","Flak Boots",
   "Riot Helmet","Riot Chestpiece","Riot Gauntlets","Riot Leggings","Riot Boots",
   "Tek Helmet","Tek Chestpiece","Tek Gauntlets","Tek Leggings","Tek Boots",
@@ -401,15 +639,13 @@ var ARK_ITEMS = [
   "Hazard Suit Hat","Hazard Suit Shirt","Hazard Suit Gloves","Hazard Suit Pants","Hazard Suit Boots",
   "SCUBA Mask","SCUBA Tank","SCUBA Leggings","SCUBA Flippers",
   "Riot Shield","Wooden Shield","Metal Shield","Tek Shield",
-  // ===== TOOLS & UTILITY =====
-  "Spyglass","GPS","Compass","Parachute","Grappling Hook",
+  "Spyglass","GPS","Compass","Parachute",
   "Magnifying Glass","Radio","Transponder Node","Transponder Tracker",
   "Cryopod","Cryofridge","Feeding Trough","Tek Trough",
   "Preserving Bin","Refrigerator","Industrial Cooker","Industrial Grill","Industrial Forge",
   "Chemistry Bench","Fabricator","Replicator","Tek Replicator",
   "Generator","Tek Generator","Wind Turbine","Electrical Cable",
   "Air Conditioner","Incubator","Tek Dedicated Storage","Vault",
-  // ===== STRUCTURES =====
   "Metal Foundation","Metal Wall","Metal Ceiling","Metal Door","Metal Doorframe",
   "Metal Gateway","Metal Gate","Metal Pillar","Metal Ramp","Metal Hatchframe",
   "Metal Trapdoor","Metal Fence Foundation","Metal Fence Support","Metal Railing",
@@ -418,14 +654,303 @@ var ARK_ITEMS = [
   "Turret","Auto Turret","Heavy Auto Turret","Tek Turret","Plant Species X",
   "Behemoth Gateway","Behemoth Gate","Dino Gateway","Dino Gate",
   "Storage Box","Large Storage Box","Bookshelf","Smithy","Mortar and Pestle",
-  "Campfire","Standing Torch","Industrial Forge","Industrial Grinder",
-  // ===== CONSUMABLES =====
+  "Campfire","Standing Torch","Industrial Grinder",
   "Water Jar","Waterskin","Canteen","Beer Jar","Custom Consumable",
   "Bug Repellant","Insect Repellant",
-  // ===== LOST COLONY =====
   "Pyromaniac Fang","Draconis Silk","Gigadesmodus Wing","Ceratosaurus Horn",
   "Aureliax Crystal","Dreadmear Essence","Fasolasuchus Scale","Shastasaurus Oil",
-  "Xiphactinus Fin","Drakling Talon"
+  "Xiphactinus Fin","Drakling Talon",
+  // Genesis / Fjordur / Extra
+  "Mutagel","Mutagen","Golden Nugget","Runestone","Artifact of the Stalker",
+  "Ambergris","Hexagon","Tek Stryder","Maewing Saddle","Shadowmane",
+  "Narcoberry","Spoiled Meat","Silica Pearls","Chitin","Metal Ingot","Wood","Hide","Stone","Flint"
+];
+// Deduplicate
+ARK_ITEMS = [...new Set(ARK_ITEMS)];
+
+// =============================================
+// CRAFT RECIPES
+// =============================================
+var CRAFT_RECIPES = {
+  "Auto Turret": {"Metal Ingot":70,"Electronics":50,"Polymer":20,"Cementing Paste":30},
+  "Heavy Auto Turret": {"Metal Ingot":120,"Electronics":80,"Polymer":40,"Cementing Paste":50,"Element":5},
+  "Metal Foundation": {"Metal Ingot":50,"Cementing Paste":15},
+  "Metal Wall": {"Metal Ingot":25,"Cementing Paste":7},
+  "Metal Ceiling": {"Metal Ingot":35,"Cementing Paste":10},
+  "Metal Doorframe": {"Metal Ingot":16,"Cementing Paste":5},
+  "Metal Door": {"Metal Ingot":12,"Cementing Paste":3},
+  "Metal Gateway": {"Metal Ingot":60,"Cementing Paste":18},
+  "Metal Gate": {"Metal Ingot":20,"Cementing Paste":6},
+  "Metal Pillar": {"Metal Ingot":20,"Cementing Paste":6},
+  "Metal Ramp": {"Metal Ingot":25,"Cementing Paste":7},
+  "Metal Hatchframe": {"Metal Ingot":25,"Cementing Paste":7},
+  "Metal Trapdoor": {"Metal Ingot":12,"Cementing Paste":3},
+  "Fabricated Pistol": {"Metal Ingot":35,"Polymer":15,"Cementing Paste":10},
+  "Longneck Rifle": {"Metal Ingot":35,"Wood":20,"Hide":15},
+  "Pump-Action Shotgun": {"Metal Ingot":40,"Polymer":15,"Cementing Paste":10,"Wood":10},
+  "Fabricated Sniper Rifle": {"Metal Ingot":45,"Polymer":20,"Cementing Paste":15,"Crystal":30},
+  "Assault Rifle": {"Metal Ingot":60,"Polymer":35,"Cementing Paste":20},
+  "Rocket Launcher": {"Metal Ingot":50,"Polymer":20,"Cementing Paste":30},
+  "Compound Bow": {"Metal Ingot":16,"Polymer":10,"Cementing Paste":8},
+  "Crossbow": {"Metal Ingot":7,"Wood":10,"Fiber":35},
+  "Flak Helmet": {"Metal Ingot":20,"Polymer":6,"Hide":15},
+  "Flak Chestpiece": {"Metal Ingot":30,"Polymer":8,"Hide":20},
+  "Flak Gauntlets": {"Metal Ingot":12,"Polymer":4,"Hide":10},
+  "Flak Leggings": {"Metal Ingot":25,"Polymer":6,"Hide":18},
+  "Flak Boots": {"Metal Ingot":12,"Polymer":4,"Hide":10},
+  "Electronics": {"Metal Ingot":1,"Silica Pearls":3},
+  "Cementing Paste": {"Chitin":4,"Stone":8},
+  "Narcotic": {"Narcoberry":5,"Spoiled Meat":1},
+  "Gunpowder": {"Sparkpowder":1,"Charcoal":1},
+  "Sparkpowder": {"Flint":2,"Stone":1},
+  "Stimulant": {"Stimberry":5,"Sparkpowder":2},
+  "Tranq Arrow": {"Stone Arrow":1,"Narcotic":1},
+  "Shocking Tranq Dart": {"Tranq Dart":1,"Biotoxin":3},
+  "Tranq Dart": {"Simple Rifle Ammo":1,"Narcotic":3},
+  "Simple Rifle Ammo": {"Metal Ingot":1,"Gunpowder":6},
+  "Simple Bullet": {"Metal Ingot":1,"Gunpowder":4},
+  "Simple Shotgun Ammo": {"Metal Ingot":1,"Gunpowder":3},
+  "Advanced Bullet": {"Metal Ingot":2,"Gunpowder":6},
+  "Advanced Rifle Bullet": {"Metal Ingot":3,"Gunpowder":9},
+  "Rocket Propelled Grenade": {"Metal Ingot":8,"Gunpowder":20,"Polymer":10,"Cementing Paste":8,"Crystal":4},
+  "C4 Charge": {"Gunpowder":30,"Crystal":10,"Cementing Paste":15,"Fiber":5,"Hide":5,"Polymer":5},
+  "Polymer": {"Obsidian":2,"Cementing Paste":1},
+  "Gasoline": {"Oil":6,"Hide":5},
+  "Generator": {"Metal Ingot":25,"Electronics":10,"Crystal":10},
+  "Air Conditioner": {"Metal Ingot":15,"Electronics":15,"Crystal":5,"Polymer":10,"Cementing Paste":5},
+  "Cryopod": {"Crystal":10,"Metal Ingot":8,"Polymer":15,"Oil":4,"Fiber":18},
+  "Medical Brew": {"Tintoberry":20,"Narcoberry":2,"Water Jar":1},
+  "Energy Brew": {"Azulberry":20,"Stimberry":2,"Water Jar":1},
+  "Mindwipe Tonic": {"Narcoberry":72,"Stimberry":72,"Mejoberry":20,"Rare Flower":20,"Rare Mushroom":20,"Cooked Prime Meat":24,"Cooked Meat Jerky":24},
+  "Pike": {"Metal Ingot":10,"Wood":10,"Hide":20},
+  "Sword": {"Metal Ingot":15,"Polymer":5,"Hide":10},
+  "Metal Pick": {"Metal Ingot":1,"Wood":1,"Hide":10},
+  "Metal Hatchet": {"Metal Ingot":8,"Wood":1,"Hide":6}
+};
+
+// =============================================
+// TASK TEMPLATES
+// =============================================
+var TASK_TEMPLATES = [
+  // ============================================================
+  // THE ISLAND — BOSS FIGHTS
+  // ============================================================
+  // --- Broodmother Lysrix ---
+  {title:"🕷️ Broodmother Gamma (Island)",category:"raid",priority:"moyenne",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1}]},
+  {title:"🕷️ Broodmother Beta (Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
+      {name:"Argentavis Talon",qty:3},{name:"Sarcosuchus Skin",qty:3},{name:"Sauropod Vertebra",qty:3},{name:"Tyrannosaurus Arm",qty:3}]},
+  {title:"🕷️ Broodmother Alpha (Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
+      {name:"Argentavis Talon",qty:5},{name:"Sarcosuchus Skin",qty:5},{name:"Sauropod Vertebra",qty:5},{name:"Tyrannosaurus Arm",qty:5}]},
+  // --- Megapithecus ---
+  {title:"🦍 Megapithecus Gamma (Island)",category:"raid",priority:"moyenne",
+    items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1}]},
+  {title:"🦍 Megapithecus Beta (Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1},
+      {name:"Megalodon Tooth",qty:3},{name:"Therizino Claws",qty:3},{name:"Thylacoleo Hook-Claw",qty:3},{name:"Yutyrannus Lungs",qty:3}]},
+  {title:"🦍 Megapithecus Alpha (Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1},
+      {name:"Megalodon Tooth",qty:5},{name:"Therizino Claws",qty:5},{name:"Thylacoleo Hook-Claw",qty:5},{name:"Yutyrannus Lungs",qty:5}]},
+  // --- Dragon ---
+  {title:"🐉 Dragon Gamma (Island)",category:"raid",priority:"moyenne",
+    items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1}]},
+  {title:"🐉 Dragon Beta (Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1},
+      {name:"Fire Talon",qty:1},{name:"Sarcosuchus Skin",qty:1},{name:"Argentavis Talon",qty:1},{name:"Sauropod Vertebra",qty:1},{name:"Tyrannosaurus Arm",qty:1}]},
+  {title:"🐉 Dragon Alpha (Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1},
+      {name:"Fire Talon",qty:2},{name:"Sarcosuchus Skin",qty:2},{name:"Argentavis Talon",qty:2},{name:"Sauropod Vertebra",qty:2},{name:"Tyrannosaurus Arm",qty:2}]},
+  // --- Tek Cave / Overseer ---
+  {title:"🤖 Overseer Gamma (Island)",category:"raid",priority:"haute",
+    items:[{name:"Alpha Broodmother Trophy",qty:1},{name:"Alpha Megapithecus Trophy",qty:1},{name:"Alpha Dragon Trophy",qty:1}]},
+  {title:"🤖 Overseer Alpha (Island)",category:"raid",priority:"haute",
+    items:[{name:"Alpha Broodmother Trophy",qty:1},{name:"Alpha Megapithecus Trophy",qty:1},{name:"Alpha Dragon Trophy",qty:1}]},
+
+  // ============================================================
+  // SCORCHED EARTH
+  // ============================================================
+  {title:"🦂 Manticore Gamma (Scorched)",category:"raid",priority:"moyenne",
+    items:[{name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1}]},
+  {title:"🦂 Manticore Beta (Scorched)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1},
+      {name:"Fire Wyvern Talon",qty:2},{name:"Lightning Wyvern Talon",qty:2},{name:"Poison Wyvern Talon",qty:2},{name:"Deathworm Horn",qty:5}]},
+  {title:"🦂 Manticore Alpha (Scorched)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1},
+      {name:"Fire Wyvern Talon",qty:5},{name:"Lightning Wyvern Talon",qty:5},{name:"Poison Wyvern Talon",qty:5},{name:"Deathworm Horn",qty:10}]},
+
+  // ============================================================
+  // ABERRATION
+  // ============================================================
+  {title:"👽 Rockwell Gamma (Aberration)",category:"raid",priority:"moyenne",
+    items:[{name:"Artifact of the Depths",qty:1},{name:"Artifact of the Shadows",qty:1},{name:"Artifact of the Stalker",qty:1},
+      {name:"Reaper Pheromone Gland",qty:3},{name:"Nameless Venom",qty:5}]},
+  {title:"👽 Rockwell Beta (Aberration)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Depths",qty:1},{name:"Artifact of the Shadows",qty:1},{name:"Artifact of the Stalker",qty:1},
+      {name:"Reaper Pheromone Gland",qty:5},{name:"Nameless Venom",qty:10},{name:"Rock Drake Feather",qty:3}]},
+  {title:"👽 Rockwell Alpha (Aberration)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Depths",qty:1},{name:"Artifact of the Shadows",qty:1},{name:"Artifact of the Stalker",qty:1},
+      {name:"Reaper Pheromone Gland",qty:7},{name:"Nameless Venom",qty:15},{name:"Rock Drake Feather",qty:5},{name:"Charge Battery",qty:3}]},
+
+  // ============================================================
+  // EXTINCTION
+  // ============================================================
+  {title:"❄️ Ice Titan (Extinction)",category:"raid",priority:"haute",
+    items:[{name:"Corrupt Heart",qty:100},{name:"Element Dust",qty:1000}]},
+  {title:"🌋 Desert Titan (Extinction)",category:"raid",priority:"haute",
+    items:[{name:"Corrupt Heart",qty:100},{name:"Element Dust",qty:1000}]},
+  {title:"🌿 Forest Titan (Extinction)",category:"raid",priority:"haute",
+    items:[{name:"Corrupt Heart",qty:100},{name:"Element Dust",qty:1000}]},
+  {title:"👑 King Titan Gamma (Extinction)",category:"raid",priority:"haute",
+    items:[{name:"Titan Trophy",qty:3},{name:"Corrupt Heart",qty:150},{name:"Element",qty:20}]},
+  {title:"👑 King Titan Alpha (Extinction)",category:"raid",priority:"haute",
+    items:[{name:"Titan Trophy",qty:3},{name:"Corrupt Heart",qty:300},{name:"Element",qty:100}]},
+
+  // ============================================================
+  // GENESIS PART 1
+  // ============================================================
+  {title:"🌊 Moeder Gamma (Genesis 1)",category:"raid",priority:"moyenne",
+    items:[{name:"Golden Nugget",qty:50}]},
+  {title:"🌊 Moeder Beta (Genesis 1)",category:"raid",priority:"haute",
+    items:[{name:"Golden Nugget",qty:100}]},
+  {title:"🌊 Moeder Alpha (Genesis 1)",category:"raid",priority:"haute",
+    items:[{name:"Golden Nugget",qty:200}]},
+  {title:"🧬 Corrupted Master Controller Gamma (Gen1)",category:"raid",priority:"haute",
+    items:[{name:"Golden Nugget",qty:150}]},
+  {title:"🧬 Corrupted Master Controller Alpha (Gen1)",category:"raid",priority:"haute",
+    items:[{name:"Golden Nugget",qty:500}]},
+
+  // ============================================================
+  // GENESIS PART 2
+  // ============================================================
+  {title:"🌀 Rockwell Prime Gamma (Genesis 2)",category:"raid",priority:"haute",
+    items:[{name:"Element",qty:20},{name:"Mutagel",qty:50}]},
+  {title:"🌀 Rockwell Prime Beta (Genesis 2)",category:"raid",priority:"haute",
+    items:[{name:"Element",qty:50},{name:"Mutagel",qty:100}]},
+  {title:"🌀 Rockwell Prime Alpha (Genesis 2)",category:"raid",priority:"haute",
+    items:[{name:"Element",qty:100},{name:"Mutagel",qty:200}]},
+
+  // ============================================================
+  // FJORDUR
+  // ============================================================
+  {title:"🐺 Fenrisúlfr Gamma (Fjordur)",category:"raid",priority:"moyenne",
+    items:[{name:"Runestone",qty:30}]},
+  {title:"🐺 Fenrisúlfr Beta (Fjordur)",category:"raid",priority:"haute",
+    items:[{name:"Runestone",qty:30},{name:"Alpha T-Rex Trophy",qty:1}]},
+  {title:"🐺 Fenrisúlfr Alpha (Fjordur)",category:"raid",priority:"haute",
+    items:[{name:"Runestone",qty:30},{name:"Alpha T-Rex Trophy",qty:1}]},
+  {title:"🐍 Broodmother/Megapithecus/Dragon (Fjordur)",category:"raid",priority:"haute",
+    items:[{name:"Runestone",qty:30},{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
+      {name:"Artifact of the Brute",qty:1},{name:"Artifact of the Clever",qty:1},{name:"Artifact of the Devious",qty:1},
+      {name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1}]},
+  {title:"🦊 Beyla Gamma (Fjordur)",category:"raid",priority:"moyenne",
+    items:[{name:"Runestone",qty:30}]},
+  {title:"🦊 Beyla Alpha (Fjordur)",category:"raid",priority:"haute",
+    items:[{name:"Runestone",qty:30}]},
+  {title:"🐲 Steinbjorn Gamma (Fjordur)",category:"raid",priority:"moyenne",
+    items:[{name:"Runestone",qty:30}]},
+  {title:"🐲 Steinbjorn Alpha (Fjordur)",category:"raid",priority:"haute",
+    items:[{name:"Runestone",qty:30}]},
+  {title:"⚡ Hati & Skoll Gamma (Fjordur)",category:"raid",priority:"moyenne",
+    items:[{name:"Runestone",qty:30}]},
+  {title:"⚡ Hati & Skoll Alpha (Fjordur)",category:"raid",priority:"haute",
+    items:[{name:"Runestone",qty:30}]},
+
+  // ============================================================
+  // THE CENTER
+  // ============================================================
+  {title:"🕷️🦍 Broodmother & Megapithecus (Center)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
+      {name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1}]},
+
+  // ============================================================
+  // RAGNAROK
+  // ============================================================
+  {title:"🐉🦂 Dragon & Manticore (Ragnarok)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1},
+      {name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1},
+      {name:"Fire Talon",qty:2},{name:"Deathworm Horn",qty:5}]},
+
+  // ============================================================
+  // VALGUERO
+  // ============================================================
+  {title:"🦍🐉 Megapithecus & Dragon (Valguero)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1},
+      {name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1}]},
+
+  // ============================================================
+  // CRYSTAL ISLES
+  // ============================================================
+  {title:"💎 Crystal Wyvern Queen Gamma (Crystal Isles)",category:"raid",priority:"moyenne",
+    items:[{name:"Primal Crystal",qty:20}]},
+  {title:"💎 Crystal Wyvern Queen Beta (Crystal Isles)",category:"raid",priority:"haute",
+    items:[{name:"Primal Crystal",qty:40}]},
+  {title:"💎 Crystal Wyvern Queen Alpha (Crystal Isles)",category:"raid",priority:"haute",
+    items:[{name:"Primal Crystal",qty:60},{name:"Alpha Crystal Wyvern Queen Trophy",qty:1}]},
+
+  // ============================================================
+  // LOST ISLAND
+  // ============================================================
+  {title:"🦁 Dinopithecus King Gamma (Lost Island)",category:"raid",priority:"moyenne",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Massive",qty:1},{name:"Artifact of the Skylord",qty:1}]},
+  {title:"🦁 Dinopithecus King Beta (Lost Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Massive",qty:1},{name:"Artifact of the Skylord",qty:1},
+      {name:"Sarcosuchus Skin",qty:3},{name:"Tyrannosaurus Arm",qty:3}]},
+  {title:"🦁 Dinopithecus King Alpha (Lost Island)",category:"raid",priority:"haute",
+    items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Massive",qty:1},{name:"Artifact of the Skylord",qty:1},
+      {name:"Sarcosuchus Skin",qty:5},{name:"Tyrannosaurus Arm",qty:5},{name:"Alpha T-Rex Trophy",qty:1}]},
+
+  // ============================================================
+  // LOST COLONY (ASA DLC)
+  // ============================================================
+  {title:"🔥 Pyromaniac Boss (Lost Colony)",category:"raid",priority:"haute",
+    items:[{name:"Pyromaniac Fang",qty:10},{name:"Draconis Silk",qty:5},{name:"Drakling Talon",qty:5}]},
+  {title:"🦇 Gigadesmodus Boss (Lost Colony)",category:"raid",priority:"haute",
+    items:[{name:"Gigadesmodus Wing",qty:10},{name:"Dreadmear Essence",qty:5},{name:"Aureliax Crystal",qty:5}]},
+  {title:"🐊 Fasolasuchus Boss (Lost Colony)",category:"raid",priority:"haute",
+    items:[{name:"Fasolasuchus Scale",qty:10},{name:"Ceratosaurus Horn",qty:5},{name:"Shastasaurus Oil",qty:5}]},
+
+  // ============================================================
+  // UTILITY TEMPLATES
+  // ============================================================
+  {title:"🏗️ Base métal 3x3",category:"building",priority:"moyenne",
+    items:[{name:"Metal Foundation",qty:9},{name:"Metal Wall",qty:24},{name:"Metal Ceiling",qty:9},
+      {name:"Metal Doorframe",qty:2},{name:"Metal Door",qty:2}]},
+  {title:"🏗️ Base métal 5x5 fortifiée",category:"building",priority:"haute",
+    items:[{name:"Metal Foundation",qty:25},{name:"Metal Wall",qty:60},{name:"Metal Ceiling",qty:25},
+      {name:"Metal Doorframe",qty:4},{name:"Metal Door",qty:4},{name:"Metal Gateway",qty:2},{name:"Metal Gate",qty:2},
+      {name:"Auto Turret",qty:6},{name:"Generator",qty:1},{name:"Gasoline",qty:50}]},
+  {title:"⚔️ Kit PVP complet",category:"raid",priority:"haute",
+    items:[{name:"Flak Helmet",qty:3},{name:"Flak Chestpiece",qty:3},{name:"Flak Gauntlets",qty:3},
+      {name:"Flak Leggings",qty:3},{name:"Flak Boots",qty:3},{name:"Longneck Rifle",qty:1},
+      {name:"Pump-Action Shotgun",qty:1},{name:"Fabricated Pistol",qty:1},
+      {name:"Medical Brew",qty:50},{name:"Stimulant",qty:50},{name:"Energy Brew",qty:30},
+      {name:"Advanced Rifle Bullet",qty:200},{name:"Simple Shotgun Ammo",qty:100},{name:"Simple Bullet",qty:200}]},
+  {title:"⚔️ Kit Raid C4",category:"raid",priority:"haute",
+    items:[{name:"C4 Charge",qty:50},{name:"C4 Remote Detonator",qty:1},{name:"Rocket Launcher",qty:2},
+      {name:"Rocket Propelled Grenade",qty:30},{name:"Flak Helmet",qty:2},{name:"Flak Chestpiece",qty:2},
+      {name:"Flak Gauntlets",qty:2},{name:"Flak Leggings",qty:2},{name:"Flak Boots",qty:2},
+      {name:"Medical Brew",qty:100}]},
+  {title:"🦖 Tame basique (KO)",category:"taming",priority:"moyenne",
+    items:[{name:"Tranq Arrow",qty:50},{name:"Narcotic",qty:100},{name:"Raw Meat",qty:50},{name:"Narcoberry",qty:200}]},
+  {title:"🦖 Tame gros dino (Rex/Giga)",category:"taming",priority:"haute",
+    items:[{name:"Shocking Tranq Dart",qty:100},{name:"Narcotic",qty:500},{name:"Kibble (Exceptional)",qty:30},
+      {name:"Longneck Rifle",qty:1},{name:"Biotoxin",qty:200}]},
+  {title:"🧬 Élevage complet",category:"breeding",priority:"moyenne",
+    items:[{name:"Air Conditioner",qty:14},{name:"Cryopod",qty:10},{name:"Kibble (Extraordinary)",qty:50},
+      {name:"Cryofridge",qty:1},{name:"Tek Trough",qty:1},{name:"Cooked Meat",qty:500}]},
+  {title:"🛡️ Tourelles x10",category:"building",priority:"haute",
+    items:[{name:"Auto Turret",qty:10},{name:"Advanced Bullet",qty:2000},{name:"Generator",qty:1},{name:"Gasoline",qty:50},{name:"Electrical Cable",qty:20}]},
+  {title:"🛡️ Tourelles Heavy x6",category:"building",priority:"haute",
+    items:[{name:"Heavy Auto Turret",qty:6},{name:"Advanced Rifle Bullet",qty:3000},{name:"Tek Generator",qty:1},{name:"Element",qty:10}]},
+  {title:"🧪 Farm Narco/Stimulant",category:"farming",priority:"moyenne",
+    items:[{name:"Narcoberry",qty:5000},{name:"Spoiled Meat",qty:1000},{name:"Stimberry",qty:2000},{name:"Sparkpowder",qty:500}]},
+  {title:"⛏️ Farm ressources de base",category:"farming",priority:"basse",
+    items:[{name:"Metal Ingot",qty:3000},{name:"Cementing Paste",qty:1000},{name:"Polymer",qty:500},
+      {name:"Crystal",qty:500},{name:"Obsidian",qty:300},{name:"Silica Pearls",qty:500}]},
+  {title:"⛏️ Farm Element",category:"farming",priority:"haute",
+    items:[{name:"Element",qty:50},{name:"Element Dust",qty:5000},{name:"Element Shard",qty:100}]}
 ];
 
 // =============================================
@@ -435,10 +960,8 @@ function getItemIconUrl(name) {
   var slug = name.replace(/ /g, '_');
   return 'https://ark.wiki.gg/images/thumb/' + slug + '.png/30px-' + slug + '.png';
 }
-
 function itemIconHtml(name, cls) {
-  var c = cls || '';
-  return '<img class="' + c + '" src="' + getItemIconUrl(name) + '" alt="" onerror="this.classList.add(\'broken\')" loading="lazy">';
+  return '<img class="' + (cls||'') + '" src="' + getItemIconUrl(name) + '" alt="" onerror="this.classList.add(\'broken\')" loading="lazy">';
 }
 
 // =============================================
@@ -446,18 +969,66 @@ function itemIconHtml(name, cls) {
 // =============================================
 var STATE = {
   pseudo: '',
+  tribeName: '',
   tribeCode: null,
+  cloudId: null,
   tasks: [],
+  members: [],
+  roles: {},
+  customCategories: [],
+  activityLog: [],
+  stats: {},
+  breedingLibrary: [],
   lastSync: 0
 };
 
 var CLOUD_BASE = 'https://api.npoint.io';
 var syncInterval = null;
 var cloudId = null;
-
-// Pending items for the task creation form
 var pendingItems = [];
-var acIndex = -1; // autocomplete active index
+var acIndex = -1;
+var filterMyTasks = false;
+var previousTasksSnapshot = '';
+
+// =============================================
+// ANIMATED BACKGROUND
+// =============================================
+function initBubbles() {
+  // Legacy — replaced by canvas particle system
+}
+
+// =============================================
+// TOAST NOTIFICATIONS
+// =============================================
+function showToast(icon, message) {
+  var container = document.getElementById('toastContainer');
+  var toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = '<span class="toast-icon">'+icon+'</span><span class="toast-body">'+message+'</span>';
+  container.appendChild(toast);
+  setTimeout(function() {
+    toast.classList.add('out');
+    setTimeout(function() { toast.remove(); }, 400);
+  }, 4000);
+}
+
+// =============================================
+// TABS
+// =============================================
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-tab') === tabName); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    var isActive = p.id === 'panel-' + tabName;
+    p.classList.toggle('active', isActive);
+    p.style.display = isActive ? 'flex' : 'none';
+  });
+  var filterBtn = document.getElementById('filterMyTasks');
+  if (filterBtn) filterBtn.style.display = tabName === 'tasks' ? '' : 'none';
+  if (tabName === 'templates') renderTemplates();
+  if (tabName === 'journal') renderJournal();
+  if (tabName === 'stats') renderStats();
+  if (tabName === 'breeding') renderBreeding();
+}
 
 // =============================================
 // AUTOCOMPLETE
@@ -466,7 +1037,6 @@ function setupAutocomplete() {
   var input = document.getElementById('itemNameInput');
   var dd = document.getElementById('autocompleteDropdown');
   if (!input || !dd) return;
-
   input.addEventListener('input', function() {
     var q = this.value.trim().toLowerCase();
     acIndex = -1;
@@ -474,14 +1044,9 @@ function setupAutocomplete() {
     var matches = ARK_ITEMS.filter(function(n) { return n.toLowerCase().indexOf(q) !== -1; }).slice(0, 15);
     if (matches.length === 0) { dd.classList.remove('show'); return; }
     dd.innerHTML = matches.map(function(m, i) {
-      return '<div class="autocomplete-item" data-index="' + i + '" data-name="' + escH(m) + '">' +
-        itemIconHtml(m, 'broken') + // start as broken, load lazily
-        '<span>' + highlightMatch(m, q) + '</span></div>';
+      return '<div class="autocomplete-item" data-index="'+i+'" data-name="'+escH(m)+'">'+itemIconHtml(m,'')+' <span>'+highlightMatch(m,q)+'</span></div>';
     }).join('');
-    // Fix image loading
-    dd.querySelectorAll('img').forEach(function(img) { img.classList.remove('broken'); });
     dd.classList.add('show');
-
     dd.querySelectorAll('.autocomplete-item').forEach(function(el) {
       el.addEventListener('mousedown', function(e) {
         e.preventDefault();
@@ -491,56 +1056,34 @@ function setupAutocomplete() {
       });
     });
   });
-
   input.addEventListener('keydown', function(e) {
     var items = dd.querySelectorAll('.autocomplete-item');
     if (!dd.classList.contains('show') || items.length === 0) {
       if (e.key === 'Enter') { e.preventDefault(); addPendingItem(); }
       return;
     }
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'ArrowDown') { e.preventDefault(); acIndex = Math.min(acIndex+1,items.length-1); updateAcActive(items); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); acIndex = Math.max(acIndex-1,0); updateAcActive(items); }
+    else if (e.key === 'Enter') {
       e.preventDefault();
-      acIndex = Math.min(acIndex + 1, items.length - 1);
-      updateAcActive(items);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      acIndex = Math.max(acIndex - 1, 0);
-      updateAcActive(items);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (acIndex >= 0 && items[acIndex]) {
-        input.value = items[acIndex].getAttribute('data-name');
-        dd.classList.remove('show');
-        document.getElementById('itemQtyInput').focus();
-      } else {
-        addPendingItem();
-      }
-    } else if (e.key === 'Escape') {
-      dd.classList.remove('show');
-    }
+      if (acIndex >= 0 && items[acIndex]) { input.value = items[acIndex].getAttribute('data-name'); dd.classList.remove('show'); document.getElementById('itemQtyInput').focus(); }
+      else { addPendingItem(); }
+    } else if (e.key === 'Escape') { dd.classList.remove('show'); }
   });
-
-  input.addEventListener('blur', function() {
-    setTimeout(function() { dd.classList.remove('show'); }, 150);
-  });
+  input.addEventListener('blur', function() { setTimeout(function() { dd.classList.remove('show'); }, 150); });
 }
-
 function updateAcActive(items) {
-  items.forEach(function(el, i) {
-    if (i === acIndex) el.classList.add('active');
-    else el.classList.remove('active');
-  });
-  if (acIndex >= 0 && items[acIndex]) items[acIndex].scrollIntoView({ block: 'nearest' });
+  items.forEach(function(el,i) { el.classList.toggle('active', i===acIndex); });
+  if (acIndex >= 0 && items[acIndex]) items[acIndex].scrollIntoView({block:'nearest'});
 }
-
 function highlightMatch(text, query) {
   var idx = text.toLowerCase().indexOf(query);
   if (idx === -1) return escH(text);
-  return escH(text.substring(0, idx)) + '<strong style="color:var(--accent-l)">' + escH(text.substring(idx, idx + query.length)) + '</strong>' + escH(text.substring(idx + query.length));
+  return escH(text.substring(0,idx))+'<strong style="color:var(--accent-l)">'+escH(text.substring(idx,idx+query.length))+'</strong>'+escH(text.substring(idx+query.length));
 }
 
 // =============================================
-// PENDING ITEMS (form)
+// PENDING ITEMS
 // =============================================
 function addPendingItem() {
   var nameInput = document.getElementById('itemNameInput');
@@ -549,34 +1092,57 @@ function addPendingItem() {
   var qty = parseInt(qtyInput.value) || 1;
   if (!name) { nameInput.focus(); return; }
   if (qty < 1) qty = 1;
-
-  pendingItems.push({ name: name, qty: qty, collected: 0 });
+  pendingItems.push({name:name,qty:qty,collected:0});
   nameInput.value = '';
   qtyInput.value = '1';
   nameInput.focus();
   document.getElementById('autocompleteDropdown').classList.remove('show');
   renderPendingItems();
 }
-
 function removePendingItem(idx) {
-  pendingItems.splice(idx, 1);
+  pendingItems.splice(idx,1);
   renderPendingItems();
 }
-
 function renderPendingItems() {
   var container = document.getElementById('pendingItems');
   if (!container) return;
   if (pendingItems.length === 0) { container.innerHTML = ''; return; }
-  container.innerHTML = pendingItems.map(function(it, i) {
-    return '<div class="pending-item">' +
-      itemIconHtml(it.name, 'pending-item-icon') +
-      '<span class="pending-item-name">' + escH(it.name) + '</span>' +
-      '<span class="pending-item-qty">x' + it.qty + '</span>' +
-      '<button class="btn-icon btn-remove" onclick="removePendingItem(' + i + ')" title="Retirer">' +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-      '</button>' +
-    '</div>';
+  container.innerHTML = pendingItems.map(function(it,i) {
+    return '<div class="pending-item">'+itemIconHtml(it.name,'pending-item-icon')+
+      '<span class="pending-item-name">'+escH(it.name)+'</span>'+
+      '<span class="pending-item-qty">x'+it.qty+'</span>'+
+      '<button class="btn-icon btn-remove" onclick="removePendingItem('+i+')" title="Retirer">'+
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'+
+      '</button></div>';
   }).join('');
+}
+
+// =============================================
+// TASK OPTIONS TOGGLES
+// =============================================
+function toggleRecurOptions() {
+  var btn = document.getElementById('recurToggle');
+  var typeEl = document.getElementById('recurType');
+  var customEl = document.getElementById('recurCustomH');
+  var isActive = btn.classList.toggle('active');
+  typeEl.style.display = isActive ? '' : 'none';
+  customEl.style.display = isActive && typeEl.value === 'custom' ? '' : 'none';
+  typeEl.onchange = function() {
+    customEl.style.display = this.value === 'custom' ? '' : 'none';
+  };
+}
+function toggleCoordsInput() {
+  var btn = document.getElementById('coordsToggle');
+  var x = document.getElementById('coordX');
+  var y = document.getElementById('coordY');
+  var isActive = btn.classList.toggle('active');
+  x.style.display = isActive ? '' : 'none';
+  y.style.display = isActive ? '' : 'none';
+}
+function toggleMyTasksFilter() {
+  filterMyTasks = !filterMyTasks;
+  document.getElementById('filterMyTasks').classList.toggle('active', filterMyTasks);
+  renderTasks();
 }
 
 // =============================================
@@ -585,63 +1151,49 @@ function renderPendingItems() {
 function generateCode() {
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random()*chars.length)];
   return code;
 }
-
 function createTribe() {
   var pseudo = document.getElementById('pseudoInput').value.trim();
+  var tribeName = document.getElementById('tribeNameInput').value.trim();
   if (!pseudo) { document.getElementById('pseudoInput').focus(); return; }
-
+  if (!tribeName) { document.getElementById('tribeNameInput').focus(); return; }
   STATE.pseudo = pseudo;
+  STATE.tribeName = tribeName;
   STATE.tribeCode = generateCode();
   STATE.tasks = [];
-
-  setSyncStatus('Création...', false);
-  fetch(CLOUD_BASE, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: STATE.tribeCode, tasks: [], members: [pseudo], created: Date.now() })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {})
-  .catch(function() {});
-
+  STATE.members = [pseudo];
+  STATE.roles = {};
+  STATE.roles[pseudo] = 'chef';
+  STATE.activityLog = [];
+  STATE.stats = {};
+  STATE.stats[pseudo] = {tasksCreated:0,tasksCompleted:0,itemsFarmed:0};
+  setSyncStatus('Creation...', false);
   createCloudDoc(function(id) {
     cloudId = id;
     saveLocal();
     showTribeScreen();
     startSync();
+    addLog('join', pseudo, pseudo+' a cree la tribu');
   });
 }
-
 function createCloudDoc(callback) {
-  var data = { code: STATE.tribeCode, tasks: [], members: [STATE.pseudo], updated: Date.now() };
-
+  var data = { code:STATE.tribeCode, tribeName:STATE.tribeName, tasks:[], members:[STATE.pseudo], roles:STATE.roles, customCategories:[], activityLog:[], stats:STATE.stats, updated:Date.now() };
   fetch('https://jsonblob.com/api/jsonBlob', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(data)
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(data)
   })
   .then(function(r) {
     var loc = r.headers.get('Location') || r.headers.get('location') || r.headers.get('X-Jsonblob') || '';
     if (loc) {
       var id = loc.split('/').pop();
-      if (id && id.length > 5) {
-        cloudId = id;
-        STATE.cloudId = id;
-        callback(id);
-        return;
-      }
+      if (id && id.length > 5) { cloudId = id; STATE.cloudId = id; callback(id); return; }
     }
     if (r.url && r.url.indexOf('jsonBlob/') !== -1) {
       var urlId = r.url.split('jsonBlob/').pop();
-      if (urlId && urlId.length > 5) {
-        cloudId = urlId;
-        STATE.cloudId = urlId;
-        callback(urlId);
-        return;
-      }
+      if (urlId && urlId.length > 5) { cloudId = urlId; STATE.cloudId = urlId; callback(urlId); return; }
     }
     return createWithNpoint(data, callback);
   })
@@ -650,75 +1202,70 @@ function createCloudDoc(callback) {
     createWithNpoint(data, callback);
   });
 }
-
 function createWithNpoint(data, callback) {
   fetch('https://api.npoint.io', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
   })
   .then(function(r) { return r.json(); })
   .then(function(resp) {
     if (resp && resp.id) {
-      var id = 'npoint:' + resp.id;
-      cloudId = id;
-      STATE.cloudId = id;
-      callback(id);
+      var id = 'npoint:'+resp.id;
+      cloudId = id; STATE.cloudId = id; callback(id);
     } else {
       setSyncStatus('Mode hors-ligne', true);
-      STATE.cloudId = null; cloudId = null;
-      callback(null);
+      STATE.cloudId = null; cloudId = null; callback(null);
     }
   })
   .catch(function(e) {
     console.error('All cloud services failed:', e);
     setSyncStatus('Mode hors-ligne', true);
-    STATE.cloudId = null; cloudId = null;
-    callback(null);
+    STATE.cloudId = null; cloudId = null; callback(null);
   });
 }
-
 function joinTribe() {
   var pseudo = document.getElementById('pseudoInput').value.trim();
   var code = document.getElementById('joinCode').value.trim();
   if (!pseudo) { document.getElementById('pseudoInput').focus(); return; }
   if (!code) { document.getElementById('joinCode').focus(); return; }
-
   STATE.pseudo = pseudo;
   STATE.tribeCode = code;
-
   var savedLocal = loadLocal();
   if (savedLocal && savedLocal.tribeCode === code && savedLocal.cloudId) {
     STATE = savedLocal;
     STATE.pseudo = pseudo;
     cloudId = savedLocal.cloudId;
+    if (!STATE.roles) STATE.roles = {};
+    if (!STATE.activityLog) STATE.activityLog = [];
+    if (!STATE.stats) STATE.stats = {};
+    if (!STATE.customCategories) STATE.customCategories = [];
+    if (!STATE.breedingLibrary) STATE.breedingLibrary = [];
     showTribeScreen();
     startSync();
     pullFromCloud();
     return;
   }
-
   setSyncStatus('Connexion...', false);
   var url = getCloudUrl(code);
-  if (!url) {
-    alert('Code invalide.');
-    return;
-  }
-  fetch(url, {
-    headers: { 'Accept': 'application/json' }
-  })
-  .then(function(r) {
-    if (!r.ok) throw new Error('Not found');
-    return r.json();
-  })
+  if (!url) { alert('Code invalide.'); return; }
+  fetch(url, {headers:{'Accept':'application/json'}})
+  .then(function(r) { if (!r.ok) throw new Error('Not found'); return r.json(); })
   .then(function(data) {
     cloudId = code;
     STATE.cloudId = code;
+    STATE.tribeName = data.tribeName || 'Tribu';
     STATE.tasks = data.tasks || [];
-    if (data.members && data.members.indexOf(pseudo) === -1) {
-      data.members.push(pseudo);
-    }
+    STATE.roles = data.roles || {};
+    STATE.activityLog = data.activityLog || [];
+    STATE.stats = data.stats || {};
+    STATE.customCategories = data.customCategories || [];
+    STATE.breedingLibrary = data.breedingLibrary || [];
+    if (data.members && data.members.indexOf(pseudo) === -1) data.members.push(pseudo);
     STATE.members = data.members || [pseudo];
+    if (!STATE.roles[pseudo]) STATE.roles[pseudo] = 'membre';
+    if (!STATE.stats[pseudo]) STATE.stats[pseudo] = {tasksCreated:0,tasksCompleted:0,itemsFarmed:0};
+    addLog('join', pseudo, pseudo+' a rejoint la tribu');
     saveLocal();
     showTribeScreen();
     startSync();
@@ -727,66 +1274,97 @@ function joinTribe() {
   })
   .catch(function() {
     setSyncStatus('Tribu introuvable', true);
-    alert('Code tribu introuvable. Vérifie le code et réessaie.');
+    alert('Code tribu introuvable. Verifie le code et reessaie.');
   });
 }
 
 // =============================================
-// CLOUD SYNC (jsonblob.com or npoint.io)
+// CLOUD SYNC
 // =============================================
-function getCloudUrl(id, method) {
+function getCloudUrl(id) {
   if (!id) return null;
-  if (id.indexOf('npoint:') === 0) {
-    return 'https://api.npoint.io/' + id.slice(7);
-  }
-  return 'https://jsonblob.com/api/jsonBlob/' + id;
+  if (id.indexOf('npoint:') === 0) return 'https://api.npoint.io/'+id.slice(7);
+  return 'https://jsonblob.com/api/jsonBlob/'+id;
 }
-
 function pushToCloud() {
   if (!cloudId) return;
   var url = getCloudUrl(cloudId);
   if (!url) return;
   var data = {
-    code: STATE.tribeCode,
-    tasks: STATE.tasks,
-    members: STATE.members || [STATE.pseudo],
-    updated: Date.now()
+    code:STATE.tribeCode, tribeName:STATE.tribeName||'Tribu',
+    tasks:STATE.tasks, members:STATE.members||[STATE.pseudo],
+    roles:STATE.roles||{}, customCategories:STATE.customCategories||[],
+    activityLog:STATE.activityLog||[], stats:STATE.stats||{},
+    breedingLibrary:STATE.breedingLibrary||[],
+    updated:Date.now()
   };
   fetch(url, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(data)
+    method:'PUT',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(data)
   })
-  .then(function() { setSyncStatus('Synchronisé', false); })
+  .then(function() { setSyncStatus('Synchronise', false); })
   .catch(function() { setSyncStatus('Erreur sync', true); });
 }
-
 function pullFromCloud() {
   if (!cloudId) return;
   var url = getCloudUrl(cloudId);
   if (!url) return;
-  fetch(url, {
-    headers: { 'Accept': 'application/json' }
-  })
+  fetch(url, {headers:{'Accept':'application/json'}})
   .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
   .then(function(data) {
     if (data.updated && data.updated > STATE.lastSync) {
-      STATE.tasks = data.tasks || [];
+      var oldSnapshot = JSON.stringify(STATE.tasks);
+      var newTasks = data.tasks || [];
+      var newSnapshot = JSON.stringify(newTasks);
+      if (oldSnapshot !== newSnapshot) {
+        detectChanges(STATE.tasks, newTasks);
+      }
+      STATE.tasks = newTasks;
       STATE.members = data.members || [];
+      if (data.tribeName) STATE.tribeName = data.tribeName;
+      if (data.roles) STATE.roles = data.roles;
+      if (data.customCategories) STATE.customCategories = data.customCategories;
+      if (data.activityLog) STATE.activityLog = data.activityLog;
+      if (data.stats) STATE.stats = data.stats;
+      if (data.breedingLibrary) { STATE.breedingLibrary = data.breedingLibrary; renderBreeding(); }
       STATE.lastSync = data.updated;
       renderTasks();
+      renderMembers();
+      updateAssignDropdown();
+      if (data.tribeName) document.getElementById('tribeNameDisplay').textContent = data.tribeName;
       saveLocal();
-      setSyncStatus('Synchronisé', false);
+      setSyncStatus('Synchronise', false);
     }
   })
   .catch(function() { setSyncStatus('Erreur sync', true); });
 }
-
+function detectChanges(oldTasks, newTasks) {
+  var oldMap = {};
+  oldTasks.forEach(function(t) { oldMap[t.id] = t; });
+  newTasks.forEach(function(t) {
+    if (!oldMap[t.id]) {
+      if (t.author !== STATE.pseudo) showToast('&#10133;', '<span class="toast-member">'+escH(t.author)+'</span> a ajoute la tache "'+escH(t.title)+'"');
+    } else {
+      var old = oldMap[t.id];
+      if (t.done && !old.done && t.doneBy && t.doneBy !== STATE.pseudo) {
+        showToast('&#9989;', '<span class="toast-member">'+escH(t.doneBy)+'</span> a termine "'+escH(t.title)+'"');
+      }
+      if (t.items && old.items) {
+        var oldTotal = 0, newTotal = 0;
+        old.items.forEach(function(it) { oldTotal += (it.collected||0); });
+        t.items.forEach(function(it) { newTotal += (it.collected||0); });
+        if (newTotal > oldTotal && t.lastEditor && t.lastEditor !== STATE.pseudo) {
+          showToast('&#128230;', '<span class="toast-member">'+escH(t.lastEditor)+'</span> a farme +'+(newTotal-oldTotal)+' items sur "'+escH(t.title)+'"');
+        }
+      }
+    }
+  });
+}
 function startSync() {
   if (syncInterval) clearInterval(syncInterval);
-  syncInterval = setInterval(function() { pullFromCloud(); }, 3000);
+  syncInterval = setInterval(function() { pullFromCloud(); checkRecurringTasks(); updateDeadlineDisplays(); }, 3000);
 }
-
 function stopSync() {
   if (syncInterval) clearInterval(syncInterval);
   syncInterval = null;
@@ -801,7 +1379,6 @@ function saveLocal() {
     if (window.api && window.api.saveTribeData) window.api.saveTribeData(STATE);
   } catch(e) {}
 }
-
 function loadLocal() {
   try {
     var s = localStorage.getItem('didi-tribe');
@@ -811,218 +1388,662 @@ function loadLocal() {
 }
 
 // =============================================
+// ACTIVITY LOG
+// =============================================
+function addLog(type, member, text) {
+  if (!STATE.activityLog) STATE.activityLog = [];
+  STATE.activityLog.unshift({type:type, member:member, text:text, time:Date.now()});
+  if (STATE.activityLog.length > 100) STATE.activityLog = STATE.activityLog.slice(0,100);
+}
+
+// =============================================
+// STATS TRACKING
+// =============================================
+function trackStat(member, field, amount) {
+  if (!STATE.stats) STATE.stats = {};
+  if (!STATE.stats[member]) STATE.stats[member] = {tasksCreated:0,tasksCompleted:0,itemsFarmed:0};
+  STATE.stats[member][field] = (STATE.stats[member][field]||0) + (amount||1);
+}
+
+// =============================================
+// RECURRING TASKS
+// =============================================
+function checkRecurringTasks() {
+  var now = Date.now();
+  var changed = false;
+  STATE.tasks.forEach(function(t) {
+    if (t.recurring && t.done && t.recurResetAt && now >= t.recurResetAt) {
+      t.done = false;
+      t.doneBy = null;
+      if (t.items) t.items.forEach(function(it) { it.collected = 0; });
+      t.recurResetAt = null;
+      changed = true;
+      addLog('create', 'systeme', 'Tache recurrente "'+t.title+'" a ete reinitialise');
+    }
+  });
+  if (changed) { renderTasks(); saveLocal(); pushToCloud(); }
+}
+
+// =============================================
 // TASKS
 // =============================================
 function addTask() {
   var input = document.getElementById('taskInput');
   var title = input.value.trim();
   if (!title) return;
-
   var task = {
-    id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-    title: title,
-    category: document.getElementById('taskCategory').value,
-    priority: document.getElementById('taskPriority').value,
-    done: false,
-    author: STATE.pseudo,
-    createdAt: Date.now()
+    id: Date.now()+'-'+Math.random().toString(36).substr(2,5),
+    title:title,
+    category:document.getElementById('taskCategory').value,
+    priority:document.getElementById('taskPriority').value,
+    done:false,
+    author:STATE.pseudo,
+    createdAt:Date.now()
   };
-
-  // Attach pending items if any
+  var assignVal = document.getElementById('taskAssign').value;
+  if (assignVal) task.assignedTo = assignVal;
+  var deadlineVal = document.getElementById('taskDeadline').value;
+  if (deadlineVal) task.deadline = Date.now() + parseInt(deadlineVal);
+  var recurBtn = document.getElementById('recurToggle');
+  if (recurBtn.classList.contains('active')) {
+    task.recurring = true;
+    var rt = document.getElementById('recurType').value;
+    task.recurType = rt;
+    if (rt === 'daily') task.recurIntervalMs = 86400000;
+    else if (rt === 'weekly') task.recurIntervalMs = 604800000;
+    else {
+      var h = parseInt(document.getElementById('recurCustomH').value) || 1;
+      task.recurIntervalMs = h * 3600000;
+    }
+  }
+  var coordsBtn = document.getElementById('coordsToggle');
+  if (coordsBtn.classList.contains('active')) {
+    var cx = parseFloat(document.getElementById('coordX').value);
+    var cy = parseFloat(document.getElementById('coordY').value);
+    if (!isNaN(cx) && !isNaN(cy)) task.coords = {x:cx, y:cy};
+  }
   if (pendingItems.length > 0) {
-    task.items = pendingItems.map(function(it) {
-      return { name: it.name, qty: it.qty, collected: 0 };
-    });
+    task.items = pendingItems.map(function(it) { return {name:it.name,qty:it.qty,collected:0}; });
     pendingItems = [];
     renderPendingItems();
   }
-
   STATE.tasks.unshift(task);
   input.value = '';
+  trackStat(STATE.pseudo, 'tasksCreated', 1);
+  addLog('create', STATE.pseudo, STATE.pseudo+' a cree "'+title+'"');
+  resetTaskOptions();
   renderTasks();
   saveLocal();
   pushToCloud();
 }
-
+function resetTaskOptions() {
+  document.getElementById('recurToggle').classList.remove('active');
+  document.getElementById('recurType').style.display = 'none';
+  document.getElementById('recurCustomH').style.display = 'none';
+  document.getElementById('coordsToggle').classList.remove('active');
+  document.getElementById('coordX').style.display = 'none';
+  document.getElementById('coordY').style.display = 'none';
+  document.getElementById('taskDeadline').value = '';
+  document.getElementById('taskAssign').value = '';
+}
 function toggleTask(id) {
   var t = STATE.tasks.find(function(x) { return x.id === id; });
-  if (t) { t.done = !t.done; t.doneBy = t.done ? STATE.pseudo : null; }
+  if (!t) return;
+  t.done = !t.done;
+  t.doneBy = t.done ? STATE.pseudo : null;
+  if (t.done) {
+    trackStat(STATE.pseudo, 'tasksCompleted', 1);
+    addLog('complete', STATE.pseudo, STATE.pseudo+' a termine "'+t.title+'"');
+    if (t.recurring && t.recurIntervalMs) {
+      t.recurResetAt = Date.now() + t.recurIntervalMs;
+    }
+  }
   renderTasks();
   saveLocal();
   pushToCloud();
 }
-
 function deleteTask(id) {
+  var t = STATE.tasks.find(function(x) { return x.id === id; });
+  if (!t) return;
+  var myRole = STATE.roles[STATE.pseudo] || 'membre';
+  if (t.author !== STATE.pseudo && myRole === 'membre') {
+    showToast('&#9940;', 'Seul un chef ou officier peut supprimer les taches des autres');
+    return;
+  }
   STATE.tasks = STATE.tasks.filter(function(x) { return x.id !== id; });
+  addLog('delete', STATE.pseudo, STATE.pseudo+' a supprime "'+t.title+'"');
   renderTasks();
   saveLocal();
   pushToCloud();
+}
+// Track which task items sections are open
+var openItemSections = {};
+
+function saveOpenSections() {
+  document.querySelectorAll('.task-items-container.open').forEach(function(el) {
+    var id = el.id.replace('items-','');
+    openItemSections[id] = true;
+  });
+}
+function restoreOpenSections() {
+  Object.keys(openItemSections).forEach(function(id) {
+    var container = document.getElementById('items-'+id);
+    var toggle = document.getElementById('toggle-'+id);
+    if (container) container.classList.add('open');
+    if (toggle) toggle.classList.add('open');
+  });
+  // Auto-open tasks with only 1 item
+  STATE.tasks.forEach(function(t) {
+    if (t.items && t.items.length === 1 && !t.done) {
+      var container = document.getElementById('items-'+t.id);
+      var toggle = document.getElementById('toggle-'+t.id);
+      if (container && !container.classList.contains('open')) {
+        container.classList.add('open');
+        if (toggle) toggle.classList.add('open');
+        openItemSections[t.id] = true;
+      }
+    }
+  });
 }
 
 function incrementItem(taskId, itemIdx, amount) {
   var t = STATE.tasks.find(function(x) { return x.id === taskId; });
   if (!t || !t.items || !t.items[itemIdx]) return;
   var item = t.items[itemIdx];
-  item.collected = Math.max(0, Math.min((item.collected || 0) + amount, item.qty));
+  var before = item.collected || 0;
+  item.collected = Math.max(0, Math.min(before + amount, item.qty));
+  var diff = (item.collected||0) - before;
+  if (diff > 0) {
+    trackStat(STATE.pseudo, 'itemsFarmed', diff);
+    addLog('farm', STATE.pseudo, STATE.pseudo+' a farmé +'+diff+' '+item.name);
+  }
+  t.lastEditor = STATE.pseudo;
+  openItemSections[taskId] = true;
+  saveOpenSections();
   renderTasks();
+  restoreOpenSections();
   saveLocal();
   pushToCloud();
 }
 
 function editItemCollected(taskId, itemIdx) {
+  // Replace the progress span with an inline input
+  var spanId = 'progress-'+taskId+'-'+itemIdx;
+  var span = document.getElementById(spanId);
+  if (!span) return;
+  // Already editing?
+  if (span.querySelector('.item-inline-edit')) return;
+
   var t = STATE.tasks.find(function(x) { return x.id === taskId; });
   if (!t || !t.items || !t.items[itemIdx]) return;
   var item = t.items[itemIdx];
-  var val = prompt('Nombre collecté pour "' + item.name + '" (max ' + item.qty + '):', item.collected || 0);
-  if (val === null) return;
-  var num = parseInt(val);
-  if (isNaN(num) || num < 0) return;
-  item.collected = Math.min(num, item.qty);
-  renderTasks();
-  saveLocal();
-  pushToCloud();
-}
 
+  var currentVal = item.collected || 0;
+  span.innerHTML = '<input class="item-inline-edit" type="number" value="'+currentVal+'" min="0" max="'+item.qty+'" data-task="'+taskId+'" data-idx="'+itemIdx+'">/'+item.qty;
+
+  var input = span.querySelector('.item-inline-edit');
+  input.focus();
+  input.select();
+
+  function commitEdit() {
+    var num = parseInt(input.value);
+    if (isNaN(num) || num < 0) num = currentVal;
+    if (num > item.qty) num = item.qty;
+    var before = item.collected || 0;
+    item.collected = num;
+    var diff = num - before;
+    if (diff > 0) { trackStat(STATE.pseudo, 'itemsFarmed', diff); addLog('farm', STATE.pseudo, STATE.pseudo+' a mis à jour '+item.name+' → '+num); }
+    t.lastEditor = STATE.pseudo;
+    openItemSections[taskId] = true;
+    saveOpenSections();
+    renderTasks();
+    restoreOpenSections();
+    saveLocal();
+    pushToCloud();
+  }
+
+  input.addEventListener('blur', commitEdit);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') {
+      input.removeEventListener('blur', commitEdit);
+      openItemSections[taskId] = true;
+      saveOpenSections();
+      renderTasks();
+      restoreOpenSections();
+    }
+  });
+}
 function getTaskProgress(task) {
   if (!task.items || task.items.length === 0) return null;
   var totalReq = 0, totalCol = 0;
-  task.items.forEach(function(it) {
-    totalReq += it.qty;
-    totalCol += Math.min(it.collected || 0, it.qty);
-  });
+  task.items.forEach(function(it) { totalReq += it.qty; totalCol += Math.min(it.collected||0,it.qty); });
   if (totalReq === 0) return null;
-  return { total: totalReq, collected: totalCol, pct: Math.round((totalCol / totalReq) * 100) };
+  return {total:totalReq,collected:totalCol,pct:Math.round((totalCol/totalReq)*100)};
 }
-
 function toggleItemsSection(taskId) {
-  var container = document.getElementById('items-' + taskId);
-  var toggle = document.getElementById('toggle-' + taskId);
+  var container = document.getElementById('items-'+taskId);
+  var toggle = document.getElementById('toggle-'+taskId);
   if (!container || !toggle) return;
   var isOpen = container.classList.contains('open');
-  if (isOpen) {
-    container.classList.remove('open');
-    toggle.classList.remove('open');
+  container.classList.toggle('open');
+  toggle.classList.toggle('open');
+  if (isOpen) { delete openItemSections[taskId]; }
+  else { openItemSections[taskId] = true; }
+}
+
+// =============================================
+// DYNAMIC PRIORITY SORTING
+// =============================================
+function getTaskSortScore(t) {
+  if (t.done) return 10000;
+  var score = 0;
+  var prioOrder = {haute:0,moyenne:100,basse:200};
+  score += prioOrder[t.priority] || 100;
+  if (t.deadline) {
+    var remaining = t.deadline - Date.now();
+    if (remaining < 0) score -= 500;
+    else if (remaining < 3600000) score -= 300;
+    else if (remaining < 21600000) score -= 100;
+  }
+  return score;
+}
+
+// =============================================
+// PROGRESS RING SVG
+// =============================================
+function progressRingSvg(pct, size) {
+  size = size || 22;
+  var r = (size/2) - 2;
+  var circ = 2 * Math.PI * r;
+  var offset = circ - (pct/100)*circ;
+  var color = pct >= 100 ? 'var(--green)' : 'var(--accent)';
+  return '<svg class="progress-ring" width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="var(--border-1)" stroke-width="2"/>'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" '+
+    'stroke-dasharray="'+circ+'" stroke-dashoffset="'+offset+'" transform="rotate(-90 '+(size/2)+' '+(size/2)+')"/>'+
+    '</svg>';
+}
+
+// =============================================
+// DEADLINE DISPLAY
+// =============================================
+function formatDeadline(deadline) {
+  if (!deadline) return '';
+  var remaining = deadline - Date.now();
+  if (remaining <= 0) return {text:'Expire', urgent:true};
+  if (remaining < 60000) return {text:Math.ceil(remaining/1000)+'s', urgent:true};
+  if (remaining < 3600000) return {text:Math.ceil(remaining/60000)+'min', urgent:remaining < 1800000};
+  if (remaining < 86400000) return {text:Math.floor(remaining/3600000)+'h'+Math.floor((remaining%3600000)/60000)+'m', urgent:false};
+  return {text:Math.floor(remaining/86400000)+'j', urgent:false};
+}
+function updateDeadlineDisplays() {
+  document.querySelectorAll('[data-deadline]').forEach(function(el) {
+    var dl = parseInt(el.getAttribute('data-deadline'));
+    var info = formatDeadline(dl);
+    el.textContent = '&#9200; '+info.text;
+    el.classList.toggle('urgent', info.urgent);
+  });
+}
+
+// =============================================
+// CRAFT CALCULATOR
+// =============================================
+function showCraftCalc(taskId) {
+  var t = STATE.tasks.find(function(x) { return x.id === taskId; });
+  if (!t || !t.items) return;
+  var rawMaterials = {};
+  t.items.forEach(function(item) {
+    var needed = item.qty - (item.collected||0);
+    if (needed <= 0) return;
+    calcRawMaterials(item.name, needed, rawMaterials, 0);
+  });
+  var html = '<div class="craft-popup-backdrop" onclick="closeCraftCalc()"></div>';
+  html += '<div class="craft-popup"><h3>&#128295; Materiaux necessaires</h3>';
+  var keys = Object.keys(rawMaterials);
+  if (keys.length === 0) {
+    html += '<div style="color:var(--text-2);text-align:center;padding:20px">Tous les items sont collectes !</div>';
   } else {
-    container.classList.add('open');
-    toggle.classList.add('open');
+    keys.sort();
+    keys.forEach(function(k) {
+      html += '<div class="craft-row">'+itemIconHtml(k,'task-item-icon')+' <span class="craft-name">'+escH(k)+'</span><span class="craft-qty">x'+rawMaterials[k]+'</span></div>';
+    });
+  }
+  html += '<div style="margin-top:12px;text-align:right"><button class="btn-secondary" onclick="closeCraftCalc()">Fermer</button></div></div>';
+  document.getElementById('modalContainer').innerHTML = html;
+}
+function calcRawMaterials(itemName, qty, result, depth) {
+  if (depth > 5) { result[itemName] = (result[itemName]||0) + qty; return; }
+  var recipe = CRAFT_RECIPES[itemName];
+  if (!recipe) { result[itemName] = (result[itemName]||0) + qty; return; }
+  Object.keys(recipe).forEach(function(mat) {
+    var matQty = recipe[mat] * qty;
+    calcRawMaterials(mat, matQty, result, depth+1);
+  });
+}
+function closeCraftCalc() {
+  document.getElementById('modalContainer').innerHTML = '';
+}
+
+// =============================================
+// COORDS / MAP
+// =============================================
+function openMapAtCoords() {
+  if (window.api && window.api.openMapsWindow) {
+    window.api.openMapsWindow('the-island', 'The Island');
   }
 }
 
+// =============================================
+// BREEDING
+// =============================================
+function openBreeding() {
+  if (window.api && window.api.openBreeding) {
+    window.api.openBreeding();
+  }
+}
+
+// =============================================
+// CUSTOM CATEGORIES
+// =============================================
+function showAddCategoryModal() {
+  var html = '<div class="modal-overlay" onclick="closeModal()"><div class="modal-box" onclick="event.stopPropagation()">';
+  html += '<h3>&#10133; Nouvelle categorie</h3>';
+  html += '<input id="customCatName" placeholder="Nom de la categorie">';
+  html += '<input id="customCatColor" type="color" value="#97ADFF" style="width:100%;height:32px;border:none;cursor:pointer">';
+  html += '<div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Annuler</button>';
+  html += '<button class="btn-primary" onclick="addCustomCategory()">Ajouter</button></div>';
+  html += '</div></div>';
+  document.getElementById('modalContainer').innerHTML = html;
+  setTimeout(function() { document.getElementById('customCatName').focus(); },100);
+}
+function addCustomCategory() {
+  var name = document.getElementById('customCatName').value.trim();
+  var color = document.getElementById('customCatColor').value;
+  if (!name) return;
+  var slug = name.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if (!STATE.customCategories) STATE.customCategories = [];
+  STATE.customCategories.push({slug:slug, name:name, color:color});
+  updateCategoryDropdown();
+  closeModal();
+  saveLocal();
+  pushToCloud();
+}
+function updateCategoryDropdown() {
+  var sel = document.getElementById('taskCategory');
+  var existingCustom = sel.querySelectorAll('.custom-opt');
+  existingCustom.forEach(function(o) { o.remove(); });
+  (STATE.customCategories||[]).forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c.slug;
+    opt.textContent = c.name;
+    opt.className = 'custom-opt';
+    sel.appendChild(opt);
+  });
+}
+function getCategoryColor(cat) {
+  var colors = {farming:'#2dd4a0',taming:'#60a5fa',building:'#f59e0b',raid:'#ef4444',breeding:'#d946ef',autre:'#97ADFF'};
+  if (colors[cat]) return colors[cat];
+  var custom = (STATE.customCategories||[]).find(function(c) { return c.slug === cat; });
+  return custom ? custom.color : '#97ADFF';
+}
+function getCategoryName(cat) {
+  var names = {farming:'Farming',taming:'Taming',building:'Building',raid:'Raid',breeding:'Breeding',autre:'Autre'};
+  if (names[cat]) return names[cat];
+  var custom = (STATE.customCategories||[]).find(function(c) { return c.slug === cat; });
+  return custom ? custom.name : cat;
+}
+function closeModal() {
+  document.getElementById('modalContainer').innerHTML = '';
+}
+
+// =============================================
+// TRIBE ROLES
+// =============================================
+function promoteToOfficier(member) {
+  if ((STATE.roles[STATE.pseudo]||'membre') !== 'chef') { showToast('&#9940;','Seul le chef peut promouvoir'); return; }
+  STATE.roles[member] = 'officier';
+  addLog('join', STATE.pseudo, STATE.pseudo+' a promu '+member+' officier');
+  renderMembers();
+  saveLocal();
+  pushToCloud();
+}
+function demoteToMembre(member) {
+  if ((STATE.roles[STATE.pseudo]||'membre') !== 'chef') { showToast('&#9940;','Seul le chef peut retrograder'); return; }
+  STATE.roles[member] = 'membre';
+  addLog('join', STATE.pseudo, STATE.pseudo+' a retrograde '+member);
+  renderMembers();
+  saveLocal();
+  pushToCloud();
+}
+function getRoleBadge(member) {
+  var role = (STATE.roles||{})[member] || 'membre';
+  if (role === 'chef') return '<span class="role-badge" title="Chef">&#128081;</span>';
+  if (role === 'officier') return '<span class="role-badge" title="Officier">&#128737;&#65039;</span>';
+  return '';
+}
+
+// =============================================
+// RENDER TASKS
+// =============================================
 function renderTasks() {
   var list = document.getElementById('taskList');
   var empty = document.getElementById('taskEmpty');
-
-  if (STATE.tasks.length === 0) {
+  var tasks = STATE.tasks;
+  if (filterMyTasks) {
+    tasks = tasks.filter(function(t) { return t.assignedTo === STATE.pseudo || t.author === STATE.pseudo || !t.assignedTo; });
+  }
+  if (tasks.length === 0) {
     empty.style.display = 'flex';
-    var cards = list.querySelectorAll('.task');
+    var cards = list.querySelectorAll('.task-card');
     cards.forEach(function(c) { c.remove(); });
     return;
   }
-
   empty.style.display = 'none';
-
-  var prioOrder = { haute: 0, moyenne: 1, basse: 2 };
-  var sorted = STATE.tasks.slice().sort(function(a, b) {
-    if (a.done !== b.done) return a.done ? 1 : -1;
-    return (prioOrder[a.priority] || 1) - (prioOrder[b.priority] || 1);
-  });
-
+  var sorted = tasks.slice().sort(function(a,b) { return getTaskSortScore(a) - getTaskSortScore(b); });
   var html = '';
-  sorted.forEach(function(t) {
+  sorted.forEach(function(t, idx) {
     var ago = timeAgo(t.createdAt);
     var progress = getTaskProgress(t);
     var hasItems = t.items && t.items.length > 0;
     var allCollected = progress && progress.pct === 100;
-
-    html += '<div class="task ' + (t.done ? 'done' : '') + '">';
-    html += '<button class="task-check ' + (t.done ? 'checked' : '') + '" onclick="toggleTask(\'' + t.id + '\')"></button>';
-    html += '<div class="task-body">';
-
-    // Title row with optional progress badge
-    html += '<div class="task-title-row">';
-    html += '<div class="task-title">' + escH(t.title) + '</div>';
-    if (progress) {
-      html += '<span class="task-progress-badge ' + (allCollected ? 'complete' : '') + '">' + progress.pct + '%</span>';
+    var catClass = 'cat-'+(t.category||'autre');
+    var extraClass = '';
+    if (t.priority === 'haute' && !t.done) extraClass += ' prio-haute-glow';
+    if (progress && progress.pct >= 80 && !allCollected && !t.done) extraClass += ' near-complete';
+    if (t.deadline && !t.done) {
+      var rem = t.deadline - Date.now();
+      if (rem > 0 && rem < 1800000) extraClass += ' deadline-urgent';
     }
-    html += '</div>';
-
-    html += '<div class="task-meta">';
-    html += '<span class="task-tag tag-' + t.category + '">' + getCategoryIcon(t.category) + ' ' + t.category + '</span>';
-    html += '<span class="task-prio prio-' + t.priority + '">' + t.priority + '</span>';
-    html += '<span class="task-author">' + escH(t.author) + '</span>';
-    html += '<span class="task-time">' + ago + '</span>';
-    if (t.done && t.doneBy) html += '<span class="task-time">' + svgCheck(8) + ' ' + escH(t.doneBy) + '</span>';
+    html += '<div class="task-card '+catClass+(t.done?' done':'')+extraClass+'" style="animation-delay:'+(idx*0.03)+'s">';
+    html += '<button class="task-check '+(t.done?'checked':'')+'" onclick="toggleTask(\''+t.id+'\')"></button>';
+    html += '<div class="task-body">';
+    html += '<div class="task-title-row">';
+    html += '<span class="prio-dot '+t.priority+'"></span>';
+    html += '<div class="task-title">'+escH(t.title)+'</div>';
+    html += '<div class="task-badges">';
+    if (t.recurring) html += '<span class="recur-badge" title="Recurrente">&#128260;</span>';
+    if (progress) html += progressRingSvg(progress.pct, 20);
+    if (progress) html += '<span class="task-progress-badge '+(allCollected?'complete':'')+'">'+progress.pct+'%</span>';
+    if (t.assignedTo) {
+      var initial = t.assignedTo.charAt(0).toUpperCase();
+      html += '<span class="assign-chip"><span class="assign-initial">'+initial+'</span>'+escH(t.assignedTo)+'</span>';
+    }
+    if (t.deadline && !t.done) {
+      var dlInfo = formatDeadline(t.deadline);
+      html += '<span class="deadline-badge'+(dlInfo.urgent?' urgent':'')+'" data-deadline="'+t.deadline+'">&#9200; '+dlInfo.text+'</span>';
+    }
+    if (t.coords) {
+      html += '<span class="coords-badge" onclick="openMapAtCoords()" title="Ouvrir la carte">&#128205; '+t.coords.x.toFixed(1)+', '+t.coords.y.toFixed(1)+'</span>';
+    }
     html += '</div></div>';
-    html += '<button class="task-delete" onclick="deleteTask(\'' + t.id + '\')" title="Supprimer">' +
-      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-    '</button>';
-
-    // Items section
+    html += '<div class="task-meta">';
+    var catColor = getCategoryColor(t.category);
+    var catName = getCategoryName(t.category);
+    var tagClass = 'tag-'+(t.category||'autre');
+    var isCustomCat = !['farming','taming','building','raid','breeding','autre'].includes(t.category);
+    if (isCustomCat) {
+      html += '<span class="task-tag" style="background:'+catColor+'15;color:'+catColor+';border:1px solid '+catColor+'35">'+catName+'</span>';
+    } else {
+      html += '<span class="task-tag '+tagClass+'">'+catName+'</span>';
+    }
+    html += '<span class="task-prio prio-'+t.priority+'">'+t.priority+'</span>';
+    html += '<span class="task-author">'+escH(t.author)+' '+getRoleBadge(t.author)+'</span>';
+    html += '<span class="task-time">'+ago+'</span>';
+    if (t.done && t.doneBy) html += '<span class="task-time">&#10003; '+escH(t.doneBy)+'</span>';
+    html += '</div></div>';
+    html += '<div class="task-actions">';
+    if (hasItems) html += '<button class="task-act-btn" onclick="showCraftCalc(\''+t.id+'\')" title="Calculer craft">&#128295;</button>';
+    if (t.category === 'taming' || t.category === 'breeding') html += '<button class="task-act-btn" onclick="openBreeding()" title="Breeding">&#129516;</button>';
+    html += '<button class="task-act-btn del" onclick="deleteTask(\''+t.id+'\')" title="Supprimer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+    html += '</div>';
     if (hasItems) {
-      // Toggle button
-      html += '<button class="task-items-toggle" id="toggle-' + t.id + '" onclick="toggleItemsSection(\'' + t.id + '\')">';
+      html += '<button class="task-items-toggle" id="toggle-'+t.id+'" onclick="toggleItemsSection(\''+t.id+'\')">';
       html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
-      html += t.items.length + ' item' + (t.items.length > 1 ? 's' : '') + ' requis';
-      html += '</button>';
-
-      // Progress bar
+      html += t.items.length+' item'+(t.items.length>1?'s':'')+' requis</button>';
       if (progress) {
-        html += '<div class="task-progress-bar"><div class="task-progress-fill ' + (allCollected ? 'complete' : '') + '" style="width:' + progress.pct + '%"></div></div>';
+        html += '<div class="task-progress-bar"><div class="task-progress-fill '+(allCollected?'complete':'')+'" style="width:'+progress.pct+'%"></div></div>';
       }
-
-      // Collapsible items container
-      html += '<div class="task-items-container" id="items-' + t.id + '">';
-      t.items.forEach(function(item, idx) {
-        var isCollected = (item.collected || 0) >= item.qty;
-        var pctItem = Math.round(((item.collected || 0) / item.qty) * 100);
-        html += '<div class="task-item-row ' + (isCollected ? 'collected' : '') + '">';
-        html += '<img class="task-item-icon" src="' + getItemIconUrl(item.name) + '" alt="" onerror="this.classList.add(\'broken\')" loading="lazy">';
-        html += '<span class="task-item-name">' + escH(item.name) + '</span>';
+      html += '<div class="task-items-container" id="items-'+t.id+'">';
+      t.items.forEach(function(item, iIdx) {
+        var isCollected = (item.collected||0) >= item.qty;
+        var pctItem = Math.round(((item.collected||0)/item.qty)*100);
+        html += '<div class="task-item-row '+(isCollected?'collected':'')+'">';
+        html += '<img class="task-item-icon" src="'+getItemIconUrl(item.name)+'" alt="" onerror="this.classList.add(\'broken\')" loading="lazy">';
+        html += '<span class="task-item-name">'+escH(item.name)+'</span>';
         html += '<div class="task-item-actions">';
-        html += '<button class="item-btn item-minus" onclick="event.stopPropagation();incrementItem(\'' + t.id + '\',' + idx + ',-1)" title="-1">−</button>';
-        html += '<span class="task-item-progress" ondblclick="event.stopPropagation();editItemCollected(\'' + t.id + '\',' + idx + ')" title="Double-clic pour éditer"><span class="current">' + (item.collected || 0) + '</span>/' + item.qty + '</span>';
-        html += '<button class="item-btn item-plus" onclick="event.stopPropagation();incrementItem(\'' + t.id + '\',' + idx + ',1)" title="+1">+</button>';
-        html += '<button class="item-btn item-plus10" onclick="event.stopPropagation();incrementItem(\'' + t.id + '\',' + idx + ',10)" title="+10">+10</button>';
-        html += '<button class="item-btn item-edit" onclick="event.stopPropagation();editItemCollected(\'' + t.id + '\',' + idx + ')" title="Modifier">' + svgEdit(10) + '</button>';
+        html += '<button class="item-btn item-minus" onclick="event.stopPropagation();incrementItem(\''+t.id+'\','+iIdx+',-1)" title="-1">&#8722;</button>';
+        html += '<span class="task-item-progress" id="progress-'+t.id+'-'+iIdx+'" onclick="event.stopPropagation();editItemCollected(\''+t.id+'\','+iIdx+')" title="Cliquer pour modifier"><span class="current">'+(item.collected||0)+'</span>/'+item.qty+'</span>';
+        html += '<button class="item-btn item-plus" onclick="event.stopPropagation();incrementItem(\''+t.id+'\','+iIdx+',1)" title="+1">+</button>';
+        html += '<button class="item-btn item-plus10" onclick="event.stopPropagation();incrementItem(\''+t.id+'\','+iIdx+',10)" title="+10">+10</button>';
+        html += '<button class="item-btn item-edit" onclick="event.stopPropagation();editItemCollected(\''+t.id+'\','+iIdx+')" title="Modifier">&#9998;</button>';
         html += '</div>';
-        html += '<div class="task-item-bar"><div class="task-item-bar-fill" style="width:' + pctItem + '%;background:' + (isCollected ? 'var(--green)' : 'var(--accent)') + '"></div></div>';
+        html += '<div class="task-item-bar"><div class="task-item-bar-fill" style="width:'+pctItem+'%;background:'+(isCollected?'var(--green)':'linear-gradient(90deg,var(--accent),var(--blue))')+'"></div></div>';
         html += '<svg class="task-item-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
         html += '</div>';
       });
-      html += '<div class="task-item-hint">Boutons +/- ou double-clic sur le nombre pour éditer</div>';
+      html += '<div class="task-item-hint">Boutons +/- ou clic sur le nombre pour entrer une valeur</div>';
       html += '</div>';
-
-      // Auto-suggest done
       if (allCollected && !t.done) {
-        html += '<div class="task-suggest-done">';
-        html += '<span>Tous les items sont collectés !</span>';
-        html += '<button onclick="toggleTask(\'' + t.id + '\')">Terminer</button>';
-        html += '</div>';
+        html += '<div class="task-suggest-done"><span>Tous les items sont collectes !</span><button onclick="toggleTask(\''+t.id+'\')">Terminer</button></div>';
       }
     }
-
     html += '</div>';
   });
-
-  var cards = list.querySelectorAll('.task');
+  var cards = list.querySelectorAll('.task-card');
   cards.forEach(function(c) { c.remove(); });
   list.insertAdjacentHTML('beforeend', html);
-}
-
-function handleItemClick(event, taskId, itemIdx) {
-  event.stopPropagation();
-  var amount = event.shiftKey ? 10 : 1;
-  incrementItem(taskId, itemIdx, amount);
+  restoreOpenSections();
 }
 
 // =============================================
-// SVG HELPERS
+// TEMPLATES
 // =============================================
-function svgCheck(size) {
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="20 6 9 17 4 12"/></svg>';
+function renderTemplates() {
+  var grid = document.getElementById('templatesGrid');
+  var html = '';
+  TASK_TEMPLATES.forEach(function(tpl, idx) {
+    var catColor = getCategoryColor(tpl.category);
+    html += '<div class="template-card" style="animation-delay:'+(idx*0.05)+'s;border-left:3px solid '+catColor+'" onclick="applyTemplate('+idx+')">';
+    html += '<div class="tpl-title"><span class="task-tag tag-'+tpl.category+'">'+getCategoryName(tpl.category)+'</span> '+escH(tpl.title)+'</div>';
+    html += '<div class="tpl-desc">'+tpl.items.length+' items &bull; Priorite '+tpl.priority+'</div>';
+    html += '<div class="tpl-items">';
+    tpl.items.slice(0,5).forEach(function(it) {
+      html += '<span class="tpl-item">'+escH(it.name)+' x'+it.qty+'</span>';
+    });
+    if (tpl.items.length > 5) html += '<span class="tpl-item">+'+(tpl.items.length-5)+' autres</span>';
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
 }
-function svgEdit(size) {
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>';
+function applyTemplate(idx) {
+  var tpl = TASK_TEMPLATES[idx];
+  document.getElementById('taskInput').value = tpl.title;
+  document.getElementById('taskCategory').value = tpl.category;
+  document.getElementById('taskPriority').value = tpl.priority;
+  pendingItems = tpl.items.map(function(it) { return {name:it.name,qty:it.qty,collected:0}; });
+  renderPendingItems();
+  switchTab('tasks');
+  showToast('&#128203;', 'Template "'+tpl.title+'" charge. Clique "Ajouter" pour creer.');
+}
+
+// =============================================
+// JOURNAL
+// =============================================
+function renderJournal() {
+  var container = document.getElementById('journalList');
+  var logs = STATE.activityLog || [];
+  if (logs.length === 0) {
+    container.innerHTML = '<div class="task-empty" style="padding:40px"><div class="task-empty-title">Aucune activite</div><div class="task-empty-sub">Le journal se remplira au fur et a mesure des actions</div></div>';
+    return;
+  }
+  var html = '';
+  var icons = {create:'&#10133;',complete:'&#9989;',farm:'&#128230;',join:'&#128101;',delete:'&#128465;&#65039;'};
+  var typeClasses = {create:'jtype-create',complete:'jtype-complete',farm:'jtype-farm',join:'jtype-join',delete:'jtype-delete'};
+  var typeLabels = {create:'Cree',complete:'Termine',farm:'Farme',join:'Membre',delete:'Supprime'};
+  logs.forEach(function(log, idx) {
+    html += '<div class="journal-entry" style="animation-delay:'+(idx*0.02)+'s">';
+    html += '<span class="journal-icon">'+(icons[log.type]||'&#128196;')+'</span>';
+    html += '<div class="journal-body"><span class="journal-text">'+log.text+'</span></div>';
+    html += '<span class="journal-type '+(typeClasses[log.type]||'')+'">'+(typeLabels[log.type]||log.type)+'</span>';
+    html += '<span class="journal-time">'+timeAgo(log.time)+'</span>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// =============================================
+// STATS
+// =============================================
+function renderStats() {
+  var container = document.getElementById('statsContainer');
+  var stats = STATE.stats || {};
+  var members = Object.keys(stats);
+  if (members.length === 0) {
+    container.innerHTML = '<div class="task-empty" style="padding:40px"><div class="task-empty-title">Pas encore de stats</div><div class="task-empty-sub">Commence a travailler pour voir les contributions</div></div>';
+    return;
+  }
+  var totalContrib = members.map(function(m) {
+    var s = stats[m];
+    return {name:m, total:(s.tasksCreated||0)+(s.tasksCompleted||0)*2+(s.itemsFarmed||0)};
+  }).sort(function(a,b) { return b.total - a.total; });
+  var medals = ['&#129351;','&#129352;','&#129353;'];
+  var maxTotal = totalContrib[0] ? totalContrib[0].total : 1;
+  var html = '<div class="stats-section"><div class="stats-title">&#127942; Classement</div>';
+  totalContrib.forEach(function(mc, idx) {
+    var medal = idx < 3 ? medals[idx] : '<span style="color:var(--text-3)">#'+(idx+1)+'</span>';
+    html += '<div class="leaderboard-row">';
+    html += '<span class="lb-rank">'+medal+'</span>';
+    html += '<span class="lb-name">'+escH(mc.name)+' '+getRoleBadge(mc.name)+'</span>';
+    html += '<span class="lb-score">'+mc.total+' pts</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '<div class="stats-section"><div class="stats-title">&#128202; Taches creees</div><div class="bar-chart">';
+  var maxCreated = Math.max.apply(null, members.map(function(m) { return stats[m].tasksCreated||0; })) || 1;
+  members.forEach(function(m) {
+    var val = stats[m].tasksCreated || 0;
+    var pct = Math.round((val/maxCreated)*100);
+    html += '<div class="bar-chart-row"><span class="bar-chart-label">'+escH(m)+'</span><div class="bar-chart-track"><div class="bar-chart-fill" style="width:'+pct+'%"></div><span class="bar-chart-val">'+val+'</span></div></div>';
+  });
+  html += '</div></div>';
+  html += '<div class="stats-section"><div class="stats-title">&#9989; Taches terminees</div><div class="bar-chart">';
+  var maxCompleted = Math.max.apply(null, members.map(function(m) { return stats[m].tasksCompleted||0; })) || 1;
+  members.forEach(function(m) {
+    var val = stats[m].tasksCompleted || 0;
+    var pct = Math.round((val/maxCompleted)*100);
+    html += '<div class="bar-chart-row"><span class="bar-chart-label">'+escH(m)+'</span><div class="bar-chart-track"><div class="bar-chart-fill" style="width:'+pct+'%;background:linear-gradient(90deg,var(--green),#34d399)"></div><span class="bar-chart-val">'+val+'</span></div></div>';
+  });
+  html += '</div></div>';
+  html += '<div class="stats-section"><div class="stats-title">&#128230; Items farmes</div><div class="bar-chart">';
+  var maxFarmed = Math.max.apply(null, members.map(function(m) { return stats[m].itemsFarmed||0; })) || 1;
+  members.forEach(function(m) {
+    var val = stats[m].itemsFarmed || 0;
+    var pct = Math.round((val/maxFarmed)*100);
+    html += '<div class="bar-chart-row"><span class="bar-chart-label">'+escH(m)+'</span><div class="bar-chart-track"><div class="bar-chart-fill" style="width:'+pct+'%;background:linear-gradient(90deg,var(--orange),#fbbf24)"></div><span class="bar-chart-val">'+val+'</span></div></div>';
+  });
+  html += '</div></div>';
+  container.innerHTML = html;
 }
 
 // =============================================
@@ -1032,90 +2053,232 @@ function showTribeScreen() {
   document.getElementById('setupScreen').style.display = 'none';
   var ts = document.getElementById('tribeScreen');
   ts.style.display = 'flex';
-
   var displayCode = cloudId || STATE.tribeCode;
   document.getElementById('tribeCodeDisplay').textContent = displayCode;
-  document.getElementById('tribeUser').textContent = STATE.pseudo;
+  document.getElementById('tribeNameDisplay').textContent = STATE.tribeName || 'Tribu';
+  updateCategoryDropdown();
+  updateAssignDropdown();
+  renderMembers();
   renderTasks();
   setupAutocomplete();
 }
-
+function updateAssignDropdown() {
+  var sel = document.getElementById('taskAssign');
+  var val = sel.value;
+  sel.innerHTML = '<option value="">Tous</option>';
+  (STATE.members||[]).forEach(function(m) {
+    sel.innerHTML += '<option value="'+escH(m)+'">'+escH(m)+'</option>';
+  });
+  sel.value = val;
+}
+function renderMembers() {
+  var bar = document.getElementById('membersBar');
+  if (!bar) return;
+  var members = STATE.members || [STATE.pseudo];
+  var myRole = (STATE.roles||{})[STATE.pseudo] || 'membre';
+  var html = '';
+  members.forEach(function(m) {
+    var isMe = m === STATE.pseudo;
+    var role = (STATE.roles||{})[m] || 'membre';
+    html += '<span class="member-chip '+(isMe?'me':'')+'" '+(myRole==='chef' && !isMe ? 'onclick="showMemberActions(\''+escH(m)+'\')" style="cursor:pointer"' : '')+'>';
+    html += '<span class="m-dot"></span>';
+    html += getRoleBadge(m) + ' ' + escH(m)+(isMe?' (toi)':'');
+    html += '</span>';
+  });
+  html += '<span class="members-count">'+members.length+' membre'+(members.length>1?'s':'')+'</span>';
+  bar.innerHTML = html;
+}
+function showMemberActions(member) {
+  var role = (STATE.roles||{})[member] || 'membre';
+  var html = '<div class="modal-overlay" onclick="closeModal()"><div class="modal-box" onclick="event.stopPropagation()">';
+  html += '<h3>'+escH(member)+' '+getRoleBadge(member)+'</h3>';
+  html += '<div style="font:400 11px var(--font);color:var(--text-2);margin-bottom:10px">Role actuel : '+role+'</div>';
+  if (role === 'membre') {
+    html += '<button class="btn-primary" style="width:100%;margin-bottom:6px" onclick="promoteToOfficier(\''+escH(member)+'\');closeModal()">&#128737;&#65039; Promouvoir Officier</button>';
+  } else if (role === 'officier') {
+    html += '<button class="btn-secondary" style="width:100%;margin-bottom:6px" onclick="demoteToMembre(\''+escH(member)+'\');closeModal()">Retrograder Membre</button>';
+  }
+  html += '<button class="btn-secondary" style="width:100%" onclick="closeModal()">Fermer</button>';
+  html += '</div></div>';
+  document.getElementById('modalContainer').innerHTML = html;
+}
 function copyCode() {
   var el = document.getElementById('tribeCodeDisplay');
   var code = el.textContent;
   navigator.clipboard.writeText(code).then(function() {
     el.classList.add('copied');
-    el.textContent = 'Copié !';
-    setTimeout(function() {
-      el.classList.remove('copied');
-      el.textContent = code;
-    }, 1500);
+    el.textContent = 'Copie !';
+    setTimeout(function() { el.classList.remove('copied'); el.textContent = code; }, 1500);
   });
 }
-
 function leaveTribe() {
-  if (!confirm('Quitter la tribu ? Les tâches resteront accessibles avec le code.')) return;
+  if (!confirm('Quitter la tribu ?')) return;
   stopSync();
-  STATE = { pseudo: STATE.pseudo, tribeCode: null, tasks: [], lastSync: 0 };
+  localStorage.removeItem('didi-tribe');
+  STATE = {pseudo:'',tribeName:'',tribeCode:null,cloudId:null,tasks:[],members:[],roles:{},customCategories:[],activityLog:[],stats:{},breedingLibrary:[],lastSync:0};
   cloudId = null;
-  try { localStorage.removeItem('didi-tribe'); } catch(e) {}
   document.getElementById('tribeScreen').style.display = 'none';
   document.getElementById('setupScreen').style.display = 'flex';
 }
-
 function setSyncStatus(text, isError) {
   var bar = document.getElementById('syncBar');
-  var el = document.getElementById('syncText');
-  if (el) el.textContent = text;
-  if (bar) {
-    if (isError) bar.classList.add('error');
-    else bar.classList.remove('error');
-  }
+  var span = document.getElementById('syncText');
+  if (span) span.textContent = text;
+  if (bar) bar.classList.toggle('error', isError);
+  var status = document.getElementById('syncStatus');
+  if (status) status.textContent = text;
 }
-
 function togglePin() {
-  if (window.api) window.api.tribeTogglePin();
-}
-if (window.api && window.api.onTribePinChanged) {
-  window.api.onTribePinChanged(function(v) {
-    document.getElementById('pinBtn').style.color = v ? 'var(--accent-l)' : '';
-  });
+  if (window.api && window.api.tribeTogglePin) window.api.tribeTogglePin();
 }
 
-function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function getCategoryIcon(cat) {
-  var svgAttr = 'width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"';
-  switch(cat) {
-    case 'farming': return '<svg ' + svgAttr + '><path d="M12 22V10"/><path d="M6 18c0-3.5 2.5-6 6-8"/><path d="M18 18c0-3.5-2.5-6-6-8"/><path d="M12 10c-2-2.5-2-5 0-8"/></svg>';
-    case 'taming': return '<svg ' + svgAttr + '><ellipse cx="12" cy="10" rx="8" ry="6"/><path d="M18 14c0 2-1.5 4-3 5"/><circle cx="12" cy="10" r="2"/></svg>';
-    case 'building': return '<svg ' + svgAttr + '><path d="M15 2l5 5-11 11H4v-5L15 2z"/><path d="M12 5l5 5"/><path d="M2 22h20"/></svg>';
-    case 'raid': return '<svg ' + svgAttr + '><path d="M14.5 2l5.5 5.5-7 7-5.5-5.5z"/><path d="M9.5 14.5l-5.5 5.5"/><path d="M9.5 2l5.5 5.5"/></svg>';
-    default: return '<svg ' + svgAttr + '><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/></svg>';
-  }
+// =============================================
+// UTILITY FUNCTIONS
+// =============================================
+function escH(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function timeAgo(ts) {
-  var diff = Math.floor((Date.now() - ts) / 1000);
-  if (diff < 60) return 'à l\'instant';
-  if (diff < 3600) return Math.floor(diff / 60) + 'min';
-  if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-  return Math.floor(diff / 86400) + 'j';
+  if (!ts) return '';
+  var diff = Date.now() - ts;
+  if (diff < 60000) return 'a l\'instant';
+  if (diff < 3600000) return Math.floor(diff/60000)+'min';
+  if (diff < 86400000) return Math.floor(diff/3600000)+'h';
+  return Math.floor(diff/86400000)+'j';
+}
+function getCategoryIcon(cat) {
+  var icons = {farming:'&#127793;',taming:'&#129430;',building:'&#127959;',raid:'&#9876;&#65039;',breeding:'&#129516;',autre:'&#128312;'};
+  return icons[cat] || '&#128312;';
 }
 
 // =============================================
 // INIT
 // =============================================
-var saved = loadLocal();
-if (saved && saved.tribeCode && saved.cloudId) {
-  STATE = saved;
-  cloudId = saved.cloudId;
-  showTribeScreen();
-  startSync();
-  pullFromCloud();
-} else if (saved && saved.pseudo) {
-  document.getElementById('pseudoInput').value = saved.pseudo;
+function init() {
+  initBubbles();
+  var saved = loadLocal();
+  if (saved && saved.tribeCode && saved.cloudId) {
+    STATE = saved;
+    if (!STATE.roles) STATE.roles = {};
+    if (!STATE.activityLog) STATE.activityLog = [];
+    if (!STATE.stats) STATE.stats = {};
+    if (!STATE.customCategories) STATE.customCategories = [];
+    if (!STATE.breedingLibrary) STATE.breedingLibrary = [];
+    cloudId = saved.cloudId;
+    showTribeScreen();
+    startSync();
+    pullFromCloud();
+  }
 }
+init();
+
+// =============================================
+// BREEDING LIBRARY (shared)
+// =============================================
+function refreshBreedingLib() {
+  if (!window.api || !window.api.loadTribeData) return;
+  window.api.loadTribeData().then(function(data) {
+    if (data && data.breedingLibrary) {
+      STATE.breedingLibrary = data.breedingLibrary;
+      renderBreeding();
+    }
+  });
+}
+
+function renderBreeding() {
+  var container = document.getElementById('breedingLibContent');
+  if (!container) return;
+  var lib = STATE.breedingLibrary || [];
+  if (lib.length === 0) {
+    container.innerHTML = '<div class="task-empty" style="padding:40px"><div class="task-empty-title">Aucune créature partagée</div><div class="task-empty-sub">Les membres peuvent synchroniser leur bibliothèque depuis le Breeding Manager</div></div>';
+    return;
+  }
+  // Group by member
+  var byMember = {};
+  lib.forEach(function(c) {
+    var m = c.syncedBy || 'Inconnu';
+    if (!byMember[m]) byMember[m] = [];
+    byMember[m].push(c);
+  });
+  var html = '';
+  var STAT_NAMES = ['HP','Stam','Oxy','Food','Weight','Melee','Speed'];
+  var STAT_KEYS = ['Health','Stamina','Oxygen','Food','Weight','Melee','Speed'];
+  Object.keys(byMember).sort().forEach(function(member) {
+    var creatures = byMember[member];
+    var isMe = member === STATE.pseudo;
+    html += '<div style="margin-bottom:16px">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+    html += '<span style="width:8px;height:8px;border-radius:50%;background:' + (isMe ? 'var(--green)' : 'var(--accent)') + '"></span>';
+    html += '<span style="font:700 12px var(--font);color:var(--text-0)">' + escH(member) + '</span>';
+    if (isMe) html += '<span style="font:600 9px var(--font);color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:1px 6px;border-radius:var(--r-sm)">MOI</span>';
+    html += '<span style="font:500 10px var(--font);color:var(--text-3);margin-left:auto">' + creatures.length + ' créature(s)</span>';
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">';
+    creatures.forEach(function(c) {
+      var sexIcon = c.sex === 'M' ? '♂' : '♀';
+      var sexColor = c.sex === 'M' ? 'var(--blue)' : 'var(--pink)';
+      html += '<div style="padding:10px 12px;border-radius:var(--r-lg);background:rgba(6,6,16,0.5);backdrop-filter:blur(12px);border:1px solid var(--border-0);transition:all .2s" onmouseover="this.style.borderColor=\'rgba(123,147,248,0.15)\'" onmouseout="this.style.borderColor=\'var(--border-0)\'">';
+      html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">';
+      html += '<span style="font:800 12px var(--font);color:var(--text-0)">' + escH(c.name || c.species || '?') + '</span>';
+      html += '<span style="font:700 9px var(--font);color:' + sexColor + ';background:rgba(' + (c.sex === 'M' ? '96,165,250' : '217,70,239') + ',0.08);border:1px solid rgba(' + (c.sex === 'M' ? '96,165,250' : '217,70,239') + ',0.2);padding:1px 6px;border-radius:var(--r-sm)">' + sexIcon + '</span>';
+      if (c.level) html += '<span style="font:700 10px var(--font);color:var(--text-2);margin-left:auto">Niv.' + c.level + '</span>';
+      html += '</div>';
+      if (c.species && c.name) html += '<div style="font:500 10px var(--font);color:var(--text-3);margin-bottom:6px">' + escH(c.species) + '</div>';
+      // Wild levels grid
+      if (c.wildLevels) {
+        html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px">';
+        STAT_KEYS.forEach(function(key, idx) {
+          var val = c.wildLevels[key];
+          if (val === undefined || val === null) val = '-';
+          html += '<div style="text-align:center;padding:3px 2px;border-radius:var(--r-sm);background:rgba(10,10,24,0.4)">';
+          html += '<div style="font:700 7px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px">' + STAT_NAMES[idx] + '</div>';
+          html += '<div style="font:900 12px var(--font);color:var(--text-1)">' + val + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+      // Mutations
+      if (c.mutaPat || c.mutaMat) {
+        html += '<div style="display:flex;gap:8px;margin-top:5px;font:600 9px var(--font);color:var(--accent-l)">';
+        if (c.mutaPat) html += '<span>Pat: ' + c.mutaPat + '</span>';
+        if (c.mutaMat) html += '<span>Mat: ' + c.mutaMat + '</span>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+// Listen for breeding updates from main process
+if (window.api && window.api.onTribeBreedingUpdated) {
+  window.api.onTribeBreedingUpdated(function(data) {
+    STATE.breedingLibrary = data || [];
+    renderBreeding();
+    showToast('&#129516;', 'Bibliothèque breeding mise à jour');
+  });
+}
+
+// === ANIMATED CANVAS BACKGROUND ===
+(function(){
+  var c=document.getElementById('bgCanvas'),ctx=c.getContext('2d'),W,H;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  var particles=[];for(var i=0;i<40;i++)particles.push({x:Math.random()*800,y:Math.random()*600,vx:(Math.random()-0.5)*0.25,vy:(Math.random()-0.5)*0.25,r:Math.random()*1.2+0.4,a:Math.random()*0.3+0.1,col:['123,147,248','96,165,250','45,212,160','217,70,239'][Math.floor(Math.random()*4)]});
+  var blobs=[{x:0.15,y:0.2,r:180,col:'123,147,248',ph:0,sp:0.003},{x:0.8,y:0.3,r:150,col:'96,165,250',ph:2,sp:0.004},{x:0.5,y:0.75,r:160,col:'45,212,160',ph:4,sp:0.002}];
+  var t=0;
+  function draw(){
+    t++;ctx.clearRect(0,0,W,H);
+    for(var b of blobs){var ox=Math.sin(t*b.sp+b.ph)*25,oy=Math.cos(t*b.sp*0.7+b.ph)*18;var g=ctx.createRadialGradient(b.x*W+ox,b.y*H+oy,0,b.x*W+ox,b.y*H+oy,b.r);g.addColorStop(0,'rgba('+b.col+',0.05)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+    for(var p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.col+','+p.a+')';ctx.fill()}
+    for(var i=0;i<particles.length;i++)for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(123,147,248,'+(0.05*(1-d/110))+')';ctx.lineWidth=0.5;ctx.stroke()}}
+    requestAnimationFrame(draw)
+  }
+  draw();
+})();
 </script>
+<script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>
 </html>

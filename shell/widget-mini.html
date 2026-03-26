@@ -6,16 +6,20 @@
 <style>
 /* ===== THEME VARIABLES ===== */
 :root {
-  --accent:#7c6aef; --accent-l:#9d8ff5;
-  --accent-glow:rgba(124,106,239,0.15); --accent-bg:rgba(124,106,239,0.08);
-  --accent-border:rgba(124,106,239,0.22);
-  --success:#2dd4a0; --danger:#ef4444; --warning:#f59e0b;
-  --bg-0:#000000; --bg-1:#0a0a0a; --bg-2:#111111;
-  --text-0:#edeef3; --text-1:#b8bac4; --text-2:#7d808e; --text-3:#4e5160;
-  --border-s:rgba(255,255,255,0.04); --border-m:rgba(255,255,255,0.07);
+  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
+  --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
   --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
-  --r-sm:6px; --r-md:8px; --r-lg:12px;
-  --starve:#2dd4a0; --torpor:#9d8ff5;
+  --bar-h:34px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,7 +30,7 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
   padding: 6px 10px;
   background: rgba(0,0,0,0.88);
   border-radius: var(--r-lg);
-  border: 1px solid var(--border-s);
+  border: 1px solid var(--border-0);
   font-family: var(--font);
   backdrop-filter: blur(16px);
   -webkit-app-region: drag;
@@ -89,9 +93,9 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.3px;
 }
-.w-val.starve { color: var(--starve); }
-.w-val.torpor { color: var(--torpor); }
-.w-val.danger { color: var(--danger); animation: pulse 0.8s infinite; }
+.w-val.starve { color: var(--green); }
+.w-val.torpor { color: var(--accent-l); }
+.w-val.danger { color: var(--red); animation: pulse 0.8s infinite; }
 
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
@@ -102,24 +106,24 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
 .w-bar-label { font-size: 7px; font-weight: 700; color: var(--text-3); text-transform: uppercase; width: 40px; }
 .w-bar-track { flex: 1; height: 3px; background: var(--bg-2); border-radius: 2px; overflow: hidden; }
 .w-bar-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
-.w-bar-fill.starve-f { background: linear-gradient(90deg, #0d3d2e, var(--starve)); }
-.w-bar-fill.torpor-f { background: linear-gradient(90deg, #2e2260, var(--torpor)); }
+.w-bar-fill.starve-f { background: linear-gradient(90deg, #0d3d2e, var(--green)); }
+.w-bar-fill.torpor-f { background: linear-gradient(90deg, #2e2260, var(--accent-l)); }
 .w-bar-pct { font-size: 8px; font-weight: 700; color: var(--text-2); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
 
 .w-food-info { display: none; align-items: center; gap: 8px; margin-top: 2px; }
 .w-food-stat { font-size: 8px; color: var(--text-3); }
-.w-food-stat span { color: var(--starve); font-weight: 700; }
+.w-food-stat span { color: var(--green); font-weight: 700; }
 
 /* ===== DETAILED MODE extras ===== */
-.w-detail { display: none; flex-direction: column; gap: 4px; margin-top: 4px; border-top: 1px solid var(--border-s); padding-top: 5px; }
+.w-detail { display: none; flex-direction: column; gap: 4px; margin-top: 4px; border-top: 1px solid var(--border-0); padding-top: 5px; }
 
 .w-narco-row { display: flex; align-items: center; gap: 6px; }
 .w-narco-item { display: flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; color: var(--text-2); }
-.w-narco-item .n-val { color: var(--torpor); font-variant-numeric: tabular-nums; }
+.w-narco-item .n-val { color: var(--accent-l); font-variant-numeric: tabular-nums; }
 
 .w-breed-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 0; }
 .w-breed-label { font-size: 8px; font-weight: 700; color: var(--text-3); text-transform: uppercase; }
-.w-breed-time { font-size: 11px; font-weight: 800; color: var(--warning); font-variant-numeric: tabular-nums; }
+.w-breed-time { font-size: 11px; font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; }
 .w-breed-time.inactive { color: var(--text-3); }
 
 .w-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 2px; }
@@ -127,18 +131,38 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
 .w-stat-name { font-size: 6px; font-weight: 700; color: var(--text-3); text-transform: uppercase; }
 .w-stat-val { font-size: 10px; font-weight: 800; color: var(--text-1); font-variant-numeric: tabular-nums; }
 
+/* ===== SMOOTH TRANSITIONS ===== */
+.w-bars, .w-food-info, .w-detail {
+  transition: opacity 0.25s ease, max-height 0.3s ease, margin-top 0.25s ease, padding-top 0.25s ease;
+  overflow: hidden;
+}
+
+/* Hidden state defaults */
+.w-bars, .w-food-info, .w-detail {
+  opacity: 0; max-height: 0; margin-top: 0; padding-top: 0;
+}
+/* Reset border-top for detail when hidden */
+.w-detail { border-top-color: transparent; }
+
 /* ===== MODE DISPLAY RULES ===== */
 [data-mode="mini"] .w-bars,
 [data-mode="mini"] .w-food-info,
-[data-mode="mini"] .w-detail { display: none; }
+[data-mode="mini"] .w-detail { display: none; opacity: 0; max-height: 0; }
 
-[data-mode="standard"] .w-bars { display: flex; }
-[data-mode="standard"] .w-food-info { display: flex; }
-[data-mode="standard"] .w-detail { display: none; }
+[data-mode="standard"] .w-bars { display: flex; opacity: 1; max-height: 80px; margin-top: 4px; }
+[data-mode="standard"] .w-food-info { display: flex; opacity: 1; max-height: 30px; margin-top: 2px; }
+[data-mode="standard"] .w-detail { display: none; opacity: 0; max-height: 0; }
 
-[data-mode="detailed"] .w-bars { display: flex; }
-[data-mode="detailed"] .w-food-info { display: flex; }
-[data-mode="detailed"] .w-detail { display: flex; }
+[data-mode="detailed"] .w-bars { display: flex; opacity: 1; max-height: 80px; margin-top: 4px; }
+[data-mode="detailed"] .w-food-info { display: flex; opacity: 1; max-height: 30px; margin-top: 2px; }
+[data-mode="detailed"] .w-detail { display: flex; opacity: 1; max-height: 200px; margin-top: 4px; padding-top: 5px; border-top-color: var(--border-0); }
+
+/* Mode transition flash effect */
+@keyframes modeFlash {
+  0% { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+  100% { border-color: var(--border-0); box-shadow: none; }
+}
+#widget.mode-transition { animation: modeFlash 0.4s ease-out; }
 </style>
 </head>
 <body>
@@ -148,7 +172,7 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
   <div class="w-top">
     <div class="w-name" id="wName">--</div>
     <span class="w-mode-badge" id="wModeBadge">MINI</span>
-    <span class="w-drag-hint">DRAG</span>
+    <span class="w-drag-hint">GLISSER</span>
     <button class="w-close" onclick="if(window.api)window.api.widgetClose()" title="Fermer">✕</button>
   </div>
 
@@ -213,12 +237,19 @@ var MODE_SIZES = { mini: [220, 70], standard: [280, 140], detailed: [340, 260] }
 var currentMode = 'mini';
 
 // ===== MODE CYCLING =====
-function setMode(mode) {
+function setMode(mode, fromMain) {
+  if (!MODE_SIZES[mode]) return;
   currentMode = mode;
   widget.setAttribute('data-mode', mode);
   document.getElementById('wModeBadge').textContent = mode.toUpperCase();
-  // Notify main process to resize
-  if (window.api && window.api.widgetSetMode) {
+
+  // Trigger flash animation on mode change
+  widget.classList.remove('mode-transition');
+  void widget.offsetWidth; // force reflow to restart animation
+  widget.classList.add('mode-transition');
+
+  // If the mode was set locally (not from main), notify main process to resize
+  if (!fromMain && window.api && window.api.widgetSetMode) {
     window.api.widgetSetMode(mode, MODE_SIZES[mode][0], MODE_SIZES[mode][1]);
   }
 }
@@ -229,10 +260,26 @@ function cycleMode() {
   setMode(next);
 }
 
-// Listen for mode cycle from main process (keyboard shortcut)
+// Listen for mode change driven by main process (keyboard shortcut cycles from main)
+if (window.api && window.api.onWidgetModeChanged) {
+  window.api.onWidgetModeChanged(function(mode) {
+    setMode(mode, true);
+  });
+}
+
+// Legacy: listen for cycle-mode event (fallback if main sends cycle instead of mode-changed)
 if (window.api && window.api.onWidgetCycleMode) {
   window.api.onWidgetCycleMode(function() {
     cycleMode();
+  });
+}
+
+// On load, sync mode with main process
+if (window.api && window.api.getWidgetMode) {
+  window.api.getWidgetMode().then(function(mode) {
+    if (mode && mode !== currentMode) {
+      setMode(mode, true);
+    }
   });
 }
 

@@ -12,6 +12,7 @@ if (process.platform === 'win32') {
 }
 
 let mainWindow;
+let splashWindow = null;
 let timerWindow = null;
 let mapsWindow = null;
 let widgetWindow = null;
@@ -20,6 +21,15 @@ let breedingWindow = null;
 let ocrWindow = null;
 let tribeWindow = null;
 let isOverlay = false;
+
+// ===== WIDGET MODE STATE =====
+let widgetMode = 'mini';
+const WIDGET_SIZES = {
+  mini:     { w: 220, h: 70 },
+  standard: { w: 280, h: 140 },
+  detailed: { w: 340, h: 260 },
+};
+const WIDGET_MODES = ['mini', 'standard', 'detailed'];
 
 // ===== KEYBINDS CONFIG =====
 const DEFAULT_KEYBINDS = {
@@ -95,7 +105,7 @@ function registerAllShortcuts() {
     if (currentKeybinds.toggleWidgetMode) {
       globalShortcut.register(currentKeybinds.toggleWidgetMode, () => {
         if (isWidgetAlive()) {
-          widgetWindow.webContents.send('widget-cycle-mode');
+          cycleWidgetMode();
         }
       });
     }
@@ -223,6 +233,11 @@ ipcMain.on('install-update', () => {
 });
 
 ipcMain.handle('get-app-version', () => app.getVersion());
+ipcMain.handle('get-preload-path', () => {
+  const p = path.join(__dirname, 'webview-preload.js');
+  // Convert Windows backslashes to forward slashes for file:// URL
+  return 'file:///' + p.replace(/\\/g, '/');
+});
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -244,9 +259,31 @@ function createWindow() {
     show: false,
   });
 
+  // Allow webview preload scripts – validate that only our own preload is used
+  mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
+    // Strip any existing preload scripts for security
+    delete webPreferences.preload;
+    delete webPreferences.preloadURL;
+
+    // Only allow our webview-preload.js
+    const allowedPreload = path.join(__dirname, 'webview-preload.js');
+    const allowedPreloadUrl = 'file:///' + allowedPreload.replace(/\\/g, '/');
+
+    if (params.preload && params.preload === allowedPreloadUrl) {
+      webPreferences.preload = allowedPreload;
+    }
+
+    // Ensure security defaults
+    webPreferences.contextIsolation = true;
+    webPreferences.nodeIntegration = false;
+  });
+
   mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+    // If no splash screen, show immediately; otherwise splash logic handles it
+    if (!splashWindow || splashWindow.isDestroyed()) {
+      mainWindow.show();
+    }
     mainWindow.setAlwaysOnTop(false);
     mainWindow.webContents.setZoomFactor(loadScale());
 
@@ -391,13 +428,30 @@ function setWidgetClickThrough(enabled) {
   } catch (e) {}
 }
 
+function cycleWidgetMode() {
+  const idx = WIDGET_MODES.indexOf(widgetMode);
+  const next = WIDGET_MODES[(idx + 1) % WIDGET_MODES.length];
+  setWidgetMode(next);
+}
+
+function setWidgetMode(mode) {
+  if (!WIDGET_SIZES[mode]) return;
+  widgetMode = mode;
+  if (isWidgetAlive()) {
+    const { w, h } = WIDGET_SIZES[mode];
+    try { widgetWindow.setSize(w, h); } catch (e) {}
+    try { widgetWindow.webContents.send('widget-mode-changed', mode); } catch (e) {}
+  }
+}
+
 function createWidgetWindow() {
   if (isWidgetAlive()) return;
   widgetWindow = null;
+  widgetMode = 'mini'; // Reset mode on new widget
   const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
 
   widgetWindow = new BrowserWindow({
-    width: 220, height: 70, x: sw - 240, y: 80,
+    width: WIDGET_SIZES.mini.w, height: WIDGET_SIZES.mini.h, x: sw - 240, y: 80,
     frame: false, transparent: true, alwaysOnTop: true,
     resizable: false, minimizable: false, maximizable: false,
     skipTaskbar: true, focusable: false,
@@ -469,8 +523,45 @@ function createSettingsWindow() {
 
 app.whenReady().then(() => {
   loadKeybinds();
+
+  // --- Splash Screen ---
+  splashWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    frame: false,
+    transparent: true,
+    center: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    show: false,
+    icon: APP_ICON,
+  });
+  splashWindow.loadFile(path.join(__dirname, '..', 'shell', 'splash.html'));
+  splashWindow.once('ready-to-show', () => { splashWindow.show(); });
+
+  // Create the main window (starts hidden via show:false)
   createWindow();
   registerAllShortcuts();
+
+  // When main window content finishes loading, wait then transition
+  mainWindow.webContents.on('did-finish-load', () => {
+    setTimeout(() => {
+      if (splashWindow && !splashWindow.isDestroyed()) {
+        splashWindow.webContents.send('fade-out');
+        // Wait for fade animation to complete, then show main + close splash
+        setTimeout(() => {
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.show();
+          }
+          if (splashWindow && !splashWindow.isDestroyed()) {
+            splashWindow.destroy();
+          }
+          splashWindow = null;
+        }, 400);
+      }
+    }, 1500);
+  });
 });
 
 app.on('will-quit', () => globalShortcut.unregisterAll());
@@ -578,15 +669,14 @@ ipcMain.on('close-widget', () => safeDestroyWidget());
 ipcMain.on('widget-close', () => safeDestroyWidget());
 ipcMain.handle('is-widget-open', () => isWidgetAlive());
 ipcMain.on('widget-set-mode', (_, mode, w, h) => {
-  if (isWidgetAlive()) {
-    try { widgetWindow.setSize(w, h); } catch (e) {}
-  }
+  setWidgetMode(mode);
 });
 ipcMain.on('widget-cycle-mode', () => {
   if (isWidgetAlive()) {
-    try { widgetWindow.webContents.send('widget-cycle-mode'); } catch (e) {}
+    cycleWidgetMode();
   }
 });
+ipcMain.handle('get-widget-mode', () => widgetMode);
 
 // Settings
 ipcMain.on('open-settings', () => createSettingsWindow());
@@ -989,6 +1079,27 @@ ipcMain.handle('load-tribe-data', () => {
 });
 ipcMain.on('save-tribe-data', (_, data) => {
   try { fs.writeFileSync(getTribeDataPath(), JSON.stringify(data, null, 2), 'utf8'); } catch (e) {}
+});
+
+// Sync breeding library to tribe
+ipcMain.handle('sync-breeding-to-tribe', (_, creatures, pseudo) => {
+  try {
+    const tribeFp = getTribeDataPath();
+    if (!fs.existsSync(tribeFp)) return { ok: false, error: 'no-tribe' };
+    const tribe = JSON.parse(fs.readFileSync(tribeFp, 'utf8'));
+    if (!tribe || !tribe.tribeCode) return { ok: false, error: 'no-tribe' };
+    if (!tribe.breedingLibrary) tribe.breedingLibrary = [];
+    // Merge: replace existing from same user, add new
+    const others = tribe.breedingLibrary.filter(c => c.syncedBy !== pseudo);
+    const synced = creatures.map(c => ({ ...c, syncedBy: pseudo, syncedAt: Date.now() }));
+    tribe.breedingLibrary = [...others, ...synced];
+    fs.writeFileSync(tribeFp, JSON.stringify(tribe, null, 2), 'utf8');
+    // Notify tribe window if open
+    if (tribeWindow && !tribeWindow.isDestroyed()) {
+      tribeWindow.webContents.send('tribe-breeding-updated', tribe.breedingLibrary);
+    }
+    return { ok: true, count: synced.length };
+  } catch (e) { return { ok: false, error: e.message }; }
 });
 
 // ===== OCR WINDOW =====

@@ -7,34 +7,35 @@
 <style>
 /* ===== DESIGN SYSTEM v3 ===== */
 :root{
-  --accent:#7c6aef;--accent-l:#9d8ff5;--accent-d:#6354c4;
-  --accent-glow:rgba(124,106,239,0.15);--accent-bg:rgba(124,106,239,0.08);
-  --accent-border:rgba(124,106,239,0.22);
-  --success:#2dd4a0;--success-bg:rgba(45,212,160,0.08);
-  --danger:#ef4444;--danger-bg:rgba(239,68,68,0.08);
-  --warning:#f59e0b;--warning-bg:rgba(245,158,11,0.08);
-  --info:#60a5fa;
-  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;
+  --bg-0:#020208;--bg-1:rgba(6,6,16,0.8);--bg-2:rgba(10,10,24,0.6);--bg-3:rgba(20,20,45,0.6);--bg-4:rgba(30,28,55,0.5);
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --border-s:rgba(255,255,255,0.04);--border-m:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.12);
-  --bar-h:38px;--font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(6,6,16,0.5);--glass-border:rgba(123,147,248,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
-  --male:#60a5fa;--female:#f472b6
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --bar-h:34px;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);background:var(--bg-0);color:var(--text-0);-webkit-font-smoothing:antialiased}
-#app{display:flex;flex-direction:column;height:100vh}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);background:#020208;color:var(--text-0);-webkit-font-smoothing:antialiased;position:relative}
+#app{display:flex;flex-direction:column;height:100vh;position:relative;z-index:1}
 
 /* ===== TITLE BAR ===== */
-#breed-bar{display:flex;align-items:center;height:var(--bar-h);padding:0 10px 0 16px;background:var(--bg-1);border-bottom:1px solid var(--border-s);-webkit-app-region:drag;flex-shrink:0;gap:8px}
-.bar-title{font-size:11px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c6aef,#b68df7,#7c6aef);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#breed-bar{display:flex;align-items:center;height:var(--bar-h);padding:0 10px 0 16px;background:rgba(4,4,12,0.7);backdrop-filter:blur(32px);border-bottom:1px solid rgba(123,147,248,0.08);-webkit-app-region:drag;flex-shrink:0;gap:8px}
+.bar-title{font-size:11px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7B93F8,#b68df7,#7B93F8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .bar-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);-webkit-text-fill-color:initial}
 .bar-spacer{flex:1}
-.bar-btn{-webkit-app-region:no-drag;height:26px;padding:0 10px;border:1px solid var(--border-s);border-radius:var(--r-sm);background:rgba(255,255,255,0.03);color:var(--text-2);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
-.bar-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-1);border-color:var(--border-m)}
+.bar-btn{-webkit-app-region:no-drag;height:26px;padding:0 10px;border:1px solid var(--border-0);border-radius:var(--r-sm);background:rgba(6,6,16,0.5);backdrop-filter:blur(8px);color:var(--text-2);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
+.bar-btn:hover{background:rgba(20,20,45,0.6);color:var(--text-1);border-color:var(--border-1)}
 .bar-btn.active{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border)}
 .breed-close{-webkit-app-region:no-drag;width:36px;height:30px;border:none;background:transparent;color:var(--text-3);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;border-radius:var(--r-sm)}
 .breed-close:hover{background:#c42b1c;color:#fff}
@@ -43,17 +44,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 #main-layout{flex:1;display:flex;overflow:hidden}
 
 /* Nav sidebar */
-#nav-bar{width:54px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg-1);border-right:1px solid var(--border-s);padding:8px 0;gap:2px;align-items:center}
+#nav-bar{width:54px;flex-shrink:0;display:flex;flex-direction:column;background:rgba(4,4,12,0.7);backdrop-filter:blur(16px);border-right:1px solid rgba(123,147,248,0.06);padding:8px 0;gap:2px;align-items:center}
 .nav-btn{width:40px;height:40px;border:none;border-radius:var(--r-md);background:transparent;color:var(--text-3);font-size:16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;position:relative}
 .nav-btn:hover{background:var(--accent-bg);color:var(--text-2)}
-.nav-btn.active{background:var(--accent-bg);color:var(--accent-l);box-shadow:inset 3px 0 0 var(--accent)}
-.nav-btn .nav-label{position:absolute;left:50px;padding:4px 10px;background:var(--bg-3);border:1px solid var(--border-m);border-radius:var(--r-sm);font-size:9px;font-weight:700;color:var(--text-1);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
+.nav-btn.active{background:var(--accent-bg);color:var(--accent-l);box-shadow:inset 3px 0 0 var(--accent), 0 0 12px rgba(123,147,248,0.08)}
+.nav-btn .nav-label{position:absolute;left:50px;padding:4px 10px;background:rgba(20,20,45,0.8);backdrop-filter:blur(12px);border:1px solid var(--border-1);border-radius:var(--r-sm);font-size:9px;font-weight:700;color:var(--text-1);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
 .nav-btn:hover .nav-label{opacity:1}
 
 /* Content panels */
 .panel{display:none;flex:1;flex-direction:column;overflow:hidden}
 .panel.active{display:flex}
-.panel-header{padding:16px 20px 12px;border-bottom:1px solid var(--border-s);flex-shrink:0;background:rgba(255,255,255,0.01)}
+.panel-header{padding:16px 20px 12px;border-bottom:1px solid var(--border-0);flex-shrink:0;background:rgba(4,4,12,0.4);backdrop-filter:blur(12px)}
 .panel-title{font-size:15px;font-weight:800;color:var(--text-0);margin-bottom:3px;letter-spacing:-0.2px}
 .panel-sub{font-size:10.5px;color:var(--text-3);font-weight:500}
 .panel-body{flex:1;overflow-y:auto;padding:16px 20px}
@@ -65,42 +66,42 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-group.full{grid-column:1/-1}
 .form-label{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px}
-.form-input{padding:7px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border-s);border-radius:var(--r-sm);color:var(--text-0);font-size:11.5px;font-weight:600;font-family:inherit;outline:none;transition:all .15s}
-.form-input:focus{border-color:var(--accent);color:var(--text-0);box-shadow:0 0 0 3px rgba(124,106,239,0.12)}
+.form-input{padding:7px 10px;background:rgba(6,6,16,0.6);backdrop-filter:blur(8px);border:1px solid var(--border-0);border-radius:var(--r-sm);color:var(--text-0);font-size:11.5px;font-weight:600;font-family:inherit;outline:none;transition:all .15s}
+.form-input:focus{border-color:var(--accent);color:var(--text-0);box-shadow:0 0 0 3px rgba(123,147,248,0.1), 0 0 16px rgba(123,147,248,0.06)}
 .form-input::placeholder{color:var(--text-3)}
-select.form-input{cursor:pointer;background:var(--bg-2);color:var(--text-0);border:1px solid var(--border-s)}
-select.form-input option{background:var(--bg-2);color:var(--text-0)}
+select.form-input{cursor:pointer;background:rgba(10,10,24,0.6);backdrop-filter:blur(8px);color:var(--text-0);border:1px solid var(--border-0)}
+select.form-input option{background:#0a0a18;color:var(--text-0)}
 
-.btn{height:32px;padding:0 16px;border:1px solid var(--border-m);border-radius:var(--r-md);background:rgba(255,255,255,0.03);color:var(--text-2);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;text-transform:uppercase;letter-spacing:.4px}
-.btn:hover{background:rgba(255,255,255,0.06);color:var(--text-0);border-color:var(--border-h)}
-.btn.primary{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border);box-shadow:0 2px 8px var(--accent-glow)}
-.btn.primary:hover{background:rgba(124,106,239,0.14);color:var(--accent-l);transform:translateY(-1px)}
-.btn.danger{background:var(--danger-bg);color:var(--danger);border-color:rgba(239,68,68,0.20)}
+.btn{height:32px;padding:0 16px;border:1px solid var(--border-1);border-radius:var(--r-md);background:rgba(6,6,16,0.5);backdrop-filter:blur(8px);color:var(--text-2);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;text-transform:uppercase;letter-spacing:.4px}
+.btn:hover{background:rgba(20,20,45,0.6);color:var(--text-0);border-color:var(--border-2)}
+.btn.primary{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border);box-shadow:0 4px 16px rgba(123,147,248,0.2)}
+.btn.primary:hover{background:rgba(123,147,248,0.14);color:var(--accent-l);transform:translateY(-2px);box-shadow:0 6px 24px rgba(123,147,248,0.3)}
+.btn.danger{background:var(--red-bg);color:var(--red);border-color:rgba(239,68,68,0.20)}
 .btn.danger:hover{background:rgba(239,68,68,0.12)}
-.btn.success{background:var(--success-bg);color:var(--success);border-color:rgba(45,212,160,0.20)}
+.btn.success{background:var(--green-bg);color:var(--green);border-color:rgba(45,212,160,0.20)}
 .btn.success:hover{background:rgba(45,212,160,0.12)}
 .btn-row{display:flex;gap:8px;margin-top:10px}
 
 /* ===== CARDS ===== */
-.card{border-radius:var(--r-lg);padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border-s);transition:all .2s}
-.card:hover{border-color:var(--border-m)}
+.card{border-radius:var(--r-lg);padding:12px 14px;background:rgba(6,6,16,0.5);backdrop-filter:blur(12px);border:1px solid var(--border-0);transition:all .2s}
+.card:hover{border-color:rgba(123,147,248,0.15);box-shadow:0 0 20px rgba(123,147,248,0.06)}
 .card+.card{margin-top:8px}
 .card-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .card-title{font-size:12.5px;font-weight:700;color:var(--text-0);flex:1}
 .card-badge{font-size:8px;font-weight:800;padding:2px 7px;border-radius:var(--r-sm);text-transform:uppercase;letter-spacing:.5px}
-.badge-male{background:rgba(96,165,250,0.08);color:var(--male);border:1px solid rgba(96,165,250,0.20)}
-.badge-female{background:rgba(244,114,182,0.08);color:var(--female);border:1px solid rgba(244,114,182,0.20)}
-.badge-muta{background:var(--accent-bg);color:var(--accent-l);border:1px solid rgba(124,106,239,0.22)}
+.badge-male{background:rgba(96,165,250,0.08);color:var(--blue);border:1px solid rgba(96,165,250,0.20)}
+.badge-female{background:rgba(244,114,182,0.08);color:var(--pink);border:1px solid rgba(244,114,182,0.20)}
+.badge-muta{background:var(--accent-bg);color:var(--accent-l);border:1px solid rgba(123,147,248,0.22)}
 
 /* Stats row */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.stat-cell{padding:5px 6px;border-radius:var(--r-sm);background:rgba(255,255,255,0.02);text-align:center;border:1px solid transparent;transition:border-color .15s}
-.stat-cell:hover{border-color:var(--border-s)}
+.stat-cell{padding:5px 6px;border-radius:var(--r-sm);background:rgba(10,10,24,0.4);backdrop-filter:blur(6px);text-align:center;border:1px solid transparent;transition:all .15s}
+.stat-cell:hover{border-color:var(--border-0)}
 .stat-name{font-size:7.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
 .stat-val{font-size:13px;font-weight:900;color:var(--text-1);font-variant-numeric:tabular-nums}
-.stat-val.best{color:var(--success)}
+.stat-val.best{color:var(--green)}
 .stat-val.highlight{color:var(--accent-l)}
-.stat-val.worse{color:var(--danger)}
+.stat-val.worse{color:var(--red)}
 
 /* Extractor result */
 .extract-row{display:grid;grid-template-columns:80px 1fr 60px 60px;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
@@ -110,7 +111,7 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
 .extract-fill{height:100%;border-radius:9999px;background:var(--accent);transition:width .3s}
 .extract-wild{font-size:13px;font-weight:900;color:var(--accent-l);text-align:center;font-variant-numeric:tabular-nums}
 .extract-value{font-size:10.5px;color:var(--text-3);text-align:center;font-variant-numeric:tabular-nums}
-.extract-wild.top{color:var(--success)}
+.extract-wild.top{color:var(--green)}
 
 /* Muta counter */
 .muta-display{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--text-3)}
@@ -118,32 +119,32 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
 /* ===== BREED SIM ===== */
 .breed-parents{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:start}
 .breed-vs{display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--text-3);padding-top:30px}
-.breed-result{margin-top:14px;padding:16px;border-radius:var(--r-lg);background:rgba(124,106,239,0.03);border:1px solid rgba(124,106,239,0.10)}
+.breed-result{margin-top:14px;padding:16px;border-radius:var(--r-lg);background:rgba(123,147,248,0.04);backdrop-filter:blur(12px);border:1px solid rgba(123,147,248,0.10)}
 .breed-result-title{font-size:12px;font-weight:800;color:var(--accent-l);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 
 /* ===== LINEAGE TREE ===== */
-.lineage-node{display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:var(--r-md);background:rgba(255,255,255,0.02);border:1px solid var(--border-s);font-size:9px;color:var(--text-2);min-width:90px;text-align:center;transition:border-color .15s}
-.lineage-node:hover{border-color:var(--border-m)}
+.lineage-node{display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:var(--r-md);background:rgba(6,6,16,0.5);backdrop-filter:blur(10px);border:1px solid var(--border-0);font-size:9px;color:var(--text-2);min-width:90px;text-align:center;transition:all .15s}
+.lineage-node:hover{border-color:rgba(123,147,248,0.15);box-shadow:0 0 16px rgba(123,147,248,0.06)}
 .lineage-node .l-name{font-weight:700;color:var(--text-0);font-size:10.5px}
 .lineage-node .l-muta{font-size:8px;color:var(--accent-l)}
 
 /* ===== TABS ===== */
-.sub-tabs{display:flex;gap:0;border-bottom:1px solid var(--border-s);margin-bottom:12px;flex-shrink:0}
+.sub-tabs{display:flex;gap:0;border-bottom:1px solid var(--border-0);margin-bottom:12px;flex-shrink:0}
 .sub-tab{padding:9px 16px;border:none;background:transparent;color:var(--text-3);font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
-.sub-tab:hover{color:var(--text-2);background:rgba(124,106,239,0.03)}
+.sub-tab:hover{color:var(--text-2);background:rgba(123,147,248,0.03)}
 .sub-tab.active{color:var(--accent-l);border-bottom-color:var(--accent)}
 
 /* Table */
 .data-table{width:100%;border-collapse:collapse;font-size:10.5px}
-.data-table th{text-align:left;padding:8px 10px;font-size:8.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border-s)}
+.data-table th{text-align:left;padding:8px 10px;font-size:8.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border-0)}
 .data-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--text-2)}
 .data-table tr:hover td{background:var(--accent-bg);color:var(--text-1)}
 .data-table .t-name{font-weight:700;color:var(--text-0)}
 .data-table .t-stat{font-weight:700;font-variant-numeric:tabular-nums}
 .data-table .t-action{text-align:right}
-.t-btn-sm{padding:3px 10px;border:1px solid var(--border-s);border-radius:var(--r-sm);background:rgba(255,255,255,0.03);color:var(--text-3);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
-.t-btn-sm:hover{background:rgba(255,255,255,0.06);color:var(--text-1);border-color:var(--border-m)}
-.t-btn-sm.del:hover{background:var(--danger-bg);color:var(--danger);border-color:rgba(239,68,68,0.20)}
+.t-btn-sm{padding:3px 10px;border:1px solid var(--border-0);border-radius:var(--r-sm);background:rgba(6,6,16,0.5);backdrop-filter:blur(6px);color:var(--text-3);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.t-btn-sm:hover{background:rgba(20,20,45,0.6);color:var(--text-1);border-color:var(--border-1)}
+.t-btn-sm.del:hover{background:var(--red-bg);color:var(--red);border-color:rgba(239,68,68,0.20)}
 
 /* Empty state */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;color:var(--text-3)}
@@ -153,32 +154,60 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
 
 /* Config cards */
 .config-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.config-card{padding:12px;border-radius:var(--r-md);background:rgba(255,255,255,0.02);border:1px solid var(--border-s);transition:border-color .15s}
-.config-card:hover{border-color:var(--border-m)}
+.config-card{padding:12px;border-radius:var(--r-md);background:rgba(6,6,16,0.5);backdrop-filter:blur(10px);border:1px solid var(--border-0);transition:all .15s}
+.config-card:hover{border-color:rgba(123,147,248,0.15);box-shadow:0 0 16px rgba(123,147,248,0.06)}
 .config-card .cc-label{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .config-card .cc-val{font-size:17px;font-weight:900;color:var(--accent-l);font-variant-numeric:tabular-nums}
 
 /* Monte Carlo */
 .mc-results{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mc-stat{padding:10px;border-radius:var(--r-md);background:rgba(255,255,255,0.02);border:1px solid var(--border-s)}
+.mc-stat{padding:10px;border-radius:var(--r-md);background:rgba(6,6,16,0.5);backdrop-filter:blur(10px);border:1px solid var(--border-0)}
 .mc-stat-name{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .mc-stat-pct{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
-.mc-stat-pct.high{color:var(--success)}.mc-stat-pct.mid{color:var(--warning)}.mc-stat-pct.low{color:var(--danger)}
+.mc-stat-pct.high{color:var(--green)}.mc-stat-pct.mid{color:var(--orange)}.mc-stat-pct.low{color:var(--red)}
 .prob-bar{height:5px;background:rgba(255,255,255,0.05);border-radius:9999px;overflow:hidden;margin-top:4px}
 .prob-fill{height:100%;border-radius:9999px;transition:width .3s}
 
+/* ===== TRIPLE STAT DISPLAY ===== */
+.stat-triple{display:grid;grid-template-columns:50px 1fr 1fr 1fr;gap:2px;align-items:center;padding:4px 6px;border-radius:var(--r-sm);background:rgba(10,10,24,0.4);border:1px solid transparent;transition:all .15s;font-size:11px}
+.stat-triple:hover{border-color:var(--border-0)}
+.stat-triple .st-label{font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
+.stat-triple .st-wild{font:900 12px var(--font);color:var(--green);font-variant-numeric:tabular-nums;text-align:center}
+.stat-triple .st-muta{font:800 11px var(--font);color:var(--accent-l);font-variant-numeric:tabular-nums;text-align:center}
+.stat-triple .st-alloc{font:600 10px var(--font);color:var(--text-3);font-variant-numeric:tabular-nums;text-align:center}
+.stat-triple .st-muta.zero,.stat-triple .st-alloc.zero{color:var(--text-3);opacity:0.3}
+.stat-triple .st-wild.top{color:var(--green);text-shadow:0 0 8px rgba(45,212,160,0.3)}
+.stat-triple .st-wild.clean-ok{color:var(--green);opacity:0.6}
+.muta-counter{display:inline-flex;align-items:center;gap:4px;font:700 9px var(--font);padding:2px 8px;border-radius:var(--r-sm)}
+.muta-counter.pat{color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border)}
+.muta-counter.mat{color:var(--pink);background:var(--pink-bg);border:1px solid var(--pink-border)}
+.muta-counter.over{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.clean-badge{display:inline-flex;align-items:center;gap:3px;font:700 8px var(--font);color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:1px 6px;border-radius:var(--r-sm)}
+.level-cap-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:9999px;overflow:hidden;margin-top:4px}
+.level-cap-fill{height:100%;border-radius:9999px;transition:width .3s}
+.stat-cap-warn{color:var(--orange);font:700 8px var(--font)}
+.tek-stat-row{display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:4px;align-items:center}
+.tek-stat-row .form-input{padding:5px 6px;font-size:11px;text-align:center}
+.unified-stat-row{display:grid;grid-template-columns:58px 1fr 52px 52px 52px;gap:4px;align-items:center;padding:2px 0}
+.unified-stat-row:nth-child(odd){background:rgba(255,255,255,0.01);border-radius:var(--r-sm)}
+.ustat-label{font:700 10px var(--font);color:var(--text-1);white-space:nowrap}
+.unified-stat-row .stat-input{padding:5px 6px;font-size:11px}
+.ustat-w{padding:5px 4px!important;font-size:11px!important;text-align:center!important;border-color:rgba(74,222,128,0.15)!important;color:#4ade80!important}
+.ustat-m{padding:5px 4px!important;font-size:11px!important;text-align:center!important;border-color:rgba(123,147,248,0.15)!important;color:var(--accent-l)!important}
+.ustat-a{padding:5px 4px!important;font-size:11px!important;text-align:center!important;border-color:rgba(255,255,255,0.05)!important;color:var(--text-3)!important}
+
 /* Section divider */
-.section-title{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border-s)}
+.section-title{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border-0)}
 
 /* Searchable Select */
 .ss-wrap{position:relative;width:100%}
 .ss-input{width:100%}
-.ss-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:240px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-m);border-radius:var(--r-md);z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.7)}
+.ss-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:240px;overflow-y:auto;background:rgba(10,10,24,0.85);backdrop-filter:blur(16px);border:1px solid var(--border-1);border-radius:var(--r-md);z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.7)}
 .ss-dropdown::-webkit-scrollbar{width:4px}.ss-dropdown::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.10);border-radius:4px}
 .ss-option{padding:6px 12px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .1s}
 .ss-option:hover,.ss-option.hl{background:var(--accent-bg);color:var(--text-0)}
 .ss-option.sel{color:var(--accent-l);font-weight:700}
-.ss-selected{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border-s);border-radius:var(--r-sm);cursor:default}
+.ss-selected{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(6,6,16,0.5);backdrop-filter:blur(8px);border:1px solid var(--border-0);border-radius:var(--r-sm);cursor:default}
 .ss-sel-icon{border-radius:4px;flex-shrink:0;filter:invert(1) brightness(1.8);object-fit:contain}
 .ss-selected span{font-size:11.5px;font-weight:600;color:var(--text-0);flex:1}
 .ss-clear{border:none;background:transparent;color:var(--text-3);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}
@@ -186,58 +215,59 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
 .ss-option{display:flex;align-items:center;gap:8px}
 .ss-option img{width:24px;height:24px;filter:invert(1) brightness(1.8);object-fit:contain;flex-shrink:0}
 .ss-empty{padding:14px;text-align:center;color:var(--text-3);font-size:10px;font-style:italic}
-.ss-group{padding:6px 12px 3px;font-size:8px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;background:var(--bg-1);position:sticky;top:0;z-index:1}
+.ss-group{padding:6px 12px 3px;font-size:8px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;background:rgba(6,6,16,0.8);backdrop-filter:blur(8px);position:sticky;top:0;z-index:1}
 
 /* Creature preview */
 .creature-preview{
-  display:flex;align-items:center;gap:20px;padding:0;margin:14px 0;
-  background:linear-gradient(135deg,rgba(124,106,239,0.06),rgba(15,15,30,0.8));
-  border:1px solid var(--accent-border);border-radius:var(--r-lg);
-  overflow:hidden;animation:fadeSlide .3s ease;min-height:160px;
+  display:flex;align-items:center;gap:12px;padding:0;margin:10px 0;
+  background:linear-gradient(135deg,rgba(123,147,248,0.06),rgba(6,6,16,0.7));
+  backdrop-filter:blur(12px);
+  border:1px solid var(--accent-border);border-radius:var(--r-md);
+  overflow:hidden;animation:fadeSlide .3s ease;min-height:60px;
 }
 @keyframes fadeSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .creature-preview-img{
-  width:200px;height:160px;object-fit:cover;
-  background:linear-gradient(135deg,rgba(124,106,239,0.12),rgba(20,20,40,0.9));
+  width:80px;height:60px;object-fit:cover;
+  background:linear-gradient(135deg,rgba(123,147,248,0.12),rgba(20,20,40,0.9));
   flex-shrink:0;
 }
-.creature-preview-info{display:flex;flex-direction:column;gap:6px;padding:14px 20px}
-.creature-preview-name{font-size:24px;font-weight:900;color:var(--text-0);letter-spacing:-0.3px}
-.creature-preview-species{font-size:10px;font-weight:600;color:var(--accent-l);text-transform:uppercase;letter-spacing:1px}
+.creature-preview-info{display:flex;flex-direction:column;gap:2px;padding:8px 12px}
+.creature-preview-name{font-size:14px;font-weight:800;color:var(--text-0);letter-spacing:-0.2px}
+.creature-preview-species{font-size:9px;font-weight:600;color:var(--accent-l);text-transform:uppercase;letter-spacing:1px}
 
 /* Best stats table */
-.best-table td.top-stat{color:var(--success);font-weight:900}
+.best-table td.top-stat{color:var(--green);font-weight:900}
 .best-table td.good-stat{color:var(--accent-l);font-weight:700}
 
 /* Scrollbar */
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:9999px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.16)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(123,147,248,0.15);border-radius:9999px}::-webkit-scrollbar-thumb:hover{background:rgba(123,147,248,0.3)}
 
 /* Gene chips */
 .gene-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .gene-chip{padding:2px 7px;border-radius:var(--r-sm);font-size:8px;font-weight:800;cursor:default;letter-spacing:.3px}
-.gene-chip.mutable{background:var(--accent-bg);color:var(--accent-l);border:1px solid rgba(124,106,239,0.22)}
-.gene-chip.robust{background:var(--success-bg);color:var(--success);border:1px solid rgba(45,212,160,0.20)}
-.gene-chip.frail{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.20)}
-.gene-chip.special{background:var(--warning-bg);color:var(--warning);border:1px solid rgba(245,158,11,0.20)}
+.gene-chip.mutable{background:var(--accent-bg);color:var(--accent-l);border:1px solid rgba(123,147,248,0.22)}
+.gene-chip.robust{background:var(--green-bg);color:var(--green);border:1px solid rgba(45,212,160,0.20)}
+.gene-chip.frail{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,0.20)}
+.gene-chip.special{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(245,158,11,0.20)}
 
 /* ===== EDIT FORM ===== */
-.edit-form{padding:10px;background:rgba(255,255,255,0.02);border:1px solid var(--accent-border);border-radius:var(--r-md);margin-top:6px}
+.edit-form{padding:10px;background:rgba(6,6,16,0.5);backdrop-filter:blur(12px);border:1px solid var(--accent-border);border-radius:var(--r-md);margin-top:6px}
 .edit-form .form-grid{gap:8px}
-.edit-sex-toggle{display:flex;gap:0;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border-s)}
-.edit-sex-btn{flex:1;padding:6px 12px;border:none;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;transition:all .15s;background:rgba(255,255,255,0.03);color:var(--text-3)}
-.edit-sex-btn.active-male{background:rgba(96,165,250,0.15);color:var(--male);border-color:rgba(96,165,250,0.30)}
-.edit-sex-btn.active-female{background:rgba(244,114,182,0.15);color:var(--female);border-color:rgba(244,114,182,0.30)}
+.edit-sex-toggle{display:flex;gap:0;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border-0)}
+.edit-sex-btn{flex:1;padding:6px 12px;border:none;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;transition:all .15s;background:rgba(6,6,16,0.5);color:var(--text-3)}
+.edit-sex-btn.active-male{background:rgba(96,165,250,0.15);color:var(--blue);border-color:rgba(96,165,250,0.30)}
+.edit-sex-btn.active-female{background:rgba(244,114,182,0.15);color:var(--pink);border-color:rgba(244,114,182,0.30)}
 
 /* ===== ADD CREATURE FORM ===== */
-.add-creature-overlay{display:none;margin-bottom:12px;padding:14px;background:rgba(124,106,239,0.04);border:1px solid var(--accent-border);border-radius:var(--r-lg);animation:fadeSlide .3s ease}
+.add-creature-overlay{display:none;margin-bottom:12px;padding:14px;background:rgba(123,147,248,0.05);backdrop-filter:blur(12px);border:1px solid var(--accent-border);border-radius:var(--r-lg);animation:fadeSlide .3s ease}
 .add-creature-overlay.visible{display:block}
 .add-creature-title{font-size:12px;font-weight:800;color:var(--accent-l);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .add-btn-header{width:28px;height:28px;border:1px solid var(--accent-border);border-radius:var(--r-md);background:var(--accent-bg);color:var(--accent-l);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.add-btn-header:hover{background:rgba(124,106,239,0.18);transform:translateY(-1px);box-shadow:0 2px 8px var(--accent-glow)}
+.add-btn-header:hover{background:rgba(123,147,248,0.18);transform:translateY(-1px);box-shadow:0 2px 8px var(--accent-glow)}
 
 /* Autocomplete for add form */
 .ac-wrap{position:relative;width:100%}
-.ac-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:200px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border-m);border-radius:var(--r-md);z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.7)}
+.ac-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:200px;overflow-y:auto;background:rgba(10,10,24,0.85);backdrop-filter:blur(16px);border:1px solid var(--border-1);border-radius:var(--r-md);z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.7)}
 .ac-dropdown::-webkit-scrollbar{width:4px}.ac-dropdown::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.10);border-radius:4px}
 .ac-option{display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .1s}
 .ac-option:hover{background:var(--accent-bg);color:var(--text-0)}
@@ -246,35 +276,37 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
 /* ===== ADVISOR ===== */
 .advisor-section{display:flex;flex-direction:column;gap:12px}
 .advisor-header{font-size:14px;font-weight:800;color:var(--accent-l);display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.advisor-species-card{padding:14px;border-radius:var(--r-lg);background:rgba(255,255,255,0.02);border:1px solid var(--border-s);transition:border-color .2s}
-.advisor-species-card:hover{border-color:var(--border-m)}
+.advisor-species-card{padding:14px;border-radius:var(--r-lg);background:rgba(6,6,16,0.5);backdrop-filter:blur(12px);border:1px solid var(--border-0);transition:all .2s}
+.advisor-species-card:hover{border-color:rgba(123,147,248,0.15);box-shadow:0 0 20px rgba(123,147,248,0.06)}
 .advisor-species-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .advisor-species-ico{width:32px;height:32px;filter:invert(1) brightness(1.8);object-fit:contain;border-radius:4px;flex-shrink:0}
 .advisor-species-name{font-size:13px;font-weight:800;color:var(--text-0);flex:1}
 .advisor-priority{font-size:8px;font-weight:800;padding:3px 8px;border-radius:var(--r-sm);text-transform:uppercase;letter-spacing:.5px}
-.advisor-priority.high{background:var(--warning-bg);color:var(--warning);border:1px solid rgba(245,158,11,0.20)}
-.advisor-priority.done{background:var(--success-bg);color:var(--success);border:1px solid rgba(45,212,160,0.20)}
-.advisor-priority.need{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.20)}
-.advisor-pair{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px;padding:8px;background:rgba(255,255,255,0.02);border-radius:var(--r-md);border:1px solid var(--border-s)}
+.advisor-priority.high{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(245,158,11,0.20)}
+.advisor-priority.done{background:var(--green-bg);color:var(--green);border:1px solid rgba(45,212,160,0.20)}
+.advisor-priority.need{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,0.20)}
+.advisor-pair{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px;padding:8px;background:rgba(10,10,24,0.4);backdrop-filter:blur(8px);border-radius:var(--r-md);border:1px solid var(--border-0)}
 .advisor-parent{font-size:10px;font-weight:600;padding:4px 0}
-.advisor-parent.male{color:var(--male)}
-.advisor-parent.female{color:var(--female)}
+.advisor-parent.male{color:var(--blue)}
+.advisor-parent.female{color:var(--pink)}
 .advisor-vs{font-size:14px;font-weight:900;color:var(--text-3);text-align:center}
 .advisor-stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:8px}
-.advisor-stat-cell{padding:5px 4px;border-radius:var(--r-sm);background:rgba(255,255,255,0.02);text-align:center;border:1px solid transparent;transition:border-color .15s}
+.advisor-stat-cell{padding:5px 4px;border-radius:var(--r-sm);background:rgba(10,10,24,0.4);backdrop-filter:blur(6px);text-align:center;border:1px solid transparent;transition:all .15s}
 .advisor-stat-cell.locked{border-color:rgba(45,212,160,0.25);background:rgba(45,212,160,0.04)}
 .advisor-stat-cell.unlocked{border-color:rgba(245,158,11,0.20);background:rgba(245,158,11,0.03)}
 .advisor-stat-label{font-size:7px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px}
 .advisor-stat-val{font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}
-.advisor-stat-val.best-m{color:var(--male)}
-.advisor-stat-val.best-f{color:var(--female)}
-.advisor-stat-val.best-both{color:var(--success)}
+.advisor-stat-val.best-m{color:var(--blue)}
+.advisor-stat-val.best-f{color:var(--pink)}
+.advisor-stat-val.best-both{color:var(--green)}
 .advisor-completion{font-size:10px;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:6px}
 .advisor-completion-bar{flex:1;height:5px;background:rgba(255,255,255,0.05);border-radius:9999px;overflow:hidden}
 .advisor-completion-fill{height:100%;border-radius:9999px;transition:width .3s}
+body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
 </head>
 <body>
+<canvas id="bgCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
 <div id="app">
   <!-- Title Bar -->
   <div id="breed-bar">
@@ -293,6 +325,7 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
       <button class="nav-btn" onclick="switchPanel('bestof',this)" title="Top Stats"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22M18 2H6v7a6 6 0 1 0 12 0V2Z"/></svg><span class="nav-label">Top Stats</span></button>
       <button class="nav-btn" onclick="switchPanel('breed',this)" title="Breeding"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 3.236s1.612 2.164 3.5 3.264M5.5 9.5c1.667.333 3.333.333 5 0M6 16.5c2-.333 4-.333 6 0M14.5 20.764s-1.612-2.164-3.5-3.264"/></svg><span class="nav-label">Breeding</span></button>
       <button class="nav-btn" onclick="switchPanel('pedigree',this)" title="Pedigree"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg><span class="nav-label">Pedigree</span></button>
+      <button class="nav-btn" onclick="switchPanel('mutations',this)" title="Mutation Tracker"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg><span class="nav-label">Mutations</span></button>
       <button class="nav-btn" onclick="switchPanel('advisor',this)" title="Conseiller"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg><span class="nav-label">Conseiller</span></button>
       <button class="nav-btn" onclick="switchPanel('config',this)" title="Config"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="nav-label">Config</span></button>
     </div>
@@ -304,6 +337,15 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
         <div class="panel-sub">Entre les valeurs brutes du jeu — extraction automatique des wild levels</div>
       </div>
       <div class="panel-body">
+        <!-- Creature visual preview (shown after species selection) -->
+        <div id="exCreaturePreview" class="creature-preview" style="display:none">
+          <img id="exCreatureImg" class="creature-preview-img" src="">
+          <div class="creature-preview-info">
+            <div class="creature-preview-species">Espèce sélectionnée</div>
+            <div class="creature-preview-name" id="exCreaturePreviewName"></div>
+          </div>
+        </div>
+
         <div class="form-grid">
           <div class="form-group">
             <span class="form-label">Espèce</span>
@@ -347,29 +389,42 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
           </div>
         </div>
 
-        <!-- Creature visual preview -->
-        <div id="exCreaturePreview" class="creature-preview" style="display:none">
-          <img id="exCreatureImg" class="creature-preview-img" src="">
-          <div class="creature-preview-info">
-            <div class="creature-preview-species">Espèce sélectionnée</div>
-            <div class="creature-preview-name" id="exCreaturePreviewName"></div>
+        <!-- Unified stat grid: Raw Value + W/M/A (TEK binoculars) -->
+        <div class="section-title">Stats — Valeurs Brutes + Points TEK</div>
+        <div style="font-size:9px;color:var(--text-3);margin-bottom:6px">Remplis les valeurs brutes (in-game) ET/OU les points TEK (jumelles). Les deux se complètent.</div>
+
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:58px 1fr 52px 52px 52px;gap:4px;padding:0 2px;margin-bottom:4px">
+          <span style="font:700 8px var(--font);color:var(--text-3)">Stat</span>
+          <span style="font:700 8px var(--font);color:var(--text-2);text-align:center">Valeur In-Game</span>
+          <span style="font:700 8px var(--font);color:#4ade80;text-align:center">W</span>
+          <span style="font:700 8px var(--font);color:var(--accent-l);text-align:center">M</span>
+          <span style="font:700 8px var(--font);color:var(--text-3);text-align:center">A</span>
+        </div>
+
+        <div class="unified-stat-row"><span class="ustat-label">Health</span><input class="form-input stat-input" id="exHP" type="number" step="0.1" placeholder="ex: 5400" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekHP_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekHP_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekHP_A" type="number" placeholder="A"></div>
+        <div class="unified-stat-row"><span class="ustat-label">Stamina</span><input class="form-input stat-input" id="exStam" type="number" step="0.1" placeholder="ex: 1200" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekStam_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekStam_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekStam_A" type="number" placeholder="A"></div>
+        <div class="unified-stat-row"><span class="ustat-label">Oxygen</span><input class="form-input stat-input" id="exOxy" type="number" step="0.1" placeholder="ex: 450" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekOxy_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekOxy_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekOxy_A" type="number" placeholder="A"></div>
+        <div class="unified-stat-row"><span class="ustat-label">Food</span><input class="form-input stat-input" id="exFood" type="number" step="0.1" placeholder="ex: 8000" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekFood_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekFood_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekFood_A" type="number" placeholder="A"></div>
+        <div class="unified-stat-row"><span class="ustat-label">Weight</span><input class="form-input stat-input" id="exWeight" type="number" step="0.1" placeholder="ex: 500" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekWeight_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekWeight_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekWeight_A" type="number" placeholder="A"></div>
+        <div class="unified-stat-row"><span class="ustat-label">Melee %</span><input class="form-input stat-input" id="exMelee" type="number" step="0.1" placeholder="ex: 350" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekMelee_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekMelee_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekMelee_A" type="number" placeholder="A"></div>
+        <div class="unified-stat-row"><span class="ustat-label">Speed %</span><input class="form-input stat-input" id="exSpeed" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekSpeed_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekSpeed_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekSpeed_A" type="number" placeholder="A"></div>
+        <input type="hidden" id="exTorpor" value="0">
+
+        <!-- Mutation counters (always visible) -->
+        <div style="display:flex;gap:12px;margin-top:10px;padding:8px;border-radius:var(--r-md);background:rgba(6,6,16,0.3);border:1px solid var(--border-0)">
+          <div class="form-group" style="flex:1">
+            <span class="form-label" style="color:#60a5fa">&#9794; Mutations Pat</span>
+            <div style="display:flex;align-items:center;gap:4px"><input class="form-input" id="exMutaPat" type="number" value="0" min="0" max="9999" style="text-align:center;color:#60a5fa"><span style="font:700 11px var(--font);color:var(--text-3)">/ 20</span></div>
+          </div>
+          <div class="form-group" style="flex:1">
+            <span class="form-label" style="color:#d946ef">&#9792; Mutations Mat</span>
+            <div style="display:flex;align-items:center;gap:4px"><input class="form-input" id="exMutaMat" type="number" value="0" min="0" max="9999" style="text-align:center;color:#d946ef"><span style="font:700 11px var(--font);color:var(--text-3)">/ 20</span></div>
           </div>
         </div>
 
-        <div class="section-title">Valeurs du Jeu (ce que tu vois in-game)</div>
-        <div class="form-grid cols-4">
-          <div class="form-group"><span class="form-label">Health</span><input class="form-input stat-input" id="exHP" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
-          <div class="form-group"><span class="form-label">Stamina</span><input class="form-input stat-input" id="exStam" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
-          <div class="form-group"><span class="form-label">Oxygen</span><input class="form-input stat-input" id="exOxy" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
-          <div class="form-group"><span class="form-label">Food</span><input class="form-input stat-input" id="exFood" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
-          <div class="form-group"><span class="form-label">Weight</span><input class="form-input stat-input" id="exWeight" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"></div>
-          <div class="form-group"><span class="form-label">Melee (%)</span><input class="form-input stat-input" id="exMelee" type="number" step="0.1" placeholder="100" oninput="onExtractChange()"></div>
-          <input type="hidden" id="exSpeed" value="0">
-          <input type="hidden" id="exTorpor" value="0">
-        </div>
-
-        <div class="btn-row">
-          <button class="btn primary" onclick="extractStats()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Extraire les Levels</button>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn primary" id="exExtractBtn" onclick="extractStats()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Extraire &amp; Sauvegarder</button>
           <button class="btn" onclick="clearExtractor()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset</button>
         </div>
 
@@ -389,6 +444,7 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
           <div class="panel-title">Bibliothèque de Créatures</div>
           <div class="panel-sub">Toutes tes créatures avec leurs wild levels extraits</div>
         </div>
+        <button class="btn" style="font-size:10px;padding:0 12px;height:28px;gap:4px" onclick="syncToTribe()" title="Synchroniser la bibliothèque avec la tribu">&#128257; Sync Tribu</button>
         <button class="add-btn-header" onclick="toggleAddCreatureForm()" title="Ajouter une créature">+</button>
       </div>
       <div class="panel-body">
@@ -419,15 +475,41 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
               <input class="form-input" id="addLevel" type="number" placeholder="150">
             </div>
           </div>
-          <div class="section-title" style="margin-top:10px">Wild Levels</div>
-          <div class="form-grid cols-3" id="addStatsGrid">
-            <div class="form-group"><span class="form-label">Health</span><input class="form-input" id="addWL_Health" type="number" placeholder="0"></div>
-            <div class="form-group"><span class="form-label">Stamina</span><input class="form-input" id="addWL_Stamina" type="number" placeholder="0"></div>
-            <div class="form-group"><span class="form-label">Oxygen</span><input class="form-input" id="addWL_Oxygen" type="number" placeholder="0"></div>
-            <div class="form-group"><span class="form-label">Food</span><input class="form-input" id="addWL_Food" type="number" placeholder="0"></div>
-            <div class="form-group"><span class="form-label">Weight</span><input class="form-input" id="addWL_Weight" type="number" placeholder="0"></div>
-            <div class="form-group"><span class="form-label">Melee</span><input class="form-input" id="addWL_Melee" type="number" placeholder="0"></div>
+          <!-- TEK Mode Toggle -->
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px;margin-bottom:6px">
+            <div class="section-title" style="margin:0;border:none;padding:0;flex:1">Stats (Points)</div>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font:600 9px var(--font);color:var(--text-2);text-transform:uppercase;letter-spacing:.5px">
+              <input type="checkbox" id="addTekMode" onchange="toggleAddTekMode()" style="accent-color:var(--accent)"> Mode TEK (Sauvage/Muté/Attribué)
+            </label>
           </div>
+          <!-- Simple mode: wild levels only -->
+          <div id="addStatsSimple">
+            <div class="form-grid cols-3">
+              <div class="form-group"><span class="form-label">HP</span><input class="form-input" id="addWL_Health" type="number" placeholder="0"></div>
+              <div class="form-group"><span class="form-label">Stam</span><input class="form-input" id="addWL_Stamina" type="number" placeholder="0"></div>
+              <div class="form-group"><span class="form-label">Oxy</span><input class="form-input" id="addWL_Oxygen" type="number" placeholder="0"></div>
+              <div class="form-group"><span class="form-label">Food</span><input class="form-input" id="addWL_Food" type="number" placeholder="0"></div>
+              <div class="form-group"><span class="form-label">Weight</span><input class="form-input" id="addWL_Weight" type="number" placeholder="0"></div>
+              <div class="form-group"><span class="form-label">Melee</span><input class="form-input" id="addWL_Melee" type="number" placeholder="0"></div>
+              <div class="form-group"><span class="form-label">Speed</span><input class="form-input" id="addWL_Speed" type="number" placeholder="0"></div>
+            </div>
+          </div>
+          <!-- TEK mode: wild / mutated / allocated -->
+          <div id="addStatsTek" style="display:none">
+            <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:4px;font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;padding:0 2px">
+              <span>Stat</span><span style="color:var(--green)">Sauvage</span><span style="color:var(--accent-l)">Muté</span><span style="color:var(--text-3)">Attribué</span>
+            </div>
+            <div id="addTekGrid" style="display:flex;flex-direction:column;gap:3px"></div>
+            <!-- Mutation counters -->
+            <div class="section-title" style="margin-top:10px">Compteur Mutations</div>
+            <div class="form-grid cols-3">
+              <div class="form-group"><span class="form-label">Patrilinéaire /20</span><input class="form-input" id="addMutaPat" type="number" placeholder="0" min="0"></div>
+              <div class="form-group"><span class="form-label">Matrilinéaire /20</span><input class="form-input" id="addMutaMat" type="number" placeholder="0" min="0"></div>
+            </div>
+          </div>
+          <!-- Genes -->
+          <div class="section-title" style="margin-top:10px">Gènes / Traits <button class="t-btn-sm" onclick="addGeneRow()" style="margin-left:8px;font-size:8px">+ Ajouter</button></div>
+          <div id="addGenesContainer"></div>
           <div class="btn-row" style="margin-top:10px">
             <button class="btn primary" onclick="addCreatureManual()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Ajouter</button>
             <button class="btn" onclick="toggleAddCreatureForm()">Annuler</button>
@@ -577,6 +659,29 @@ select.form-input option{background:var(--bg-2);color:var(--text-0)}
             </div>
         </div>
         <div id="pedigreeView" style="overflow:auto"></div>
+      </div>
+    </div>
+
+    <!-- ============ PANEL: MUTATION TRACKER ============ -->
+    <div class="panel" id="panel-mutations">
+      <div class="panel-header">
+        <div class="panel-title">Mutation Tracker</div>
+        <div class="panel-sub">Suivi du stacking de mutations par stat et par espèce — Hard Cap 253 pts</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-group" style="margin-bottom:10px">
+          <span class="form-label">Espèce</span>
+          <div class="ss-wrap" id="mutaSpeciesWrap">
+            <div class="ss-selected" id="mutaSpeciesSelected" style="display:none">
+              <img class="ss-sel-icon" id="mutaSpeciesIcon" width="24" height="24">
+              <span id="mutaSpeciesName"></span>
+              <button class="ss-clear" onclick="clearSS('mutaSpecies');renderMutaTracker()">&times;</button>
+            </div>
+            <input class="form-input ss-input" id="mutaSpeciesInput" placeholder="Sélectionner espèce..." oninput="openSS('mutaSpecies')" onfocus="openSS('mutaSpecies')" autocomplete="off">
+            <div class="ss-dropdown" id="mutaSpeciesDropdown"></div>
+          </div>
+        </div>
+        <div id="mutaTrackerContent"></div>
       </div>
     </div>
 
@@ -730,6 +835,60 @@ var ASB_STAT_MAP = {Health:'Health',Stamina:'Stamina',Oxygen:'Oxygen',Food:'Food
 var STAT_IDS = {Health:'exHP',Stamina:'exStam',Oxygen:'exOxy',Food:'exFood',Weight:'exWeight',Melee:'exMelee',Speed:'exSpeed',Torpor:'exTorpor'};
 
 // ===================================================================
+//  BREEDING CONSTANTS (from ARK mechanics)
+// ===================================================================
+var CLEAN_STATS = ['Oxygen','Food','Speed'];
+var LEVEL_CAP = 450;
+var LEVEL_CAP_RX = 500;
+var STAT_HARD_CAP = 253;
+var MUTA_PER_ROLL = 0.025; // 2.5% per roll, 3 rolls per egg
+var MUTA_ROLLS = 3;
+var MUTA_POINTS = 2; // +2 points per mutation
+var GENE_DEFS = {
+  Mutable: { levels:[1,2,3], bonuses:[0.01, 0.015, 0.02], desc:'Chance mutation supplémentaire' },
+  Robust:  { levels:[1,2,3], bonuses:[0.015, 0.0225, 0.03], desc:'Chance meilleure stat parent' },
+  Frail:   { levels:[1,2,3], bonuses:[0.015, 0.0225, 0.03], desc:'Chance pire stat parent' }
+};
+var EMPTY_STATS = function() { return {Health:0,Stamina:0,Oxygen:0,Food:0,Weight:0,Melee:0,Speed:0}; };
+
+// Helpers
+function getBreedingValue(c, stat) { return (c.wildLevels[stat]||0) + (c.mutatedLevels ? (c.mutatedLevels[stat]||0) : 0); }
+function getTotalLevel(c) {
+  var t = 1;
+  STAT_KEYS.slice(0,7).forEach(function(k) { t += (c.wildLevels[k]||0) + (c.mutatedLevels?(c.mutatedLevels[k]||0):0) + (c.allocatedLevels?(c.allocatedLevels[k]||0):0); });
+  return t;
+}
+function getTotalBreedingPts(c) {
+  var t = 0;
+  STAT_KEYS.slice(0,7).forEach(function(k) { t += getBreedingValue(c, k); });
+  return t;
+}
+function getTotalMutations(c) {
+  if (!c.mutaPerStat) return (c.mutaPat||0) + (c.mutaMat||0);
+  var t = 0; STAT_KEYS.slice(0,7).forEach(function(k) { t += (c.mutaPerStat[k]||0); }); return t;
+}
+function isClean(c) {
+  return CLEAN_STATS.every(function(k) { return getBreedingValue(c, k) === 0; });
+}
+function checkLevelCap(c, isRX) {
+  var cap = isRX ? LEVEL_CAP_RX : LEVEL_CAP;
+  return getTotalLevel(c) >= cap;
+}
+function checkStatCap(c, stat) {
+  return getBreedingValue(c, stat) >= STAT_HARD_CAP;
+}
+function migrateCreature(c) {
+  if (!c.mutatedLevels) c.mutatedLevels = EMPTY_STATS();
+  if (!c.allocatedLevels) c.allocatedLevels = EMPTY_STATS();
+  if (!c.mutaPerStat) c.mutaPerStat = EMPTY_STATS();
+  if (!c.genes) c.genes = [];
+  if (!c.colorRegions) c.colorRegions = {0:null,1:null,2:null,3:null,4:null,5:null};
+  if (c.mutaPat === undefined) c.mutaPat = 0;
+  if (c.mutaMat === undefined) c.mutaMat = 0;
+  return c;
+}
+
+// ===================================================================
 //  STATE
 // ===================================================================
 var DB = {
@@ -753,20 +912,27 @@ function saveDB() {
 function loadDB() {
   try {
     var saved = localStorage.getItem('ark-breeding-db-v2');
-    if (saved) { DB = JSON.parse(saved); return; }
+    if (saved) {
+      DB = JSON.parse(saved);
+      // Migrate all creatures to v3 schema
+      DB.creatures.forEach(migrateCreature);
+      return;
+    }
     // Try migrating from v1
     var v1 = localStorage.getItem('ark-breeding-db');
     if (v1) {
       var old = JSON.parse(v1);
       if (old.dinos) {
         old.dinos.forEach(function(d) {
-          DB.creatures.push({
+          var c = {
             id: DB.nextId++, species: d.species, name: d.name, sex: d.sex,
             level: d.level || 0, wildLevels: d.stats || {},
             mutaPat: d.mutaPat || 0, mutaMat: d.mutaMat || 0,
             parentMale: d.parentMale || '', parentFemale: d.parentFemale || '',
             bred: false, tamed: true
-          });
+          };
+          migrateCreature(c);
+          DB.creatures.push(c);
         });
         saveDB();
       }
@@ -774,7 +940,11 @@ function loadDB() {
   } catch(e) {}
   if (window.api && window.api.loadBreedingData) {
     window.api.loadBreedingData().then(function(data) {
-      if (data && data.creatures) { DB = data; renderAll(); }
+      if (data && data.creatures) {
+        DB = data;
+        DB.creatures.forEach(migrateCreature);
+        renderAll();
+      }
     });
   }
 }
@@ -870,41 +1040,126 @@ function extractWildLevels(species, values, level, tamed, TE, imprint) {
 // ===================================================================
 function extractStats() {
   var rawSpecies = selectedSpeciesName;
-  var species = resolveASBName(rawSpecies);
+  var species = resolveASBName(rawSpecies) || rawSpecies;
   var level = parseInt(document.getElementById('exLevel').value) || 0;
   var tamed = document.getElementById('exTamed').value;
   var TE = parseFloat(document.getElementById('exTE').value) || 100;
   var imprint = parseFloat(document.getElementById('exImprint').value) || 0;
 
-  if (!species || !ASB_DATA[species]) {
-    document.getElementById('extractResults').innerHTML = '<div class="empty"><div class="empty-title">Espèce "' + escH(rawSpecies||'') + '" non trouvée dans les données ASB</div></div>';
-    return;
-  }
-
-  // Collect values
-  var values = {};
-  STAT_KEYS.forEach(function(stat) {
-    values[stat] = parseFloat(document.getElementById(STAT_IDS[stat]).value) || 0;
+  // Read TEK W/M/A inputs
+  var tekMap = {Health:'HP',Stamina:'Stam',Oxygen:'Oxy',Food:'Food',Weight:'Weight','Melee Damage':'Melee',Speed:'Speed'};
+  var tekWild = EMPTY_STATS(), tekMuta = EMPTY_STATS(), tekAlloc = EMPTY_STATS(), mutaPerStat = EMPTY_STATS();
+  var hasTekData = false;
+  var totalTekW = 0;
+  Object.keys(tekMap).forEach(function(stat) {
+    var sfx = tekMap[stat];
+    var w = parseInt(document.getElementById('exTek' + sfx + '_W').value) || 0;
+    var m = parseInt(document.getElementById('exTek' + sfx + '_M').value) || 0;
+    var a = parseInt(document.getElementById('exTek' + sfx + '_A').value) || 0;
+    var k = stat === 'Speed' ? 'Speed' : stat;
+    tekWild[k] = w; tekMuta[k] = m; tekAlloc[k] = a;
+    mutaPerStat[k] = Math.ceil(m / 2);
+    totalTekW += w;
+    if (w > 0 || m > 0 || a > 0) hasTekData = true;
   });
 
-  var result = extractWildLevels(species, values, level, tamed, TE, imprint);
-  if (!result) return;
+  // Read mutation counters
+  var mutaPat = parseInt(document.getElementById('exMutaPat').value) || 0;
+  var mutaMat = parseInt(document.getElementById('exMutaMat').value) || 0;
 
-  lastExtracted = {
-    species: species,
-    name: document.getElementById('exName').value || (species + ' #' + DB.nextId),
-    sex: document.getElementById('exSex').value,
-    level: level,
-    wildLevels: result.wildLevels,
-    totalWild: result.totalWild,
-    tamed: tamed !== 'wild',
-    bred: tamed === 'bred',
-    TE: TE,
-    imprint: imprint
-  };
+  // Read raw in-game stat values
+  var values = {};
+  var hasRawData = false;
+  STAT_KEYS.forEach(function(stat) {
+    values[stat] = parseFloat(document.getElementById(STAT_IDS[stat]).value) || 0;
+    if (values[stat] > 0) hasRawData = true;
+  });
 
-  renderExtractionResults(result, species, level);
-  document.getElementById('extractActions').style.display = '';
+  // Determine extraction strategy
+  if (hasTekData && hasRawData && species && ASB_DATA[species]) {
+    // BOTH available: extract wild levels from raw, then compare/merge with TEK data
+    var result = extractWildLevels(species, values, level, tamed, TE, imprint);
+    // TEK data takes priority (direct observation), ASB extraction serves as validation
+    var wildLevels = hasTekData ? tekWild : (result ? result.wildLevels : tekWild);
+    var totalW = 0;
+    STAT_KEYS.forEach(function(k) { totalW += (wildLevels[k]||0); });
+
+    lastExtracted = {
+      species: species,
+      name: document.getElementById('exName').value || (species + ' #' + DB.nextId),
+      sex: document.getElementById('exSex').value,
+      level: level || (totalW + 1),
+      wildLevels: wildLevels,
+      mutatedLevels: tekMuta,
+      allocatedLevels: tekAlloc,
+      mutaPerStat: mutaPerStat,
+      mutaPat: mutaPat, mutaMat: mutaMat,
+      totalWild: totalW,
+      tamed: tamed !== 'wild',
+      bred: tamed === 'bred' || (mutaPat > 0 || mutaMat > 0),
+      TE: TE, imprint: imprint, genes: []
+    };
+
+    // Show combined results with cross-validation
+    renderCombinedResults(lastExtracted, result);
+    document.getElementById('extractActions').style.display = '';
+
+  } else if (hasTekData) {
+    // TEK only: direct save
+    var totalW2 = 0;
+    STAT_KEYS.forEach(function(k) { totalW2 += (tekWild[k]||0); });
+
+    lastExtracted = {
+      species: species || rawSpecies,
+      name: document.getElementById('exName').value || ((species||rawSpecies||'Dino') + ' #' + DB.nextId),
+      sex: document.getElementById('exSex').value,
+      level: level || (totalW2 + 1),
+      wildLevels: tekWild,
+      mutatedLevels: tekMuta,
+      allocatedLevels: tekAlloc,
+      mutaPerStat: mutaPerStat,
+      mutaPat: mutaPat, mutaMat: mutaMat,
+      totalWild: totalW2,
+      tamed: true,
+      bred: true,
+      TE: 100, imprint: imprint, genes: []
+    };
+
+    renderTekExtractionResults(lastExtracted);
+    document.getElementById('extractActions').style.display = '';
+
+  } else if (hasRawData) {
+    // Raw only: classic ASB extraction
+    if (!species || !ASB_DATA[species]) {
+      document.getElementById('extractResults').innerHTML = '<div class="empty"><div class="empty-title">Espèce "' + escH(rawSpecies||'') + '" non trouvée dans les données ASB</div></div>';
+      return;
+    }
+
+    var result2 = extractWildLevels(species, values, level, tamed, TE, imprint);
+    if (!result2) return;
+
+    lastExtracted = {
+      species: species,
+      name: document.getElementById('exName').value || (species + ' #' + DB.nextId),
+      sex: document.getElementById('exSex').value,
+      level: level,
+      wildLevels: result2.wildLevels,
+      mutatedLevels: tekMuta,
+      allocatedLevels: tekAlloc,
+      mutaPerStat: mutaPerStat,
+      mutaPat: mutaPat, mutaMat: mutaMat,
+      totalWild: result2.totalWild,
+      tamed: tamed !== 'wild',
+      bred: tamed === 'bred',
+      TE: TE, imprint: imprint
+    };
+
+    renderExtractionResults(result2, species, level);
+    document.getElementById('extractActions').style.display = '';
+
+  } else {
+    document.getElementById('extractResults').innerHTML = '<div class="empty"><div class="empty-title">Entre des valeurs in-game ou des points TEK pour extraire</div></div>';
+  }
 }
 
 function renderExtractionResults(result, species, level) {
@@ -936,6 +1191,98 @@ function renderExtractionResults(result, species, level) {
   document.getElementById('extractResults').innerHTML = html;
 }
 
+function renderTekExtractionResults(ext) {
+  var html = '<div class="card" style="margin-top:8px">';
+  html += '<div class="card-head"><span class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Mode TEK — Stats Directes</span>';
+  html += '<span class="card-badge badge-muta">Wild: ' + ext.totalWild + ' pts</span></div>';
+
+  // Header
+  html += '<div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr 50px;gap:2px;font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;padding:0 6px;margin-bottom:2px">';
+  html += '<span></span><span style="text-align:center;color:#4ade80">W</span><span style="text-align:center;color:var(--accent-l)">M</span><span style="text-align:center">A</span><span style="text-align:center">BV</span></div>';
+
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    var w = ext.wildLevels[k]||0, m = ext.mutatedLevels[k]||0, a = ext.allocatedLevels[k]||0;
+    var bv = w + m;
+    var isCleanStat = CLEAN_STATS.indexOf(k) >= 0;
+    var capWarn = bv >= STAT_HARD_CAP;
+    html += '<div class="stat-triple">';
+    html += '<span class="st-label">' + (STAT_LABELS[k]||k);
+    if (isCleanStat && w === 0 && m === 0) html += ' <span style="color:var(--green)">✓</span>';
+    if (capWarn) html += ' <span class="stat-cap-warn">MAX</span>';
+    html += '</span>';
+    html += '<span class="st-wild">' + w + '</span>';
+    html += '<span class="st-muta' + (m === 0 ? ' zero' : '') + '">' + (m > 0 ? '+' + m : '-') + '</span>';
+    html += '<span class="st-alloc' + (a === 0 ? ' zero' : '') + '">' + (a > 0 ? '+' + a : '-') + '</span>';
+    html += '<span style="font:700 10px var(--font);color:var(--text-0);text-align:center">' + bv + '</span>';
+    html += '</div>';
+  });
+
+  // Mutation counters summary
+  html += '<div style="display:flex;gap:8px;margin-top:6px;padding:6px;border-radius:var(--r-sm);background:rgba(6,6,16,0.3)">';
+  html += '<span class="muta-counter pat">♂ Pat: ' + (ext.mutaPat||0) + '/20</span>';
+  html += '<span class="muta-counter mat">♀ Mat: ' + (ext.mutaMat||0) + '/20</span>';
+  var totalLvl = getTotalLevel({wildLevels:ext.wildLevels, mutatedLevels:ext.mutatedLevels, allocatedLevels:ext.allocatedLevels});
+  html += '<span style="font:600 9px var(--font);color:var(--text-2);margin-left:auto">Level: ' + totalLvl + '/' + LEVEL_CAP + '</span>';
+  html += '</div>';
+
+  html += '</div>';
+  document.getElementById('extractResults').innerHTML = html;
+}
+
+function renderCombinedResults(ext, asbResult) {
+  var html = '<div class="card" style="margin-top:8px">';
+  html += '<div class="card-head"><span class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Résultat Combiné (TEK + ASB)</span>';
+  html += '<span class="card-badge badge-muta">Wild: ' + ext.totalWild + ' pts</span></div>';
+
+  // Header
+  html += '<div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr 50px 50px;gap:2px;font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;padding:0 6px;margin-bottom:2px">';
+  html += '<span></span><span style="text-align:center;color:#4ade80">W</span><span style="text-align:center;color:var(--accent-l)">M</span><span style="text-align:center">A</span><span style="text-align:center">BV</span><span style="text-align:center;color:var(--text-3)">ASB</span></div>';
+
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    var w = ext.wildLevels[k]||0, m = ext.mutatedLevels[k]||0, a = ext.allocatedLevels[k]||0;
+    var bv = w + m;
+    var asbW = asbResult ? (asbResult.wildLevels[k]||0) : 0;
+    var isCleanStat = CLEAN_STATS.indexOf(k) >= 0;
+    var capWarn = bv >= STAT_HARD_CAP;
+    var mismatch = asbResult && asbW !== w && asbW > 0;
+    html += '<div class="stat-triple">';
+    html += '<span class="st-label">' + (STAT_LABELS[k]||k);
+    if (isCleanStat && w === 0 && m === 0) html += ' <span style="color:var(--green)">✓</span>';
+    if (capWarn) html += ' <span class="stat-cap-warn">MAX</span>';
+    html += '</span>';
+    html += '<span class="st-wild">' + w + '</span>';
+    html += '<span class="st-muta' + (m === 0 ? ' zero' : '') + '">' + (m > 0 ? '+' + m : '-') + '</span>';
+    html += '<span class="st-alloc' + (a === 0 ? ' zero' : '') + '">' + (a > 0 ? '+' + a : '-') + '</span>';
+    html += '<span style="font:700 10px var(--font);color:var(--text-0);text-align:center">' + bv + '</span>';
+    // ASB cross-validation column
+    html += '<span style="font:600 9px var(--font);text-align:center;color:' + (mismatch ? 'var(--orange)' : 'var(--text-3)') + '">' + asbW + (mismatch ? ' ⚠' : '') + '</span>';
+    html += '</div>';
+  });
+
+  // Mismatch warning
+  var hasMismatch = false;
+  if (asbResult) {
+    STAT_KEYS_DISPLAY.forEach(function(k) {
+      if ((asbResult.wildLevels[k]||0) !== (ext.wildLevels[k]||0) && (asbResult.wildLevels[k]||0) > 0) hasMismatch = true;
+    });
+  }
+  if (hasMismatch) {
+    html += '<div style="margin-top:6px;padding:6px 8px;border-radius:var(--r-sm);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);font:600 9px var(--font);color:var(--orange)">';
+    html += '⚠ Différence entre TEK et ASB — les valeurs TEK (observation directe) sont prioritaires. Vérifie les valeurs brutes si l\'écart est grand.</div>';
+  }
+
+  // Mutation counters + level
+  html += '<div style="display:flex;gap:8px;margin-top:6px;padding:6px;border-radius:var(--r-sm);background:rgba(6,6,16,0.3)">';
+  html += '<span class="muta-counter pat">♂ Pat: ' + (ext.mutaPat||0) + '/20</span>';
+  html += '<span class="muta-counter mat">♀ Mat: ' + (ext.mutaMat||0) + '/20</span>';
+  var totalLvl = getTotalLevel({wildLevels:ext.wildLevels, mutatedLevels:ext.mutatedLevels, allocatedLevels:ext.allocatedLevels});
+  html += '<span style="font:600 9px var(--font);color:var(--text-2);margin-left:auto">Level: ' + totalLvl + '/' + LEVEL_CAP + '</span>';
+  html += '</div>';
+
+  html += '</div>';
+  document.getElementById('extractResults').innerHTML = html;
+}
+
 function saveExtracted() {
   if (!lastExtracted) return;
   var c = {
@@ -945,11 +1292,17 @@ function saveExtracted() {
     sex: lastExtracted.sex,
     level: lastExtracted.level,
     wildLevels: lastExtracted.wildLevels,
+    mutatedLevels: lastExtracted.mutatedLevels || EMPTY_STATS(),
+    allocatedLevels: lastExtracted.allocatedLevels || EMPTY_STATS(),
+    mutaPerStat: lastExtracted.mutaPerStat || EMPTY_STATS(),
+    genes: lastExtracted.genes || [],
+    colorRegions: {0:null,1:null,2:null,3:null,4:null,5:null},
     tamed: lastExtracted.tamed,
     bred: lastExtracted.bred,
     TE: lastExtracted.TE,
     imprint: lastExtracted.imprint,
-    mutaPat: 0, mutaMat: 0,
+    mutaPat: lastExtracted.mutaPat || 0,
+    mutaMat: lastExtracted.mutaMat || 0,
     parentMale: '', parentFemale: '',
     addedAt: Date.now()
   };
@@ -962,6 +1315,16 @@ function saveExtracted() {
 
 function clearExtractor() {
   STAT_KEYS.forEach(function(stat) { document.getElementById(STAT_IDS[stat]).value = ''; });
+  // Clear TEK inputs
+  var tekSfx = ['HP','Stam','Oxy','Food','Weight','Melee','Speed'];
+  tekSfx.forEach(function(s) {
+    ['_W','_M','_A'].forEach(function(t) {
+      var el = document.getElementById('exTek' + s + t);
+      if (el) el.value = '';
+    });
+  });
+  var mpEl = document.getElementById('exMutaPat'); if (mpEl) mpEl.value = '0';
+  var mmEl = document.getElementById('exMutaMat'); if (mmEl) mmEl.value = '0';
   document.getElementById('exName').value = '';
   document.getElementById('exLevel').value = '';
   document.getElementById('exTE').value = '100';
@@ -969,6 +1332,7 @@ function clearExtractor() {
   document.getElementById('extractResults').innerHTML = '';
   document.getElementById('extractActions').style.display = 'none';
   lastExtracted = null;
+  onExtractChange();
 }
 
 function onExtractSpeciesChange() {}
@@ -990,47 +1354,108 @@ function renderLibrary() {
   if (filtered.length === 0) { list.innerHTML = ''; empty.style.display = ''; return; }
   empty.style.display = 'none';
 
-  // Sort by species then by total wild levels
+  // Sort by species then by total breeding value (wild+mutated)
   filtered.sort(function(a, b) {
     if (a.species !== b.species) return a.species.localeCompare(b.species);
-    var ta = 0, tb = 0;
-    STAT_KEYS.forEach(function(k) { ta += (a.wildLevels[k]||0); tb += (b.wildLevels[k]||0); });
-    return tb - ta;
+    return getTotalBreedingPts(b) - getTotalBreedingPts(a);
   });
 
-  // Find top stats per species for highlighting
+  // Find top stats per species for highlighting (based on breeding value)
   var topStats = {};
   filtered.forEach(function(c) {
     if (!topStats[c.species]) topStats[c.species] = {};
     STAT_KEYS.forEach(function(k) {
-      var v = c.wildLevels[k] || 0;
+      var v = getBreedingValue(c, k);
       if (!topStats[c.species][k] || v > topStats[c.species][k]) topStats[c.species][k] = v;
     });
   });
 
   var html = '';
   filtered.forEach(function(c) {
-    var sexBadge = c.sex === 'M' ? '<span class="card-badge badge-male">♂</span>' : '<span class="card-badge badge-female">♀</span>';
-    var total = 0;
-    STAT_KEYS.forEach(function(k) { total += (c.wildLevels[k]||0); });
-
+    migrateCreature(c);
+    var breedPts = getTotalBreedingPts(c);
+    var totalLvl = getTotalLevel(c);
+    var clean = isClean(c);
+    var capPct = Math.min(100, totalLvl / LEVEL_CAP * 100);
+    var capColor = capPct > 90 ? 'var(--red)' : (capPct > 70 ? 'var(--orange)' : 'var(--green)');
+    var mp = c.mutaPat||0, mm = c.mutaMat||0;
+    var sexColor = c.sex === 'M' ? 'var(--blue)' : 'var(--pink)';
+    var sexIcon = c.sex === 'M' ? '\u2642' : '\u2640';
     var icoUrl = getIconUrl(c.species);
-    var hasRawStats = c.rawStats && !c.wildLevelsExtracted;
-    html += '<div class="card"><div class="card-head">';
-    html += '<img src="' + icoUrl + '" style="width:28px;height:28px;filter:invert(1) brightness(1.8);border-radius:4px;margin-right:6px" onerror="this.style.display=\'none\'">';
-    html += '<span class="card-title">' + escH(c.name) + '</span>' + sexBadge;
-    html += '<span class="card-badge badge-muta">' + c.species + '</span>';
-    html += '<span style="font-size:9px;color:#666">Lv ' + (c.level||'?') + ' | ' + total + ' pts</span>';
-    html += '</div><div class="stat-grid">';
-    STAT_KEYS_DISPLAY.forEach(function(k) {
-      var v = c.wildLevels[k] || 0;
-      var isTop = topStats[c.species] && v > 0 && v === topStats[c.species][k];
-      html += '<div class="stat-cell"><div class="stat-name">' + (STAT_LABELS[k]||k) + '</div>';
-      html += '<div class="stat-val' + (isTop ? ' best' : '') + '">' + v + '</div></div>';
-    });
+
+    html += '<div class="card">';
+
+    // ── Row 1: Header — icon, name, sex, level ──
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+    html += '<img src="' + icoUrl + '" style="width:32px;height:32px;filter:invert(1) brightness(1.8);border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="display:flex;align-items:center;gap:6px">';
+    html += '<span style="font:800 13px var(--font);color:var(--text-0);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escH(c.name) + '</span>';
+    html += '<span style="font:900 12px var(--font);color:' + sexColor + '">' + sexIcon + '</span>';
     html += '</div>';
-    html += '<div class="btn-row" style="margin-top:6px">';
-    html += '<button class="t-btn-sm" onclick="extractLevelsForDino(' + c.id + ')" style="color:var(--success)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Extraire Levels</button>';
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-top:1px">';
+    html += '<span style="font:600 10px var(--font);color:var(--accent-l)">' + escH(c.species) + '</span>';
+    html += '<span style="font:700 9px var(--font);color:var(--text-3)">Lv ' + (c.level||totalLvl) + '</span>';
+    if (clean) html += '<span class="clean-badge">\u2713 Clean</span>';
+    html += '</div></div>';
+    // BV total badge (right side)
+    html += '<div style="text-align:center;flex-shrink:0">';
+    html += '<div style="font:900 16px var(--font);color:var(--text-0);line-height:1">' + breedPts + '</div>';
+    html += '<div style="font:600 7px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px">BV Total</div>';
+    html += '</div></div>';
+
+    // ── Row 2: Mutation counters + genes ──
+    html += '<div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;align-items:center">';
+    html += '<span class="muta-counter pat' + (mp>=20?' over':'') + '">\u2642 ' + mp + '/20</span>';
+    html += '<span class="muta-counter mat' + (mm>=20?' over':'') + '">\u2640 ' + mm + '/20</span>';
+    if (c.genes && c.genes.length > 0) {
+      c.genes.forEach(function(g) {
+        html += '<span style="font:600 8px var(--font);color:var(--accent-l);background:var(--accent-bg);border:1px solid var(--accent-border);padding:1px 5px;border-radius:var(--r-sm)">' + g.name + ' ' + (STAT_LABELS[g.stat]||g.stat) + ' Niv' + g.level + '</span>';
+      });
+    }
+    html += '</div>';
+
+    // ── Row 3: Stat table ──
+    html += '<table style="width:100%;border-collapse:separate;border-spacing:0 1px;font-variant-numeric:tabular-nums">';
+    html += '<thead><tr style="font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px">';
+    html += '<th style="text-align:left;padding:0 6px;width:50px">Stat</th>';
+    html += '<th style="text-align:center;color:#4ade80">W</th>';
+    html += '<th style="text-align:center;color:var(--accent-l)">M</th>';
+    html += '<th style="text-align:center;color:var(--text-3)">A</th>';
+    html += '<th style="text-align:center;width:38px;color:var(--text-1)">BV</th>';
+    html += '</tr></thead><tbody>';
+    STAT_KEYS_DISPLAY.forEach(function(k, idx) {
+      var w = c.wildLevels[k]||0;
+      var m = c.mutatedLevels ? (c.mutatedLevels[k]||0) : 0;
+      var a = c.allocatedLevels ? (c.allocatedLevels[k]||0) : 0;
+      var bv = w + m;
+      var isTop = topStats[c.species] && bv > 0 && bv === topStats[c.species][k];
+      var isCleanStat = CLEAN_STATS.indexOf(k) >= 0;
+      var capWarn = bv >= STAT_HARD_CAP;
+      var bg = idx % 2 === 0 ? 'rgba(10,10,24,0.35)' : 'transparent';
+      html += '<tr style="background:' + bg + '">';
+      html += '<td style="padding:3px 6px;font:700 9px var(--font);color:var(--text-2)">' + (STAT_LABELS[k]||k);
+      if (isCleanStat && w === 0 && m === 0) html += ' <span style="color:var(--green)">\u2713</span>';
+      if (capWarn) html += ' <span style="color:var(--red);font-size:7px">MAX</span>';
+      html += '</td>';
+      html += '<td style="text-align:center;font:900 12px var(--font);color:' + (isTop ? '#4ade80' : '#4ade80cc') + (isTop ? ';text-shadow:0 0 8px rgba(45,212,160,0.3)' : '') + '">' + w + '</td>';
+      html += '<td style="text-align:center;font:800 11px var(--font);color:' + (m > 0 ? 'var(--accent-l)' : 'var(--text-3)') + ';opacity:' + (m > 0 ? '1' : '0.25') + '">' + (m > 0 ? '+' + m : '-') + '</td>';
+      html += '<td style="text-align:center;font:600 10px var(--font);color:' + (a > 0 ? 'var(--text-2)' : 'var(--text-3)') + ';opacity:' + (a > 0 ? '1' : '0.25') + '">' + (a > 0 ? '+' + a : '-') + '</td>';
+      html += '<td style="text-align:center;font:900 11px var(--font);color:' + (isTop ? 'var(--green)' : 'var(--text-0)') + '">' + bv + '</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+
+    // ── Row 4: Level cap bar ──
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:0 4px">';
+    html += '<span style="font:600 8px var(--font);color:var(--text-3);white-space:nowrap">Lv ' + totalLvl + '/' + LEVEL_CAP + '</span>';
+    html += '<div class="level-cap-bar" style="flex:1"><div class="level-cap-fill" style="width:' + capPct + '%;background:' + capColor + '"></div></div>';
+    html += '<span style="font:700 8px var(--font);color:' + capColor + '">' + Math.round(capPct) + '%</span>';
+    html += '</div>';
+
+    // ── Row 5: Action buttons ──
+    html += '<div class="btn-row" style="margin-top:8px">';
+    html += '<button class="t-btn-sm" onclick="extractLevelsForDino(' + c.id + ')" style="color:var(--green)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10M12 7v10"/></svg> Extraire</button>';
     html += '<button class="t-btn-sm" onclick="copyDinoJSON(' + c.id + ')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> JSON</button>';
     html += '<button class="t-btn-sm" onclick="editDino(' + c.id + ')" style="color:var(--accent-l)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg> Edit</button>';
     html += '<button class="t-btn-sm del" onclick="if(confirm(\'Supprimer?\'))removeDino(' + c.id + ')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>';
@@ -1077,7 +1502,7 @@ function extractLevelsForDino(id) {
     // Values are already levels or zero - prompt user to enter raw values
     var formEl = document.getElementById('editForm_' + id);
     if (!formEl) return;
-    var html = '<div class="edit-form" style="margin-top:8px;padding:10px;background:var(--bg-2);border-radius:var(--r-md);border:1px solid var(--border-m)">';
+    var html = '<div class="edit-form" style="margin-top:8px;padding:10px;background:var(--bg-2);border-radius:var(--r-md);border:1px solid var(--border-1)">';
     html += '<div style="font-size:11px;font-weight:700;color:var(--accent-l);margin-bottom:8px">Entrer les valeurs in-game pour extraire les levels</div>';
     html += '<div style="font-size:9px;color:var(--text-2);margin-bottom:8px">Entre les stats telles que tu les vois dans le jeu (ex: Health 5400.2, Melee 350.5%)</div>';
     html += '<div class="form-grid cols-3" style="gap:6px">';
@@ -1198,7 +1623,7 @@ function renderBestStats() {
     html += '<tr><td class="t-name">' + (STAT_LABELS[k]||k) + '</td>';
     html += '<td class="top-stat">' + b.val + '</td>';
     html += '<td>' + escH(b.dino.name) + '</td>';
-    html += '<td>' + (b.dino.sex === 'M' ? '<span style="color:var(--male)">♂</span>' : '<span style="color:var(--female)">♀</span>') + '</td></tr>';
+    html += '<td>' + (b.dino.sex === 'M' ? '<span style="color:var(--blue)">♂</span>' : '<span style="color:var(--pink)">♀</span>') + '</td></tr>';
   });
   html += '</tbody></table>';
 
@@ -1209,8 +1634,8 @@ function renderBestStats() {
       html += '<div class="section-title" style="margin-top:16px">Meilleur Couple Recommandé</div>';
       html += '<div class="card">';
       html += '<div style="font-size:12px;margin-bottom:8px">';
-      html += '<span style="color:var(--male);font-weight:700">♂ ' + escH(idealPair.male.name) + '</span>';
-      html += ' × <span style="color:var(--female);font-weight:700">♀ ' + escH(idealPair.female.name) + '</span>';
+      html += '<span style="color:var(--blue);font-weight:700">♂ ' + escH(idealPair.male.name) + '</span>';
+      html += ' × <span style="color:var(--pink);font-weight:700">♀ ' + escH(idealPair.female.name) + '</span>';
       html += '</div>';
       html += '<div class="stat-grid">';
       STAT_KEYS_DISPLAY.forEach(function(k) {
@@ -1249,8 +1674,14 @@ function findOptimalPair(males, females) {
     females.forEach(function(f) {
       var score = 0;
       STAT_KEYS.forEach(function(k) {
-        score += Math.max(m.wildLevels[k]||0, f.wildLevels[k]||0);
+        score += Math.max(getBreedingValue(m, k), getBreedingValue(f, k));
       });
+      // Bonus for clean parents
+      if (isClean(m)) score += 5;
+      if (isClean(f)) score += 5;
+      // Penalty for parents over mutation cap
+      if ((m.mutaPat||0) >= 20 && (m.mutaMat||0) >= 20) score -= 20;
+      if ((f.mutaPat||0) >= 20 && (f.mutaMat||0) >= 20) score -= 20;
       if (score > bestScore) { bestScore = score; bestPair = { male: m, female: f, score: score }; }
     });
   });
@@ -1280,8 +1711,8 @@ function findBestPair() {
   var html = '<div class="card">';
   html += '<div class="card-head"><span class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22M18 2H6v7a6 6 0 1 0 12 0V2Z"/></svg> Meilleur Couple</span></div>';
   html += '<div style="font-size:12px;margin-bottom:8px">';
-  html += '<span style="color:var(--male);font-weight:700">♂ ' + escH(pair.male.name) + '</span>';
-  html += ' × <span style="color:var(--female);font-weight:700">♀ ' + escH(pair.female.name) + '</span>';
+  html += '<span style="color:var(--blue);font-weight:700">♂ ' + escH(pair.male.name) + '</span>';
+  html += ' × <span style="color:var(--pink);font-weight:700">♀ ' + escH(pair.female.name) + '</span>';
   html += ' — Score: <span style="color:var(--accent);font-weight:700">' + pair.score + '</span></div>';
 
   html += '<table class="data-table"><thead><tr><th>Stat</th><th>♂</th><th>♀</th><th>Best</th><th>Chance</th></tr></thead><tbody>';
@@ -1292,8 +1723,8 @@ function findBestPair() {
     var chance = mv === fv ? 100 : 55;
     var cls = chance === 100 ? 'top-stat' : (chance >= 55 ? 'good-stat' : '');
     html += '<tr><td class="t-name">' + (STAT_LABELS[k]||k) + '</td>';
-    html += '<td class="t-stat" style="color:var(--male)">' + mv + '</td>';
-    html += '<td class="t-stat" style="color:var(--female)">' + fv + '</td>';
+    html += '<td class="t-stat" style="color:var(--blue)">' + mv + '</td>';
+    html += '<td class="t-stat" style="color:var(--pink)">' + fv + '</td>';
     html += '<td class="' + cls + '">' + best + '</td>';
     html += '<td>' + chance + '%</td></tr>';
   });
@@ -1334,7 +1765,7 @@ function simulateBreed(count) {
       html += '<div class="stat-cell"><div class="stat-name">' + (STAT_LABELS[k]||k) + '</div><div class="stat-val' + cls + '">' + v + '</div></div>';
     });
     html += '</div>';
-    if (baby.mutations.length > 0) html += '<div style="margin-top:6px;font-size:11px;color:#a78bfa;font-weight:700">🧬 Mutations: ' + baby.mutations.join(', ') + '</div>';
+    if (baby.mutations.length > 0) html += '<div style="margin-top:6px;font-size:11px;color:var(--accent-l);font-weight:700">🧬 Mutations: ' + baby.mutations.join(', ') + '</div>';
     html += '<div class="btn-row"><button class="btn success" onclick="registerBaby()">💾 Enregistrer</button></div>';
     html += '</div>';
     el.innerHTML = html;
@@ -1345,23 +1776,92 @@ function simulateBreed(count) {
 }
 
 function simulateSingleBreed(male, female) {
-  var baby = { species: male.species, name: male.species + ' Baby', sex: Math.random()<0.5?'M':'F',
-    wildLevels: {}, mutations: [], mutaPat: (male.mutaPat||0)+(male.mutaMat||0),
-    mutaMat: (female.mutaPat||0)+(female.mutaMat||0), bred: true, tamed: true,
-    parentMale: male.name, parentFemale: female.name, parentMaleId: male.id, parentFemaleId: female.id };
+  migrateCreature(male); migrateCreature(female);
   var statKeys7 = STAT_KEYS.slice(0,7);
+  var baby = {
+    species: male.species, name: male.species + ' Baby', sex: Math.random()<0.5?'M':'F',
+    wildLevels: {}, mutatedLevels: EMPTY_STATS(), allocatedLevels: EMPTY_STATS(),
+    mutaPerStat: EMPTY_STATS(), genes: [], mutations: [],
+    colorRegions: {0:null,1:null,2:null,3:null,4:null,5:null},
+    mutaPat: (male.mutaPat||0) + (male.mutaMat||0),
+    mutaMat: (female.mutaPat||0) + (female.mutaMat||0),
+    bred: true, tamed: true, TE: 0, imprint: 0,
+    parentMale: male.name, parentFemale: female.name,
+    parentMaleId: male.id, parentFemaleId: female.id
+  };
+
+  // Collect genes from both parents for bonus calculation
+  var allGenes = (male.genes||[]).concat(female.genes||[]);
+
+  // 1. Stat inheritance: 55% best parent / 45% worst (based on wild+mutated)
   STAT_KEYS.forEach(function(k) {
-    var mv = male.wildLevels[k]||0, fv = female.wildLevels[k]||0;
-    baby.wildLevels[k] = mv === fv ? mv : (Math.random() < 0.55 ? Math.max(mv,fv) : Math.min(mv,fv));
+    var mv = getBreedingValue(male, k), fv = getBreedingValue(female, k);
+    var inheritBest = 0.55;
+    // Robust gene bonus: increases chance to inherit best stat
+    allGenes.forEach(function(g) {
+      if (g.name === 'Robust' && g.stat === k) inheritBest += GENE_DEFS.Robust.bonuses[g.level-1] || 0;
+      if (g.name === 'Frail' && g.stat === k) inheritBest -= GENE_DEFS.Frail.bonuses[g.level-1] || 0;
+    });
+    inheritBest = Math.max(0, Math.min(1, inheritBest));
+    var chosen = mv === fv ? mv : (Math.random() < inheritBest ? Math.max(mv,fv) : Math.min(mv,fv));
+    // Split into wild + mutated: wild = original parent's wild, mutated = rest
+    var bestParent = mv >= fv ? male : female;
+    var worstParent = mv >= fv ? female : male;
+    var chosenParent = chosen === Math.max(mv,fv) ? bestParent : worstParent;
+    baby.wildLevels[k] = chosenParent.wildLevels[k] || 0;
+    baby.mutatedLevels[k] = chosenParent.mutatedLevels ? (chosenParent.mutatedLevels[k]||0) : 0;
+    baby.mutaPerStat[k] = chosenParent.mutaPerStat ? (chosenParent.mutaPerStat[k]||0) : 0;
   });
-  // Mutation chance ~7.13% per parent if under cap
-  for (var i = 0; i < 3; i++) {
-    if (Math.random() < 0.0713) {
-      var ms = statKeys7[Math.floor(Math.random()*7)];
-      baby.wildLevels[ms] = (baby.wildLevels[ms]||0) + 2;
+
+  // 2. Mutation rolls: 3 independent rolls, each 2.5%
+  var mutaBonus = 0;
+  allGenes.forEach(function(g) {
+    if (g.name === 'Mutable') mutaBonus += GENE_DEFS.Mutable.bonuses[g.level-1] || 0;
+  });
+  var patCanMutate = !((male.mutaPat||0) >= 20 && (male.mutaMat||0) >= 20);
+  var matCanMutate = !((female.mutaPat||0) >= 20 && (female.mutaMat||0) >= 20);
+
+  for (var i = 0; i < MUTA_ROLLS; i++) {
+    // Determine which side this roll comes from
+    var side;
+    if (i === 0) side = 'pat';
+    else if (i === 1) side = 'mat';
+    else side = Math.random() < 0.5 ? 'pat' : 'mat';
+
+    // Skip if that side is capped
+    if (side === 'pat' && !patCanMutate) continue;
+    if (side === 'mat' && !matCanMutate) continue;
+
+    if (Math.random() < MUTA_PER_ROLL + mutaBonus) {
+      var ms = statKeys7[Math.floor(Math.random() * 7)];
+      // Check hard cap
+      if (getBreedingValue(baby, ms) + MUTA_POINTS > STAT_HARD_CAP) continue;
+      baby.mutatedLevels[ms] = (baby.mutatedLevels[ms]||0) + MUTA_POINTS;
+      baby.mutaPerStat[ms] = (baby.mutaPerStat[ms]||0) + 1;
       baby.mutations.push(ms);
+      // Increment mutation counter for that side
+      if (side === 'pat') baby.mutaPat++;
+      else baby.mutaMat++;
     }
   }
+
+  // 3. Gene inheritance (simplified: random selection from parents' pool)
+  if (allGenes.length > 0) {
+    var babyGenes = [];
+    var shuffled = allGenes.slice().sort(function() { return Math.random() - 0.5; });
+    shuffled.forEach(function(g) {
+      if (babyGenes.length >= 5) return;
+      var sameCategory = babyGenes.filter(function(bg) { return bg.name === g.name; }).length;
+      if (sameCategory >= 3) return;
+      if (Math.random() < 0.5) babyGenes.push({name:g.name, stat:g.stat, level:g.level});
+    });
+    baby.genes = babyGenes;
+  }
+
+  // Compute baby level
+  baby.level = 1;
+  statKeys7.forEach(function(k) { baby.level += (baby.wildLevels[k]||0) + (baby.mutatedLevels[k]||0); });
+
   return baby;
 }
 
@@ -1370,35 +1870,44 @@ function registerBaby() {
   var b = window._lastBaby;
   b.id = DB.nextId++;
   b.name = prompt('Nom:', b.name) || b.name;
-  b.level = 0; STAT_KEYS.forEach(function(k) { b.level += (b.wildLevels[k]||0); }); b.level++;
+  migrateCreature(b);
+  b.level = getTotalLevel(b);
+  b.addedAt = Date.now();
   DB.creatures.push(b);
   saveDB();
   window._lastBaby = null;
-  document.getElementById('breedResults').innerHTML = '<div style="color:#4ade80;font-size:11px;font-weight:700;padding:10px">✅ Enregistré !</div>';
+  document.getElementById('breedResults').innerHTML = '<div style="color:#4ade80;font-size:11px;font-weight:700;padding:10px">\u2705 Enregistré !</div>';
 }
 
 function runMonteCarlo(male, female, count, el) {
   var stats = {};
   STAT_KEYS_DISPLAY.forEach(function(k) { stats[k] = {bestCount:0, mutaCount:0}; });
-  var mutaTotal = 0;
+  var mutaTotal = 0, cleanCount = 0, capBreachCount = 0, totalMutas = 0;
   for (var i = 0; i < count; i++) {
     var baby = simulateSingleBreed(male, female);
     STAT_KEYS_DISPLAY.forEach(function(k) {
-      if ((baby.wildLevels[k]||0) >= Math.max(male.wildLevels[k]||0, female.wildLevels[k]||0)) stats[k].bestCount++;
+      if (getBreedingValue(baby, k) >= Math.max(getBreedingValue(male, k), getBreedingValue(female, k))) stats[k].bestCount++;
       if (baby.mutations.indexOf(k) >= 0) stats[k].mutaCount++;
     });
-    if (baby.mutations.length > 0) mutaTotal++;
+    if (baby.mutations.length > 0) { mutaTotal++; totalMutas += baby.mutations.length; }
+    if (isClean(baby)) cleanCount++;
+    if (checkLevelCap(baby)) capBreachCount++;
   }
-  var html = '<div class="breed-result"><div class="breed-result-title">📊 Monte Carlo — ' + count + ' simulations</div>';
-  html += '<div style="font-size:11px;color:#4ade80;font-weight:700;margin-bottom:10px">🧬 Avec mutation: ' + (mutaTotal/count*100).toFixed(1) + '%</div>';
+  var html = '<div class="breed-result"><div class="breed-result-title">\uD83D\uDCCA Monte Carlo \u2014 ' + count + ' simulations</div>';
+  html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:10px;font-weight:700">';
+  html += '<span style="color:var(--green)">\uD83E\uDDEC Mutation: ' + (mutaTotal/count*100).toFixed(1) + '%</span>';
+  html += '<span style="color:var(--accent-l)">Avg/oeuf: ' + (totalMutas/count).toFixed(2) + '</span>';
+  html += '<span style="color:var(--green)">\u2713 Clean: ' + (cleanCount/count*100).toFixed(1) + '%</span>';
+  if (capBreachCount > 0) html += '<span style="color:var(--red)">\u26A0 Cap 450: ' + (capBreachCount/count*100).toFixed(1) + '%</span>';
+  html += '</div>';
   html += '<div class="mc-results">';
   STAT_KEYS_DISPLAY.forEach(function(k) {
     var pct = (stats[k].bestCount/count*100);
     var cls = pct >= 55 ? 'high' : (pct >= 45 ? 'mid' : 'low');
     html += '<div class="mc-stat"><div class="mc-stat-name">' + (STAT_LABELS[k]||k) + '</div>';
     html += '<div class="mc-stat-pct ' + cls + '">' + pct.toFixed(1) + '%</div>';
-    html += '<div style="font-size:8px;color:#444">muta: ' + (stats[k].mutaCount/count*100).toFixed(1) + '%</div>';
-    html += '<div class="prob-bar"><div class="prob-fill" style="width:' + pct + '%;background:' + (cls==='high'?'#4ade80':(cls==='mid'?'#f59e0b':'#ef4444')) + '"></div></div></div>';
+    html += '<div style="font-size:8px;color:var(--text-3)">muta: ' + (stats[k].mutaCount/count*100).toFixed(1) + '%</div>';
+    html += '<div class="prob-bar"><div class="prob-fill" style="width:' + pct + '%;background:' + (cls==='high'?'var(--green)':(cls==='mid'?'var(--orange)':'var(--red)')) + '"></div></div></div>';
   });
   html += '</div></div>';
   el.innerHTML = html;
@@ -1428,7 +1937,7 @@ function renderPedigree() {
 
   function makeNode(creature, depth) {
     if (!creature || depth > 4) return '';
-    var sexCol = creature.sex === 'M' ? 'var(--male)' : 'var(--female)';
+    var sexCol = creature.sex === 'M' ? 'var(--blue)' : 'var(--pink)';
     var html = '<div class="lineage-node" style="border-color:' + sexCol + '">';
     html += '<div class="l-name" style="color:' + sexCol + '">' + (creature.sex==='M'?'♂':'♀') + ' ' + escH(creature.name) + '</div>';
     var total = 0; STAT_KEYS_DISPLAY.forEach(function(k) { total += (creature.wildLevels[k]||0); });
@@ -1823,17 +2332,69 @@ function pickAddSpecies(name) {
   document.getElementById('addSpeciesDropdown').style.display = 'none';
 }
 
+function toggleAddTekMode() {
+  var tek = document.getElementById('addTekMode').checked;
+  document.getElementById('addStatsSimple').style.display = tek ? 'none' : '';
+  document.getElementById('addStatsTek').style.display = tek ? '' : 'none';
+  if (tek && !document.getElementById('addTekGrid').innerHTML) {
+    var html = '';
+    var allStats = STAT_KEYS.slice(0,7);
+    allStats.forEach(function(k) {
+      var isCleanStat = CLEAN_STATS.indexOf(k) >= 0;
+      html += '<div class="tek-stat-row">';
+      html += '<span class="form-label" style="font-size:9px;' + (isCleanStat?'color:var(--text-3);opacity:0.6':'') + '">' + (STAT_LABELS[k]||k) + (isCleanStat?' ⓪':'') + '</span>';
+      html += '<input class="form-input" id="addWL_' + k + '_tek" type="number" placeholder="W" style="border-color:rgba(45,212,160,0.15)">';
+      html += '<input class="form-input" id="addML_' + k + '" type="number" placeholder="M" style="border-color:rgba(123,147,248,0.15)">';
+      html += '<input class="form-input" id="addAL_' + k + '" type="number" placeholder="A" style="border-color:rgba(255,255,255,0.05)">';
+      html += '</div>';
+    });
+    document.getElementById('addTekGrid').innerHTML = html;
+  }
+}
+
+function addGeneRow() {
+  var container = document.getElementById('addGenesContainer');
+  var idx = container.querySelectorAll('.add-gene-entry').length;
+  if (idx >= 5) { alert('Maximum 5 gènes par créature'); return; }
+  var html = '<div class="add-gene-entry" style="display:flex;gap:4px;align-items:center;margin-bottom:4px">';
+  html += '<select class="form-input gene-name-sel" style="flex:1;font-size:10px"><option value="">Type...</option><option value="Mutable">Mutable</option><option value="Robust">Robust</option><option value="Frail">Frail</option></select>';
+  html += '<select class="form-input gene-stat-sel" style="flex:1;font-size:10px"><option value="">Stat...</option>';
+  STAT_KEYS.slice(0,7).forEach(function(k) { html += '<option value="' + k + '">' + (STAT_LABELS[k]||k) + '</option>'; });
+  html += '</select>';
+  html += '<select class="form-input gene-level-sel" style="width:55px;font-size:10px"><option value="1">Niv1</option><option value="2">Niv2</option><option value="3">Niv3</option></select>';
+  html += '<button class="t-btn-sm del" onclick="this.parentElement.remove()" style="font-size:9px">✕</button></div>';
+  container.insertAdjacentHTML('beforeend', html);
+}
+
 function addCreatureManual() {
   var species = addCreatureSpeciesValue || document.getElementById('addSpeciesInput').value;
   if (!species) { alert('Sélectionne une espèce'); return; }
   var name = document.getElementById('addName').value || (species + ' #' + DB.nextId);
   var level = parseInt(document.getElementById('addLevel').value) || 0;
-  var wl = {};
+  var tekMode = document.getElementById('addTekMode') && document.getElementById('addTekMode').checked;
+  var wl = {}, ml = EMPTY_STATS(), al = EMPTY_STATS(), mps = EMPTY_STATS();
   STAT_KEYS_DISPLAY.forEach(function(k) {
     wl[k] = parseInt(document.getElementById('addWL_' + k).value) || 0;
+    if (tekMode) {
+      ml[k] = parseInt(document.getElementById('addML_' + k).value) || 0;
+      al[k] = parseInt(document.getElementById('addAL_' + k).value) || 0;
+      mps[k] = Math.ceil(ml[k] / MUTA_POINTS); // Each mutation = +2
+    }
   });
-  wl.Speed = 0;
+  wl.Speed = parseInt(document.getElementById('addWL_Speed') && document.getElementById('addWL_Speed').value) || 0;
   wl.Torpor = 0;
+  var mutaPat = parseInt(document.getElementById('addMutaPat') && document.getElementById('addMutaPat').value) || 0;
+  var mutaMat = parseInt(document.getElementById('addMutaMat') && document.getElementById('addMutaMat').value) || 0;
+  // Parse genes
+  var genes = [];
+  document.querySelectorAll('.add-gene-entry').forEach(function(el) {
+    var gName = el.querySelector('.gene-name-sel'); if (!gName) return;
+    var gStat = el.querySelector('.gene-stat-sel');
+    var gLvl = el.querySelector('.gene-level-sel');
+    if (gName.value && gStat.value && gLvl.value) {
+      genes.push({ name: gName.value, stat: gStat.value, level: parseInt(gLvl.value) });
+    }
+  });
   var c = {
     id: DB.nextId++,
     species: species,
@@ -1841,11 +2402,16 @@ function addCreatureManual() {
     sex: addCreatureSex,
     level: level,
     wildLevels: wl,
+    mutatedLevels: ml,
+    allocatedLevels: al,
+    mutaPerStat: mps,
+    genes: genes,
+    colorRegions: {0:null,1:null,2:null,3:null,4:null,5:null},
     tamed: true,
-    bred: false,
+    bred: tekMode && (mutaPat > 0 || mutaMat > 0),
     TE: 100,
     imprint: 0,
-    mutaPat: 0, mutaMat: 0,
+    mutaPat: mutaPat, mutaMat: mutaMat,
     parentMale: '', parentFemale: '',
     addedAt: Date.now()
   };
@@ -1865,6 +2431,119 @@ document.addEventListener('click', function(e) {
 // ===================================================================
 //  BREEDING ADVISOR
 // ===================================================================
+// ===================================================================
+//  MUTATION TRACKER
+// ===================================================================
+function renderMutaTracker() {
+  var el = document.getElementById('mutaTrackerContent');
+  var species = getSSValue('mutaSpecies');
+  if (!species) {
+    // Show all species summary
+    var speciesMap = {};
+    DB.creatures.forEach(function(c) {
+      migrateCreature(c);
+      if (!speciesMap[c.species]) speciesMap[c.species] = [];
+      speciesMap[c.species].push(c);
+    });
+    if (Object.keys(speciesMap).length === 0) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico" style="font-size:40px;opacity:0.3">\uD83E\uDDEC</div><div class="empty-title">Aucune créature</div><div class="empty-sub">Ajoute des créatures pour suivre les mutations</div></div>';
+      return;
+    }
+    var html = '';
+    Object.keys(speciesMap).sort().forEach(function(sp) {
+      var dinos = speciesMap[sp];
+      var maxMuta = {}; var cleanCount = 0;
+      STAT_KEYS_DISPLAY.forEach(function(k) { maxMuta[k] = 0; });
+      dinos.forEach(function(c) {
+        STAT_KEYS_DISPLAY.forEach(function(k) {
+          var bv = getBreedingValue(c, k);
+          if (bv > maxMuta[k]) maxMuta[k] = bv;
+        });
+        if (isClean(c)) cleanCount++;
+      });
+      var totalMaxMuta = 0;
+      STAT_KEYS_DISPLAY.forEach(function(k) { totalMaxMuta = Math.max(totalMaxMuta, maxMuta[k]); });
+      html += '<div class="card" style="cursor:pointer" onclick="setSSValue(\'mutaSpecies\',\'' + sp.replace(/'/g, "\\'") + '\');renderMutaTracker()">';
+      html += '<div class="card-head"><span class="card-title">' + escH(sp) + '</span>';
+      html += '<span style="font:600 9px var(--font);color:var(--text-3)">' + dinos.length + ' dinos</span>';
+      if (cleanCount > 0) html += '<span class="clean-badge" style="margin-left:4px">\u2713 ' + cleanCount + ' clean</span>';
+      html += '</div>';
+      html += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+      STAT_KEYS_DISPLAY.forEach(function(k) {
+        var v = maxMuta[k];
+        var pct = Math.min(100, v / STAT_HARD_CAP * 100);
+        var col = v >= STAT_HARD_CAP ? 'var(--red)' : (v >= 200 ? 'var(--orange)' : 'var(--accent)');
+        html += '<div style="flex:1;min-width:50px;text-align:center;padding:4px;border-radius:var(--r-sm);background:rgba(10,10,24,0.4)">';
+        html += '<div style="font:700 7px var(--font);color:var(--text-3);text-transform:uppercase">' + (STAT_LABELS[k]||k) + '</div>';
+        html += '<div style="font:900 13px var(--font);color:' + col + '">' + v + '</div>';
+        html += '<div class="level-cap-bar" style="margin-top:2px"><div class="level-cap-fill" style="width:' + pct + '%;background:' + col + '"></div></div>';
+        html += '<div style="font:500 7px var(--font);color:var(--text-3)">' + v + '/253</div>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+    el.innerHTML = html;
+    return;
+  }
+
+  // Detailed view for one species
+  var dinos = DB.creatures.filter(function(c) { return c.species === species; });
+  if (dinos.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-title">Aucune créature de type ' + escH(species) + '</div></div>';
+    return;
+  }
+
+  var html = '<div style="font:800 14px var(--font);color:var(--text-0);margin-bottom:10px">' + escH(species) + ' — Mutation Stacking</div>';
+
+  // Per-stat breakdown: best wild, best mutated, total stacked
+  STAT_KEYS_DISPLAY.forEach(function(k) {
+    var bestWild = 0, bestMuta = 0, bestTotal = 0, bestDino = null;
+    dinos.forEach(function(c) {
+      migrateCreature(c);
+      var w = c.wildLevels[k]||0, m = c.mutatedLevels[k]||0, t = w + m;
+      if (t > bestTotal) { bestTotal = t; bestWild = w; bestMuta = m; bestDino = c; }
+    });
+    var pct = Math.min(100, bestTotal / STAT_HARD_CAP * 100);
+    var col = bestTotal >= STAT_HARD_CAP ? 'var(--red)' : (bestTotal >= 200 ? 'var(--orange)' : (bestTotal >= 100 ? 'var(--accent)' : 'var(--green)'));
+    var mutaCount = bestMuta / 2; // Each mutation = +2 pts
+    html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-md);background:rgba(6,6,16,0.4);border:1px solid var(--border-0);margin-bottom:4px">';
+    html += '<span style="font:700 10px var(--font);color:var(--text-2);width:50px;text-transform:uppercase">' + (STAT_LABELS[k]||k) + '</span>';
+    html += '<div style="flex:1">';
+    html += '<div style="display:flex;justify-content:space-between;font:600 9px var(--font);color:var(--text-3);margin-bottom:2px">';
+    html += '<span>W:' + bestWild + ' + M:' + bestMuta + ' = <b style="color:var(--text-0)">' + bestTotal + '</b></span>';
+    html += '<span>' + bestTotal + '/253 (' + Math.round(mutaCount) + ' muta)</span></div>';
+    html += '<div class="level-cap-bar" style="height:6px"><div class="level-cap-fill" style="width:' + pct + '%;background:' + col + '"></div></div>';
+    html += '</div>';
+    if (bestDino) html += '<span style="font:500 8px var(--font);color:var(--text-3);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + escH(bestDino.name) + '">' + escH(bestDino.name) + '</span>';
+    html += '</div>';
+  });
+
+  // Clean status overview
+  html += '<div class="section-title" style="margin-top:12px">Statut Clean (Oxy/Food/Speed à 0)</div>';
+  var cleanDinos = dinos.filter(isClean);
+  var dirtyDinos = dinos.filter(function(c) { return !isClean(c); });
+  html += '<div style="display:flex;gap:8px;margin-bottom:8px">';
+  html += '<span class="clean-badge">\u2713 ' + cleanDinos.length + ' clean</span>';
+  if (dirtyDinos.length > 0) html += '<span style="font:700 9px var(--font);color:var(--red);background:var(--red-bg);border:1px solid var(--red-border);padding:2px 8px;border-radius:var(--r-sm)">\u2717 ' + dirtyDinos.length + ' à nettoyer</span>';
+  html += '</div>';
+
+  // Mutation counter summary
+  html += '<div class="section-title">Compteurs Mutation</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px">';
+  dinos.sort(function(a,b) { return getTotalBreedingPts(b) - getTotalBreedingPts(a); }).forEach(function(c) {
+    var mp = c.mutaPat||0, mm = c.mutaMat||0;
+    html += '<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:var(--r-sm);background:rgba(10,10,24,0.3);font:500 10px var(--font)">';
+    html += '<span style="color:' + (c.sex==='M'?'var(--blue)':'var(--pink)') + '">' + (c.sex==='M'?'\u2642':'\u2640') + '</span>';
+    html += '<span style="color:var(--text-1);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escH(c.name) + '</span>';
+    html += '<span class="muta-counter pat' + (mp>=20?' over':'') + '" style="font-size:8px">P:' + mp + '/20</span>';
+    html += '<span class="muta-counter mat' + (mm>=20?' over':'') + '" style="font-size:8px">M:' + mm + '/20</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
 function renderAdvisor() {
   var el = document.getElementById('advisorContent');
   if (DB.creatures.length === 0) {
@@ -1947,9 +2626,9 @@ function renderAdvisor() {
   var doneCount = entries.filter(function(e) { return e.priority === 'done'; }).length;
   var needCount = entries.filter(function(e) { return e.priority === 'need'; }).length;
   html += '<div class="config-grid" style="margin-bottom:12px">';
-  html += '<div class="config-card"><div class="cc-label">À Reproduire</div><div class="cc-val" style="color:var(--warning)">' + highCount + '</div></div>';
-  html += '<div class="config-card"><div class="cc-label">Parfaits</div><div class="cc-val" style="color:var(--success)">' + doneCount + '</div></div>';
-  html += '<div class="config-card"><div class="cc-label">Besoin Sexe</div><div class="cc-val" style="color:var(--danger)">' + needCount + '</div></div>';
+  html += '<div class="config-card"><div class="cc-label">À Reproduire</div><div class="cc-val" style="color:var(--orange)">' + highCount + '</div></div>';
+  html += '<div class="config-card"><div class="cc-label">Parfaits</div><div class="cc-val" style="color:var(--green)">' + doneCount + '</div></div>';
+  html += '<div class="config-card"><div class="cc-label">Besoin Sexe</div><div class="cc-val" style="color:var(--red)">' + needCount + '</div></div>';
   html += '</div>';
 
   entries.forEach(function(entry) {
@@ -1966,7 +2645,7 @@ function renderAdvisor() {
       html += '<div style="font-size:10px;color:var(--text-3);padding:4px 0">Créatures disponibles: ';
       entry.dinos.forEach(function(d, i) {
         if (i > 0) html += ', ';
-        html += '<span style="color:' + (d.sex==='M'?'var(--male)':'var(--female)') + '">' + (d.sex==='M'?'♂':'♀') + ' ' + escH(d.name) + '</span>';
+        html += '<span style="color:' + (d.sex==='M'?'var(--blue)':'var(--pink)') + '">' + (d.sex==='M'?'♂':'♀') + ' ' + escH(d.name) + '</span>';
       });
       html += '</div>';
     } else if (entry.pair) {
@@ -1997,9 +2676,9 @@ function renderAdvisor() {
         html += '<div class="advisor-stat-label">' + (STAT_LABELS[sd.stat]||sd.stat) + '</div>';
         html += '<div class="advisor-stat-val ' + valClass + '">' + sd.pairBest + '</div>';
         if (sd.locked) {
-          html += '<div style="font-size:7px;color:var(--success)">&#x1f512;</div>';
+          html += '<div style="font-size:7px;color:var(--green)">&#x1f512;</div>';
         } else if (!sd.covered) {
-          html += '<div style="font-size:7px;color:var(--warning)">best:' + sd.best + '</div>';
+          html += '<div style="font-size:7px;color:var(--orange)">best:' + sd.best + '</div>';
         } else {
           html += '<div style="font-size:7px;color:var(--text-3)">' + sd.male + '/' + sd.female + '</div>';
         }
@@ -2009,7 +2688,7 @@ function renderAdvisor() {
 
       // Completion bar
       var pct = entry.completionPct;
-      var barColor = pct === 100 ? 'var(--success)' : (pct >= 50 ? 'var(--warning)' : 'var(--danger)');
+      var barColor = pct === 100 ? 'var(--green)' : (pct >= 50 ? 'var(--orange)' : 'var(--red)');
       html += '<div class="advisor-completion">';
       html += '<span>Completion: ' + pct + '% (' + entry.lockedCount + '/' + entry.totalStats + ' stats verrouillés)</span>';
       html += '<div class="advisor-completion-bar"><div class="advisor-completion-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
@@ -2116,17 +2795,72 @@ if (window.api && window.api.onOCRStatsReceived) {
     switchPanel('extractor');
     document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
     document.querySelector('.nav-btn').classList.add('active');
-    // Map OCR stat keys to extractor fields
-    var map = {'Health':'exHP','Stamina':'exStam','Oxygen':'exOxy','Food':'exFood','Weight':'exWeight','Melee Damage':'exMelee','Movement Speed':'exSpeed','Torpidity':'exTorpor'};
-    Object.keys(map).forEach(function(key) {
+
+    // Fill raw stat values (left column — always)
+    var rawMap = {'Health':'exHP','Stamina':'exStam','Oxygen':'exOxy','Food':'exFood','Weight':'exWeight','Melee Damage':'exMelee','Movement Speed':'exSpeed','Torpidity':'exTorpor'};
+    Object.keys(rawMap).forEach(function(key) {
       if (stats[key] !== undefined) {
-        var el = document.getElementById(map[key]);
+        var el = document.getElementById(rawMap[key]);
         if (el) el.value = stats[key];
       }
     });
+
+    // Fill TEK W/M/A inputs (right columns) if triple data available
+    if (stats._tripleMode || stats._wildLevels) {
+      var tekMap = {Health:'HP',Stamina:'Stam',Oxygen:'Oxy',Food:'Food',Weight:'Weight','Melee Damage':'Melee','Movement Speed':'Speed'};
+      Object.keys(tekMap).forEach(function(key) {
+        var sfx = tekMap[key];
+        var wEl = document.getElementById('exTek' + sfx + '_W');
+        var mEl = document.getElementById('exTek' + sfx + '_M');
+        var aEl = document.getElementById('exTek' + sfx + '_A');
+        if (wEl && stats._wildLevels && stats._wildLevels[key] !== undefined) wEl.value = stats._wildLevels[key];
+        if (mEl && stats._mutatedLevels && stats._mutatedLevels[key] !== undefined) mEl.value = stats._mutatedLevels[key];
+        if (aEl && stats._allocatedLevels && stats._allocatedLevels[key] !== undefined) aEl.value = stats._allocatedLevels[key];
+      });
+      if (stats._mutaPat !== undefined) document.getElementById('exMutaPat').value = stats._mutaPat;
+      if (stats._mutaMat !== undefined) document.getElementById('exMutaMat').value = stats._mutaMat;
+    }
+
     if (stats.Level) document.getElementById('exLevel').value = stats.Level;
   });
 }
+
+// === ANIMATED CANVAS BACKGROUND ===
+(function(){
+  var c=document.getElementById('bgCanvas'),ctx=c.getContext('2d'),W,H,animId;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  var particles=[];for(var i=0;i<40;i++)particles.push({x:Math.random()*800,y:Math.random()*600,vx:(Math.random()-0.5)*0.25,vy:(Math.random()-0.5)*0.25,r:Math.random()*1.2+0.4,a:Math.random()*0.3+0.1,col:['123,147,248','96,165,250','45,212,160','217,70,239'][Math.floor(Math.random()*4)]});
+  var blobs=[{x:0.15,y:0.2,r:180,col:'123,147,248',ph:0,sp:0.003},{x:0.8,y:0.3,r:150,col:'96,165,250',ph:2,sp:0.004},{x:0.5,y:0.75,r:160,col:'45,212,160',ph:4,sp:0.002}];
+  var t=0;
+  function draw(){
+    t++;ctx.clearRect(0,0,W,H);
+    for(var b of blobs){var ox=Math.sin(t*b.sp+b.ph)*25,oy=Math.cos(t*b.sp*0.7+b.ph)*18;var g=ctx.createRadialGradient(b.x*W+ox,b.y*H+oy,0,b.x*W+ox,b.y*H+oy,b.r);g.addColorStop(0,'rgba('+b.col+',0.05)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+    for(var p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.col+','+p.a+')';ctx.fill()}
+    for(var i=0;i<particles.length;i++)for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(123,147,248,'+(0.05*(1-d/110))+')';ctx.lineWidth=0.5;ctx.stroke()}}
+    animId=requestAnimationFrame(draw)
+  }
+  draw();
+})();
 </script>
+<script>
+// ===== SYNC TO TRIBE =====
+function syncToTribe() {
+  if (!window.api || !window.api.syncBreedingToTribe) return alert('Fonction non disponible');
+  if (!DB.creatures || DB.creatures.length === 0) return alert('Aucune créature à synchroniser');
+  window.api.loadTribeData().then(function(tribe) {
+    if (!tribe || !tribe.tribeCode) return alert('Tu dois rejoindre une tribu avant de synchroniser');
+    var pseudo = tribe.pseudo || 'Inconnu';
+    window.api.syncBreedingToTribe(DB.creatures, pseudo).then(function(res) {
+      if (res.ok) {
+        alert('✓ ' + res.count + ' créature(s) synchronisée(s) avec la tribu !');
+      } else {
+        alert('Erreur: ' + (res.error || 'Échec de la synchronisation'));
+      }
+    });
+  });
+}
+</script>
+<script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>
 </html>

@@ -8,15 +8,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg-0:#0b0c10; --bg-1:#13141a; --bg-2:#1a1c24; --bg-3:#22242e;
-  --text-0:#e4e5eb; --text-1:#a8aab6; --text-2:#6b6e7d; --text-3:#434652;
-  --accent:#7c6aef; --accent-l:#9d8ff5; --accent-d:#5f4ec8;
-  --accent-glow:rgba(124,106,239,0.18); --accent-bg:rgba(124,106,239,0.10);
-  --green:#2dd4a0; --orange:#f0993e; --red:#ef5f5f; --yellow:#f0c246;
-  --border-0:rgba(255,255,255,0.05); --border-1:rgba(255,255,255,0.08); --border-2:rgba(255,255,255,0.14);
-  --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
-  --bar-h:40px;
-  --r-sm:5px; --r-md:8px; --r-lg:10px;
+  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
+  --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --bar-h:34px;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -59,14 +64,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 .bar-sep { width:1px; height:16px; background:var(--border-0); flex-shrink:0; margin:0 2px; }
 
 .bar-btn.on { background:var(--accent-bg); color:var(--accent-l); }
-.bar-btn.on:hover { background:rgba(124,106,239,0.16); }
+.bar-btn.on:hover { background:rgba(123,147,248,0.16); }
 
 .bar-btn.timer { color:var(--orange); }
 .bar-btn.timer:hover { background:rgba(240,153,62,0.08); color:#f5b06a; }
 .bar-btn.timer.on { background:rgba(240,153,62,0.10); color:#f5b06a; }
 
 .bar-btn.widget,.bar-btn.breeding { color:var(--accent); }
-.bar-btn.widget:hover,.bar-btn.breeding:hover { background:rgba(124,106,239,0.08); color:var(--accent-l); }
+.bar-btn.widget:hover,.bar-btn.breeding:hover { background:rgba(123,147,248,0.08); color:var(--accent-l); }
 .bar-btn.widget.on,.bar-btn.breeding.on { background:var(--accent-bg); color:var(--accent-l); }
 
 .nav-cluster { display:flex; align-items:center; gap:0; -webkit-app-region:no-drag; }
@@ -116,7 +121,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 .overlay-pill {
   padding:2px 7px; border-radius:var(--r-sm); font-size:8px; font-weight:700;
   letter-spacing:1px; text-transform:uppercase;
-  background:var(--accent-bg); border:1px solid rgba(124,106,239,0.20);
+  background:var(--accent-bg); border:1px solid rgba(123,147,248,0.20);
   color:var(--accent-l); display:none; flex-shrink:0;
 }
 .overlay-pill.show { display:inline-block; animation:badgePop .2s ease; }
@@ -236,7 +241,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
     <!-- Maps -->
     <div class="resize-wrap">
       <button class="bar-btn" id="mapsBtn" onclick="toggleMapsMenu()" title="Interactive Maps">
-        <span class="ico">🗺️</span><span class="lbl">Maps</span>
+        <span class="ico">🗺️</span><span class="lbl">Cartes</span>
       </button>
       <div class="resize-menu maps-dropdown" id="mapsMenu">
         <button class="resize-opt" onclick="openMap('the-island','The Island')">🏝️ The Island</button>

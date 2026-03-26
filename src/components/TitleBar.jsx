@@ -2,16 +2,21 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon } from './Icons';
 
-const TOOLS = [
-  { key: 'breeding', Icon: DnaIcon,       label: 'Breeding',    shortcut: 'Alt+B', action: () => window.api?.openBreeding() },
-  { key: 'tribe',    Icon: ClipboardIcon, label: 'Tribu Tasks', shortcut: '',       action: () => window.api?.openTribe() },
-  { key: 'timer',    Icon: TimerIcon,     label: 'Timer',       shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
-  { key: 'maps',     Icon: MapIcon,       label: 'Maps',        shortcut: 'Alt+G', action: () => window.api?.openMapsWindow('the-island', 'The Island') },
-  { key: 'ocr',      Icon: ScanIcon,      label: 'OCR',         shortcut: 'Alt+S', action: () => window.api?.openOCR() },
-  { key: 'widget',   Icon: WidgetIcon,    label: 'Widget',      shortcut: 'Alt+W', action: () => window.api?.openWidget() },
+// Tools that navigate within the main window
+const NAV_TOOLS = [
+  { key: 'breeding', Icon: DnaIcon,       label: 'Breeding',    shortcut: 'Alt+B' },
+  { key: 'tribe',    Icon: ClipboardIcon, label: 'Tribu Tasks', shortcut: '' },
+  { key: 'maps',     Icon: MapIcon,       label: 'Cartes',      shortcut: 'Alt+G' },
+  { key: 'ocr',      Icon: ScanIcon,      label: 'OCR Scanner', shortcut: 'Alt+S' },
 ];
 
-export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome }) {
+// Tools that still open separate windows (overlays that need to float)
+const WINDOW_TOOLS = [
+  { key: 'timer',  Icon: TimerIcon,  label: 'Timer Overlay', shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
+  { key: 'widget', Icon: WidgetIcon, label: 'Widget Mini',   shortcut: 'Alt+W', action: () => window.api?.openWidget() },
+];
+
+export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activePage, onNavigate }) {
   const minimize = () => window.api?.minimize();
   const maximize = () => window.api?.maximize();
   const close = () => window.api?.close();
@@ -28,7 +33,22 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome }) {
 
       {/* Center: Tool buttons */}
       <div className="tb-tools">
-        {TOOLS.map(t => (
+        {/* Nav tools — navigate within the app */}
+        {NAV_TOOLS.map(t => (
+          <button
+            key={t.key}
+            className={`tb-tool ${activePage === t.key ? 'active' : ''}`}
+            onClick={() => onNavigate(t.key)}
+            title={t.shortcut ? `${t.label} (${t.shortcut})` : t.label}
+          >
+            <t.Icon size={13} />
+          </button>
+        ))}
+
+        <div className="tb-sep" />
+
+        {/* Window tools — open separate windows */}
+        {WINDOW_TOOLS.map(t => (
           <button
             key={t.key}
             className="tb-tool"
@@ -42,9 +62,9 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome }) {
         <div className="tb-sep" />
 
         <button
-          className="tb-tool"
-          onClick={() => window.api?.openSettings()}
-          title="Settings"
+          className={`tb-tool ${activePage === 'settings' ? 'active' : ''}`}
+          onClick={() => onNavigate('settings')}
+          title="Paramètres"
         >
           <SettingsIcon size={13} />
         </button>
