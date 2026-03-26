@@ -524,9 +524,14 @@ function cleanNumber(numStr) {
 function preprocessOCRText(text) {
   var t = text;
   t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  // DO NOT replace | with l — pipes are used in TEK binoculars format (5|0|1)
-  // Only replace | with l when it's inside a word (between letters)
+  // Preserve | as pipe when between digits (TEK format: 5|0|1)
+  // Only replace | with l when between letters
   t = t.replace(/([a-zA-Z])\|([a-zA-Z])/g, '$1l$2');
+  // Fix OCR reading pipes as I, l, 1 between small numbers in parens
+  // e.g. "(5 I 0 I 1)" or "(5 l 0 l 1)" → "(5|0|1)"
+  t = t.replace(/\(\s*(\d{1,3})\s*[lI1]\s*(\d{1,3})\s*[lI1]\s*(\d{1,3})\s*\)/g, '($1|$2|$3)');
+  // Fix "(5, 0, 1)" comma-separated
+  t = t.replace(/\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/g, '($1|$2|$3)');
   t = t.replace(/0xygen/gi, 'Oxygen');
   t = t.replace(/f00d/gi, 'Food'); t = t.replace(/fo0d/gi, 'Food');
   t = t.replace(/t0rpor/gi, 'Torpor'); t = t.replace(/t0rpidity/gi, 'Torpidity');
@@ -728,155 +733,119 @@ function parseStats(text, globalConf) {
   detectedMutaPat = null;
   detectedMutaMat = null;
 
-  // Pass 1: regex matching with triple format support
-  for (var j = 0; j < STAT_PATTERNS.length; j++) {
-    var pat = STAT_PATTERNS[j];
-    var match = pat.regex.exec(text);
-    if (match) {
-      var v1 = cleanNumber(match[1]);
-      var v2 = match[2] ? cleanNumber(match[2]) : null;
-      var v3 = match[3] ? cleanNumber(match[3]) : null;
+  // ──── TEK BINOCULARS PRIMARY STRATEGY ────
+  // TEK shows NO stat names — just icons + numbers in fixed order:
+  //   Health, Stamina, Oxygen, Food, Weight, Melee, (skip Speed), Torpor
+  // Format per line: "6718.7 / 671.8 (5 | 0 | 1)" or "211.4 % (5 | 0 | 22)"
+  // OCR may mangle pipes/parens, so we use very flexible regex
 
-      if (!isNaN(v1) && v1 >= 0) {
-        if (v2 !== null && !isNaN(v2) && v3 !== null && !isNaN(v3)) {
-          // Triple format: wild / mutated / allocated (TEK binoculars)
-          tripleMode = true;
-          parsedStats[pat.key] = {
-            value: v1, wild: v1, mutated: v2, allocated: v3,
-            tripleMode: true, confidence: Math.min(95, globalConf + 10)
-          };
-        } else if (v2 !== null && !isNaN(v2) && v2 > 0) {
-          // current / max format — use max
-          parsedStats[pat.key] = { value: v2, confidence: Math.min(95, globalConf + 5) };
-        } else if (v1 >= 0.1) {
-          parsedStats[pat.key] = { value: v1, confidence: Math.min(95, globalConf + 5) };
-        }
-      }
-    }
-  }
-
-  // Pass 2: TEK binoculars format — parse lines with "value / base (W|M|A)"
-  // TEK panel has stats in order without labels, just icons + numbers
-  var lines = text.split('\n');
-  var tekWmaRegex = /(\d+[.,]?\d*)\s*[/]\s*(\d+[.,]?\d*)\s*\((\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)\)/;
-  // Also match: just "(W|M|A)" at end of a line with numbers before
-  var tekWmaAlt = /(\d+[.,]?\d*)\s*%?\s*\((\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)\)/;
   var tekStatOrder = ['Health','Stamina','Oxygen','Food','Weight','Melee Damage','Torpidity'];
   var tekIdx = 0;
+  var tekFound = 0;
 
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i].trim();
-    if (!line) continue;
-    var lineLower = line.toLowerCase();
+  // Collect ALL W/M/A triplets from the entire text using multiple patterns
+  // Pattern 1: (N|N|N) or (N | N | N) — clean parens with pipes
+  var wmaPatterns = [
+    /\(\s*(\d+)\s*[|lI]\s*(\d+)\s*[|lI]\s*(\d+)\s*\)/g,
+    // Pattern 2: OCR might miss parens: N|N|N or N | N | N at end of line
+    /(\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)(?:\s*\)|\s*$)/gm,
+    // Pattern 3: OCR reads | as 1 or l between small numbers: (5 1 0 1 1) → need context
+    /\(\s*(\d{1,2})\s+(\d{1,2})\s+(\d{1,2})\s*\)/g,
+    // Pattern 4: with slashes instead of pipes: (5/0/1)
+    /\(\s*(\d+)\s*\/\s*(\d+)\s*\/\s*(\d+)\s*\)/g,
+  ];
 
-    // Try TEK format: "6718.7 / 671.8 (5|0|1)"
-    var tekMatch = tekWmaRegex.exec(line);
-    if (tekMatch) {
-      var wVal = parseInt(tekMatch[3]);
-      var mVal = parseInt(tekMatch[4]);
-      var aVal = parseInt(tekMatch[5]);
-      // Try to identify which stat this is by alias or by order
-      var statKey = null;
-      for (var j2 = 0; j2 < STAT_PATTERNS.length; j2++) {
-        if (parsedStats[STAT_PATTERNS[j2].key]) continue;
-        for (var k = 0; k < STAT_PATTERNS[j2].aliases.length; k++) {
-          if (lineLower.indexOf(STAT_PATTERNS[j2].aliases[k]) !== -1) { statKey = STAT_PATTERNS[j2].key; break; }
+  var allWma = [];
+  for (var pi = 0; pi < wmaPatterns.length; pi++) {
+    var re = wmaPatterns[pi];
+    var m;
+    while ((m = re.exec(text)) !== null) {
+      var w = parseInt(m[1]), mu = parseInt(m[2]), a = parseInt(m[3]);
+      // Sanity: W/M/A are level points, typically 0-255
+      if (w >= 0 && w <= 255 && mu >= 0 && mu <= 255 && a >= 0 && a <= 255) {
+        // Check it's not already found at same position
+        var dup = false;
+        for (var di = 0; di < allWma.length; di++) {
+          if (allWma[di].w === w && allWma[di].m === mu && allWma[di].a === a) { dup = true; break; }
         }
-        if (statKey) break;
-      }
-      // If no alias found, assign by TEK panel order
-      if (!statKey) {
-        while (tekIdx < tekStatOrder.length && parsedStats[tekStatOrder[tekIdx]]) tekIdx++;
-        if (tekIdx < tekStatOrder.length) statKey = tekStatOrder[tekIdx++];
-      }
-      if (statKey && !parsedStats[statKey]) {
-        tripleMode = true;
-        parsedStats[statKey] = {
-          value: wVal, wild: wVal, mutated: mVal, allocated: aVal,
-          tripleMode: true, confidence: Math.min(95, globalConf + 15)
-        };
-      }
-      continue;
-    }
-
-    // Try alt TEK format: "211.4 % (5|0|22)" (torpor)
-    var tekAlt = tekWmaAlt.exec(line);
-    if (tekAlt) {
-      var wVal2 = parseInt(tekAlt[2]);
-      var mVal2 = parseInt(tekAlt[3]);
-      var aVal2 = parseInt(tekAlt[4]);
-      var statKey2 = null;
-      for (var j3 = 0; j3 < STAT_PATTERNS.length; j3++) {
-        if (parsedStats[STAT_PATTERNS[j3].key]) continue;
-        for (var k2 = 0; k2 < STAT_PATTERNS[j3].aliases.length; k2++) {
-          if (lineLower.indexOf(STAT_PATTERNS[j3].aliases[k2]) !== -1) { statKey2 = STAT_PATTERNS[j3].key; break; }
-        }
-        if (statKey2) break;
-      }
-      if (!statKey2) {
-        while (tekIdx < tekStatOrder.length && parsedStats[tekStatOrder[tekIdx]]) tekIdx++;
-        if (tekIdx < tekStatOrder.length) statKey2 = tekStatOrder[tekIdx++];
-      }
-      if (statKey2 && !parsedStats[statKey2]) {
-        tripleMode = true;
-        parsedStats[statKey2] = {
-          value: wVal2, wild: wVal2, mutated: mVal2, allocated: aVal2,
-          tripleMode: true, confidence: Math.min(90, globalConf + 10)
-        };
-      }
-      continue;
-    }
-
-    // Fallback: alias-based matching for lines without TEK format
-    for (var j4 = 0; j4 < STAT_PATTERNS.length; j4++) {
-      var pat2 = STAT_PATTERNS[j4];
-      if (parsedStats[pat2.key]) continue;
-
-      var found = false;
-      for (var k3 = 0; k3 < pat2.aliases.length; k3++) {
-        if (lineLower.indexOf(pat2.aliases[k3]) !== -1) { found = true; break; }
-      }
-      if (!found) continue;
-
-      // Check for triple format: N/N/N on this line
-      var tripleMatch = line.match(/(\d+)\s*[/|]\s*(\d+)\s*[/|]\s*(\d+)/);
-      if (tripleMatch) {
-        tripleMode = true;
-        parsedStats[pat2.key] = {
-          value: parseInt(tripleMatch[1]), wild: parseInt(tripleMatch[1]),
-          mutated: parseInt(tripleMatch[2]), allocated: parseInt(tripleMatch[3]),
-          tripleMode: true, confidence: Math.max(50, globalConf)
-        };
-        continue;
-      }
-
-      var numRegex = /(\d+[.,]\d+|\d+)/g;
-      var nums = []; var m;
-      while ((m = numRegex.exec(line)) !== null) nums.push(m[1]);
-      if (nums.length === 0) continue;
-
-      var bestVal = null;
-      if (line.indexOf('/') !== -1) {
-        var parts = line.split('/');
-        if (parts.length >= 2) {
-          var lastNum = parts[parts.length - 1].match(/(\d+[.,]?\d*)/);
-          if (lastNum) bestVal = cleanNumber(lastNum[1]);
-        }
-      }
-      if (bestVal === null) {
-        for (var ni = nums.length - 1; ni >= 0; ni--) {
-          var nv = cleanNumber(nums[ni]);
-          if (!isNaN(nv) && nv > 0) { bestVal = nv; break; }
-        }
-      }
-      if (bestVal !== null && bestVal > 0) {
-        parsedStats[pat2.key] = { value: bestVal, confidence: Math.max(30, globalConf - 15) };
+        if (!dup) allWma.push({ w: w, m: mu, a: a, pos: m.index });
       }
     }
   }
 
-  // Pass 3: detect mutation counters
-  // TEK format: "Mutations: ♂ 0  ♀ 0" or preprocessed "MutaPat:0 MutaMat:0"
+  // Sort by position in text (top to bottom = stat order)
+  allWma.sort(function(a, b) { return a.pos - b.pos; });
+
+  // Assign W/M/A triplets to stats in TEK order
+  if (allWma.length >= 3) {
+    tripleMode = true;
+    for (var wi = 0; wi < allWma.length && tekIdx < tekStatOrder.length; wi++) {
+      var entry = allWma[wi];
+      var key = tekStatOrder[tekIdx++];
+      parsedStats[key] = {
+        value: entry.w, wild: entry.w, mutated: entry.m, allocated: entry.a,
+        tripleMode: true, confidence: Math.min(95, globalConf + 15)
+      };
+      tekFound++;
+    }
+  }
+
+  // ──── FALLBACK: keyword-based matching ────
+  // If TEK didn't find enough, try classic keyword regex
+  if (tekFound < 3) {
+    for (var j = 0; j < STAT_PATTERNS.length; j++) {
+      var pat = STAT_PATTERNS[j];
+      if (parsedStats[pat.key]) continue;
+      var match = pat.regex.exec(text);
+      if (match) {
+        var v1 = cleanNumber(match[1]);
+        var v2 = match[2] ? cleanNumber(match[2]) : null;
+        var v3 = match[3] ? cleanNumber(match[3]) : null;
+        if (!isNaN(v1) && v1 >= 0) {
+          if (v2 !== null && !isNaN(v2) && v3 !== null && !isNaN(v3)) {
+            tripleMode = true;
+            parsedStats[pat.key] = {
+              value: v1, wild: v1, mutated: v2, allocated: v3,
+              tripleMode: true, confidence: Math.min(95, globalConf + 10)
+            };
+          } else if (v2 !== null && !isNaN(v2) && v2 > 0) {
+            parsedStats[pat.key] = { value: v2, confidence: Math.min(95, globalConf + 5) };
+          } else if (v1 >= 0.1) {
+            parsedStats[pat.key] = { value: v1, confidence: Math.min(95, globalConf + 5) };
+          }
+        }
+      }
+    }
+
+    // Line-by-line alias fallback
+    var lines = text.split('\n');
+    for (var li = 0; li < lines.length; li++) {
+      var line = lines[li].trim();
+      if (!line) continue;
+      var lineLower = line.toLowerCase();
+      for (var j4 = 0; j4 < STAT_PATTERNS.length; j4++) {
+        var pat2 = STAT_PATTERNS[j4];
+        if (parsedStats[pat2.key]) continue;
+        var found = false;
+        for (var k3 = 0; k3 < pat2.aliases.length; k3++) {
+          if (lineLower.indexOf(pat2.aliases[k3]) !== -1) { found = true; break; }
+        }
+        if (!found) continue;
+        var numRegex = /(\d+[.,]\d+|\d+)/g;
+        var nums = []; var mn;
+        while ((mn = numRegex.exec(line)) !== null) nums.push(mn[1]);
+        if (nums.length > 0) {
+          var bestVal = cleanNumber(nums[nums.length - 1]);
+          if (!isNaN(bestVal) && bestVal > 0) {
+            parsedStats[pat2.key] = { value: bestVal, confidence: Math.max(30, globalConf - 15) };
+          }
+        }
+      }
+    }
+  }
+
+  // ──── MUTATION COUNTERS ────
+  // TEK format: "Mutations: ♂ 0  ♀ 0"
   var mPreprocessed = text.match(/MutaPat:(\d+)\s*MutaMat:(\d+)/);
   if (mPreprocessed) {
     detectedMutaPat = parseInt(mPreprocessed[1]);
@@ -890,15 +859,19 @@ function parseStats(text, globalConf) {
     var mMat = MUTA_MAT_REGEX.exec(text);
     if (mMat) detectedMutaMat = parseInt(mMat[1]);
   }
-  // Generic format: "X/20 - Y/20"
   if (detectedMutaPat === null && detectedMutaMat === null) {
     var mGen = MUTA_GENERIC_REGEX.exec(text);
     if (mGen) { detectedMutaPat = parseInt(mGen[1]); detectedMutaMat = parseInt(mGen[2]); }
   }
-  // TEK format fallback: "♂ N ♀ N" or "d N 9 N"
+  // TEK: "♂ N ♀ N" or OCR variants "d N 9 N", "0 0" after "Mutations"
   if (detectedMutaPat === null && detectedMutaMat === null) {
-    var mTek = text.match(/[♂dD]\s*(\d+)\s*[♀fF9]\s*(\d+)/);
+    var mTek = text.match(/[Mm]utation[s]?\s*:?\s*[♂dDoO]\s*(\d+)\s*[♀fFgG9Q]\s*(\d+)/);
     if (mTek) { detectedMutaPat = parseInt(mTek[1]); detectedMutaMat = parseInt(mTek[2]); }
+  }
+  if (detectedMutaPat === null && detectedMutaMat === null) {
+    // Last resort: two numbers at end after mutation-like text
+    var mLast = text.match(/[♂]\s*(\d+)\s*[♀]\s*(\d+)/);
+    if (mLast) { detectedMutaPat = parseInt(mLast[1]); detectedMutaMat = parseInt(mLast[2]); }
   }
 }
 
@@ -1119,6 +1092,8 @@ function runTesseract(dataUrl) {
     }
 
     Tesseract.recognize(dataUrl, 'eng', {
+      tessedit_pageseg_mode: '6', // Assume uniform block of text
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,%/|()- :♂♀',
       logger: function(info) {
         if (info.status === 'recognizing text' && info.progress !== undefined) {
           var pct = 35 + Math.round(info.progress * 60);
