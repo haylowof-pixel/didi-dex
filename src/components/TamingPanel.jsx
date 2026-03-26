@@ -5,6 +5,8 @@ import { ClockIcon, DropletIcon, ZapIcon, ShieldIcon, PlayIcon, PauseIcon, Reset
 import { NARCOTICS } from '../data/dinosaurs';
 
 export default function TamingPanel({ result, dino, level }) {
+  const isPassive = dino.tamingMethod === 'Passive';
+
   const [starveTimeLeft, setStarveTimeLeft] = useState(result.starveTimeSeconds);
   const [starveRunning, setStarveRunning] = useState(false);
   const starveInterval = useRef(null);
@@ -16,6 +18,12 @@ export default function TamingPanel({ result, dino, level }) {
   const [torporExpanded, setTorporExpanded] = useState(false);
 
   const [narcUsed, setNarcUsed] = useState({ narcotic: 0, narcoberry: 0, ascerbic: 0, biotoxin: 0 });
+
+  // Passive taming: feeding interval timer
+  const feedingIntervalSec = result.secondsPerFood || 0;
+  const [feedTimeLeft, setFeedTimeLeft] = useState(feedingIntervalSec);
+  const [feedRunning, setFeedRunning] = useState(false);
+  const feedInterval = useRef(null);
 
   const playAlert = useCallback(() => {
     try {
@@ -49,7 +57,7 @@ export default function TamingPanel({ result, dino, level }) {
     if (starveRunning) {
       starveInterval.current = setInterval(() => {
         setStarveTimeLeft(prev => {
-          if (prev <= 1) { clearInterval(starveInterval.current); setStarveRunning(false); playAlert(); return 0; }
+          if (prev <= 1) { clearInterval(starveInterval.current); setStarveRunning(false); playAlert(); window.api?.showNotification({ title: 'DIDI DEX - Starve Timer', body: 'Le starve timer est terminé ! Nourris le dino maintenant.' }); return 0; }
           return prev - 1;
         });
       }, 1000);
@@ -69,6 +77,26 @@ export default function TamingPanel({ result, dino, level }) {
     } else { clearInterval(torporInterval.current); }
     return () => clearInterval(torporInterval.current);
   }, [torporRunning, result.torporTimerSeconds, playAlert]);
+
+  // Passive taming: feeding interval countdown
+  useEffect(() => {
+    if (feedRunning) {
+      feedInterval.current = setInterval(() => {
+        setFeedTimeLeft(prev => {
+          if (prev <= 1) { clearInterval(feedInterval.current); setFeedRunning(false); playAlert(); return 0; }
+          return prev - 1;
+        });
+      }, 1000);
+    } else { clearInterval(feedInterval.current); }
+    return () => clearInterval(feedInterval.current);
+  }, [feedRunning, playAlert]);
+
+  // Reset feeding timer when result changes
+  useEffect(() => {
+    setFeedTimeLeft(result.secondsPerFood || 0);
+    setFeedRunning(false);
+    clearInterval(feedInterval.current);
+  }, [result.secondsPerFood]);
 
   const addNarc = (type, torpAmount) => {
     setNarcUsed(prev => ({ ...prev, [type]: prev[type] + 1 }));
@@ -133,7 +161,8 @@ export default function TamingPanel({ result, dino, level }) {
         </div>
       </div>
 
-      {/* SECTION 2: Starve Timer */}
+      {/* SECTION 2: Starve Timer (Knockout only) */}
+      {!isPassive && (
       <div className="tp-section tp-starve">
         <div className="tp-section-header">
           <ClockIcon size={14} />
@@ -167,6 +196,52 @@ export default function TamingPanel({ result, dino, level }) {
           </button>
         </div>
       </div>
+      )}
+
+      {/* Passive Taming Section */}
+      {isPassive && (
+      <div className="tp-section tp-passive">
+        <div className="tp-section-header">
+          <DropletIcon size={14} />
+          <span>Passive Taming</span>
+        </div>
+        <div className="tp-info-text">
+          Approche la créature et nourris-la à la main
+        </div>
+        <div className="tp-food-needed">
+          <ClockIcon size={16} />
+          <span className="tp-food-needed-count">{feedingIntervalSec}s</span>
+          <span className="tp-food-needed-name">entre chaque nourrissage</span>
+        </div>
+        <div className="tp-section-header" style={{ marginTop: '8px' }}>
+          <ClockIcon size={14} />
+          <span>Feeding Interval</span>
+          <span className="tp-timer-value">{formatTimerDisplay(feedTimeLeft)}</span>
+        </div>
+        <div className="tp-progress">
+          <div className="tp-progress-bar tp-progress-orange" style={{ width: `${feedingIntervalSec > 0 ? ((feedingIntervalSec - feedTimeLeft) / feedingIntervalSec) * 100 : 0}%` }} />
+        </div>
+        <div className="tp-timer-controls">
+          {!feedRunning ? (
+            <button className="tp-btn tp-btn-primary" onClick={() => setFeedRunning(true)}>
+              <PlayIcon size={11} /> Démarrer
+            </button>
+          ) : (
+            <button className="tp-btn" onClick={() => setFeedRunning(false)}>
+              <PauseIcon size={11} /> Pause
+            </button>
+          )}
+          <button className="tp-btn tp-btn-ghost" onClick={() => { setFeedTimeLeft(feedingIntervalSec); setFeedRunning(false); }}>
+            <ResetIcon size={11} /> Reset
+          </button>
+        </div>
+        {feedTimeLeft <= 0 && (
+          <motion.div className="tp-alert-danger" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: 'var(--green)', borderColor: 'var(--green)' }}>
+            <DropletIcon size={13} /> Nourris la créature maintenant !
+          </motion.div>
+        )}
+      </div>
+      )}
 
       {/* SECTION 3: Effectiveness */}
       <div className="tp-section tp-effectiveness">
@@ -196,7 +271,8 @@ export default function TamingPanel({ result, dino, level }) {
         </div>
       </div>
 
-      {/* SECTION 4: Torpor Timer */}
+      {/* SECTION 4: Torpor Timer (Knockout only) */}
+      {!isPassive && (
       <div className={`tp-section tp-torpor ${torporDanger ? 'tp-torpor-danger' : ''}`}>
         <div className="tp-section-header">
           <ZapIcon size={14} />
@@ -250,8 +326,10 @@ export default function TamingPanel({ result, dino, level }) {
           </motion.div>
         )}
       </div>
+      )}
 
-      {/* SECTION 5: Narcotics */}
+      {/* SECTION 5: Narcotics (Knockout only) */}
+      {!isPassive && (
       <div className="tp-section">
         <div className="tp-section-header">
           <PillIcon size={14} />
@@ -263,6 +341,7 @@ export default function TamingPanel({ result, dino, level }) {
           <NarcoticRow imgSrc={NARCOTICS.BIO_TOXIN.img}  name="Bio Toxin"          needed={result.bioToxinNeeded}        used={narcUsed.biotoxin}  onUse={() => addNarc('biotoxin', 80)} />
         </div>
       </div>
+      )}
 
       {/* SECTION 6: Tips */}
       {dino.tips && (

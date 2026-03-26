@@ -240,7 +240,9 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 </head>
 <body>
 <div id="app">
-  <canvas id="bgCanvas" style="position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:12px"></canvas>
+  <video id="bgVideo" autoplay muted loop playsinline style="position:absolute;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;object-fit:cover;opacity:0.18;filter:brightness(0.7) saturate(1.2);border-radius:12px">
+    <source src="../public/splash-video.mp4" type="video/mp4">
+  </video>
   <!-- Title bar -->
   <div id="ocr-bar">
     <span class="bar-title"><span class="dot"></span>OCR Scanner</span>
@@ -263,6 +265,17 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
           <span>3.</span> Screenshot automatique + analyse OCR
         </div>
         <button class="scan-btn" id="scanBtn" onclick="startScan()">&#128247; Scanner le Dino <span style="font-size:10px;opacity:0.6;margin-left:6px">(F8)</span></button>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <button class="bar-btn" id="autoCaptureBtn" onclick="toggleAutoCapture()" style="padding:0 12px;height:28px;font-size:11px">Auto</button>
+          <select onchange="setAutoCapDelay(parseInt(this.value))" style="background:rgba(6,6,16,0.6);border:1px solid var(--border-1);border-radius:var(--r-sm);color:var(--text-2);font:600 10px var(--font);padding:4px 8px;cursor:pointer">
+            <option value="3000">3s</option>
+            <option value="5000" selected>5s</option>
+            <option value="10000">10s</option>
+            <option value="15000">15s</option>
+            <option value="30000">30s</option>
+          </select>
+          <span style="font-size:9px;color:var(--text-3)">Auto-capture intervalle</span>
+        </div>
       </div>
     </div>
 
@@ -1180,6 +1193,41 @@ if (window.api && window.api.onOCRProgress) {
   });
 }
 
+// ===== AUTO-CAPTURE INTERVAL =====
+var autoCapInterval = null;
+var autoCapDelay = 5000; // 5 seconds default
+
+function toggleAutoCapture() {
+  var btn = document.getElementById('autoCaptureBtn');
+  if (autoCapInterval) {
+    clearInterval(autoCapInterval);
+    autoCapInterval = null;
+    btn.textContent = 'Auto';
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    setStatus('', 'Auto-capture arrete');
+    return;
+  }
+  // Start auto-capture loop
+  btn.textContent = 'Stop';
+  btn.style.background = 'rgba(239,68,68,0.15)';
+  btn.style.borderColor = 'rgba(239,68,68,0.3)';
+  setStatus('processing', 'Auto-capture: scan toutes les ' + (autoCapDelay/1000) + 's');
+  startScan(); // immediate first scan
+  autoCapInterval = setInterval(function() {
+    startScan();
+  }, autoCapDelay);
+}
+
+function setAutoCapDelay(ms) {
+  autoCapDelay = ms;
+  if (autoCapInterval) {
+    clearInterval(autoCapInterval);
+    autoCapInterval = setInterval(function() { startScan(); }, autoCapDelay);
+    setStatus('processing', 'Auto-capture: scan toutes les ' + (autoCapDelay/1000) + 's');
+  }
+}
+
 // ===== LISTEN FOR F8 SCAN TRIGGER =====
 if (window.api && window.api.onTriggerScan) {
   window.api.onTriggerScan(function() {
@@ -1187,23 +1235,7 @@ if (window.api && window.api.onTriggerScan) {
   });
 }
 
-// === ANIMATED CANVAS BACKGROUND ===
-(function(){
-  var c=document.getElementById('bgCanvas'),ctx=c.getContext('2d'),W,H;
-  function resize(){var app=document.getElementById('app');W=c.width=app.clientWidth;H=c.height=app.clientHeight}
-  resize();window.addEventListener('resize',resize);
-  var particles=[];for(var i=0;i<35;i++)particles.push({x:Math.random()*800,y:Math.random()*600,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,r:Math.random()*1.2+0.3,a:Math.random()*0.25+0.08,col:['123,147,248','96,165,250','45,212,160','217,70,239'][Math.floor(Math.random()*4)]});
-  var blobs=[{x:0.15,y:0.2,r:160,col:'123,147,248',ph:0,sp:0.003},{x:0.8,y:0.35,r:140,col:'96,165,250',ph:2,sp:0.004},{x:0.5,y:0.8,r:150,col:'45,212,160',ph:4,sp:0.002}];
-  var t=0;
-  function draw(){
-    t++;ctx.clearRect(0,0,W,H);
-    for(var b of blobs){var ox=Math.sin(t*b.sp+b.ph)*25,oy=Math.cos(t*b.sp*0.7+b.ph)*18;var g=ctx.createRadialGradient(b.x*W+ox,b.y*H+oy,0,b.x*W+ox,b.y*H+oy,b.r);g.addColorStop(0,'rgba('+b.col+',0.04)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
-    for(var p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.col+','+p.a+')';ctx.fill()}
-    for(var i=0;i<particles.length;i++)for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(123,147,248,'+(0.04*(1-d/100))+')';ctx.lineWidth=0.5;ctx.stroke()}}
-    requestAnimationFrame(draw)
-  }
-  draw();
-})();
+// Video background replaces canvas animation
 </script>
 <script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>

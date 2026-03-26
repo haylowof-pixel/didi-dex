@@ -5,13 +5,15 @@ import { getCreatureIconUrl } from '../data/creatureIcons';
 
 const ALL_CATEGORIES = ['All', ...Object.values(CATEGORIES)];
 
-export default function Sidebar({ dinosaurs, selectedDino, onSelectDino }) {
+export default function Sidebar({ dinosaurs, selectedDino, onSelectDino, favorites = [], toggleFavorite }) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
 
   const filtered = useMemo(() => {
     let list = dinosaurs;
-    if (category !== 'All') {
+    if (category === 'Favoris') {
+      list = list.filter(d => favorites.includes(d.id));
+    } else if (category !== 'All') {
       list = list.filter(d => d.category === category);
     }
     if (search.trim()) {
@@ -22,7 +24,7 @@ export default function Sidebar({ dinosaurs, selectedDino, onSelectDino }) {
       );
     }
     return list;
-  }, [dinosaurs, search, category]);
+  }, [dinosaurs, search, category, favorites]);
 
   return (
     <div className="sidebar">
@@ -56,6 +58,14 @@ export default function Sidebar({ dinosaurs, selectedDino, onSelectDino }) {
             {cat === 'All' ? 'Tous' : cat}
           </button>
         ))}
+        <button
+          key="Favoris"
+          className={`cat-chip ${category === 'Favoris' ? 'active' : ''}`}
+          onClick={() => setCategory('Favoris')}
+          style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+        >
+          ★ Favoris
+        </button>
       </div>
 
       {/* Count */}
@@ -95,6 +105,21 @@ export default function Sidebar({ dinosaurs, selectedDino, onSelectDino }) {
                   <span className={`dino-badge badge-${dino.tamingMethod === 'Knockout' ? 'knockout' : dino.tamingMethod === 'Passive' ? 'passive' : 'notame'}`}>{dino.tamingMethod}</span>
                 </div>
               </div>
+              {toggleFavorite && (
+                <button
+                  className="fav-btn"
+                  onClick={(e) => { e.stopPropagation(); toggleFavorite(dino.id); }}
+                  title={favorites.includes(dino.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: '16px', padding: '4px', marginLeft: 'auto', flexShrink: 0,
+                    color: favorites.includes(dino.id) ? 'gold' : 'rgba(255,255,255,0.2)',
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  ★
+                </button>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>

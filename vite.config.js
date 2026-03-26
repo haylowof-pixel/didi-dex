@@ -6,6 +6,14 @@ export default defineConfig({
   base: './',
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react-vendor';
+          if (id.includes('node_modules/framer-motion')) return 'framer';
+        },
+      },
+    },
   },
   server: {
     port: 5173,

@@ -239,10 +239,151 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 ::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.15); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
+
+/* ===== COORD CLICK TOOLTIP ===== */
+#coord-tooltip {
+  position: absolute; display: none; padding: 4px 8px;
+  background: rgba(8,9,12,0.95); border: 1px solid var(--accent-border);
+  border-radius: var(--r-md); font-size: 10px; color: var(--accent-l);
+  pointer-events: none; z-index: 110; white-space: nowrap;
+  font-weight: 700; font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 12px rgba(123,147,248,0.25);
+  transition: opacity .15s;
+}
+
+/* ===== PLACE MARKER MODE BUTTON ===== */
+.bar-btn-s.place-mode { }
+.bar-btn-s.place-mode.active { background: rgba(239,68,68,0.15); color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+/* ===== CONTEXT MENU ===== */
+#ctx-menu {
+  position: absolute; display: none; z-index: 200;
+  background: rgba(8,9,12,0.97); border: 1px solid var(--border-2);
+  border-radius: var(--r-md); min-width: 150px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  backdrop-filter: blur(16px);
+}
+.ctx-item {
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px;
+  font-size: 10px; font-weight: 600; color: var(--text-2);
+  cursor: pointer; border: none; background: transparent;
+  font-family: inherit; width: 100%; text-align: left;
+  transition: all .1s;
+}
+.ctx-item:hover { background: var(--accent-bg); color: var(--accent-l); }
+.ctx-item.danger:hover { background: var(--red-bg); color: var(--red); }
+.ctx-sep { height: 1px; background: var(--border-1); margin: 2px 0; }
+.ctx-header {
+  padding: 5px 12px 3px; font-size: 8px; font-weight: 700;
+  color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ===== MARKER EDIT DIALOG ===== */
+#marker-dialog {
+  position: absolute; display: none; z-index: 300;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  background: rgba(10,10,18,0.97); border: 1px solid var(--accent-border);
+  border-radius: var(--r-lg); padding: 14px; width: 240px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+  backdrop-filter: blur(24px);
+}
+#marker-dialog .dlg-title {
+  font-size: 10px; font-weight: 700; color: var(--accent-l);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+}
+#marker-dialog label {
+  font-size: 9px; font-weight: 600; color: var(--text-3);
+  display: block; margin: 6px 0 3px;
+}
+#marker-dialog input[type="text"], #marker-dialog textarea {
+  width: 100%; padding: 5px 7px; background: rgba(6,6,16,0.8);
+  border: 1px solid var(--border-1); border-radius: var(--r-sm);
+  color: var(--text-1); font-size: 10px; font-weight: 600;
+  font-family: inherit; outline: none; transition: border-color .15s;
+}
+#marker-dialog input:focus, #marker-dialog textarea:focus {
+  border-color: var(--accent-border); box-shadow: 0 0 8px rgba(123,147,248,0.15);
+}
+#marker-dialog textarea { resize: vertical; min-height: 40px; max-height: 80px; }
+.dlg-cats {
+  display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 8px;
+}
+.dlg-cat {
+  padding: 3px 8px; border-radius: 10px; font-size: 9px; font-weight: 700;
+  cursor: pointer; border: 1px solid var(--border-1); background: transparent;
+  color: var(--text-3); font-family: inherit; transition: all .1s;
+  display: flex; align-items: center; gap: 3px;
+}
+.dlg-cat:hover { border-color: var(--border-2); color: var(--text-2); }
+.dlg-cat.selected { border-color: var(--accent-border); color: var(--accent-l); background: var(--accent-bg); }
+.dlg-coord-display {
+  font-size: 9px; color: var(--text-3); font-weight: 600;
+  font-variant-numeric: tabular-nums; margin: 4px 0;
+}
+.dlg-actions { display: flex; gap: 6px; margin-top: 10px; }
+.dlg-btn {
+  flex: 1; padding: 5px 0; border-radius: var(--r-sm); font-size: 9px;
+  font-weight: 700; cursor: pointer; font-family: inherit; text-align: center;
+  border: 1px solid var(--border-1); background: transparent;
+  color: var(--text-3); transition: all .1s;
+}
+.dlg-btn:hover { background: var(--bg-2); color: var(--text-2); border-color: var(--border-2); }
+.dlg-btn.primary {
+  background: var(--accent-bg); color: var(--accent-l);
+  border-color: var(--accent-border);
+}
+.dlg-btn.primary:hover { background: rgba(123,147,248,0.18); }
+#marker-overlay {
+  position: absolute; inset: 0; z-index: 250; display: none;
+  background: rgba(0,0,0,0.4);
+}
+
+/* ===== MARKERS TAB IN SIDEBAR ===== */
+.marker-panel-list { display: flex; flex-direction: column; gap: 2px; }
+.marker-panel-item {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 7px; border-radius: var(--r-sm);
+  cursor: pointer; transition: all .1s;
+}
+.marker-panel-item:hover { background: rgba(123,147,248,0.08); }
+.marker-panel-item.active { background: rgba(123,147,248,0.12); }
+.marker-dot-icon {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.marker-panel-name {
+  font-size: 9px; font-weight: 600; color: var(--text-2);
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.marker-panel-coords {
+  font-size: 7px; color: var(--text-3); font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.marker-panel-del {
+  opacity: 0; width: 14px; height: 14px; border: none; background: transparent;
+  color: var(--text-3); font-size: 10px; cursor: pointer; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center; transition: all .1s;
+}
+.marker-panel-item:hover .marker-panel-del { opacity: 1; }
+.marker-panel-del:hover { background: var(--red-bg); color: var(--red); }
+
+.marker-add-btn {
+  margin-top: 6px; padding: 5px 0; width: 100%;
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: var(--r-sm); color: var(--accent-l); font-size: 9px;
+  font-weight: 700; cursor: pointer; font-family: inherit; text-align: center;
+  transition: all .1s;
+}
+.marker-add-btn:hover { background: rgba(123,147,248,0.18); }
+
+.marker-count {
+  font-size: 8px; color: var(--text-3); font-weight: 600; margin-bottom: 4px;
+}
 </style>
 </head>
 <body>
-<canvas id="bgCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
+<video id="bgVideo" autoplay muted loop playsinline style="position:absolute;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;object-fit:cover;opacity:0.18;filter:brightness(0.7) saturate(1.2);border-radius:12px">
+  <source src="../public/splash-video.mp4" type="video/mp4">
+</video>
 <div id="app">
 
   <!-- Title Bar -->
@@ -1591,23 +1732,7 @@ document.getElementById('pinBtn').classList.add('active');
 loadSavedBgImage('the-island');
 resizeCanvas();
 
-// === ANIMATED CANVAS BACKGROUND ===
-(function(){
-  var c=document.getElementById('bgCanvas'),ctx=c.getContext('2d'),W,H;
-  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
-  resize();window.addEventListener('resize',resize);
-  var particles=[];for(var i=0;i<35;i++)particles.push({x:Math.random()*800,y:Math.random()*600,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,r:Math.random()*1.2+0.3,a:Math.random()*0.25+0.08,col:['123,147,248','96,165,250','45,212,160','217,70,239'][Math.floor(Math.random()*4)]});
-  var blobs=[{x:0.15,y:0.2,r:160,col:'123,147,248',ph:0,sp:0.003},{x:0.8,y:0.35,r:140,col:'96,165,250',ph:2,sp:0.004},{x:0.5,y:0.8,r:150,col:'45,212,160',ph:4,sp:0.002}];
-  var t=0;
-  function draw(){
-    t++;ctx.clearRect(0,0,W,H);
-    for(var b of blobs){var ox=Math.sin(t*b.sp+b.ph)*25,oy=Math.cos(t*b.sp*0.7+b.ph)*18;var g=ctx.createRadialGradient(b.x*W+ox,b.y*H+oy,0,b.x*W+ox,b.y*H+oy,b.r);g.addColorStop(0,'rgba('+b.col+',0.04)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
-    for(var p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.col+','+p.a+')';ctx.fill()}
-    for(var i=0;i<particles.length;i++)for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(123,147,248,'+(0.04*(1-d/100))+')';ctx.lineWidth=0.5;ctx.stroke()}}
-    requestAnimationFrame(draw)
-  }
-  draw();
-})();
+// Video background replaces canvas animation
 </script>
 <script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>

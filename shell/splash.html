@@ -31,45 +31,21 @@
     justify-content: center;
   }
 
-  /* Animated gradient background */
-  .bg-gradient {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse at 30% 50%, rgba(123,147,248,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 50%, rgba(90,60,200,0.06) 0%, transparent 60%);
-    animation: gradientShift 4s ease-in-out infinite alternate;
-    z-index: 0;
-  }
-
-  @keyframes gradientShift {
-    0% { opacity: 0.6; transform: scale(1); }
-    100% { opacity: 1; transform: scale(1.1); }
-  }
-
-  /* Floating particles */
-  .particles {
+  /* Video background */
+  .splash-video {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    overflow: hidden;
-    z-index: 1;
-    pointer-events: none;
+    object-fit: cover;
+    z-index: 0;
   }
 
-  .particle {
+  /* Dark overlay for readability */
+  .video-overlay {
     position: absolute;
-    bottom: -10px;
-    border-radius: 50%;
-    background: rgba(123,147,248,0.15);
-    opacity: 0;
-    animation: floatParticle linear infinite;
-  }
-
-  @keyframes floatParticle {
-    0% { transform: translateY(0) translateX(0); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.2; }
-    100% { transform: translateY(-320px) translateX(30px); opacity: 0; }
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1;
   }
 
   /* Logo */
@@ -107,7 +83,7 @@
     color: #fff;
     margin-top: 14px;
     letter-spacing: 3px;
-    text-shadow: 0 0 20px rgba(123,147,248,0.5), 0 0 40px rgba(123,147,248,0.2);
+    text-shadow: 0 0 20px rgba(123,147,248,0.5), 0 0 40px rgba(123,147,248,0.2), 0 2px 8px rgba(0,0,0,0.5);
     animation: textSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
     opacity: 0;
     transform: translateY(15px);
@@ -117,10 +93,11 @@
     position: relative;
     z-index: 2;
     font-size: 11px;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.6);
     margin-top: 6px;
     letter-spacing: 1.5px;
     font-weight: 400;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     animation: textSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
     opacity: 0;
     transform: translateY(15px);
@@ -138,7 +115,7 @@
     left: 40px;
     right: 40px;
     height: 2px;
-    background: rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.1);
     border-radius: 2px;
     z-index: 2;
     overflow: hidden;
@@ -165,9 +142,10 @@
     bottom: 8px;
     right: 14px;
     font-size: 9px;
-    color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.35);
     z-index: 2;
     letter-spacing: 0.5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     animation: textSlideUp 0.5s ease 0.8s forwards;
     opacity: 0;
   }
@@ -185,8 +163,10 @@
 </head>
 <body>
   <div class="splash-container" id="splashContainer">
-    <div class="bg-gradient"></div>
-    <div class="particles" id="particles"></div>
+    <video class="splash-video" autoplay muted loop playsinline>
+      <source src="../public/splash-video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
 
     <img class="logo glowing" src="../public/new-icon.png" width="80" height="80" alt="DIDI DEX">
     <div class="title">DIDI DEX</div>
@@ -196,27 +176,10 @@
       <div class="loading-bar"></div>
     </div>
 
-    <div class="version">v2.0.0</div>
+    <div class="version">v2.1.3</div>
   </div>
 
   <script>
-    // Generate floating particles
-    (function() {
-      const container = document.getElementById('particles');
-      const count = 18;
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = Math.random() * 4 + 2;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.animationDuration = (Math.random() * 6 + 5) + 's';
-        p.style.animationDelay = (Math.random() * 4) + 's';
-        container.appendChild(p);
-      }
-    })();
-
     // Listen for fade-out event from main process
     if (window.electronAPI && window.electronAPI.onSplashFadeOut) {
       window.electronAPI.onSplashFadeOut(() => {

@@ -125,21 +125,32 @@ body {
 .app-shell {
   width: 100%; height: 100%;
   display: flex; flex-direction: column;
-  background: var(--bg-base);
+  background: #020208;
   overflow: hidden;
   position: relative;
 }
 
-/* ─── Subtle ambient tint (canvas provides the main animation) ─── */
-.app-shell::before {
-  content: '';
+/* ─── Global video background ─── */
+.app-video-bg {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0.25;
+  filter: brightness(0.6) saturate(1.3) contrast(1.1);
+}
+
+/* Dark tint overlay on top of video for readability */
+.app-video-overlay {
   position: absolute; inset: 0; z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 500px 350px at 10% 20%, rgba(123,147,248,0.04) 0%, transparent 70%),
-    radial-gradient(ellipse 400px 400px at 90% 80%, rgba(96,165,250,0.03) 0%, transparent 70%);
+    radial-gradient(ellipse 500px 350px at 10% 20%, rgba(123,147,248,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 90% 80%, rgba(96,165,250,0.04) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(2,2,8,0.35) 0%, rgba(2,2,8,0.10) 50%, rgba(2,2,8,0.40) 100%);
 }
-.app-shell > * { position: relative; z-index: 1; }
+
+.app-shell > *:not(.app-video-bg):not(.app-video-overlay) { position: relative; z-index: 1; }
 
 .app-shell.overlay-mode {
   background: rgba(5,5,16,0.92);
@@ -155,8 +166,8 @@ body {
   padding: 0 4px 0 0;
   -webkit-app-region: drag;
   flex-shrink: 0;
-  background: rgba(4,4,12,0.7);
-  backdrop-filter: blur(var(--glass-blur-heavy));
+  background: rgba(4,4,12,0.4);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(123,147,248,0.08);
 }
 
@@ -268,9 +279,9 @@ body {
 .sidebar {
   width: 260px;
   display: flex; flex-direction: column;
-  background: rgba(4,4,12,0.6);
-  backdrop-filter: blur(var(--glass-blur));
-  border-right: 1px solid rgba(123,147,248,0.06);
+  background: rgba(4,4,12,0.35);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(123,147,248,0.08);
   flex-shrink: 0;
 }
 
@@ -286,13 +297,13 @@ body {
 .search-input {
   width: 100%;
   padding: 7px 28px 7px 32px;
-  background: rgba(10,10,22,0.5);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(10,10,22,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--r-md);
   color: var(--text-0);
   font-size: 12px; font-family: inherit; outline: none;
   transition: all var(--dur-norm) var(--ease);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
 }
 .search-input::placeholder { color: var(--text-3); }
 .search-input:focus {
@@ -372,7 +383,8 @@ body {
   font-size: 18px;
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
-  background: var(--bg-surface);
+  background: rgba(10,10,24,0.35);
+  backdrop-filter: blur(4px);
   border-radius: var(--r-sm);
   flex-shrink: 0;
 }
@@ -861,8 +873,8 @@ body {
 .detail-hero {
   display: flex; align-items: center; gap: 16px;
   padding: 20px;
-  background: rgba(6,6,16,0.6);
-  backdrop-filter: blur(var(--glass-blur));
+  background: rgba(6,6,16,0.35);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(123,147,248,0.12);
   border-radius: var(--r-xl);
   position: relative;
@@ -1104,8 +1116,8 @@ body {
   padding: 14px 16px;
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: var(--r-lg);
-  background: rgba(12,12,28,0.45);
-  backdrop-filter: blur(var(--glass-blur));
+  background: rgba(12,12,28,0.3);
+  backdrop-filter: blur(10px);
   transition: all var(--dur-norm) var(--ease);
 }
 .tp-section:hover { border-color: rgba(123,147,248,0.1); }
@@ -1477,3 +1489,148 @@ body {
   .tp-narc-grid { grid-template-columns: 1fr; }
   .controls-row { flex-direction: column; }
 }
+
+/* ============================================
+   Light Theme Override
+   ============================================ */
+.app-shell.light-theme {
+  --bg-base: #f5f5f8;
+  --bg-panel: rgba(255,255,255,0.9);
+  --bg-surface: rgba(245,245,248,0.8);
+  --bg-hover: rgba(235,235,240,0.7);
+  --bg-active: rgba(225,225,232,0.6);
+  --bg-input: rgba(255,255,255,0.85);
+  --bg-tooltip: rgba(255,255,255,0.95);
+
+  --bg-0: #f5f5f8;
+  --bg-1: rgba(255,255,255,0.9);
+  --bg-2: rgba(245,245,248,0.8);
+  --bg-3: rgba(235,235,240,0.7);
+  --bg-4: rgba(225,225,232,0.6);
+
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-bg-hover: rgba(255,255,255,0.85);
+  --glass-border: rgba(0,0,0,0.06);
+
+  --border-0: rgba(0,0,0,0.06);
+  --border-1: rgba(0,0,0,0.10);
+  --border-2: rgba(0,0,0,0.15);
+  --border-3: rgba(0,0,0,0.20);
+
+  --text-0: #1a1a2e;
+  --text-1: #444466;
+  --text-2: #666688;
+  --text-3: #9999aa;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-glow: 0 0 24px rgba(123,147,248,0.08);
+  --shadow-glow-accent: 0 0 30px rgba(123,147,248,0.10), 0 0 60px rgba(123,147,248,0.04);
+}
+
+/* Body & shell background */
+.app-shell.light-theme,
+.app-shell.light-theme ~ body,
+.light-theme body {
+  background: #f5f5f8;
+  color: #1a1a2e;
+}
+
+/* Title bar */
+.app-shell.light-theme .title-bar {
+  background: rgba(255,255,255,0.85);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.app-shell.light-theme .title-bar-brand { color: #1a1a2e; }
+.app-shell.light-theme .tb-home { color: var(--accent-d); }
+.app-shell.light-theme .tb-tool { color: #9999aa; }
+.app-shell.light-theme .tb-tool:hover {
+  background: rgba(123,147,248,0.08);
+  color: #1a1a2e;
+}
+.app-shell.light-theme .tb-tool.active {
+  background: rgba(123,147,248,0.12);
+  color: var(--accent-d);
+}
+.app-shell.light-theme .title-btn { color: #9999aa; }
+.app-shell.light-theme .title-btn:hover { background: rgba(0,0,0,0.06); color: #444466; }
+.app-shell.light-theme .title-btn.close:hover { background: #c42b1c; color: white; }
+.app-shell.light-theme .tb-overlay-toggle { border-color: rgba(0,0,0,0.08); color: #9999aa; }
+.app-shell.light-theme .tb-overlay-toggle:hover { background: rgba(0,0,0,0.04); color: #444466; }
+
+/* Sidebar */
+.app-shell.light-theme .sidebar {
+  background: rgba(255,255,255,0.7);
+  border-right: 1px solid rgba(0,0,0,0.06);
+}
+.app-shell.light-theme .search-input {
+  background: rgba(245,245,248,0.8);
+  border-color: rgba(0,0,0,0.08);
+  color: #1a1a2e;
+}
+.app-shell.light-theme .search-input::placeholder { color: #9999aa; }
+
+/* Dino list items */
+.app-shell.light-theme .dino-list-item:hover {
+  background: rgba(123,147,248,0.06);
+  border-color: rgba(123,147,248,0.12);
+}
+.app-shell.light-theme .dino-list-item.active {
+  background: rgba(123,147,248,0.10);
+  border-color: rgba(123,147,248,0.18);
+}
+.app-shell.light-theme .dino-icon {
+  background: rgba(245,245,248,0.9);
+}
+.app-shell.light-theme .dino-icon img,
+.app-shell.light-theme .detail-hero-icon img {
+  filter: brightness(0.3);
+}
+
+/* Cards & panels */
+.app-shell.light-theme .glass-card,
+.app-shell.light-theme .detail-card,
+.app-shell.light-theme .stat-card,
+.app-shell.light-theme .food-card,
+.app-shell.light-theme .method-card {
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Scrollbar — light style */
+.app-shell.light-theme ::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.2); }
+.app-shell.light-theme ::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.35); }
+.app-shell.light-theme ::selection { background: rgba(123,147,248,0.25); color: #1a1a2e; }
+
+/* Overlay mode in light theme */
+.app-shell.light-theme.overlay-mode {
+  background: rgba(245,245,248,0.92);
+}
+
+/* Ambient tint — lighten for light theme */
+.app-shell.light-theme::before {
+  background:
+    radial-gradient(ellipse 500px 350px at 10% 20%, rgba(123,147,248,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 90% 80%, rgba(96,165,250,0.02) 0%, transparent 70%);
+}
+
+/* Theme toggle button */
+.tb-theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border: none; background: transparent;
+  color: var(--text-3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all var(--dur-norm) var(--ease);
+  margin-right: 2px;
+}
+.tb-theme-toggle:hover {
+  background: rgba(123,147,248,0.08);
+  color: var(--text-0);
+}
+.tb-theme-toggle:active { transform: scale(0.9); }
+.app-shell.light-theme .tb-theme-toggle { color: #9999aa; }
+.app-shell.light-theme .tb-theme-toggle:hover { background: rgba(0,0,0,0.06); color: #444466; }
