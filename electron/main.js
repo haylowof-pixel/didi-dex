@@ -153,43 +153,36 @@ function registerAllShortcuts() {
 }
 
 // ===== AUTO-UPDATER =====
+// Broadcast update-status to ALL webContents (main window, webviews, separate windows)
+function broadcastUpdateStatus(data) {
+  const { webContents } = require('electron');
+  webContents.getAllWebContents().forEach(wc => {
+    try { if (!wc.isDestroyed()) wc.send('update-status', data); } catch (e) {}
+  });
+}
+
 function setupAutoUpdater() {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
 
   autoUpdater.on('checking-for-update', () => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('update-status', { status: 'checking' });
-      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'checking' }); } catch (e) {}
-    }
+    broadcastUpdateStatus({ status: 'checking' });
   });
 
   autoUpdater.on('update-available', (info) => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('update-status', { status: 'available', version: info.version });
-      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'available', version: info.version }); } catch (e) {}
-    }
+    broadcastUpdateStatus({ status: 'available', version: info.version });
   });
 
   autoUpdater.on('update-not-available', () => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('update-status', { status: 'up-to-date' });
-      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'up-to-date' }); } catch (e) {}
-    }
+    broadcastUpdateStatus({ status: 'up-to-date' });
   });
 
   autoUpdater.on('download-progress', (progress) => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('update-status', { status: 'downloading', percent: Math.round(progress.percent) });
-      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'downloading', percent: Math.round(progress.percent) }); } catch (e) {}
-    }
+    broadcastUpdateStatus({ status: 'downloading', percent: Math.round(progress.percent) });
   });
 
   autoUpdater.on('update-downloaded', (info) => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('update-status', { status: 'ready', version: info.version });
-      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'ready', version: info.version }); } catch (e) {}
-    }
+    broadcastUpdateStatus({ status: 'ready', version: info.version });
     // Show dialog
     dialog.showMessageBox(mainWindow, {
       type: 'info',
@@ -206,10 +199,7 @@ function setupAutoUpdater() {
   });
 
   autoUpdater.on('error', (err) => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('update-status', { status: 'error', message: err.message });
-      try { if (isSettingsAlive()) settingsWindow.webContents.send('update-status', { status: 'error', message: err.message }); } catch (e) {}
-    }
+    broadcastUpdateStatus({ status: 'error', message: err.message });
   });
 
   // Check for updates
@@ -223,15 +213,14 @@ function setupAutoUpdater() {
 
 // IPC for manual update check
 ipcMain.handle('check-for-updates', async () => {
-  if (app.isPackaged) {
-    try {
-      const result = await autoUpdater.checkForUpdates();
-      return { available: !!result?.updateInfo, version: result?.updateInfo?.version };
-    } catch (e) {
-      return { available: false, error: e.message };
-    }
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    return { available: !!result?.updateInfo, version: result?.updateInfo?.version };
+  } catch (e) {
+    // In dev mode or if check fails, broadcast error so UI updates
+    broadcastUpdateStatus({ status: 'error', message: app.isPackaged ? e.message : 'Mode développement — auto-update désactivé' });
+    return { available: false, error: e.message };
   }
-  return { available: false, dev: true };
 });
 
 ipcMain.on('install-update', () => {
