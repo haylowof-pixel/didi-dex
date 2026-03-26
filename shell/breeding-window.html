@@ -424,7 +424,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
         <div class="unified-stat-row"><span class="ustat-label">Food</span><input class="form-input stat-input" id="exFood" type="number" step="0.1" placeholder="ex: 8000" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekFood_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekFood_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekFood_A" type="number" placeholder="A"></div>
         <div class="unified-stat-row"><span class="ustat-label">Weight</span><input class="form-input stat-input" id="exWeight" type="number" step="0.1" placeholder="ex: 500" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekWeight_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekWeight_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekWeight_A" type="number" placeholder="A"></div>
         <div class="unified-stat-row"><span class="ustat-label">Melee %</span><input class="form-input stat-input" id="exMelee" type="number" step="0.1" placeholder="ex: 350" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekMelee_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekMelee_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekMelee_A" type="number" placeholder="A"></div>
-        <div class="unified-stat-row"><span class="ustat-label">Speed %</span><input class="form-input stat-input" id="exSpeed" type="number" step="0.1" placeholder="0" oninput="onExtractChange()"><input class="form-input ustat-w" id="exTekSpeed_W" type="number" placeholder="W"><input class="form-input ustat-m" id="exTekSpeed_M" type="number" placeholder="M"><input class="form-input ustat-a" id="exTekSpeed_A" type="number" placeholder="A"></div>
+        <input type="hidden" id="exSpeed" value="0"><input type="hidden" id="exTekSpeed_W" value="0"><input type="hidden" id="exTekSpeed_M" value="0"><input type="hidden" id="exTekSpeed_A" value="0">
         <input type="hidden" id="exTorpor" value="0">
 
         <!-- Mutation counters (always visible) -->
@@ -507,7 +507,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
               <div class="form-group"><span class="form-label">Food</span><input class="form-input" id="addWL_Food" type="number" placeholder="0"></div>
               <div class="form-group"><span class="form-label">Weight</span><input class="form-input" id="addWL_Weight" type="number" placeholder="0"></div>
               <div class="form-group"><span class="form-label">Melee</span><input class="form-input" id="addWL_Melee" type="number" placeholder="0"></div>
-              <div class="form-group"><span class="form-label">Speed</span><input class="form-input" id="addWL_Speed" type="number" placeholder="0"></div>
+              <input type="hidden" id="addWL_Speed" value="0">
             </div>
           </div>
           <!-- TEK mode: wild / mutated / allocated -->
