@@ -439,10 +439,13 @@ var DINO_NAMES = [
 ];
 
 // ===== STAT PATTERNS =====
-var N = '(\\d+\\.?\\d*)';
+var N = '(\\d+[,.]?\\d*)';
 var SEP = '[\\s.:]+';
-// Triple format: wild/mutated/allocated (TEK binoculars) — captures 3 groups via optional /N/N
+// Triple format: wild/mutated/allocated (TEK binoculars)
+// Supports both "W/M/A" and "(W | M | A)" formats
 var TRIPLE = '(?:\\s*[/|]\\s*' + N + ')?';
+// TEK binoculars format: "current / base (W | M | A)" — parenthesized with pipes
+var TEK_WMA = '(?:\\s*\\(?\\s*' + N + '\\s*[|/]\\s*' + N + '\\s*[|/]\\s*' + N + '\\s*\\)?)?';
 
 var STAT_PATTERNS = [
   { name: 'Health', key: 'Health', ico: '<img src="https://ark.wiki.gg/images/Health.png" class="stat-ico">', icoFallback: 'HP',
@@ -475,7 +478,7 @@ var STAT_PATTERNS = [
   },
   { name: 'Torpidity', key: 'Torpidity', ico: '<img src="https://ark.wiki.gg/images/Torpidity.png" class="stat-ico">', icoFallback: 'Torpor',
     aliases: ['torpidity','torpor','torpeur','torp'],
-    regex: new RegExp('torp(?:idity|or|eur)?' + SEP + N + TRIPLE + TRIPLE, 'i')
+    regex: new RegExp('torp(?:idity|or|eur)?' + SEP + N + '\\s*%?' + TRIPLE + TRIPLE, 'i')
   },
 ];
 
@@ -524,7 +527,9 @@ function cleanNumber(numStr) {
 function preprocessOCRText(text) {
   var t = text;
   t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  t = t.replace(/\|/g, 'l');
+  // DO NOT replace | with l — pipes are used in TEK binoculars format (5|0|1)
+  // Only replace | with l when it's inside a word (between letters)
+  t = t.replace(/([a-zA-Z])\|([a-zA-Z])/g, '$1l$2');
   t = t.replace(/0xygen/gi, 'Oxygen');
   t = t.replace(/f00d/gi, 'Food'); t = t.replace(/fo0d/gi, 'Food');
   t = t.replace(/t0rpor/gi, 'Torpor'); t = t.replace(/t0rpidity/gi, 'Torpidity');
@@ -534,18 +539,18 @@ function preprocessOCRText(text) {
   t = t.replace(/stam1na/gi, 'Stamina'); t = t.replace(/starnina/gi, 'Stamina');
   t = t.replace(/me1ee/gi, 'Melee'); t = t.replace(/meiee/gi, 'Melee');
   t = t.replace(/1evel/gi, 'Level'); t = t.replace(/leve1/gi, 'Level');
-  t = t.replace(/t0rpor/gi, 'Torpor'); t = t.replace(/t0rpidity/gi, 'Torpidity');
   t = t.replace(/([a-zA-Z\u00e9\u00e8\u00ea\u00e0])\s*;\s*(\d)/g, '$1: $2');
   t = t.replace(/[ \t]{2,}/g, ' ');
-  // TEK binoculars specific: normalize separators for triple format
-  // OCR might read / as l, 1, I, or |
-  t = t.replace(/(\d)\s*[lI]\s*(\d)/g, '$1/$2'); // l or I between digits → /
+  // TEK binoculars: normalize (5|0|1) or (5 | 0 | 1) to consistent format
+  // Also handle OCR reading | as l, I, 1 between digits inside parens
+  t = t.replace(/\((\d+)\s*[|lI1/]\s*(\d+)\s*[|lI1/]\s*(\d+)\)/g, '($1|$2|$3)');
+  // Handle case where parens are missing but pattern is clear: digits separated by |
+  t = t.replace(/(\d+\.?\d*)\s*[/]\s*(\d+\.?\d*)\s*\((\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)\)/g, '$1 / $2 ($3|$4|$5)');
+  // Normalize mutation symbols: ♂ and ♀ or OCR variants
+  t = t.replace(/[oO0]\s*$/gm, '0'); // trailing O → 0
   // Normalize mutation-related text
   t = t.replace(/mut[eé]e?s?/gi, 'muté');
-  t = t.replace(/sauvages?/gi, 'sauvage');
-  t = t.replace(/attribu[eé]e?s?/gi, 'attribué');
-  t = t.replace(/patrilin[eé]ai?re?/gi, 'patrilinéaire');
-  t = t.replace(/matrilin[eé]ai?re?/gi, 'matrilinéaire');
+  t = t.replace(/[Mm]utations?\s*:?\s*[♂dD]\s*(\d+)\s*[♀fF9]\s*(\d+)/g, 'MutaPat:$1 MutaMat:$2');
   return t;
 }
 
@@ -555,14 +560,20 @@ function enhanceImageForOCR(imageData) {
   var img = new Image();
   return new Promise(function(resolve) {
     img.onload = function() {
-      // Full screenshot — don't crop, let OCR read everything
-      var SCALE = 2;
-      var w = img.width * SCALE, h = img.height * SCALE;
+      // Crop the right ~30% of the screen where TEK binoculars panel is
+      // This drastically improves OCR accuracy by removing game noise
+      var cropX = Math.floor(img.width * 0.65);
+      var cropY = Math.floor(img.height * 0.15);
+      var cropW = img.width - cropX;
+      var cropH = Math.floor(img.height * 0.7);
+
+      var SCALE = 3; // Higher scale for small text
+      var w = cropW * SCALE, h = cropH * SCALE;
       canvas.width = w; canvas.height = h;
       var ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
+      ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, w, h);
 
       var data = ctx.getImageData(0, 0, w, h);
       var d = data.data;
@@ -576,19 +587,19 @@ function enhanceImageForOCR(imageData) {
 
       for (var i2 = 0; i2 < d.length; i2 += 4) {
         var gray = 0.299 * d[i2] + 0.587 * d[i2+1] + 0.114 * d[i2+2];
-        // High contrast: boost contrast around midpoint
-        gray = ((gray - 128) * 2.0) + 128;
+        // High contrast
+        gray = ((gray - 128) * 2.5) + 128;
         gray = Math.max(0, Math.min(255, gray));
         // If dark background (game), invert so text becomes dark on white
         if (avgBright < 128) gray = 255 - gray;
-        // Threshold to make it sharper
-        gray = gray > 160 ? 255 : (gray < 80 ? 0 : gray);
+        // Sharp threshold for cleaner text
+        gray = gray > 140 ? 255 : (gray < 90 ? 0 : gray);
         d[i2] = d[i2+1] = d[i2+2] = gray;
       }
       ctx.putImageData(data, 0, 0);
 
       // Add white padding
-      var PAD = 30;
+      var PAD = 40;
       var padded = document.createElement('canvas');
       padded.width = w + PAD * 2;
       padded.height = h + PAD * 2;
@@ -684,10 +695,17 @@ function detectSpecies(text) {
 
 // ===== LEVEL DETECTION =====
 function detectLevel(text) {
+  // TEK binoculars: "- Lvl 60" or "Lvl 60" or "Level 60"
   var m = text.match(/(?:level|lvl|lvi|niveau|niv)[\s.:]*(\d+)/i);
   if (m) {
     var v = parseInt(m[1]);
     if (v > 0 && v <= 500) return v;
+  }
+  // Fallback: "Lv60" or "Lv 60"
+  var m2 = text.match(/\bLv\s*(\d+)/i);
+  if (m2) {
+    var v2 = parseInt(m2[1]);
+    if (v2 > 0 && v2 <= 500) return v2;
   }
   return null;
 }
@@ -739,20 +757,86 @@ function parseStats(text, globalConf) {
     }
   }
 
-  // Pass 2: fallback line-by-line alias matching (for undetected stats)
+  // Pass 2: TEK binoculars format — parse lines with "value / base (W|M|A)"
+  // TEK panel has stats in order without labels, just icons + numbers
   var lines = text.split('\n');
+  var tekWmaRegex = /(\d+[.,]?\d*)\s*[/]\s*(\d+[.,]?\d*)\s*\((\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)\)/;
+  // Also match: just "(W|M|A)" at end of a line with numbers before
+  var tekWmaAlt = /(\d+[.,]?\d*)\s*%?\s*\((\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)\)/;
+  var tekStatOrder = ['Health','Stamina','Oxygen','Food','Weight','Melee Damage','Movement Speed','Torpidity'];
+  var tekIdx = 0;
+
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
     if (!line) continue;
     var lineLower = line.toLowerCase();
 
-    for (var j2 = 0; j2 < STAT_PATTERNS.length; j2++) {
-      var pat2 = STAT_PATTERNS[j2];
+    // Try TEK format: "6718.7 / 671.8 (5|0|1)"
+    var tekMatch = tekWmaRegex.exec(line);
+    if (tekMatch) {
+      var wVal = parseInt(tekMatch[3]);
+      var mVal = parseInt(tekMatch[4]);
+      var aVal = parseInt(tekMatch[5]);
+      // Try to identify which stat this is by alias or by order
+      var statKey = null;
+      for (var j2 = 0; j2 < STAT_PATTERNS.length; j2++) {
+        if (parsedStats[STAT_PATTERNS[j2].key]) continue;
+        for (var k = 0; k < STAT_PATTERNS[j2].aliases.length; k++) {
+          if (lineLower.indexOf(STAT_PATTERNS[j2].aliases[k]) !== -1) { statKey = STAT_PATTERNS[j2].key; break; }
+        }
+        if (statKey) break;
+      }
+      // If no alias found, assign by TEK panel order
+      if (!statKey) {
+        while (tekIdx < tekStatOrder.length && parsedStats[tekStatOrder[tekIdx]]) tekIdx++;
+        if (tekIdx < tekStatOrder.length) statKey = tekStatOrder[tekIdx++];
+      }
+      if (statKey && !parsedStats[statKey]) {
+        tripleMode = true;
+        parsedStats[statKey] = {
+          value: wVal, wild: wVal, mutated: mVal, allocated: aVal,
+          tripleMode: true, confidence: Math.min(95, globalConf + 15)
+        };
+      }
+      continue;
+    }
+
+    // Try alt TEK format: "211.4 % (5|0|22)" (torpor)
+    var tekAlt = tekWmaAlt.exec(line);
+    if (tekAlt) {
+      var wVal2 = parseInt(tekAlt[2]);
+      var mVal2 = parseInt(tekAlt[3]);
+      var aVal2 = parseInt(tekAlt[4]);
+      var statKey2 = null;
+      for (var j3 = 0; j3 < STAT_PATTERNS.length; j3++) {
+        if (parsedStats[STAT_PATTERNS[j3].key]) continue;
+        for (var k2 = 0; k2 < STAT_PATTERNS[j3].aliases.length; k2++) {
+          if (lineLower.indexOf(STAT_PATTERNS[j3].aliases[k2]) !== -1) { statKey2 = STAT_PATTERNS[j3].key; break; }
+        }
+        if (statKey2) break;
+      }
+      if (!statKey2) {
+        while (tekIdx < tekStatOrder.length && parsedStats[tekStatOrder[tekIdx]]) tekIdx++;
+        if (tekIdx < tekStatOrder.length) statKey2 = tekStatOrder[tekIdx++];
+      }
+      if (statKey2 && !parsedStats[statKey2]) {
+        tripleMode = true;
+        parsedStats[statKey2] = {
+          value: wVal2, wild: wVal2, mutated: mVal2, allocated: aVal2,
+          tripleMode: true, confidence: Math.min(90, globalConf + 10)
+        };
+      }
+      continue;
+    }
+
+    // Fallback: alias-based matching for lines without TEK format
+    for (var j4 = 0; j4 < STAT_PATTERNS.length; j4++) {
+      var pat2 = STAT_PATTERNS[j4];
       if (parsedStats[pat2.key]) continue;
 
       var found = false;
-      for (var k = 0; k < pat2.aliases.length; k++) {
-        if (lineLower.indexOf(pat2.aliases[k]) !== -1) { found = true; break; }
+      for (var k3 = 0; k3 < pat2.aliases.length; k3++) {
+        if (lineLower.indexOf(pat2.aliases[k3]) !== -1) { found = true; break; }
       }
       if (!found) continue;
 
@@ -794,14 +878,29 @@ function parseStats(text, globalConf) {
   }
 
   // Pass 3: detect mutation counters
-  var mPat = MUTA_PAT_REGEX.exec(text);
-  if (mPat) detectedMutaPat = parseInt(mPat[1]);
-  var mMat = MUTA_MAT_REGEX.exec(text);
-  if (mMat) detectedMutaMat = parseInt(mMat[1]);
+  // TEK format: "Mutations: ♂ 0  ♀ 0" or preprocessed "MutaPat:0 MutaMat:0"
+  var mPreprocessed = text.match(/MutaPat:(\d+)\s*MutaMat:(\d+)/);
+  if (mPreprocessed) {
+    detectedMutaPat = parseInt(mPreprocessed[1]);
+    detectedMutaMat = parseInt(mPreprocessed[2]);
+  }
+  if (detectedMutaPat === null) {
+    var mPat = MUTA_PAT_REGEX.exec(text);
+    if (mPat) detectedMutaPat = parseInt(mPat[1]);
+  }
+  if (detectedMutaMat === null) {
+    var mMat = MUTA_MAT_REGEX.exec(text);
+    if (mMat) detectedMutaMat = parseInt(mMat[1]);
+  }
   // Generic format: "X/20 - Y/20"
   if (detectedMutaPat === null && detectedMutaMat === null) {
     var mGen = MUTA_GENERIC_REGEX.exec(text);
     if (mGen) { detectedMutaPat = parseInt(mGen[1]); detectedMutaMat = parseInt(mGen[2]); }
+  }
+  // TEK format fallback: "♂ N ♀ N" or "d N 9 N"
+  if (detectedMutaPat === null && detectedMutaMat === null) {
+    var mTek = text.match(/[♂dD]\s*(\d+)\s*[♀fF9]\s*(\d+)/);
+    if (mTek) { detectedMutaPat = parseInt(mTek[1]); detectedMutaMat = parseInt(mTek[2]); }
   }
 }
 
