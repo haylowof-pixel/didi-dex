@@ -1,6 +1,6 @@
 {
   "name": "didi-dex",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "DIDI DEX - ARK companion app with taming calculator, breeding, maps & more",
   "main": "electron/main.js",
   "scripts": {
