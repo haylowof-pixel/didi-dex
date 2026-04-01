@@ -52,6 +52,22 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 }
 .ocr-close:hover { background: #c42b1c; color: #fff; }
 
+/* ===== DEBUG PREVIEW ===== */
+#debug-preview { display:none; padding:8px 16px; gap:8px; flex-direction:column; }
+#debug-preview.show { display:flex; }
+#debug-preview img { max-width:100%; border:1px solid var(--border-1); border-radius:var(--r-sm); }
+.debug-label { font:700 9px var(--font); color:var(--text-3); text-transform:uppercase; letter-spacing:.5px; margin-top:4px; }
+.debug-imgs { display:flex; gap:8px; overflow-x:auto; }
+.debug-imgs img { max-height:200px; flex-shrink:0; }
+
+/* ===== PASTE ZONE ===== */
+.paste-zone {
+  padding:12px 16px; border:2px dashed var(--border-1); border-radius:var(--r-md);
+  text-align:center; cursor:pointer; transition: border-color .2s; margin-top:8px;
+  font:600 11px var(--font); color:var(--text-3);
+}
+.paste-zone:hover, .paste-zone.dragover { border-color:var(--accent); color:var(--accent-l); }
+
 /* ===== CONTENT ===== */
 #content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position:relative;z-index:1; }
 
@@ -197,7 +213,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .raw-text {
   display: none; padding: 8px 12px; font-family: 'Consolas', 'SF Mono', monospace;
   font-size: 10px; color: var(--text-2); white-space: pre-wrap;
-  max-height: 80px; overflow-y: auto; word-break: break-all;
+  max-height: 200px; overflow-y: auto; word-break: break-all;
   background: rgba(6,6,16,0.6); backdrop-filter: blur(8px); border-radius: var(--r-sm); margin-top: 4px;
 }
 .raw-text.show { display: block; }
@@ -276,6 +292,20 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
           </select>
           <span style="font-size:9px;color:var(--text-3)">Auto-capture intervalle</span>
         </div>
+        <!-- Paste zone -->
+        <div class="paste-zone" id="pasteZone" onclick="document.getElementById('fileInput').click()">
+          &#128203; Coller un screenshot (Ctrl+V) ou cliquer pour importer
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileInput(this)">
+      </div>
+    </div>
+
+    <!-- Debug preview -->
+    <div id="debug-preview">
+      <div class="debug-label">&#128270; Debug: Images capturees</div>
+      <div class="debug-imgs">
+        <div><div class="debug-label">Original (crop)</div><img id="debugOriginal"></div>
+        <div><div class="debug-label">Traite (envoi OCR)</div><img id="debugProcessed"></div>
       </div>
     </div>
 
@@ -562,14 +592,16 @@ function enhanceImageForOCR(imageData) {
   var img = new Image();
   return new Promise(function(resolve) {
     img.onload = function() {
-      // Crop the right ~40% of the screen where TEK binoculars panel is
-      // The TEK HUD panel is always on the right side
-      var cropX = Math.floor(img.width * 0.58);
-      var cropY = Math.floor(img.height * 0.10);
+      // Smart crop: if image is wide (full screen), crop right 42%
+      // If image is narrow (already cropped/pasted), use full image
+      var aspectRatio = img.width / img.height;
+      var isFullScreen = aspectRatio > 1.5 && img.width > 1200;
+      var cropX = isFullScreen ? Math.floor(img.width * 0.55) : 0;
+      var cropY = 0;
       var cropW = img.width - cropX;
-      var cropH = Math.floor(img.height * 0.80);
+      var cropH = img.height;
 
-      var SCALE = 3; // 3x scale for small TEK text
+      var SCALE = 3; // 3x scale for better OCR
       var w = cropW * SCALE, h = cropH * SCALE;
       canvas.width = w; canvas.height = h;
       var ctx = canvas.getContext('2d');
@@ -577,32 +609,51 @@ function enhanceImageForOCR(imageData) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, w, h);
 
+      // Save original crop for debug
+      try {
+        var debugOrigEl = document.getElementById('debugOriginal');
+        if (debugOrigEl) {
+          var tmpC = document.createElement('canvas');
+          tmpC.width = cropW; tmpC.height = cropH;
+          tmpC.getContext('2d').drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+          debugOrigEl.src = tmpC.toDataURL('image/png');
+        }
+      } catch(e){}
+
+      // TEK binoculars: bright colored text (green/cyan/white) on dark semi-transparent background
+      // Strategy: extract bright pixels → make them black text on white background
       var data = ctx.getImageData(0, 0, w, h);
       var d = data.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var r = d[i], g = d[i+1], b = d[i+2];
+        // Calculate brightness (perceived luminance)
+        var brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+        // Also check saturation — colored text (green/cyan) is saturated + bright
+        var maxC = Math.max(r, g, b);
+        var minC = Math.min(r, g, b);
+        var saturation = maxC > 0 ? (maxC - minC) / maxC : 0;
 
-      // TEK binoculars use colored text on semi-transparent dark background:
-      // - Green text for stat values (current)
-      // - Cyan/blue text for W|M|A numbers
-      // - White text for names/labels
-      // Strategy: detect bright pixels (text) vs dark (background), convert to B&W
-      for (var i2 = 0; i2 < d.length; i2 += 4) {
-        var r = d[i2], g = d[i2+1], b = d[i2+2];
-        // Calculate luminance
-        var lum = 0.299 * r + 0.587 * g + 0.114 * b;
-        // Also detect colored text: green stats, cyan (W|M|A), white labels
-        var isGreen = g > 120 && g > r * 1.3 && g > b * 1.2;
-        var isCyan = b > 120 && g > 100 && r < 100;
-        var isBright = lum > 100;
-        var isText = isGreen || isCyan || isBright;
+        // A pixel is "text" if:
+        // 1. It's bright enough (white/light text) - brightness > 140
+        // 2. OR it's colored and moderately bright (green/cyan stat text) - sat > 0.2 && brightness > 80
+        // 3. OR it's specifically green-ish (ARK TEK green numbers)
+        var isText = false;
+        if (brightness > 140) isText = true;
+        if (saturation > 0.25 && brightness > 70) isText = true;
+        if (g > 120 && g > r * 1.1 && brightness > 60) isText = true; // green text
+        if (b > 120 && b > r * 1.1 && brightness > 60) isText = true; // blue/cyan text
 
-        // Make text black on white background for Tesseract
-        var gray = isText ? 0 : 255;
-        d[i2] = d[i2+1] = d[i2+2] = gray;
+        // Make text pixels black, background white (Tesseract prefers dark-on-light)
+        if (isText) {
+          d[i] = d[i+1] = d[i+2] = 0; // black
+        } else {
+          d[i] = d[i+1] = d[i+2] = 255; // white
+        }
       }
       ctx.putImageData(data, 0, 0);
 
-      // Add white padding
-      var PAD = 40;
+      // White padding
+      var PAD = 30;
       var padded = document.createElement('canvas');
       padded.width = w + PAD * 2;
       padded.height = h + PAD * 2;
@@ -611,7 +662,17 @@ function enhanceImageForOCR(imageData) {
       pCtx.fillRect(0, 0, padded.width, padded.height);
       pCtx.drawImage(canvas, PAD, PAD);
 
-      resolve(padded.toDataURL('image/png'));
+      var result = padded.toDataURL('image/png');
+
+      // Save processed for debug
+      try {
+        var debugProcEl = document.getElementById('debugProcessed');
+        if (debugProcEl) debugProcEl.src = result;
+        var dbgEl = document.getElementById('debug-preview');
+        if (dbgEl) dbgEl.classList.add('show');
+      } catch(e){}
+
+      resolve(result);
     };
     img.src = imageData;
   });
@@ -744,8 +805,8 @@ function parseStats(text, globalConf) {
   var tekFound = 0;
 
   // Collect ALL W/M/A triplets from the entire text using multiple patterns
-  // Pattern 1: (N|N|N) or (N | N | N) — clean parens with pipes
   var wmaPatterns = [
+    // Pattern 1: (N|N|N) or (N | N | N) — clean parens with pipes
     /\(\s*(\d+)\s*[|lI]\s*(\d+)\s*[|lI]\s*(\d+)\s*\)/g,
     // Pattern 2: OCR might miss parens: N|N|N or N | N | N at end of line
     /(\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)(?:\s*\)|\s*$)/gm,
@@ -753,6 +814,14 @@ function parseStats(text, globalConf) {
     /\(\s*(\d{1,2})\s+(\d{1,2})\s+(\d{1,2})\s*\)/g,
     // Pattern 4: with slashes instead of pipes: (5/0/1)
     /\(\s*(\d+)\s*\/\s*(\d+)\s*\/\s*(\d+)\s*\)/g,
+    // Pattern 5: Just 3 small numbers separated by spaces at end of a line (OCR lost | chars)
+    /(\d{1,3})\s+(\d{1,3})\s+(\d{1,3})\s*$/gm,
+    // Pattern 6: colon or dot separated: 5.0.1 or 5:0:1
+    /\(\s*(\d{1,3})\s*[.:]\s*(\d{1,3})\s*[.:]\s*(\d{1,3})\s*\)/g,
+    // Pattern 7: OCR reads parentheses as brackets or nothing: [N|N|N] or N|N|N
+    /\[\s*(\d+)\s*[|lI]\s*(\d+)\s*[|lI]\s*(\d+)\s*\]/g,
+    // Pattern 8: digits with any separator that looks like | (common OCR errors)
+    /(\d{1,3})\s*[|l!i]\s*(\d{1,3})\s*[|l!i]\s*(\d{1,3})/g,
   ];
 
   var allWma = [];
@@ -763,10 +832,10 @@ function parseStats(text, globalConf) {
       var w = parseInt(m[1]), mu = parseInt(m[2]), a = parseInt(m[3]);
       // Sanity: W/M/A are level points, typically 0-255
       if (w >= 0 && w <= 255 && mu >= 0 && mu <= 255 && a >= 0 && a <= 255) {
-        // Check it's not already found at same position
+        // Check it's not already found at same position (within 5 chars)
         var dup = false;
         for (var di = 0; di < allWma.length; di++) {
-          if (allWma[di].w === w && allWma[di].m === mu && allWma[di].a === a) { dup = true; break; }
+          if (Math.abs(allWma[di].pos - m.index) < 5) { dup = true; break; }
         }
         if (!dup) allWma.push({ w: w, m: mu, a: a, pos: m.index });
       }
@@ -1003,10 +1072,13 @@ function showResults() {
 
   document.getElementById('statsRows').innerHTML = html;
 
-  // Raw text
-  document.getElementById('rawText').textContent = rawOCRText;
+  // Raw text — always show for debugging (show both raw and preprocessed)
+  var rawEl = document.getElementById('rawText');
+  var cleanedForDisplay = preprocessOCRText(rawOCRText);
+  rawEl.textContent = '=== RAW OCR ===\n' + rawOCRText + '\n\n=== PREPROCESSED ===\n' + cleanedForDisplay;
+  rawEl.classList.add('show');
 
-  var modeLabel = tripleMode ? ' (Mode TEK)' : '';
+  var modeLabel = tripleMode ? ' (Mode TEK - ' + Object.keys(parsedStats).length + ' W/M/A trouves)' : '';
   setStatus('done', 'Scan termine - ' + Object.keys(parsedStats).length + '/' + STAT_PATTERNS.length + ' stats' + modeLabel);
 }
 
@@ -1018,59 +1090,17 @@ function startScan() {
   setStatus('processing', 'Minimisation de la fenetre...');
   showProgress(true, 5);
 
-  // Reset state
-  parsedStats = {};
-  detectedSpecies = null;
-  detectedLevel = null;
-  detectedSex = null;
-  rawOCRText = '';
-
   // Step 1: Tell main process to minimize all OVERSEER windows, wait, then screenshot
   if (window.api && window.api.takeScreenshot) {
     window.api.takeScreenshot().then(function(dataUrl) {
+      if (btn) btn.disabled = false;
       if (!dataUrl) {
         setStatus('error', 'Capture echouee');
         showProgress(false);
-        if (btn) btn.disabled = false;
         return;
       }
-
-      setStatus('processing', 'Amelioration de l\'image...');
-      showProgress(true, 25);
-
-      // Step 2: Enhance image for OCR
-      enhanceImageForOCR(dataUrl).then(function(enhancedDataUrl) {
-        setStatus('processing', 'Analyse OCR en cours...');
-        showProgress(true, 35);
-
-        // Step 3: Run Tesseract.js directly in the renderer
-        runTesseract(enhancedDataUrl).then(function(result) {
-          showProgress(false);
-          if (btn) btn.disabled = false;
-
-          if (result && result.text) {
-            rawOCRText = result.text;
-            var cleaned = preprocessOCRText(result.text);
-
-            // Detect species, level, sex
-            detectedSpecies = detectSpecies(cleaned);
-            detectedLevel = detectLevel(cleaned);
-            detectedSex = detectSex(cleaned);
-
-            // Parse stats
-            parseStats(cleaned, result.confidence || 70);
-
-            // Show results
-            showResults();
-          } else {
-            setStatus('error', 'Aucun texte detecte - verifie que les stats sont visibles');
-          }
-        }).catch(function(err) {
-          showProgress(false);
-          if (btn) btn.disabled = false;
-          setStatus('error', 'Erreur OCR: ' + err.message);
-        });
-      });
+      // Use shared processor
+      processImageDataUrl(dataUrl);
     }).catch(function(err) {
       showProgress(false);
       if (btn) btn.disabled = false;
@@ -1092,8 +1122,6 @@ function runTesseract(dataUrl) {
     }
 
     Tesseract.recognize(dataUrl, 'eng', {
-      tessedit_pageseg_mode: '6', // Assume uniform block of text
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,%/|()- :♂♀',
       logger: function(info) {
         if (info.status === 'recognizing text' && info.progress !== undefined) {
           var pct = 35 + Math.round(info.progress * 60);
@@ -1129,6 +1157,8 @@ function resetScan() {
   document.getElementById('placeholder').classList.remove('hidden');
   document.getElementById('resetBtn').style.display = 'none';
   document.getElementById('rawText').classList.remove('show');
+  var dbgEl = document.getElementById('debug-preview');
+  if (dbgEl) dbgEl.classList.remove('show');
   setStatus('', 'Pret');
   showProgress(false);
 }
@@ -1304,6 +1334,176 @@ function setAutoCapDelay(ms) {
 if (window.api && window.api.onTriggerScan) {
   window.api.onTriggerScan(function() {
     startScan();
+  });
+}
+
+// ===== CLIPBOARD PASTE & FILE INPUT =====
+document.addEventListener('paste', function(e) {
+  var items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') !== -1) {
+      var blob = items[i].getAsFile();
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        processImageDataUrl(ev.target.result);
+      };
+      reader.readAsDataURL(blob);
+      e.preventDefault();
+      return;
+    }
+  }
+});
+
+function handleFileInput(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    processImageDataUrl(ev.target.result);
+  };
+  reader.readAsDataURL(input.files[0]);
+  input.value = ''; // reset
+}
+
+// Drag & drop on paste zone
+(function() {
+  var zone = document.getElementById('pasteZone');
+  if (!zone) return;
+  zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault(); zone.classList.remove('dragover');
+    var files = e.dataTransfer.files;
+    if (files && files[0] && files[0].type.indexOf('image') !== -1) {
+      var reader = new FileReader();
+      reader.onload = function(ev) { processImageDataUrl(ev.target.result); };
+      reader.readAsDataURL(files[0]);
+    }
+  });
+})();
+
+// Process an image data URL (from paste, file, or screenshot)
+function processImageDataUrl(dataUrl) {
+  // Reset state
+  parsedStats = {};
+  detectedSpecies = null;
+  detectedLevel = null;
+  detectedSex = null;
+  rawOCRText = '';
+
+  setStatus('processing', 'Amelioration de l\'image...');
+  showProgress(true, 20);
+
+  // Try primary enhancement (color-based bright text extraction)
+  enhanceImageForOCR(dataUrl).then(function(enhancedDataUrl) {
+    setStatus('processing', 'Analyse OCR (passe 1)...');
+    showProgress(true, 35);
+
+    runTesseract(enhancedDataUrl).then(function(result) {
+      var text1 = (result && result.text) ? result.text : '';
+      var cleaned1 = preprocessOCRText(text1);
+      rawOCRText = text1;
+
+      // Check if we found useful WMA triplets
+      var testWma = /\(\s*\d+\s*[|lI/]\s*\d+\s*[|lI/]\s*\d+\s*\)/;
+      var hasWma = testWma.test(cleaned1);
+      // Also test for at least some numbers
+      var numCount = (cleaned1.match(/\d+/g) || []).length;
+
+      if (hasWma || numCount >= 10) {
+        // Good enough, use this result
+        detectedSpecies = detectSpecies(cleaned1);
+        detectedLevel = detectLevel(cleaned1);
+        detectedSex = detectSex(cleaned1);
+        parseStats(cleaned1, result.confidence || 70);
+        showProgress(false);
+        showResults();
+      } else {
+        // Try second pass with simpler processing (high-contrast invert)
+        setStatus('processing', 'Passe 2 (contraste eleve)...');
+        showProgress(true, 60);
+        enhanceImageSimple(dataUrl).then(function(enhancedDataUrl2) {
+          runTesseract(enhancedDataUrl2).then(function(result2) {
+            var text2 = (result2 && result2.text) ? result2.text : '';
+            // Use whichever got more text
+            if (text2.length > text1.length) {
+              rawOCRText = text2;
+              var cleaned2 = preprocessOCRText(text2);
+              detectedSpecies = detectSpecies(cleaned2);
+              detectedLevel = detectLevel(cleaned2);
+              detectedSex = detectSex(cleaned2);
+              parseStats(cleaned2, result2.confidence || 60);
+            } else {
+              rawOCRText = text1;
+              detectedSpecies = detectSpecies(cleaned1);
+              detectedLevel = detectLevel(cleaned1);
+              detectedSex = detectSex(cleaned1);
+              parseStats(cleaned1, result.confidence || 60);
+            }
+            showProgress(false);
+            showResults();
+          }).catch(function() {
+            // Fall back to first result even if poor
+            rawOCRText = text1;
+            detectedSpecies = detectSpecies(cleaned1);
+            detectedLevel = detectLevel(cleaned1);
+            detectedSex = detectSex(cleaned1);
+            parseStats(cleaned1, 50);
+            showProgress(false);
+            showResults();
+          });
+        });
+      }
+    }).catch(function(err) {
+      showProgress(false);
+      setStatus('error', 'Erreur OCR: ' + err.message);
+    });
+  });
+}
+
+// Simple enhancement: just high contrast invert (fallback)
+function enhanceImageSimple(imageData) {
+  var canvas = document.createElement('canvas');
+  var img = new Image();
+  return new Promise(function(resolve) {
+    img.onload = function() {
+      var aspectRatio = img.width / img.height;
+      var isFullScreen = aspectRatio > 1.5 && img.width > 1200;
+      var cropX = isFullScreen ? Math.floor(img.width * 0.55) : 0;
+      var cropW = img.width - cropX;
+      var cropH = img.height;
+      var SCALE = 3;
+      var w = cropW * SCALE, h = cropH * SCALE;
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, cropX, 0, cropW, cropH, 0, 0, w, h);
+
+      // High-contrast: increase contrast then threshold
+      var data = ctx.getImageData(0, 0, w, h);
+      var d = data.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var gray = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        // Invert: dark bg → white, bright text → dark
+        gray = 255 - gray;
+        // Aggressive threshold — keep only the darkest (originally brightest) pixels
+        gray = gray > 100 ? 0 : 255;
+        d[i] = d[i+1] = d[i+2] = gray;
+      }
+      ctx.putImageData(data, 0, 0);
+
+      var PAD = 30;
+      var padded = document.createElement('canvas');
+      padded.width = w + PAD * 2;
+      padded.height = h + PAD * 2;
+      var pCtx = padded.getContext('2d');
+      pCtx.fillStyle = '#ffffff';
+      pCtx.fillRect(0, 0, padded.width, padded.height);
+      pCtx.drawImage(canvas, PAD, PAD);
+      resolve(padded.toDataURL('image/png'));
+    };
+    img.src = imageData;
   });
 }
 

@@ -240,6 +240,94 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 ::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 
+/* ===== GPS TRACKER ===== */
+.bar-btn-s.tracking { background: rgba(45,212,160,0.15); color: #2dd4a0; border-color: rgba(45,212,160,0.3); animation: trackPulse 2s ease infinite; }
+@keyframes trackPulse { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 8px rgba(45,212,160,0.3); } }
+.status-tracker { color: #2dd4a0; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; animation: pulseDot 1.5s ease infinite; }
+@keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* Floating tracker controls */
+#tracker-panel {
+  position: absolute; top: 8px; right: 8px; z-index: 60;
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-end;
+}
+.tracker-controls {
+  display: flex; gap: 4px; align-items: center;
+}
+.tracker-btn {
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--border-1); border-radius: var(--r-sm);
+  background: rgba(6,6,16,0.85); backdrop-filter: blur(12px); color: var(--text-2);
+  font: 600 10px var(--font); cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.tracker-btn:hover { background: rgba(6,6,16,0.95); color: var(--text-0); border-color: var(--border-2); }
+.tracker-btn.active { background: rgba(45,212,160,0.15); color: #2dd4a0; border-color: rgba(45,212,160,0.3); }
+.tracker-btn.active:hover { background: rgba(45,212,160,0.25); }
+.tracker-status {
+  font: 700 9px var(--font); color: #2dd4a0; animation: pulseDot 1.5s ease infinite;
+  padding: 2px 8px; background: rgba(45,212,160,0.1); border: 1px solid rgba(45,212,160,0.2);
+  border-radius: var(--r-sm); display: none;
+}
+.tracker-status.show { display: block; }
+
+/* Preview capture zone */
+#tracker-preview {
+  display: none; background: rgba(6,6,16,0.9); border: 1px solid rgba(45,212,160,0.3);
+  border-radius: 6px; padding: 4px; overflow: hidden; max-width: 220px;
+}
+#tracker-preview.show { display: block; }
+#tracker-preview img { display: block; max-width: 200px; max-height: 50px; image-rendering: pixelated; }
+#tracker-preview .ocr-text { font: 600 8px 'Segoe UI'; color: #2dd4a0; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Tracker setup dialog */
+#tracker-setup-overlay {
+  position: absolute; inset: 0; z-index: 250; display: none;
+  background: rgba(0,0,0,0.5);
+}
+#tracker-setup-dialog {
+  position: absolute; display: none; z-index: 300;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  background: rgba(10,10,18,0.97); border: 1px solid rgba(45,212,160,0.3);
+  border-radius: var(--r-lg); padding: 16px; width: 300px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7); backdrop-filter: blur(24px);
+}
+#tracker-setup-dialog h3 {
+  font: 800 13px var(--font); color: #2dd4a0; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+#tracker-setup-dialog .sub { font: 400 10px var(--font); color: var(--text-3); margin-bottom: 12px; line-height: 1.5; }
+#tracker-setup-dialog label { font: 600 9px var(--font); color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; display: block; margin: 8px 0 3px; }
+#tracker-setup-dialog input {
+  width: 100%; padding: 6px 8px; background: rgba(6,6,16,0.8);
+  border: 1px solid var(--border-1); border-radius: var(--r-sm);
+  color: var(--text-0); font: 600 11px var(--font); outline: none;
+}
+#tracker-setup-dialog input:focus { border-color: rgba(45,212,160,0.4); box-shadow: 0 0 8px rgba(45,212,160,0.15); }
+.trk-row { display: flex; gap: 6px; }
+.trk-row input { flex: 1; }
+.trk-presets { display: flex; gap: 4px; flex-wrap: wrap; margin: 6px 0; }
+.trk-preset {
+  padding: 3px 8px; border-radius: var(--r-sm); font: 600 9px var(--font);
+  color: var(--text-3); background: rgba(6,6,16,0.6); border: 1px solid var(--border-1);
+  cursor: pointer; transition: all .1s;
+}
+.trk-preset:hover { color: #2dd4a0; border-color: rgba(45,212,160,0.3); background: rgba(45,212,160,0.08); }
+.trk-actions { display: flex; gap: 6px; margin-top: 12px; }
+.trk-btn {
+  flex: 1; padding: 7px 0; border-radius: var(--r-sm); font: 700 10px var(--font);
+  cursor: pointer; text-align: center; border: 1px solid var(--border-1);
+  background: transparent; color: var(--text-3); transition: all .1s;
+}
+.trk-btn:hover { background: var(--bg-2); color: var(--text-2); }
+.trk-btn.primary { background: rgba(45,212,160,0.15); color: #2dd4a0; border-color: rgba(45,212,160,0.3); }
+.trk-btn.primary:hover { background: rgba(45,212,160,0.25); }
+.trk-btn.test { background: rgba(96,165,250,0.1); color: #60a5fa; border-color: rgba(96,165,250,0.2); }
+.trk-btn.test:hover { background: rgba(96,165,250,0.2); }
+#setup-preview { display: none; margin-top: 8px; padding: 6px; background: rgba(0,0,0,0.3); border-radius: var(--r-sm); border: 1px solid var(--border-1); }
+#setup-preview img { display: block; max-width: 100%; image-rendering: pixelated; margin-bottom: 4px; }
+#setup-preview-text { font: 600 9px var(--font); color: var(--text-2); word-break: break-all; }
+
 /* ===== COORD CLICK TOOLTIP ===== */
 #coord-tooltip {
   position: absolute; display: none; padding: 4px 8px;
@@ -390,6 +478,8 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
   <div id="maps-bar">
     <span class="bar-title"><span class="dot"></span>MINIMAP</span>
     <div class="bar-spacer"></div>
+    <button class="bar-btn-s" id="trackerBtn" onclick="toggleTracker()" title="GPS Tracker temps reel">&#9678; GPS</button>
+    <button class="bar-btn-s" id="calibrateBtn" onclick="calibrateTracker()" title="Calibrer la zone GPS" style="display:none">&#9881;</button>
     <button class="bar-btn-s" id="resetBtn" onclick="resetView()" title="Reset view">⌂</button>
     <button class="bar-btn-s" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
     <button class="bar-btn-s" id="pinBtn" onclick="togglePin()" title="Pin on top">📌</button>
@@ -456,6 +546,10 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
       <!-- Tab: Layers -->
       <div class="sb-tab-content" id="tab-layers">
         <div class="sb-section">
+
+          <button class="layer-toggle" onclick="toggleLayer('custom','Markers',this)"><span class="layer-dot" style="background:#ffdd00;border-color:#ffdd00"></span>Mes Marqueurs</button>
+          <button class="layer-toggle" onclick="toggleLayer('tribe','Markers',this)"><span class="layer-dot" style="background:#7B93F8;border-color:#7B93F8"></span>Marqueurs Tribu</button>
+          <div style="height:1px;background:var(--border-0);margin:6px 0"></div>
 
           <button class="layer-toggle" onclick="toggleLayer('spawn', 'all', this)" style="margin-bottom:4px"><span class="layer-dot"></span>All Spawns</button>
 
@@ -569,12 +663,6 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
             <button class="layer-toggle" onclick="toggleLayer('poi','Obelisk',this)"><span class="layer-dot"></span>Obelisks</button>
           </div>
 
-          <!-- Custom -->
-          <div class="layer-group-label" onclick="toggleGroup(this)"><span class="arrow">▶</span> Custom</div>
-          <div class="layer-group-list">
-            <button class="layer-toggle" onclick="toggleLayer('custom','Markers',this)"><span class="layer-dot"></span>My Markers</button>
-          </div>
-
         </div>
       </div>
     </div>
@@ -583,14 +671,87 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
     <div id="map-container">
       <canvas id="map-canvas"></canvas>
       <div id="map-tooltip"></div>
+      <div id="ctx-menu"></div>
+      <!-- GPS Tracker floating panel -->
+      <div id="tracker-panel">
+        <div class="tracker-controls">
+          <button class="tracker-btn" id="trackerBtn2" onclick="toggleTracker()" title="GPS Tracker temps reel">&#9678; GPS Tracker</button>
+          <button class="tracker-btn" id="calibrateBtn2" onclick="calibrateTracker()" title="Recalibrer la zone" style="display:none">&#9881;</button>
+        </div>
+        <div class="tracker-status" id="trackerStatus2">&#9679; TRACKING</div>
+        <div id="tracker-preview"><img id="tracker-preview-img"><div class="ocr-text" id="tracker-ocr-text"></div></div>
+      </div>
     </div>
   </div>
 
   <!-- Status bar -->
   <div id="statusbar">
     <span class="status-text" id="statusMap">The Island</span>
+    <span class="status-tracker" id="statusTracker" style="display:none">&#9679; TRACKING</span>
     <span class="status-zoom" id="statusZoom">x1.0</span>
     <span class="status-coords" id="statusCoords"></span>
+  </div>
+
+  <!-- Tracker setup dialog -->
+  <div id="tracker-setup-overlay" onclick="closeTrackerSetup()"></div>
+  <div id="tracker-setup-dialog">
+    <h3>&#128225; GPS Tracker — Configuration</h3>
+    <div class="sub">
+      Active le HUD GPS dans ARK (Options → Affichage → Coordonnees).<br>
+      Indique la zone de l'ecran ou les coords LAT/LON s'affichent.
+    </div>
+    <label>Presets rapides</label>
+    <div class="trk-presets">
+      <button class="trk-preset" onclick="usePresetRegion('1080p-topleft')">1080p Haut-Gauche</button>
+      <button class="trk-preset" onclick="usePresetRegion('1080p-topcenter')">1080p Centre</button>
+      <button class="trk-preset" onclick="usePresetRegion('1440p-topleft')">1440p Haut-Gauche</button>
+      <button class="trk-preset" onclick="usePresetRegion('4k-topleft')">4K Haut-Gauche</button>
+    </div>
+    <label>Zone de capture (pixels ecran)</label>
+    <div class="trk-row">
+      <input type="number" id="trkX" placeholder="X" value="10" min="0">
+      <input type="number" id="trkY" placeholder="Y" value="10" min="0">
+    </div>
+    <div class="trk-row" style="margin-top:4px">
+      <input type="number" id="trkW" placeholder="Largeur" value="250" min="20">
+      <input type="number" id="trkH" placeholder="Hauteur" value="35" min="10">
+    </div>
+    <div class="trk-actions">
+      <button class="trk-btn test" onclick="testCapture()">&#128247; Tester</button>
+      <button class="trk-btn" onclick="openFullSelector()">&#9881; Selecteur</button>
+    </div>
+    <div id="setup-preview">
+      <img id="setup-preview-img">
+      <div id="setup-preview-text"></div>
+    </div>
+    <div class="trk-actions">
+      <button class="trk-btn" onclick="closeTrackerSetup()">Annuler</button>
+      <button class="trk-btn primary" onclick="saveTrackerSetup()">&#9654; Demarrer</button>
+    </div>
+  </div>
+
+  <!-- Marker overlay + dialog -->
+  <div id="marker-overlay" onclick="closeMarkerDialog()"></div>
+  <div id="marker-dialog">
+    <div class="dlg-title">Nouveau Marqueur</div>
+    <label>Nom</label>
+    <input type="text" id="dlg-name" placeholder="Ex: Base, Spot Rex..." maxlength="50">
+    <label>Description</label>
+    <textarea id="dlg-desc" placeholder="Notes..." maxlength="150"></textarea>
+    <div class="dlg-coord-display"></div>
+    <label>Categorie</label>
+    <div class="dlg-cats">
+      <button class="dlg-cat selected" data-cat="base" onclick="selectDlgCat(this)">&#127959; Base</button>
+      <button class="dlg-cat" data-cat="resource" onclick="selectDlgCat(this)">&#127793; Ressource</button>
+      <button class="dlg-cat" data-cat="tame" onclick="selectDlgCat(this)">&#129430; Tame</button>
+      <button class="dlg-cat" data-cat="danger" onclick="selectDlgCat(this)">&#9888;&#65039; Danger</button>
+      <button class="dlg-cat" data-cat="explore" onclick="selectDlgCat(this)">&#127758; Explore</button>
+      <button class="dlg-cat" data-cat="event" onclick="selectDlgCat(this)">&#127881; Event</button>
+    </div>
+    <div class="dlg-actions">
+      <button class="dlg-btn" onclick="closeMarkerDialog()">Annuler</button>
+      <button class="dlg-btn primary" onclick="saveMarkerFromDialog()">Placer</button>
+    </div>
   </div>
 </div>
 
@@ -829,9 +990,31 @@ var dragStartX, dragStartY, dragStartLat, dragStartLon;
 var cursorLat = -1, cursorLon = -1;
 var activeLayers = {};
 var userMarkers = [];
+var tribeMarkers = [];              // Shared tribe markers from cloud
 var bgImage = null;
 var isPinned = true;
 var gotoMarker = null;              // Temporary "go to" marker
+var editingMarkerIdx = -1;          // For marker edit dialog
+
+// GPS Tracker state
+var trackerRegion = null;       // { x, y, width, height } capture zone in CSS pixels
+var trackerActive = false;
+var trackerInterval = null;
+var playerPos = null;           // { lat, lon }
+var playerTrail = [];           // Array of { lat, lon, time }
+var TRAIL_MAX = 50;
+var TRAIL_DURATION = 120000;    // 2 minutes trail
+var trackerErrorCount = 0;
+var lastOcrText = '';
+
+var MARKER_CATS = {
+  base:     { name:'Base',        color:'#7B93F8', icon:'\u{1F3E0}' },
+  resource: { name:'Ressource',   color:'#2dd4a0', icon:'\u{1F331}' },
+  tame:     { name:'Tame',        color:'#60a5fa', icon:'\u{1F996}' },
+  danger:   { name:'Danger',      color:'#ef4444', icon:'\u{26A0}' },
+  explore:  { name:'Exploration', color:'#f59e0b', icon:'\u{1F30D}' },
+  event:    { name:'Evenement',   color:'#d946ef', icon:'\u{1F389}' },
+};
 
 var canvas = document.getElementById('map-canvas');
 var ctx = canvas.getContext('2d');
@@ -936,6 +1119,8 @@ function render() {
   drawResources();
   drawPOIs();
   drawUserMarkers();
+  drawTribeMarkers();
+  drawPlayerPosition();
   drawGotoMarker();
 
   // --- Cursor crosshair ---
@@ -1199,40 +1384,196 @@ function drawStar(cx, cy, spikes, outerR, innerR) {
   ctx.fill();
 }
 
+function drawMarkerPin(p, color, label, coordText, isTribe, authorName) {
+  var markerColor = color || '#ffdd00';
+
+  // Glow
+  ctx.shadowColor = markerColor;
+  ctx.shadowBlur = 8;
+
+  // Pin shape (teardrop)
+  ctx.fillStyle = markerColor;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y - 7, 6, Math.PI, 0);
+  ctx.lineTo(p.x, p.y + 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Inner circle
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath();
+  ctx.arc(p.x, p.y - 7, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Outline
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y - 7, 6, Math.PI, 0);
+  ctx.lineTo(p.x, p.y + 2);
+  ctx.closePath();
+  ctx.stroke();
+
+  // Label
+  ctx.fillStyle = markerColor;
+  ctx.font = '700 8px "Segoe UI"';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(label || '', p.x, p.y - 15);
+
+  // Author name for tribe markers
+  if (isTribe && authorName) {
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '600 7px "Segoe UI"';
+    ctx.fillText(authorName, p.x, p.y + 12);
+
+    ctx.fillStyle = hexToRgba(markerColor, 0.4);
+    ctx.font = '600 6px "Segoe UI"';
+    ctx.fillText(coordText || '', p.x, p.y + 20);
+  } else {
+    ctx.fillStyle = hexToRgba(markerColor, 0.4);
+    ctx.font = '600 7px "Segoe UI"';
+    ctx.fillText(coordText || '', p.x, p.y + 12);
+  }
+}
+
 function drawUserMarkers() {
   if (!activeLayers['custom:Markers']) return;
 
   userMarkers.forEach(function(m, i) {
     if (m.map !== currentMap) return;
     var p = mapToScreen(m.lat, m.lon);
-
-    ctx.shadowColor = '#ffdd00';
-    ctx.shadowBlur = 6;
-    ctx.fillStyle = '#ffdd00';
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Outline
-    ctx.strokeStyle = '#aa9900';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Label
-    ctx.fillStyle = '#ffdd00';
-    ctx.font = '700 8px "Segoe UI"';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(m.label, p.x, p.y - 8);
-
-    // Coords
-    ctx.fillStyle = 'rgba(255,221,0,0.4)';
-    ctx.font = '600 7px "Segoe UI"';
-    ctx.fillText(m.lat.toFixed(1) + ', ' + m.lon.toFixed(1), p.x, p.y + 14);
+    var color = m.color || (m.category && MARKER_CATS[m.category] ? MARKER_CATS[m.category].color : '#ffdd00');
+    drawMarkerPin(p, color, m.label || m.name || ('#' + (i+1)), m.lat.toFixed(1) + ', ' + m.lon.toFixed(1), false, null);
   });
+}
+
+function drawTribeMarkers() {
+  if (!activeLayers['tribe:Markers'] || !tribeMarkers || tribeMarkers.length === 0) return;
+
+  tribeMarkers.forEach(function(m) {
+    if (m.map !== currentMap) return;
+    var p = mapToScreen(m.lat, m.lon);
+    var color = m.color || (m.category && MARKER_CATS[m.category] ? MARKER_CATS[m.category].color : '#7B93F8');
+    drawMarkerPin(p, color, m.name || '?', m.lat.toFixed(1) + ', ' + m.lon.toFixed(1), true, m.author || '');
+  });
+}
+
+function drawPlayerPosition() {
+  if (!playerPos) return;
+  var now = Date.now();
+
+  // --- Trail ---
+  if (playerTrail.length > 1) {
+    // Remove old trail points
+    playerTrail = playerTrail.filter(function(pt) { return (now - pt.time) < TRAIL_DURATION; });
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (var i = 1; i < playerTrail.length; i++) {
+      var pt0 = playerTrail[i - 1];
+      var pt1 = playerTrail[i];
+      var age = now - pt1.time;
+      var alpha = Math.max(0.05, 1 - (age / TRAIL_DURATION));
+      var p0 = mapToScreen(pt0.lat, pt0.lon);
+      var p1 = mapToScreen(pt1.lat, pt1.lon);
+
+      ctx.strokeStyle = 'rgba(45,212,160,' + (alpha * 0.5) + ')';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.stroke();
+
+      // Trail dots
+      ctx.fillStyle = 'rgba(45,212,160,' + (alpha * 0.3) + ')';
+      ctx.beginPath();
+      ctx.arc(p1.x, p1.y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // --- Player dot ---
+  var p = mapToScreen(playerPos.lat, playerPos.lon);
+  var time = now / 1000;
+
+  // Pulsing outer ring
+  var pulse = 8 + Math.sin(time * 3) * 3;
+  ctx.strokeStyle = 'rgba(45,212,160,0.4)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, pulse, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Second ring
+  var pulse2 = 14 + Math.sin(time * 2) * 4;
+  ctx.strokeStyle = 'rgba(45,212,160,0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, pulse2, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Glow
+  ctx.shadowColor = '#2dd4a0';
+  ctx.shadowBlur = 12;
+
+  // Solid inner dot
+  ctx.fillStyle = '#2dd4a0';
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // White core
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Direction arrow (if we have trail)
+  if (playerTrail.length >= 2) {
+    var prev = playerTrail[playerTrail.length - 2];
+    var dx = playerPos.lon - prev.lon;
+    var dy = playerPos.lat - prev.lat;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 0.1) {
+      var angle = Math.atan2(dy, dx);
+      var arrowLen = 14;
+      var ax = p.x + Math.cos(angle) * arrowLen;
+      var ay = p.y + Math.sin(angle) * arrowLen;
+      ctx.strokeStyle = 'rgba(45,212,160,0.7)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p.x + Math.cos(angle) * 7, p.y + Math.sin(angle) * 7);
+      ctx.lineTo(ax, ay);
+      ctx.stroke();
+      // Arrowhead
+      ctx.fillStyle = 'rgba(45,212,160,0.7)';
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(ax - Math.cos(angle - 0.4) * 5, ay - Math.sin(angle - 0.4) * 5);
+      ctx.lineTo(ax - Math.cos(angle + 0.4) * 5, ay - Math.sin(angle + 0.4) * 5);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  // Label
+  ctx.fillStyle = '#2dd4a0';
+  ctx.font = '700 9px "Segoe UI"';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('YOU', p.x, p.y - 18);
+
+  ctx.fillStyle = 'rgba(45,212,160,0.5)';
+  ctx.font = '600 7px "Segoe UI"';
+  ctx.fillText(playerPos.lat.toFixed(1) + ', ' + playerPos.lon.toFixed(1), p.x, p.y + 18);
+
+  // Keep animating while tracker is active
+  if (trackerActive) {
+    requestAnimationFrame(render);
+  }
 }
 
 function drawGotoMarker() {
@@ -1363,7 +1704,7 @@ canvas.addEventListener('mouseleave', function() {
   render();
 });
 
-// Double-click to place marker
+// Double-click to open marker creation dialog
 canvas.addEventListener('dblclick', function(e) {
   var rect = canvas.getBoundingClientRect();
   var mx = e.clientX - rect.left;
@@ -1372,36 +1713,20 @@ canvas.addEventListener('dblclick', function(e) {
 
   if (pos.lat < 0 || pos.lat > 100 || pos.lon < 0 || pos.lon > 100) return;
 
-  userMarkers.push({
-    map: currentMap,
-    lat: Math.round(pos.lat * 10) / 10,
-    lon: Math.round(pos.lon * 10) / 10,
-    label: '#' + (userMarkers.length + 1),
-  });
-
-  // Auto-enable custom markers layer
-  if (!activeLayers['custom:Markers']) {
-    activeLayers['custom:Markers'] = true;
-    document.querySelectorAll('.layer-toggle').forEach(function(b) {
-      if (b.textContent.indexOf('My Markers') !== -1) b.classList.add('active');
-    });
-  }
-
-  render();
+  openMarkerDialog(Math.round(pos.lat * 10) / 10, Math.round(pos.lon * 10) / 10);
 });
 
-// Right-click to remove marker
+// Right-click context menu
 canvas.addEventListener('contextmenu', function(e) {
   e.preventDefault();
-  if (!activeLayers['custom:Markers']) return;
-
   var rect = canvas.getBoundingClientRect();
   var mx = e.clientX - rect.left;
   var my = e.clientY - rect.top;
   var pos = screenToMap(mx, my);
 
+  // Find nearest user marker
   var nearest = -1;
-  var minDist = 3 / zoom; // 3 map units at current zoom
+  var minDist = 3 / zoom;
   userMarkers.forEach(function(m, i) {
     if (m.map !== currentMap) return;
     var d = Math.sqrt(Math.pow(m.lat - pos.lat, 2) + Math.pow(m.lon - pos.lon, 2));
@@ -1409,10 +1734,29 @@ canvas.addEventListener('contextmenu', function(e) {
   });
 
   if (nearest >= 0) {
-    userMarkers.splice(nearest, 1);
-    render();
+    // Show context menu for marker
+    var ctxMenu = document.getElementById('ctx-menu');
+    var mk = userMarkers[nearest];
+    ctxMenu.innerHTML = '<div class="ctx-header">' + (mk.name||mk.label||'Marker') + '</div>' +
+      '<button class="ctx-item" onclick="shareMarkerToTribe(' + nearest + ');hideCtxMenu()">&#128205; Partager a la tribu</button>' +
+      '<div class="ctx-sep"></div>' +
+      '<button class="ctx-item danger" onclick="userMarkers.splice(' + nearest + ',1);hideCtxMenu();render()">&#128465; Supprimer</button>';
+    ctxMenu.style.left = mx + 'px';
+    ctxMenu.style.top = my + 'px';
+    ctxMenu.style.display = 'block';
+  } else {
+    hideCtxMenu();
+    // If on valid map coords, offer to place a marker
+    if (pos.lat >= 0 && pos.lat <= 100 && pos.lon >= 0 && pos.lon <= 100) {
+      openMarkerDialog(Math.round(pos.lat*10)/10, Math.round(pos.lon*10)/10);
+    }
   }
 });
+
+function hideCtxMenu() {
+  document.getElementById('ctx-menu').style.display = 'none';
+}
+canvas.addEventListener('mousedown', function() { hideCtxMenu(); }, true);
 
 // ===================================================================
 //  TOOLTIP
@@ -1452,13 +1796,24 @@ function updateTooltip(mx, my) {
     userMarkers.forEach(function(m) {
       if (m.map !== currentMap) return;
       var d = Math.sqrt(Math.pow(m.lat - pos.lat, 2) + Math.pow(m.lon - pos.lon, 2));
-      if (d < hitDist) { hit = { name: m.label, lat: m.lat, lon: m.lon, type: 'Marker' }; hitDist = d; }
+      if (d < hitDist) { hit = { name: m.label || m.name || 'Marker', lat: m.lat, lon: m.lon, type: 'Marker', desc: m.desc }; hitDist = d; }
+    });
+  }
+
+  // Check tribe markers
+  if (activeLayers['tribe:Markers'] && tribeMarkers) {
+    tribeMarkers.forEach(function(m) {
+      if (m.map !== currentMap) return;
+      var d = Math.sqrt(Math.pow(m.lat - pos.lat, 2) + Math.pow(m.lon - pos.lon, 2));
+      if (d < hitDist) { hit = { name: m.name || '?', lat: m.lat, lon: m.lon, type: 'Tribu — ' + (m.author||''), desc: m.desc }; hitDist = d; }
     });
   }
 
   if (hit) {
-    tooltip.innerHTML = '<div class="tt-title">' + hit.name + '</div>' +
+    var ttHtml = '<div class="tt-title">' + hit.name + '</div>' +
       '<div class="tt-coord">' + hit.type + ' — ' + hit.lat.toFixed(1) + ', ' + hit.lon.toFixed(1) + '</div>';
+    if (hit.desc) ttHtml += '<div class="tt-coord" style="color:var(--text-2);margin-top:2px">' + hit.desc + '</div>';
+    tooltip.innerHTML = ttHtml;
     tooltip.style.display = 'block';
     tooltip.style.left = (mx + 12) + 'px';
     tooltip.style.top = (my - 8) + 'px';
@@ -1727,9 +2082,369 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+// ===================================================================
+//  GPS TRACKER
+// ===================================================================
+function toggleTracker() {
+  if (trackerActive) {
+    stopTracker();
+  } else {
+    if (!trackerRegion) {
+      showTrackerSetup();
+    } else {
+      startTracker();
+    }
+  }
+}
+
+function calibrateTracker() {
+  if (window.api && window.api.openRegionSelector) {
+    window.api.openRegionSelector();
+  } else {
+    showTrackerSetup();
+  }
+}
+
+function showTrackerSetup() {
+  var dlg = document.getElementById('tracker-setup-dialog');
+  dlg.style.display = 'block';
+  document.getElementById('tracker-setup-overlay').style.display = 'block';
+  // Pre-fill with saved values
+  if (trackerRegion) {
+    document.getElementById('trkX').value = trackerRegion.x;
+    document.getElementById('trkY').value = trackerRegion.y;
+    document.getElementById('trkW').value = trackerRegion.width;
+    document.getElementById('trkH').value = trackerRegion.height;
+  }
+}
+
+function closeTrackerSetup() {
+  document.getElementById('tracker-setup-dialog').style.display = 'none';
+  document.getElementById('tracker-setup-overlay').style.display = 'none';
+}
+
+function usePresetRegion(preset) {
+  // Common GPS positions for different resolutions
+  var presets = {
+    '1080p-topleft':  { x: 10,  y: 10,  width: 250, height: 35 },
+    '1080p-topcenter':{ x: 800, y: 10,  width: 250, height: 35 },
+    '1440p-topleft':  { x: 10,  y: 10,  width: 300, height: 45 },
+    '4k-topleft':     { x: 10,  y: 10,  width: 400, height: 55 },
+  };
+  var p = presets[preset];
+  if (p) {
+    document.getElementById('trkX').value = p.x;
+    document.getElementById('trkY').value = p.y;
+    document.getElementById('trkW').value = p.width;
+    document.getElementById('trkH').value = p.height;
+  }
+}
+
+function saveTrackerSetup() {
+  var x = parseInt(document.getElementById('trkX').value) || 0;
+  var y = parseInt(document.getElementById('trkY').value) || 0;
+  var w = parseInt(document.getElementById('trkW').value) || 250;
+  var h = parseInt(document.getElementById('trkH').value) || 35;
+  if (w < 20 || h < 10) { alert('Zone trop petite'); return; }
+  trackerRegion = { x: x, y: y, width: w, height: h };
+  if (window.api && window.api.saveTrackerConfig) {
+    window.api.saveTrackerConfig({ region: trackerRegion });
+  }
+  closeTrackerSetup();
+  startTracker();
+}
+
+function openFullSelector() {
+  closeTrackerSetup();
+  if (window.api && window.api.openRegionSelector) {
+    window.api.openRegionSelector();
+  }
+}
+
+function testCapture() {
+  var x = parseInt(document.getElementById('trkX').value) || 0;
+  var y = parseInt(document.getElementById('trkY').value) || 0;
+  var w = parseInt(document.getElementById('trkW').value) || 250;
+  var h = parseInt(document.getElementById('trkH').value) || 35;
+  var testRegion = { x: x, y: y, width: w, height: h };
+  var preview = document.getElementById('setup-preview');
+  var previewText = document.getElementById('setup-preview-text');
+  preview.style.display = 'block';
+  previewText.textContent = 'Capture en cours...';
+  if (window.api && window.api.captureRegion) {
+    window.api.captureRegion(testRegion).then(function(dataUrl) {
+      if (dataUrl) {
+        document.getElementById('setup-preview-img').src = dataUrl;
+        // OCR it too
+        if (window.api.ocrCoordinates) {
+          window.api.ocrCoordinates(dataUrl).then(function(text) {
+            previewText.textContent = 'OCR: ' + (text || '(vide)').trim().substring(0, 80);
+            var coords = parseArkCoords(text);
+            if (coords) {
+              previewText.textContent += ' → LAT ' + coords.lat.toFixed(1) + ' LON ' + coords.lon.toFixed(1) + ' ✓';
+              previewText.style.color = '#2dd4a0';
+            } else {
+              previewText.style.color = '#ef4444';
+            }
+          });
+        }
+      } else {
+        previewText.textContent = 'Erreur: capture vide';
+        previewText.style.color = '#ef4444';
+      }
+    });
+  }
+}
+
+function startTracker() {
+  if (!trackerRegion) return;
+  trackerActive = true;
+  trackerErrorCount = 0;
+  // Title bar buttons
+  document.getElementById('trackerBtn').classList.add('tracking');
+  document.getElementById('calibrateBtn').style.display = '';
+  document.getElementById('statusTracker').style.display = '';
+  // Floating panel buttons
+  document.getElementById('trackerBtn2').classList.add('active');
+  document.getElementById('trackerBtn2').innerHTML = '&#9724; Stop';
+  document.getElementById('calibrateBtn2').style.display = '';
+  document.getElementById('trackerStatus2').classList.add('show');
+  document.getElementById('tracker-preview').classList.add('show');
+
+  // Center view on last known position if available
+  if (playerPos) {
+    viewLat = playerPos.lat;
+    viewLon = playerPos.lon;
+    if (zoom < 2) zoom = 3;
+    document.getElementById('statusZoom').textContent = 'x' + zoom.toFixed(1);
+  }
+
+  trackerInterval = setInterval(trackerTick, 1000);
+  trackerTick(); // First tick immediately
+  render();
+}
+
+function stopTracker() {
+  trackerActive = false;
+  if (trackerInterval) { clearInterval(trackerInterval); trackerInterval = null; }
+  // Title bar buttons
+  document.getElementById('trackerBtn').classList.remove('tracking');
+  document.getElementById('statusTracker').style.display = 'none';
+  // Floating panel buttons
+  document.getElementById('trackerBtn2').classList.remove('active');
+  document.getElementById('trackerBtn2').innerHTML = '&#9678; GPS Tracker';
+  document.getElementById('trackerStatus2').classList.remove('show');
+  document.getElementById('tracker-preview').classList.remove('show');
+  render();
+}
+
+function parseArkCoords(text) {
+  if (!text) return null;
+  // Clean up common OCR artifacts
+  var clean = text.replace(/[^0-9.\sLATlatONon]/g, ' ').replace(/\s+/g, ' ').trim();
+  // Try to extract two numbers
+  var nums = clean.match(/\d{1,3}\.?\d*/g);
+  if (!nums || nums.length < 2) return null;
+  var lat = parseFloat(nums[0]);
+  var lon = parseFloat(nums[1]);
+  // ARK coords are 0-100
+  if (isNaN(lat) || isNaN(lon)) return null;
+  if (lat < 0 || lat > 100 || lon < 0 || lon > 100) return null;
+  // Sanity: if we have a previous position, reject huge jumps (> 20 units = teleport)
+  if (playerPos) {
+    var dist = Math.sqrt(Math.pow(lat - playerPos.lat, 2) + Math.pow(lon - playerPos.lon, 2));
+    if (dist > 20) return null; // Likely OCR error
+  }
+  return { lat: lat, lon: lon };
+}
+
+async function trackerTick() {
+  if (!trackerActive || !trackerRegion) return;
+
+  try {
+    // 1. Capture the GPS region
+    var dataUrl = await window.api.captureRegion(trackerRegion);
+    if (!dataUrl) { trackerErrorCount++; return; }
+
+    // Show preview
+    document.getElementById('tracker-preview-img').src = dataUrl;
+
+    // 2. OCR the coordinates
+    var rawText = await window.api.ocrCoordinates(dataUrl);
+    lastOcrText = rawText;
+    document.getElementById('tracker-ocr-text').textContent = rawText.trim().substring(0, 60);
+
+    // 3. Parse coordinates
+    var coords = parseArkCoords(rawText);
+    if (coords) {
+      trackerErrorCount = 0;
+      playerPos = coords;
+
+      // Add to trail (avoid duplicates within 0.3 units)
+      var lastTrail = playerTrail.length > 0 ? playerTrail[playerTrail.length - 1] : null;
+      if (!lastTrail || Math.abs(lastTrail.lat - coords.lat) > 0.2 || Math.abs(lastTrail.lon - coords.lon) > 0.2) {
+        playerTrail.push({ lat: coords.lat, lon: coords.lon, time: Date.now() });
+        if (playerTrail.length > TRAIL_MAX) playerTrail.shift();
+      }
+
+      // Auto-follow: smoothly center the view on the player
+      var targetLat = coords.lat;
+      var targetLon = coords.lon;
+      viewLat += (targetLat - viewLat) * 0.3;
+      viewLon += (targetLon - viewLon) * 0.3;
+
+      render();
+    } else {
+      trackerErrorCount++;
+      // After 10 consecutive failures, show warning
+      if (trackerErrorCount >= 10) {
+        document.getElementById('tracker-ocr-text').textContent = '⚠ OCR echoue - recalibrer?';
+      }
+    }
+  } catch (e) {
+    trackerErrorCount++;
+  }
+}
+
+// Receive calibrated region from selector
+if (window.api && window.api.onTrackerRegionSet) {
+  window.api.onTrackerRegionSet(function(rect) {
+    trackerRegion = rect;
+    if (window.api.saveTrackerConfig) {
+      window.api.saveTrackerConfig({ region: rect });
+    }
+    // Auto-start tracking after calibration
+    if (!trackerActive) {
+      startTracker();
+    }
+  });
+}
+
+// Load saved tracker config on init
+function loadTrackerConfig() {
+  if (window.api && window.api.loadTrackerConfig) {
+    window.api.loadTrackerConfig().then(function(cfg) {
+      if (cfg && cfg.region) {
+        trackerRegion = cfg.region;
+        document.getElementById('calibrateBtn').style.display = '';
+        document.getElementById('calibrateBtn2').style.display = '';
+      }
+    });
+  }
+}
+
+// ===================================================================
+//  MARKER DIALOG
+// ===================================================================
+function openMarkerDialog(lat, lon) {
+  editingMarkerIdx = -1;
+  var dlg = document.getElementById('marker-dialog');
+  var overlay = document.getElementById('marker-overlay');
+  dlg.querySelector('#dlg-name').value = '';
+  dlg.querySelector('#dlg-desc').value = '';
+  dlg.querySelector('.dlg-coord-display').textContent = 'LAT ' + lat.toFixed(1) + '  LON ' + lon.toFixed(1);
+  dlg.setAttribute('data-lat', lat);
+  dlg.setAttribute('data-lon', lon);
+  // Reset category selection
+  dlg.querySelectorAll('.dlg-cat').forEach(function(c, i) { c.classList.toggle('selected', i === 0); });
+  dlg.style.display = 'block';
+  overlay.style.display = 'block';
+  setTimeout(function() { dlg.querySelector('#dlg-name').focus(); }, 50);
+}
+
+function closeMarkerDialog() {
+  document.getElementById('marker-dialog').style.display = 'none';
+  document.getElementById('marker-overlay').style.display = 'none';
+}
+
+function selectDlgCat(btn) {
+  document.querySelectorAll('.dlg-cat').forEach(function(c) { c.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+
+function saveMarkerFromDialog() {
+  var dlg = document.getElementById('marker-dialog');
+  var name = dlg.querySelector('#dlg-name').value.trim();
+  var desc = dlg.querySelector('#dlg-desc').value.trim();
+  var lat = parseFloat(dlg.getAttribute('data-lat'));
+  var lon = parseFloat(dlg.getAttribute('data-lon'));
+  var catBtn = dlg.querySelector('.dlg-cat.selected');
+  var cat = catBtn ? catBtn.getAttribute('data-cat') : 'base';
+  var catInfo = MARKER_CATS[cat] || MARKER_CATS.base;
+
+  if (!name) name = catInfo.name + ' #' + (userMarkers.filter(function(m){return m.map===currentMap}).length + 1);
+
+  userMarkers.push({
+    map: currentMap,
+    lat: lat,
+    lon: lon,
+    name: name,
+    label: name,
+    desc: desc,
+    category: cat,
+    color: catInfo.color,
+    createdAt: Date.now()
+  });
+
+  // Auto-enable custom markers layer
+  if (!activeLayers['custom:Markers']) {
+    activeLayers['custom:Markers'] = true;
+    document.querySelectorAll('.layer-toggle').forEach(function(b) {
+      if (b.textContent.indexOf('Mes Marqueurs') !== -1) b.classList.add('active');
+    });
+  }
+
+  closeMarkerDialog();
+  render();
+}
+
+// Share a local marker to tribe
+function shareMarkerToTribe(markerIdx) {
+  var m = userMarkers[markerIdx];
+  if (!m) return;
+  if (window.api && window.api.shareMarkerToTribe) {
+    window.api.shareMarkerToTribe({
+      name: m.name || m.label || 'Marker',
+      desc: m.desc || '',
+      map: m.map,
+      lat: m.lat,
+      lon: m.lon,
+      category: m.category || 'base',
+      color: m.color || '#ffdd00'
+    });
+  }
+}
+
+// ===================================================================
+//  TRIBE MARKERS LOADING
+// ===================================================================
+function loadTribeMarkers() {
+  if (window.api && window.api.loadTribeData) {
+    window.api.loadTribeData().then(function(data) {
+      if (data && data.sharedMarkers) {
+        tribeMarkers = data.sharedMarkers;
+        render();
+      }
+    }).catch(function() {});
+  }
+}
+
+// Poll tribe markers every 5 seconds
+setInterval(loadTribeMarkers, 5000);
+
+// Also listen for IPC updates
+if (window.api && window.api.onTribeMarkersUpdated) {
+  window.api.onTribeMarkersUpdated(function(markers) {
+    tribeMarkers = markers || [];
+    render();
+  });
+}
+
 // ===== INIT =====
 document.getElementById('pinBtn').classList.add('active');
 loadSavedBgImage('the-island');
+loadTribeMarkers();
+loadTrackerConfig();
 resizeCanvas();
 
 // Video background replaces canvas animation

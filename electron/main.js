@@ -3,6 +3,7 @@ const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const http = require('http');
 
 const APP_ICON = path.join(__dirname, '..', 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
@@ -21,6 +22,8 @@ let breedingWindow = null;
 let ocrWindow = null;
 let tribeWindow = null;
 let isOverlay = false;
+let regionSelectorWindow = null;
+let ocrWorker = null; // Persistent Tesseract worker for fast coordinate OCR
 
 // ===== WIDGET MODE STATE =====
 let widgetMode = 'mini';
@@ -1097,6 +1100,146 @@ ipcMain.handle('sync-breeding-to-tribe', (_, creatures, pseudo) => {
   } catch (e) { return { ok: false, error: e.message }; }
 });
 
+// Share a marker from maps to tribe
+ipcMain.handle('share-marker-to-tribe', (_, marker) => {
+  try {
+    const tribeFp = getTribeDataPath();
+    if (!fs.existsSync(tribeFp)) return { ok: false, error: 'no-tribe' };
+    const tribe = JSON.parse(fs.readFileSync(tribeFp, 'utf8'));
+    if (!tribe || !tribe.tribeCode) return { ok: false, error: 'no-tribe' };
+    if (!tribe.sharedMarkers) tribe.sharedMarkers = [];
+    const newMarker = {
+      id: 'mk-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+      name: marker.name || 'Marker',
+      desc: marker.desc || '',
+      map: marker.map,
+      lat: marker.lat,
+      lon: marker.lon,
+      category: marker.category || 'base',
+      color: marker.color || '#7B93F8',
+      author: tribe.pseudo || 'Inconnu',
+      createdAt: Date.now()
+    };
+    tribe.sharedMarkers.push(newMarker);
+    fs.writeFileSync(tribeFp, JSON.stringify(tribe, null, 2), 'utf8');
+    // Notify tribe window if open
+    if (tribeWindow && !tribeWindow.isDestroyed()) {
+      tribeWindow.webContents.send('tribe-markers-updated', tribe.sharedMarkers);
+    }
+    return { ok: true };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
+
+// ===== GPS TRACKER =====
+function getTrackerConfigPath() { return path.join(app.getPath('userData'), 'tracker-config.json'); }
+
+ipcMain.handle('load-tracker-config', () => {
+  try {
+    const fp = getTrackerConfigPath();
+    if (fs.existsSync(fp)) return JSON.parse(fs.readFileSync(fp, 'utf8'));
+  } catch (e) {}
+  return null;
+});
+
+ipcMain.on('save-tracker-config', (_, config) => {
+  try { fs.writeFileSync(getTrackerConfigPath(), JSON.stringify(config, null, 2), 'utf8'); } catch (e) {}
+});
+
+// Capture a specific screen region and return data URL
+ipcMain.handle('capture-region', async (_, rect) => {
+  try {
+    const primary = screen.getPrimaryDisplay();
+    const { width, height } = primary.size;
+    const sf = primary.scaleFactor || 1;
+    const captureW = Math.round(width * sf);
+    const captureH = Math.round(height * sf);
+    const sources = await desktopCapturer.getSources({
+      types: ['screen'],
+      thumbnailSize: { width: captureW, height: captureH }
+    });
+    if (sources.length === 0) return null;
+    const full = sources[0].thumbnail;
+    // Crop to the requested region (rect is in CSS pixels, convert to physical)
+    const cropped = full.crop({
+      x: Math.round(rect.x * sf),
+      y: Math.round(rect.y * sf),
+      width: Math.round(rect.width * sf),
+      height: Math.round(rect.height * sf)
+    });
+    return cropped.toDataURL();
+  } catch (e) {
+    return null;
+  }
+});
+
+// Fast OCR on a small coordinate image using persistent worker
+ipcMain.handle('ocr-coordinates', async (_, dataUrl) => {
+  try {
+    const Tesseract = require('tesseract.js');
+    // Use simple recognize (stateless, fast for small images)
+    const result = await Tesseract.recognize(dataUrl, 'eng', {
+      logger: () => {},
+    });
+    return result.data.text || '';
+  } catch (e) {
+    return '';
+  }
+});
+
+// Region selector overlay window
+ipcMain.on('open-region-selector', () => {
+  if (regionSelectorWindow && !regionSelectorWindow.isDestroyed()) {
+    regionSelectorWindow.focus();
+    return;
+  }
+  const primary = screen.getPrimaryDisplay();
+  regionSelectorWindow = new BrowserWindow({
+    x: primary.bounds.x,
+    y: primary.bounds.y,
+    width: primary.size.width,
+    height: primary.size.height,
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    focusable: true,
+    resizable: false,
+    fullscreenable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+    icon: APP_ICON,
+  });
+  regionSelectorWindow.loadFile(path.join(__dirname, '..', 'shell', 'region-selector.html'));
+  regionSelectorWindow.once('ready-to-show', () => {
+    if (regionSelectorWindow && !regionSelectorWindow.isDestroyed()) regionSelectorWindow.show();
+  });
+  regionSelectorWindow.on('closed', () => { regionSelectorWindow = null; });
+});
+
+ipcMain.on('region-selected', (_, rect) => {
+  // Broadcast to ALL webContents (maps may be embedded as webview in mainWindow)
+  const { webContents: wc } = require('electron');
+  wc.getAllWebContents().forEach(w => {
+    try { if (!w.isDestroyed()) w.send('tracker-region-set', rect); } catch (e) {}
+  });
+  // Close the selector
+  if (regionSelectorWindow && !regionSelectorWindow.isDestroyed()) {
+    regionSelectorWindow.destroy();
+    regionSelectorWindow = null;
+  }
+});
+
+ipcMain.on('region-selector-cancel', () => {
+  if (regionSelectorWindow && !regionSelectorWindow.isDestroyed()) {
+    regionSelectorWindow.destroy();
+    regionSelectorWindow = null;
+  }
+});
+
 // ===== OCR WINDOW =====
 function isOCRAlive() { return ocrWindow && !ocrWindow.isDestroyed(); }
 function safeDestroyOCR() {
@@ -1274,4 +1417,46 @@ ipcMain.on('send-ocr-to-breeding', (_, stats) => {
       }
     }, 1500);
   }
+});
+
+// ===== SERVER STATUS: fetch URL (bypass CORS) =====
+ipcMain.handle('fetch-url', async (_, url) => {
+  return new Promise((resolve, reject) => {
+    const mod = url.startsWith('https') ? https : http;
+    const req = mod.get(url, { timeout: 10000 }, (res) => {
+      // Follow redirects
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        mod.get(res.headers.location, { timeout: 10000 }, (res2) => {
+          let data = '';
+          res2.on('data', c => data += c);
+          res2.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { resolve(data); } });
+        }).on('error', reject);
+        return;
+      }
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { resolve(data); } });
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+  });
+});
+
+// ===== SERVER STATUS: save/load favorite servers =====
+function getFavServersPath() {
+  return path.join(app.getPath('userData'), 'fav-servers.json');
+}
+
+ipcMain.handle('load-fav-servers', async () => {
+  try {
+    const p = getFavServersPath();
+    if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch(e) {}
+  return [];
+});
+
+ipcMain.on('save-fav-servers', (_, data) => {
+  try {
+    fs.writeFileSync(getFavServersPath(), JSON.stringify(data, null, 2), 'utf8');
+  } catch(e) {}
 });

@@ -135,4 +135,24 @@ contextBridge.exposeInMainWorld('api', {
   onComparatorPinChanged:(cb) => ipcRenderer.on('comparator-pin-changed', (_, v) => cb(v)),
   onComparatorDataUpdate:(cb) => ipcRenderer.on('comparator-data-update', (_, data) => cb(data)),
   onDinoPinned:          (cb) => ipcRenderer.on('dino-pinned', (_, data) => cb(data)),
+
+  // Server Status
+  fetchUrl:          (url) => ipcRenderer.invoke('fetch-url', url),
+  loadFavServers:    () => ipcRenderer.invoke('load-fav-servers'),
+  saveFavServers:    (data) => ipcRenderer.send('save-fav-servers', data),
+  sendToHost:        (channel, ...args) => { try { ipcRenderer.sendToHost(channel, ...args); } catch(e){} },
+
+  // GPS Tracker
+  captureRegion:      (rect) => ipcRenderer.invoke('capture-region', rect),
+  ocrCoordinates:     (dataUrl) => ipcRenderer.invoke('ocr-coordinates', dataUrl),
+  loadTrackerConfig:  () => ipcRenderer.invoke('load-tracker-config'),
+  saveTrackerConfig:  (cfg) => ipcRenderer.send('save-tracker-config', cfg),
+  openRegionSelector: () => ipcRenderer.send('open-region-selector'),
+  regionSelected:     (rect) => ipcRenderer.send('region-selected', rect),
+  regionSelectorCancel: () => ipcRenderer.send('region-selector-cancel'),
+  onTrackerRegionSet: (cb) => ipcRenderer.on('tracker-region-set', (_, rect) => cb(rect)),
+
+  // Shared Markers
+  shareMarkerToTribe: (marker) => ipcRenderer.invoke('share-marker-to-tribe', marker),
+  onTribeMarkersUpdated: (cb) => ipcRenderer.on('tribe-markers-updated', (_, data) => cb(data)),
 });

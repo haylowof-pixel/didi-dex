@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>OVERSEER — Serveurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
+  --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
+  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
+  --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
+  --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  --bar-h:34px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12px;overflow:hidden;height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;position:relative}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(123,147,248,0.15);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(123,147,248,0.25)}
+
+/* ===== VIDEO BACKGROUND ===== */
+.video-bg{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;opacity:0.25}
+.video-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 500px 350px at 10% 20%,rgba(123,147,248,0.06) 0%,transparent 70%),radial-gradient(ellipse 400px 400px at 90% 80%,rgba(96,165,250,0.04) 0%,transparent 70%),linear-gradient(180deg,rgba(2,2,8,0.3) 0%,transparent 40%,transparent 60%,rgba(2,2,8,0.5) 100%)}
+
+/* ===== ANIMATED BACKGROUND BUBBLES ===== */
+.bg-bubbles{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:0;pointer-events:none}
+.bg-bubbles .bubble{position:absolute;bottom:-60px;border-radius:50%;opacity:0.05;animation:floatBubble linear infinite}
+@keyframes floatBubble{
+  0%{transform:translateY(0) translateX(0);opacity:0.04}
+  25%{transform:translateY(-25vh) translateX(15px);opacity:0.07}
+  50%{transform:translateY(-50vh) translateX(-10px);opacity:0.05}
+  75%{transform:translateY(-75vh) translateX(20px);opacity:0.06}
+  100%{transform:translateY(-110vh) translateX(-5px);opacity:0.02}
+}
+
+/* ===== GLASS ===== */
+.glass{background:rgba(6,6,16,0.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06)}
+
+/* ===== TITLE BAR ===== */
+.bar{display:flex;align-items:center;height:var(--bar-h);padding:0 8px 0 14px;-webkit-app-region:drag;background:rgba(4,4,12,0.7);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-bottom:1px solid rgba(123,147,248,0.08);flex-shrink:0;z-index:10;position:relative}
+.bar-title{font-weight:700;font-size:11px;letter-spacing:0.5px;color:var(--text-1);display:flex;align-items:center;gap:8px}
+.bar-title .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#7B93F8,#60a5fa)}
+.bar-spacer{flex:1}
+.bar-close{-webkit-app-region:no-drag;border:none;background:transparent;color:var(--text-3);font-size:14px;cursor:pointer;width:32px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);margin-left:6px;transition:all .15s}
+.bar-close:hover{background:#c42b1c;color:white}
+
+/* ===== MAIN LAYOUT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;z-index:1;position:relative}
+
+/* ===== TABS ===== */
+.srv-tabs{display:flex;gap:2px;padding:10px 14px 0;flex-shrink:0}
+.srv-tab{
+  padding:7px 16px;border:none;
+  background:rgba(255,255,255,0.02);color:var(--text-3);
+  font:600 11px var(--font);letter-spacing:0.3px;
+  cursor:pointer;border-radius:var(--r-md) var(--r-md) 0 0;
+  border:1px solid transparent;border-bottom:none;
+  transition:all .15s;
+}
+.srv-tab:hover{color:var(--text-2);background:rgba(255,255,255,0.04)}
+.srv-tab.active{color:var(--accent-l);background:rgba(6,6,16,0.5);border-color:var(--border-1)}
+
+/* ===== CONTENT PANEL ===== */
+.srv-content{flex:1;overflow:hidden;display:flex;flex-direction:column;margin:0 14px 14px;background:rgba(6,6,16,0.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border-1);border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg)}
+.srv-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
+.srv-panel.active{display:flex}
+
+/* ===== SEARCH BAR ===== */
+.srv-search-bar{display:flex;gap:8px;padding:12px 14px;align-items:center;flex-shrink:0;border-bottom:1px solid var(--border-0)}
+.srv-search-input{
+  flex:1;padding:8px 12px;border-radius:var(--r-md);
+  border:1px solid var(--border-1);background:rgba(6,6,16,0.6);
+  color:var(--text-0);font:13px var(--font);outline:none;transition:all .15s;
+}
+.srv-search-input:focus{border-color:var(--accent-border);box-shadow:0 0 0 3px var(--accent-bg)}
+.srv-search-input::placeholder{color:var(--text-3)}
+.srv-filter-group{display:flex;gap:3px;flex-shrink:0}
+.srv-filter-btn{
+  padding:5px 10px;border-radius:var(--r-sm);border:1px solid var(--border-1);
+  background:rgba(255,255,255,0.02);color:var(--text-3);font:600 10px var(--font);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.srv-filter-btn:hover{border-color:var(--accent-border);color:var(--text-1)}
+.srv-filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ===== SERVER LIST ===== */
+.srv-list{flex:1;overflow-y:auto;padding:6px 10px 10px}
+.srv-card{
+  display:grid;grid-template-columns:28px 1fr 90px 55px 55px 28px;
+  align-items:center;gap:8px;padding:9px 10px;margin-bottom:2px;
+  background:rgba(255,255,255,0.015);border-radius:var(--r-md);
+  border:1px solid transparent;transition:all .12s;cursor:default;
+}
+.srv-card:hover{border-color:var(--accent-border);background:rgba(255,255,255,0.04);box-shadow:0 0 16px var(--accent-glow)}
+
+.srv-status-dot{width:8px;height:8px;border-radius:50%;margin:auto}
+.srv-status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green)}
+.srv-status-dot.offline{background:var(--red);box-shadow:0 0 8px var(--red)}
+
+.srv-info{overflow:hidden}
+.srv-name{font-size:11px;font-weight:600;color:var(--text-0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srv-meta{display:flex;gap:5px;margin-top:3px;align-items:center;flex-wrap:wrap}
+.srv-tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600;letter-spacing:0.2px}
+.srv-tag.map{background:var(--accent-bg);color:var(--accent-l)}
+.srv-tag.official{background:var(--green-bg);color:var(--green)}
+.srv-tag.country{background:none;color:var(--text-3);font-weight:500}
+
+.srv-connect-info{display:flex;align-items:center;gap:4px;margin-top:3px}
+.srv-connect-info code{font-family:'Cascadia Code','Fira Code',monospace;color:var(--accent-l);font-size:9px;user-select:all}
+.srv-copy-btn{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:10px;padding:1px;transition:all .12s}
+.srv-copy-btn:hover{color:var(--accent)}
+
+.srv-players{font-size:10px;color:var(--text-2);text-align:center}
+.srv-players-num{font-weight:700;color:var(--text-0)}
+.srv-players-bar{height:2px;border-radius:2px;background:var(--border-0);margin-top:3px;overflow:hidden}
+.srv-players-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .3s}
+
+.srv-mode-tag{padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:center;display:inline-block}
+.srv-mode-tag.pvp{background:var(--red-bg);color:var(--red)}
+.srv-mode-tag.pve{background:var(--green-bg);color:var(--green)}
+
+.srv-rank{font-size:10px;color:var(--text-3);font-weight:600;text-align:center}
+
+.srv-fav-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-3);transition:all .15s;display:flex;align-items:center;justify-content:center}
+.srv-fav-btn:hover{color:var(--orange);transform:scale(1.2)}
+.srv-fav-btn.faved{color:var(--orange);text-shadow:0 0 8px rgba(245,158,11,0.4)}
+
+/* ===== LIST HEADER ===== */
+.srv-list-header{
+  display:grid;grid-template-columns:28px 1fr 90px 55px 55px 28px;
+  gap:8px;padding:7px 10px;font-size:9px;text-transform:uppercase;font-weight:700;
+  color:var(--text-3);letter-spacing:0.8px;border-bottom:1px solid var(--border-0);flex-shrink:0;
+}
+.srv-list-header span{text-align:center}
+.srv-list-header span:nth-child(2){text-align:left}
+
+/* ===== FAVORITES GRID ===== */
+.srv-fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:12px;overflow-y:auto;flex:1}
+.srv-fav-card{
+  background:rgba(255,255,255,0.02);border-radius:var(--r-lg);
+  border:1px solid var(--border-1);padding:12px;
+  display:flex;flex-direction:column;gap:10px;transition:all .15s;
+}
+.srv-fav-card:hover{border-color:var(--accent-border);background:rgba(255,255,255,0.04);box-shadow:0 0 20px var(--accent-glow)}
+.srv-fav-card-header{display:flex;align-items:center;gap:8px}
+.srv-fav-card-header .srv-status-dot{flex-shrink:0}
+.srv-fav-card-name{font-size:11px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srv-fav-card-remove{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:12px;padding:2px;transition:all .12s}
+.srv-fav-card-remove:hover{color:var(--red)}
+.srv-fav-tags{display:flex;gap:5px;flex-wrap:wrap}
+.srv-fav-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.srv-fav-stat{text-align:center;padding:7px 6px;background:rgba(6,6,16,0.4);border-radius:var(--r-md);border:1px solid var(--border-0)}
+.srv-fav-stat-val{font-size:14px;font-weight:700}
+.srv-fav-stat-label{font-size:8px;color:var(--text-3);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
+
+/* ===== LOADING / EMPTY ===== */
+.srv-loading,.srv-empty{display:flex;align-items:center;justify-content:center;flex:1;color:var(--text-2);font-size:12px;flex-direction:column;gap:8px}
+.srv-spinner{width:20px;height:20px;border:2px solid var(--border-1);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== PAGINATION ===== */
+.srv-pagination{display:flex;justify-content:center;align-items:center;gap:8px;padding:8px;flex-shrink:0;border-top:1px solid var(--border-0)}
+.srv-page-btn{padding:5px 14px;border-radius:var(--r-sm);border:1px solid var(--border-1);background:rgba(255,255,255,0.02);color:var(--text-2);font:600 10px var(--font);cursor:pointer;transition:all .12s}
+.srv-page-btn:hover{border-color:var(--accent-border);color:var(--text-0)}
+.srv-page-btn:disabled{opacity:0.2;cursor:not-allowed}
+.srv-page-info{font-size:10px;color:var(--text-3);font-weight:600}
+.srv-results-info{padding:0 14px 4px;font-size:9px;color:var(--text-3);flex-shrink:0;font-weight:600;letter-spacing:0.3px}
+</style>
+</head>
+<body>
+
+<!-- Video Background (same as home page) -->
+<video class="video-bg" autoplay muted loop playsinline>
+  <source src="../public/splash-video.mp4" type="video/mp4"/>
+</video>
+<div class="video-overlay"></div>
+
+<!-- Animated Background Bubbles -->
+<div class="bg-bubbles">
+  <div class="bubble" style="width:40px;height:40px;left:10%;background:var(--accent);animation-duration:18s;animation-delay:0s"></div>
+  <div class="bubble" style="width:25px;height:25px;left:25%;background:#60a5fa;animation-duration:22s;animation-delay:3s"></div>
+  <div class="bubble" style="width:55px;height:55px;left:45%;background:var(--accent);animation-duration:20s;animation-delay:1s"></div>
+  <div class="bubble" style="width:30px;height:30px;left:65%;background:#2dd4a0;animation-duration:25s;animation-delay:5s"></div>
+  <div class="bubble" style="width:35px;height:35px;left:80%;background:var(--accent);animation-duration:19s;animation-delay:2s"></div>
+  <div class="bubble" style="width:20px;height:20px;left:35%;background:#d946ef;animation-duration:24s;animation-delay:4s"></div>
+  <div class="bubble" style="width:45px;height:45px;left:90%;background:#60a5fa;animation-duration:21s;animation-delay:6s"></div>
+</div>
+
+<!-- Title Bar -->
+<div class="bar" id="srv-bar">
+  <div class="bar-title"><span class="dot"></span> SERVEURS</div>
+  <div class="bar-spacer"></div>
+  <button class="bar-close" onclick="window.api?.close?.()">&times;</button>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Tabs -->
+  <div class="srv-tabs">
+    <button class="srv-tab active" data-tab="browse" onclick="switchTab('browse')">RECHERCHER</button>
+    <button class="srv-tab" data-tab="favorites" onclick="switchTab('favorites')">FAVORIS <span id="fav-count-badge" style="opacity:0.5">0</span></button>
+  </div>
+
+  <!-- Content -->
+  <div class="srv-content">
+
+    <!-- Browse Panel -->
+    <div class="srv-panel active" id="panel-browse">
+      <div class="srv-search-bar">
+        <input class="srv-search-input" id="search-input" type="text" placeholder="Rechercher un serveur ARK..." autocomplete="off"/>
+        <div class="srv-filter-group">
+          <button class="srv-filter-btn active" data-mode="all" onclick="setModeFilter('all')">Tous</button>
+          <button class="srv-filter-btn" data-mode="pvp" onclick="setModeFilter('pvp')">PvP</button>
+          <button class="srv-filter-btn" data-mode="pve" onclick="setModeFilter('pve')">PvE</button>
+        </div>
+        <div class="srv-filter-group">
+          <button class="srv-filter-btn active" data-type="all" onclick="setTypeFilter('all')">Tous</button>
+          <button class="srv-filter-btn" data-type="official" onclick="setTypeFilter('official')">Officiel</button>
+          <button class="srv-filter-btn" data-type="unofficial" onclick="setTypeFilter('unofficial')">Non-off.</button>
+        </div>
+      </div>
+      <div class="srv-results-info" id="results-info"></div>
+      <div class="srv-list-header">
+        <span></span><span>Serveur</span><span>Joueurs</span><span>Mode</span><span>Rank</span><span></span>
+      </div>
+      <div class="srv-list" id="server-list">
+        <div class="srv-loading"><div class="srv-spinner"></div><span>Chargement...</span></div>
+      </div>
+      <div class="srv-pagination" id="pagination" style="display:none">
+        <button class="srv-page-btn" id="prev-btn" onclick="changePage(-1)">&larr; Prec.</button>
+        <span class="srv-page-info" id="page-info">Page 1</span>
+        <button class="srv-page-btn" id="next-btn" onclick="changePage(1)">Suiv. &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Favorites Panel -->
+    <div class="srv-panel" id="panel-favorites">
+      <div class="srv-fav-grid" id="fav-grid">
+        <div class="srv-empty">
+          <span style="font-size:24px;opacity:0.3">&#9733;</span>
+          <span>Aucun serveur en favoris</span>
+          <span style="font-size:10px;color:var(--text-3)">Cliquez sur l'etoile d'un serveur pour l'ajouter</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ─── State ─── */
+var servers = [];
+var rawServers = []; // Before client-side filters
+var favorites = JSON.parse(localStorage.getItem('overseer-fav-servers') || '[]');
+var nextPageUrl = null;
+var currentPage = 1;
+var searchQuery = '';
+var modeFilter = 'all';
+var typeFilter = 'all';
+var searchTimeout = null;
+var BM_BASE = 'https://api.battlemetrics.com/servers';
+
+/* ─── Tab Switching ─── */
+function switchTab(tab) {
+  document.querySelectorAll('.srv-tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.srv-panel').forEach(function(p){p.classList.remove('active')});
+  document.querySelector('.srv-tab[data-tab="'+tab+'"]').classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if (tab==='favorites') refreshFavorites();
+}
+
+/* ─── Filters ─── */
+function setModeFilter(m){
+  modeFilter=m;
+  document.querySelectorAll('.srv-filter-btn[data-mode]').forEach(function(b){b.classList.toggle('active',b.dataset.mode===m)});
+  currentPage=1;nextPageUrl=null;fetchServers();
+}
+function setTypeFilter(t){
+  typeFilter=t;
+  document.querySelectorAll('.srv-filter-btn[data-type]').forEach(function(b){b.classList.toggle('active',b.dataset.type===t)});
+  currentPage=1;nextPageUrl=null;fetchServers();
+}
+
+/* ─── Search ─── */
+document.getElementById('search-input').addEventListener('input',function(e){
+  clearTimeout(searchTimeout);
+  searchTimeout=setTimeout(function(){
+    searchQuery=e.target.value.trim();
+    currentPage=1;nextPageUrl=null;fetchServers();
+  },500);
+});
+
+/* ─── Build BattleMetrics URL ─── */
+function buildUrl(){
+  var p=[];
+  p.push('filter[game]=arksa');
+  p.push('page[size]=25');
+  p.push('sort=-players'); // Sort by players desc
+  if(searchQuery) p.push('filter[search]='+encodeURIComponent(searchQuery));
+  return BM_BASE+'?'+p.join('&');
+}
+
+/* ─── Fetch ─── */
+async function fetchServers(pageUrl){
+  var listEl=document.getElementById('server-list');
+  listEl.innerHTML='<div class="srv-loading"><div class="srv-spinner"></div><span>Recherche...</span></div>';
+  var url=pageUrl||buildUrl();
+  try{
+    var response;
+    if(window.api&&window.api.fetchUrl){
+      response=await window.api.fetchUrl(url);
+    }else{
+      response=await(await fetch(url)).json();
+    }
+    if(response&&response.data){
+      rawServers=response.data.map(function(s){
+        var a=s.attributes||{};var d=a.details||{};
+        return{bmId:a.id||s.id,name:a.name||'',ip:a.ip||'',port:a.port||'',players:a.players!=null?a.players:0,maxPlayers:a.maxPlayers||0,status:a.status||'offline',rank:a.rank||0,map:d.map||'',pve:d.pve===true,official:d.official===true,modded:d.modded===true,country:a.country||'',version:d.version||''};
+      });
+      // Client-side filters
+      servers=rawServers.slice();
+      if(modeFilter==='pvp') servers=servers.filter(function(s){return !s.pve});
+      if(modeFilter==='pve') servers=servers.filter(function(s){return s.pve});
+      if(typeFilter==='official') servers=servers.filter(function(s){return s.official});
+      if(typeFilter==='unofficial') servers=servers.filter(function(s){return !s.official});
+      nextPageUrl=(response.links&&response.links.next)||null;
+      document.getElementById('results-info').textContent=servers.length+' serveurs affiches';
+      renderServers();updatePagination();
+    }else{
+      listEl.innerHTML='<div class="srv-empty"><span>Erreur de chargement</span></div>';
+    }
+  }catch(err){
+    console.error('Fetch:',err);
+    listEl.innerHTML='<div class="srv-empty"><span style="opacity:0.5">Erreur de connexion</span><span style="font-size:10px;color:var(--text-3)">'+escHtml(err.message||'')+'</span></div>';
+  }
+}
+
+/* ─── Render ─── */
+function renderServers(){
+  var listEl=document.getElementById('server-list');
+  if(!servers||servers.length===0){listEl.innerHTML='<div class="srv-empty"><span>Aucun serveur trouve</span></div>';return}
+  var h='';
+  servers.forEach(function(s){
+    var on=s.status==='online';
+    var mc=s.pve?'pve':'pvp';var ml=s.pve?'PvE':'PvP';
+    var fav=isFavorite(s);
+    var pct=s.maxPlayers>0?Math.round(s.players/s.maxPlayers*100):0;
+    var map=(s.map||'').replace(/_WP$/,'').replace(/_/g,' ');
+    h+='<div class="srv-card">';
+    h+='<div class="srv-status-dot '+(on?'online':'offline')+'"></div>';
+    h+='<div class="srv-info">';
+    h+='<div class="srv-name" title="'+escAttr(s.name)+'">'+escHtml(s.name)+'</div>';
+    h+='<div class="srv-meta">';
+    if(map) h+='<span class="srv-tag map">'+escHtml(map)+'</span>';
+    if(s.official) h+='<span class="srv-tag official">Official</span>';
+    if(s.country) h+='<span class="srv-tag country">'+escHtml(s.country)+'</span>';
+    h+='</div>';
+    if(s.ip) h+='<div class="srv-connect-info"><code>'+escHtml(s.ip)+':'+s.port+'</code><button class="srv-copy-btn" onclick="copyText(\''+escAttr(s.ip+':'+s.port)+'\',event)">&#128203;</button></div>';
+    h+='</div>';
+    h+='<div class="srv-players"><span class="srv-players-num">'+s.players+'</span> / '+s.maxPlayers+'<div class="srv-players-bar"><div class="srv-players-bar-fill" style="width:'+pct+'%"></div></div></div>';
+    h+='<div style="text-align:center"><span class="srv-mode-tag '+mc+'">'+ml+'</span></div>';
+    h+='<div class="srv-rank">#'+(s.rank||'\u2014')+'</div>';
+    h+='<button class="srv-fav-btn '+(fav?'faved':'')+'" onclick="toggleFav(\''+escAttr(s.bmId)+'\')">'+(fav?'\u2605':'\u2606')+'</button>';
+    h+='</div>';
+  });
+  listEl.innerHTML=h;
+}
+
+/* ─── Pagination ─── */
+function updatePagination(){
+  var pag=document.getElementById('pagination');
+  if(!nextPageUrl&&currentPage<=1){pag.style.display='none';return}
+  pag.style.display='flex';
+  document.getElementById('page-info').textContent='Page '+currentPage;
+  document.getElementById('prev-btn').disabled=currentPage<=1;
+  document.getElementById('next-btn').disabled=!nextPageUrl;
+}
+function changePage(d){
+  if(d>0&&nextPageUrl){currentPage++;fetchServers(nextPageUrl)}
+  else if(d<0&&currentPage>1){currentPage--;nextPageUrl=null;fetchServers()}
+}
+
+/* ─── Favorites ─── */
+function getServerId(s){return s.bmId||s.id||(s.ip+':'+s.port)}
+function isFavorite(s){var id=getServerId(s);return favorites.some(function(f){return f.id===id})}
+function toggleFav(sid){
+  var i=favorites.findIndex(function(f){return f.id===sid});
+  if(i>=0){favorites.splice(i,1)}
+  else{
+    var s=servers.find(function(sv){return getServerId(sv)===sid});
+    if(s) favorites.push({id:sid,name:s.name,map:s.map,ip:s.ip,port:s.port,pve:s.pve,official:s.official,maxPlayers:s.maxPlayers,country:s.country});
+  }
+  saveFavorites();renderServers();updateFavCount();
+}
+function saveFavorites(){
+  localStorage.setItem('overseer-fav-servers',JSON.stringify(favorites));
+  // Direct IPC to main process
+  if(window.api&&window.api.saveFavServers) window.api.saveFavServers(favorites);
+  // Also relay via sendToHost for embedded webview context
+  if(window.api&&window.api.sendToHost) window.api.sendToHost('save-fav-servers',favorites);
+}
+function updateFavCount(){document.getElementById('fav-count-badge').textContent=favorites.length}
+
+async function refreshFavorites(){
+  var grid=document.getElementById('fav-grid');
+  if(favorites.length===0){
+    grid.innerHTML='<div class="srv-empty"><span style="font-size:24px;opacity:0.3">&#9733;</span><span>Aucun serveur en favoris</span><span style="font-size:10px;color:var(--text-3)">Cliquez sur l\'etoile d\'un serveur pour l\'ajouter</span></div>';
+    return;
+  }
+  grid.innerHTML='<div class="srv-loading"><div class="srv-spinner"></div><span>Actualisation...</span></div>';
+  var h='';
+  for(var i=0;i<favorites.length;i++){
+    var fav=favorites[i];var live=null;
+    try{
+      var url=BM_BASE+'/'+fav.id;
+      var resp;
+      if(window.api&&window.api.fetchUrl){resp=await window.api.fetchUrl(url)}
+      else{resp=await(await fetch(url)).json()}
+      if(resp&&resp.data){
+        var a=resp.data.attributes||{};var d=a.details||{};
+        live={status:a.status,players:a.players,maxPlayers:a.maxPlayers,rank:a.rank,map:d.map,pve:d.pve};
+      }
+    }catch(e){}
+    var on=live?live.status==='online':false;
+    var name=fav.name;
+    var pl=live?live.players:'\u2014';
+    var mp=live?live.maxPlayers:(fav.maxPlayers||'?');
+    var isPve=live?live.pve:fav.pve;
+    var mc=isPve?'pve':'pvp';var ml=isPve?'PvE':'PvP';
+    var map=((live&&live.map)||fav.map||'').replace(/_WP$/,'').replace(/_/g,' ');
+    h+='<div class="srv-fav-card">';
+    h+='<div class="srv-fav-card-header"><div class="srv-status-dot '+(on?'online':'offline')+'"></div>';
+    h+='<div class="srv-fav-card-name" title="'+escAttr(name)+'">'+escHtml(name)+'</div>';
+    h+='<button class="srv-fav-card-remove" onclick="removeFav(\''+escAttr(fav.id)+'\')">&times;</button></div>';
+    h+='<div class="srv-fav-tags">';
+    if(map) h+='<span class="srv-tag map">'+escHtml(map)+'</span>';
+    h+='<span class="srv-mode-tag '+mc+'">'+ml+'</span>';
+    if(fav.official) h+='<span class="srv-tag official">Official</span>';
+    h+='</div>';
+    h+='<div class="srv-fav-stats">';
+    h+='<div class="srv-fav-stat"><div class="srv-fav-stat-val">'+pl+'<span style="font-size:9px;color:var(--text-2);font-weight:400"> / '+mp+'</span></div><div class="srv-fav-stat-label">Joueurs</div></div>';
+    h+='<div class="srv-fav-stat"><div class="srv-fav-stat-val">#'+((live&&live.rank)||'\u2014')+'</div><div class="srv-fav-stat-label">Rank</div></div>';
+    h+='</div>';
+    if(fav.ip) h+='<div class="srv-connect-info"><code>'+escHtml(fav.ip)+':'+(fav.port||'')+'</code><button class="srv-copy-btn" onclick="copyText(\''+escAttr(fav.ip+':'+(fav.port||''))+'\',event)">&#128203;</button></div>';
+    h+='</div>';
+  }
+  grid.innerHTML=h;
+}
+
+function removeFav(id){
+  favorites=favorites.filter(function(f){return f.id!==id});
+  saveFavorites();updateFavCount();refreshFavorites();
+}
+
+/* ─── Helpers ─── */
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escAttr(s){return escHtml(String(s||'')).replace(/'/g,'&#39;')}
+function copyText(t,e){if(e)e.stopPropagation();navigator.clipboard.writeText(t).then(function(){var b=e&&e.target;if(b){var o=b.textContent;b.textContent='\u2713';setTimeout(function(){b.textContent=o},1200)}})}
+
+/* ─── Init ─── */
+// Sync favorites from file on load
+if(window.api&&window.api.loadFavServers){
+  window.api.loadFavServers().then(function(list){
+    if(list&&list.length>0){
+      favorites=list;
+      localStorage.setItem('overseer-fav-servers',JSON.stringify(favorites));
+      updateFavCount();
+    }
+  }).catch(function(){});
+}
+updateFavCount();
+fetchServers();
+setInterval(function(){if(document.querySelector('.srv-tab[data-tab="browse"].active'))fetchServers()},60000);
+</script>
+</body>
+</html>

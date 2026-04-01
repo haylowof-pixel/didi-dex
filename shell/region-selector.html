@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Region Selector</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; cursor: crosshair; user-select: none; }
+
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35);
+}
+
+#canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+}
+
+#instructions {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(6,6,16,0.92); backdrop-filter: blur(16px);
+  border: 1px solid rgba(123,147,248,0.3); border-radius: 10px;
+  padding: 14px 28px; color: #edeef3; font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px; font-weight: 600; text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  z-index: 10; pointer-events: none;
+}
+#instructions .accent { color: #97ADFF; }
+#instructions .sub { font-size: 10px; color: #7d808e; margin-top: 4px; font-weight: 400; }
+
+#confirm-bar {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  display: none; gap: 10px; z-index: 10;
+}
+#confirm-bar.show { display: flex; }
+
+#confirm-bar button {
+  padding: 10px 24px; border-radius: 8px; font: 700 12px 'Segoe UI', system-ui, sans-serif;
+  cursor: pointer; border: none; transition: all .15s;
+}
+#confirm-bar .btn-confirm {
+  background: linear-gradient(135deg, #7B93F8, #60a5fa); color: white;
+  box-shadow: 0 4px 20px rgba(123,147,248,0.4);
+}
+#confirm-bar .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(123,147,248,0.5); }
+#confirm-bar .btn-cancel {
+  background: rgba(255,255,255,0.08); color: #b8bac4; border: 1px solid rgba(255,255,255,0.12);
+}
+#confirm-bar .btn-cancel:hover { background: rgba(239,68,68,0.15); color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+#region-info {
+  position: fixed; display: none; padding: 4px 10px;
+  background: rgba(6,6,16,0.9); border: 1px solid rgba(123,147,248,0.3);
+  border-radius: 6px; color: #97ADFF; font: 700 10px 'Segoe UI', system-ui, sans-serif;
+  pointer-events: none; z-index: 10; white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<div id="overlay"></div>
+<canvas id="canvas"></canvas>
+
+<div id="instructions">
+  <span class="accent">Glissez pour selectionner</span> la zone des coordonnees GPS
+  <div class="sub">Selectionnez la zone ou ARK affiche LAT / LON &bull; Echap pour annuler</div>
+</div>
+
+<div id="confirm-bar">
+  <button class="btn-cancel" onclick="cancel()">Annuler</button>
+  <button class="btn-confirm" onclick="confirm()">Confirmer</button>
+</div>
+
+<div id="region-info"></div>
+
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var confirmBar = document.getElementById('confirm-bar');
+var regionInfo = document.getElementById('region-info');
+var instructions = document.getElementById('instructions');
+
+var isDrawing = false;
+var startX = 0, startY = 0;
+var rect = null; // { x, y, width, height }
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  drawOverlay();
+}
+window.addEventListener('resize', resize);
+resize();
+
+function drawOverlay() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (rect) {
+    // Darken everything except the selection
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    // Top
+    ctx.fillRect(0, 0, canvas.width, rect.y);
+    // Bottom
+    ctx.fillRect(0, rect.y + rect.height, canvas.width, canvas.height - rect.y - rect.height);
+    // Left
+    ctx.fillRect(0, rect.y, rect.x, rect.height);
+    // Right
+    ctx.fillRect(rect.x + rect.width, rect.y, canvas.width - rect.x - rect.width, rect.height);
+
+    // Selection border
+    ctx.strokeStyle = '#7B93F8';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+    ctx.setLineDash([]);
+
+    // Corner handles
+    var corners = [
+      [rect.x, rect.y],
+      [rect.x + rect.width, rect.y],
+      [rect.x, rect.y + rect.height],
+      [rect.x + rect.width, rect.y + rect.height]
+    ];
+    corners.forEach(function(c) {
+      ctx.fillStyle = '#7B93F8';
+      ctx.fillRect(c[0] - 4, c[1] - 4, 8, 8);
+    });
+
+    // Glow effect on selection area
+    ctx.shadowColor = 'rgba(123,147,248,0.3)';
+    ctx.shadowBlur = 15;
+    ctx.strokeStyle = 'rgba(123,147,248,0.5)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+    ctx.shadowBlur = 0;
+  } else {
+    // No selection yet - full dark overlay
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+canvas.addEventListener('mousedown', function(e) {
+  if (e.button !== 0) return;
+  isDrawing = true;
+  startX = e.clientX;
+  startY = e.clientY;
+  rect = null;
+  confirmBar.classList.remove('show');
+  regionInfo.style.display = 'none';
+});
+
+canvas.addEventListener('mousemove', function(e) {
+  if (!isDrawing) return;
+  var x = Math.min(startX, e.clientX);
+  var y = Math.min(startY, e.clientY);
+  var w = Math.abs(e.clientX - startX);
+  var h = Math.abs(e.clientY - startY);
+  if (w > 5 && h > 5) {
+    rect = { x: x, y: y, width: w, height: h };
+    drawOverlay();
+
+    // Show size info
+    regionInfo.style.display = 'block';
+    regionInfo.style.left = (rect.x + rect.width + 8) + 'px';
+    regionInfo.style.top = (rect.y - 4) + 'px';
+    regionInfo.textContent = Math.round(w) + ' x ' + Math.round(h) + ' px';
+  }
+});
+
+canvas.addEventListener('mouseup', function(e) {
+  if (!isDrawing) return;
+  isDrawing = false;
+  if (rect && rect.width > 10 && rect.height > 10) {
+    confirmBar.classList.add('show');
+    instructions.style.display = 'none';
+  }
+});
+
+function confirm() {
+  if (!rect) return;
+  // Send the selection as CSS pixel coordinates
+  if (window.api && window.api.regionSelected) {
+    window.api.regionSelected({
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height)
+    });
+  }
+}
+
+function cancel() {
+  if (window.api && window.api.regionSelectorCancel) {
+    window.api.regionSelectorCancel();
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cancel();
+  if (e.key === 'Enter' && rect) confirm();
+});
+</script>
+</body>
+</html>

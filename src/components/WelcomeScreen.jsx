@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, CalculatorIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, ClipboardIcon, FarmingIcon, TamingLassoIcon, BuildingIcon, RaidIcon, TaskClipboardIcon, CheckIcon } from './Icons';
+import { LogoIcon, CalculatorIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, ClipboardIcon, FarmingIcon, TamingLassoIcon, BuildingIcon, RaidIcon, TaskClipboardIcon, CheckIcon, ServerIcon } from './Icons';
 
 /* ─── Background handled by global app-video-bg ─── */
 function AnimatedCanvasBg() {
@@ -35,6 +35,7 @@ const getFeatures = (onNavigate) => [
   { Icon: TimerIcon,      title: 'Timer Overlay',     desc: 'Timers flottants pendant le jeu',          shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
   { Icon: MapIcon,        title: 'Cartes Interactives', desc: 'Cartes interactives des maps ARK',         shortcut: 'Alt+G', action: () => onNavigate?.('maps') },
   { Icon: ScanIcon,       title: 'OCR Scanner',        desc: 'Capture & extraction automatique des stats', shortcut: 'Alt+S', action: () => onNavigate?.('ocr') },
+  { Icon: ServerIcon,     title: 'Server Status',      desc: 'Status des serveurs ARK en temps réel',                       action: () => onNavigate?.('servers') },
   { Icon: WidgetIcon,     title: 'Widget Mini',        desc: 'Widget compact toujours visible',          shortcut: 'Alt+W', action: () => window.api?.openWidget() },
 ];
 
@@ -327,6 +328,127 @@ function TribeTasks() {
   );
 }
 
+function FavServers() {
+  const [favs, setFavs] = useState([]);
+  const [liveData, setLiveData] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  const fetchLive = async (favList) => {
+    if (!favList || favList.length === 0) return;
+    const results = {};
+    for (const fav of favList) {
+      try {
+        const url = `https://api.battlemetrics.com/servers/${fav.id}`;
+        let resp;
+        if (window.api?.fetchUrl) {
+          resp = await window.api.fetchUrl(url);
+        } else {
+          resp = await (await fetch(url)).json();
+        }
+        if (resp?.data?.attributes) {
+          const a = resp.data.attributes;
+          const d = a.details || {};
+          results[fav.id] = {
+            status: a.status,
+            players: a.players,
+            maxPlayers: a.maxPlayers,
+            rank: a.rank,
+            map: d.map,
+            pve: d.pve
+          };
+        }
+      } catch(e) {}
+    }
+    setLiveData(results);
+  };
+
+  const loadFavs = async () => {
+    let list = [];
+    if (window.api?.loadFavServers) {
+      list = await window.api.loadFavServers();
+    } else {
+      try { list = JSON.parse(localStorage.getItem('overseer-fav-servers') || '[]'); } catch(e) {}
+    }
+    setFavs(list || []);
+    setLoading(false);
+    if (list && list.length > 0) fetchLive(list);
+  };
+
+  useEffect(() => {
+    loadFavs();
+    // Refresh favs list every 10s (picks up changes from server-status page)
+    const favInterval = setInterval(loadFavs, 10000);
+    // Refresh live data every 60s
+    const liveInterval = setInterval(() => {
+      if (favs.length > 0) fetchLive(favs);
+    }, 60000);
+    return () => { clearInterval(favInterval); clearInterval(liveInterval); };
+  }, []);
+
+  if (loading) return null;
+
+  return (
+    <motion.div
+      className="tribe-home-section"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+    >
+      <div className="tribe-home-header">
+        <ServerIcon size={16} />
+        <span>Serveurs Favoris</span>
+        {favs.length > 0 && <span className="tribe-home-count">{favs.length} serveur{favs.length > 1 ? 's' : ''}</span>}
+        <button className="tribe-home-open" onClick={() => window.__navigate?.('servers')}>
+          {favs.length > 0 ? 'Voir tout ↗' : 'Ajouter ↗'}
+        </button>
+      </div>
+      {favs.length === 0 ? (
+        <div className="tribe-home-empty" onClick={() => window.__navigate?.('servers')}>
+          <ServerIcon size={24} />
+          <span>Ajoute des serveurs en favoris pour voir leur status ici</span>
+          <span className="tribe-home-cta">Ouvrir les serveurs →</span>
+        </div>
+      ) : (
+      <div className="fav-servers-grid">
+        {favs.slice(0, 4).map((fav, i) => {
+          const live = liveData[fav.id];
+          const isOnline = live ? live.status === 'online' : false;
+          const players = live?.players != null ? live.players : '—';
+          const maxPlayers = live?.maxPlayers || fav.maxPlayers || '?';
+          const isPve = live ? live.pve : fav.pve;
+          const mode = isPve ? 'pve' : 'pvp';
+
+          return (
+            <motion.div
+              key={fav.id}
+              className="fav-srv-card"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.05 }}
+              onClick={() => window.__navigate?.('servers')}
+            >
+              <div className={`fav-srv-dot ${isOnline ? 'online' : 'offline'}`} />
+              <div className="fav-srv-info">
+                <div className="fav-srv-name" title={fav.name}>{fav.name}</div>
+                <div className="fav-srv-meta">
+                  {fav.map && <span className="fav-srv-map">{(fav.map || '').replace(/_WP$/,'').replace(/_/g,' ')}</span>}
+                  <span className={`fav-srv-mode ${mode}`}>
+                    {isPve ? 'PvE' : 'PvP'}
+                  </span>
+                </div>
+              </div>
+              <div className="fav-srv-stats">
+                <span className="fav-srv-players">{players}/{maxPlayers}</span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+      )}
+    </motion.div>
+  );
+}
+
 function QuickStats() {
   const [stats, setStats] = useState({ creatures: 0, timers: 0 });
 
@@ -398,6 +520,9 @@ export default function WelcomeScreen({ onNavigate }) {
 
       {/* Quick Stats */}
       <QuickStats />
+
+      {/* Favorite Servers */}
+      <FavServers />
 
       {/* Tribe Tasks */}
       <TribeTasks />

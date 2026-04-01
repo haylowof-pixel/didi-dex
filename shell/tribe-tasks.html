@@ -296,6 +296,56 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .task-suggest-done button{background:var(--green);color:white;border:none;padding:3px 10px;border-radius:var(--r-sm);font:700 10px var(--font);cursor:pointer;transition:all .15s}
 .task-suggest-done button:hover{filter:brightness(1.1)}
 
+/* ===== SHARED MAP MARKERS ===== */
+.marker-filter-btn{padding:4px 10px;border-radius:99px;font:600 9px var(--font);color:var(--text-3);background:transparent;border:1px solid var(--border-0);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.marker-filter-btn:hover{color:var(--text-1);border-color:var(--border-1)}
+.marker-filter-btn.active{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border)}
+.shared-marker-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:6px;border-radius:var(--r-lg);background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);transition:all .25s ease;position:relative;overflow:hidden;animation:fadeSlideIn .3s ease backwards}
+.shared-marker-card:hover{border-color:rgba(123,147,248,0.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.shared-marker-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.marker-color-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:2px;border:2px solid rgba(255,255,255,0.15)}
+.marker-card-body{flex:1;min-width:0}
+.marker-card-name{font:700 12px var(--font);color:var(--text-0);margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.marker-card-desc{font:400 10px var(--font);color:var(--text-3);line-height:1.4;margin-bottom:4px}
+.marker-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.marker-card-coord{font:700 10px var(--font);color:var(--accent-l);background:var(--accent-bg);border:1px solid var(--accent-border);padding:2px 8px;border-radius:var(--r-sm);display:flex;align-items:center;gap:4px;cursor:pointer;transition:all .15s}
+.marker-card-coord:hover{background:var(--accent);color:white}
+.marker-card-map{font:600 9px var(--font);padding:2px 7px;border-radius:99px;background:rgba(255,255,255,0.04);color:var(--text-2);border:1px solid var(--border-0)}
+.marker-card-cat{font:700 9px var(--font);padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.3px}
+.marker-card-author{font:500 9px var(--font);color:var(--text-3);display:flex;align-items:center;gap:3px}
+.marker-card-actions{display:flex;gap:3px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.shared-marker-card:hover .marker-card-actions{opacity:1}
+.marker-group-header{font:800 11px var(--font);color:var(--text-2);padding:8px 0 4px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-0);margin-bottom:6px;margin-top:8px}
+.marker-group-header:first-child{margin-top:0}
+.marker-group-header .map-icon{font-size:14px}
+.marker-group-count{font:600 9px var(--font);color:var(--text-3);margin-left:auto}
+
+/* Marker categories */
+.mcat-base{background:var(--accent-bg);color:var(--accent-l);border:1px solid var(--accent-border)}
+.mcat-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.mcat-resource{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.mcat-tame{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.mcat-explore{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border)}
+.mcat-event{background:var(--pink-bg);color:var(--pink);border:1px solid var(--pink-border)}
+
+/* Add Marker Modal */
+.marker-modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.marker-modal-overlay.show{display:flex}
+.marker-modal{background:rgba(10,10,18,0.97);border:1px solid var(--accent-border);border-radius:var(--r-lg);padding:20px;width:340px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.7);backdrop-filter:blur(24px);animation:fadeSlideIn .2s ease}
+.marker-modal h3{font:800 14px var(--font);color:var(--text-0);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.marker-modal label{font:600 10px var(--font);color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;display:block;margin:10px 0 4px}
+.marker-modal input,.marker-modal textarea,.marker-modal select{width:100%;padding:8px 10px;background:rgba(6,6,16,0.6);border:1px solid var(--border-1);border-radius:var(--r-sm);color:var(--text-0);font:500 12px var(--font);outline:none;transition:all .2s}
+.marker-modal input:focus,.marker-modal textarea:focus,.marker-modal select:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.marker-modal textarea{resize:vertical;min-height:50px;max-height:100px}
+.marker-modal .coord-inputs{display:flex;gap:8px}
+.marker-modal .coord-inputs input{flex:1}
+.marker-color-picker{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+.marker-color-opt{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.marker-color-opt:hover{transform:scale(1.15)}
+.marker-color-opt.selected{border-color:white;box-shadow:0 0 8px rgba(255,255,255,0.3)}
+.marker-modal-actions{display:flex;gap:8px;margin-top:16px}
+.marker-modal-actions button{flex:1}
+
 /* ===== CRAFT CALCULATOR POPUP ===== */
 .craft-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(6,6,16,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-lg);padding:20px;z-index:500;width:90%;max-width:400px;max-height:70vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:fadeSlideIn .2s ease}
 .craft-popup-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:499}
@@ -437,6 +487,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
       <button class="tab-btn" data-tab="journal" onclick="switchTab('journal')">&#128220; Journal</button>
       <button class="tab-btn" data-tab="stats" onclick="switchTab('stats')">&#128202; Stats</button>
       <button class="tab-btn" data-tab="breeding" onclick="switchTab('breeding')">&#129516; Breeding</button>
+      <button class="tab-btn" data-tab="carte" onclick="switchTab('carte')">&#128205; Carte</button>
       <button class="filter-btn" id="filterMyTasks" onclick="toggleMyTasksFilter()">Mes taches</button>
     </div>
 
@@ -531,6 +582,41 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
       </div>
     </div>
 
+    <!-- TAB: CARTE (Shared Map Markers) -->
+    <div class="tab-panel" id="panel-carte" style="flex-direction:column">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border-0);display:flex;align-items:center;gap:10px;flex-shrink:0;background:rgba(6,6,16,0.4);backdrop-filter:blur(12px)">
+        <div style="flex:1">
+          <div style="font:800 14px var(--font);color:var(--text-0)">&#128205; Points Partages</div>
+          <div style="font:500 10px var(--font);color:var(--text-3);margin-top:2px">Marquez et partagez des positions sur la carte avec votre tribu</div>
+        </div>
+        <button class="btn-primary" style="padding:6px 14px;font-size:10px;border-radius:var(--r-sm)" onclick="showAddMarkerModal()">+ Ajouter</button>
+      </div>
+      <!-- Filter by map -->
+      <div style="padding:8px 16px;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid var(--border-0);overflow-x:auto">
+        <button class="marker-filter-btn active" data-map="all" onclick="filterMarkersByMap('all',this)">Toutes</button>
+        <button class="marker-filter-btn" data-map="the-island" onclick="filterMarkersByMap('the-island',this)">The Island</button>
+        <button class="marker-filter-btn" data-map="scorched-earth" onclick="filterMarkersByMap('scorched-earth',this)">Scorched</button>
+        <button class="marker-filter-btn" data-map="aberration" onclick="filterMarkersByMap('aberration',this)">Aberration</button>
+        <button class="marker-filter-btn" data-map="extinction" onclick="filterMarkersByMap('extinction',this)">Extinction</button>
+        <button class="marker-filter-btn" data-map="ragnarok" onclick="filterMarkersByMap('ragnarok',this)">Ragnarok</button>
+        <button class="marker-filter-btn" data-map="valguero" onclick="filterMarkersByMap('valguero',this)">Valguero</button>
+        <button class="marker-filter-btn" data-map="genesis" onclick="filterMarkersByMap('genesis',this)">Genesis</button>
+        <button class="marker-filter-btn" data-map="genesis-2" onclick="filterMarkersByMap('genesis-2',this)">Genesis 2</button>
+        <button class="marker-filter-btn" data-map="crystal-isles" onclick="filterMarkersByMap('crystal-isles',this)">Crystal Isles</button>
+        <button class="marker-filter-btn" data-map="lost-island" onclick="filterMarkersByMap('lost-island',this)">Lost Island</button>
+        <button class="marker-filter-btn" data-map="fjordur" onclick="filterMarkersByMap('fjordur',this)">Fjordur</button>
+        <button class="marker-filter-btn" data-map="the-center" onclick="filterMarkersByMap('the-center',this)">The Center</button>
+        <button class="marker-filter-btn" data-map="astraeos" onclick="filterMarkersByMap('astraeos',this)">Astraeos</button>
+      </div>
+      <div id="sharedMarkersContent" style="flex:1;overflow-y:auto;padding:12px 16px">
+        <div class="task-empty" style="padding:40px">
+          <div style="font-size:48px;opacity:0.3">&#128205;</div>
+          <div class="task-empty-title">Aucun point partage</div>
+          <div class="task-empty-sub">Ajoutez des points d'interet pour les partager avec votre tribu</div>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: BREEDING -->
     <div class="tab-panel" id="panel-breeding">
       <div style="padding:12px 16px;border-bottom:1px solid var(--border-0);display:flex;align-items:center;gap:10px;flex-shrink:0;background:rgba(6,6,16,0.4);backdrop-filter:blur(12px)">
@@ -557,6 +643,63 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
 <!-- MODAL CONTAINER -->
 <div id="modalContainer"></div>
+
+<!-- Shared Marker Modal -->
+<div class="marker-modal-overlay" id="markerModalOverlay" onclick="closeMarkerModal()">
+  <div class="marker-modal" onclick="event.stopPropagation()">
+    <h3>&#128205; Nouveau Point</h3>
+    <label>Nom</label>
+    <input type="text" id="markerNameInput" placeholder="Ex: Base principale, Spot Rex..." maxlength="60">
+    <label>Description (optionnel)</label>
+    <textarea id="markerDescInput" placeholder="Notes, details..." maxlength="200"></textarea>
+    <label>Carte</label>
+    <select id="markerMapSelect">
+      <option value="the-island">The Island</option>
+      <option value="scorched-earth">Scorched Earth</option>
+      <option value="aberration">Aberration</option>
+      <option value="extinction">Extinction</option>
+      <option value="ragnarok">Ragnarok</option>
+      <option value="valguero">Valguero</option>
+      <option value="genesis">Genesis</option>
+      <option value="genesis-2">Genesis 2</option>
+      <option value="crystal-isles">Crystal Isles</option>
+      <option value="lost-island">Lost Island</option>
+      <option value="fjordur">Fjordur</option>
+      <option value="the-center">The Center</option>
+      <option value="astraeos">Astraeos</option>
+    </select>
+    <label>Coordonnees</label>
+    <div class="coord-inputs">
+      <input type="number" id="markerLatInput" placeholder="LAT (0-100)" min="0" max="100" step="0.1">
+      <input type="number" id="markerLonInput" placeholder="LON (0-100)" min="0" max="100" step="0.1">
+    </div>
+    <label>Categorie</label>
+    <select id="markerCatSelect">
+      <option value="base">Base / Construction</option>
+      <option value="resource">Ressource</option>
+      <option value="tame">Tame / Creature</option>
+      <option value="danger">Danger / PvP</option>
+      <option value="explore">Exploration</option>
+      <option value="event">Evenement</option>
+    </select>
+    <label>Couleur</label>
+    <div class="marker-color-picker" id="markerColorPicker">
+      <div class="marker-color-opt selected" data-color="#7B93F8" style="background:#7B93F8" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#2dd4a0" style="background:#2dd4a0" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#ef4444" style="background:#ef4444" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#f59e0b" style="background:#f59e0b" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#60a5fa" style="background:#60a5fa" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#d946ef" style="background:#d946ef" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#ffdd00" style="background:#ffdd00" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#ff6b6b" style="background:#ff6b6b" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#ffffff" style="background:#ffffff" onclick="selectMarkerColor(this)"></div>
+    </div>
+    <div class="marker-modal-actions">
+      <button class="btn-secondary" onclick="closeMarkerModal()">Annuler</button>
+      <button class="btn-primary" onclick="addSharedMarker()">Ajouter</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // =============================================
@@ -982,6 +1125,7 @@ var STATE = {
   activityLog: [],
   stats: {},
   breedingLibrary: [],
+  sharedMarkers: [],
   lastSync: 0
 };
 
@@ -991,6 +1135,8 @@ var cloudId = null;
 var pendingItems = [];
 var acIndex = -1;
 var filterMyTasks = false;
+var markerMapFilter = 'all';
+var selectedMarkerColor = '#7B93F8';
 var previousTasksSnapshot = '';
 
 // =============================================
@@ -1299,6 +1445,7 @@ function pushToCloud() {
     roles:STATE.roles||{}, customCategories:STATE.customCategories||[],
     activityLog:STATE.activityLog||[], stats:STATE.stats||{},
     breedingLibrary:STATE.breedingLibrary||[],
+    sharedMarkers:STATE.sharedMarkers||[],
     updated:Date.now()
   };
   fetch(url, {
@@ -1331,6 +1478,7 @@ function pullFromCloud() {
       if (data.activityLog) STATE.activityLog = data.activityLog;
       if (data.stats) STATE.stats = data.stats;
       if (data.breedingLibrary) { STATE.breedingLibrary = data.breedingLibrary; renderBreeding(); }
+      if (data.sharedMarkers) { STATE.sharedMarkers = data.sharedMarkers; renderSharedMarkers(); }
       STATE.lastSync = data.updated;
       renderTasks();
       renderMembers();
@@ -2063,6 +2211,7 @@ function showTribeScreen() {
   updateAssignDropdown();
   renderMembers();
   renderTasks();
+  renderSharedMarkers();
   setupAutocomplete();
 }
 function updateAssignDropdown() {
@@ -2118,7 +2267,7 @@ function leaveTribe() {
   if (!confirm('Quitter la tribu ?')) return;
   stopSync();
   localStorage.removeItem('overseer-tribe');
-  STATE = {pseudo:'',tribeName:'',tribeCode:null,cloudId:null,tasks:[],members:[],roles:{},customCategories:[],activityLog:[],stats:{},breedingLibrary:[],lastSync:0};
+  STATE = {pseudo:'',tribeName:'',tribeCode:null,cloudId:null,tasks:[],members:[],roles:{},customCategories:[],activityLog:[],stats:{},breedingLibrary:[],sharedMarkers:[],lastSync:0};
   cloudId = null;
   document.getElementById('tribeScreen').style.display = 'none';
   document.getElementById('setupScreen').style.display = 'flex';
@@ -2168,6 +2317,7 @@ function init() {
     if (!STATE.stats) STATE.stats = {};
     if (!STATE.customCategories) STATE.customCategories = [];
     if (!STATE.breedingLibrary) STATE.breedingLibrary = [];
+    if (!STATE.sharedMarkers) STATE.sharedMarkers = [];
     cloudId = saved.cloudId;
     showTribeScreen();
     startSync();
@@ -2175,6 +2325,176 @@ function init() {
   }
 }
 init();
+
+// =============================================
+// SHARED MAP MARKERS
+// =============================================
+var MAP_NAMES = {
+  'the-island':'The Island','scorched-earth':'Scorched Earth','aberration':'Aberration',
+  'extinction':'Extinction','ragnarok':'Ragnarok','valguero':'Valguero',
+  'genesis':'Genesis','genesis-2':'Genesis 2','crystal-isles':'Crystal Isles',
+  'lost-island':'Lost Island','fjordur':'Fjordur','the-center':'The Center','astraeos':'Astraeos'
+};
+var MAP_ICONS = {
+  'the-island':'&#127965;','scorched-earth':'&#127964;','aberration':'&#127761;',
+  'extinction':'&#127750;','ragnarok':'&#9968;&#65039;','valguero':'&#127794;',
+  'genesis':'&#129516;','genesis-2':'&#128640;','crystal-isles':'&#128142;',
+  'lost-island':'&#127796;','fjordur':'&#10052;&#65039;','the-center':'&#127754;','astraeos':'&#127756;'
+};
+var MARKER_CAT_NAMES = {base:'Base',resource:'Ressource',tame:'Tame',danger:'Danger',explore:'Exploration',event:'Evenement'};
+var MARKER_CAT_ICONS = {base:'&#127959;',resource:'&#127793;',tame:'&#129430;',danger:'&#9888;&#65039;',explore:'&#127758;',event:'&#127881;'};
+
+function showAddMarkerModal() {
+  document.getElementById('markerModalOverlay').classList.add('show');
+  document.getElementById('markerNameInput').value = '';
+  document.getElementById('markerDescInput').value = '';
+  document.getElementById('markerLatInput').value = '';
+  document.getElementById('markerLonInput').value = '';
+  selectedMarkerColor = '#7B93F8';
+  document.querySelectorAll('.marker-color-opt').forEach(function(c) { c.classList.toggle('selected', c.getAttribute('data-color') === '#7B93F8'); });
+  setTimeout(function() { document.getElementById('markerNameInput').focus(); }, 100);
+}
+function closeMarkerModal() {
+  document.getElementById('markerModalOverlay').classList.remove('show');
+}
+function selectMarkerColor(el) {
+  selectedMarkerColor = el.getAttribute('data-color');
+  document.querySelectorAll('.marker-color-opt').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function addSharedMarker() {
+  var name = document.getElementById('markerNameInput').value.trim();
+  var desc = document.getElementById('markerDescInput').value.trim();
+  var map = document.getElementById('markerMapSelect').value;
+  var lat = parseFloat(document.getElementById('markerLatInput').value);
+  var lon = parseFloat(document.getElementById('markerLonInput').value);
+  var cat = document.getElementById('markerCatSelect').value;
+
+  if (!name) { showToast('&#9888;&#65039;', 'Donne un nom au point'); return; }
+  if (isNaN(lat) || isNaN(lon) || lat < 0 || lat > 100 || lon < 0 || lon > 100) {
+    showToast('&#9888;&#65039;', 'Coordonnees invalides (0-100)'); return;
+  }
+
+  var marker = {
+    id: 'mk-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    name: name,
+    desc: desc,
+    map: map,
+    lat: Math.round(lat * 10) / 10,
+    lon: Math.round(lon * 10) / 10,
+    category: cat,
+    color: selectedMarkerColor,
+    author: STATE.pseudo,
+    createdAt: Date.now()
+  };
+
+  if (!STATE.sharedMarkers) STATE.sharedMarkers = [];
+  STATE.sharedMarkers.push(marker);
+  addLog('create', STATE.pseudo, STATE.pseudo + ' a ajoute le point "' + name + '" sur ' + (MAP_NAMES[map]||map));
+  trackStat(STATE.pseudo, 'tasksCreated');
+  closeMarkerModal();
+  renderSharedMarkers();
+  saveLocal();
+  pushToCloud();
+  showToast('&#128205;', 'Point "' + escH(name) + '" ajoute sur ' + (MAP_NAMES[map]||map));
+}
+
+function deleteSharedMarker(id) {
+  if (!STATE.sharedMarkers) return;
+  var marker = STATE.sharedMarkers.find(function(m) { return m.id === id; });
+  if (!marker) return;
+  var myRole = (STATE.roles||{})[STATE.pseudo] || 'membre';
+  if (marker.author !== STATE.pseudo && myRole !== 'chef' && myRole !== 'officier') {
+    showToast('&#9940;', 'Tu ne peux supprimer que tes propres points');
+    return;
+  }
+  STATE.sharedMarkers = STATE.sharedMarkers.filter(function(m) { return m.id !== id; });
+  addLog('delete', STATE.pseudo, STATE.pseudo + ' a supprime le point "' + marker.name + '"');
+  renderSharedMarkers();
+  saveLocal();
+  pushToCloud();
+  showToast('&#128465;&#65039;', 'Point supprime');
+}
+
+function filterMarkersByMap(map, btn) {
+  markerMapFilter = map;
+  document.querySelectorAll('.marker-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderSharedMarkers();
+}
+
+function goToMarkerOnMap(map, lat, lon) {
+  if (window.api && window.api.openMapsWindow) {
+    window.api.openMapsWindow(map, MAP_NAMES[map]||map);
+  }
+}
+
+function renderSharedMarkers() {
+  var container = document.getElementById('sharedMarkersContent');
+  if (!container) return;
+  var markers = STATE.sharedMarkers || [];
+
+  if (markerMapFilter !== 'all') {
+    markers = markers.filter(function(m) { return m.map === markerMapFilter; });
+  }
+
+  if (markers.length === 0) {
+    var filterMsg = markerMapFilter !== 'all' ? ' sur ' + (MAP_NAMES[markerMapFilter]||markerMapFilter) : '';
+    container.innerHTML = '<div class="task-empty" style="padding:40px"><div style="font-size:48px;opacity:0.3">&#128205;</div><div class="task-empty-title">Aucun point' + filterMsg + '</div><div class="task-empty-sub">Ajoutez des points d\'interet pour les partager avec votre tribu</div></div>';
+    return;
+  }
+
+  // Group by map
+  var byMap = {};
+  markers.forEach(function(m) {
+    if (!byMap[m.map]) byMap[m.map] = [];
+    byMap[m.map].push(m);
+  });
+
+  var html = '';
+  var mapOrder = Object.keys(MAP_NAMES);
+  mapOrder.forEach(function(mapSlug) {
+    var list = byMap[mapSlug];
+    if (!list || list.length === 0) return;
+
+    html += '<div class="marker-group-header"><span class="map-icon">' + (MAP_ICONS[mapSlug]||'&#127758;') + '</span>' + (MAP_NAMES[mapSlug]||mapSlug) + '<span class="marker-group-count">' + list.length + ' point' + (list.length > 1 ? 's' : '') + '</span></div>';
+
+    // Sort by creation date (newest first)
+    list.sort(function(a, b) { return (b.createdAt||0) - (a.createdAt||0); });
+
+    list.forEach(function(m, idx) {
+      var isMe = m.author === STATE.pseudo;
+      var myRole = (STATE.roles||{})[STATE.pseudo] || 'membre';
+      var canDelete = isMe || myRole === 'chef' || myRole === 'officier';
+      var catClass = 'mcat-' + (m.category||'base');
+      var catName = MARKER_CAT_NAMES[m.category] || m.category || 'Base';
+      var catIcon = MARKER_CAT_ICONS[m.category] || '&#128205;';
+
+      html += '<div class="shared-marker-card" style="animation-delay:' + (idx * 0.03) + 's;border-left:3px solid ' + (m.color||'#7B93F8') + '">';
+      html += '<div class="marker-color-dot" style="background:' + (m.color||'#7B93F8') + '"></div>';
+      html += '<div class="marker-card-body">';
+      html += '<div class="marker-card-name">' + escH(m.name);
+      if (isMe) html += ' <span style="font:600 8px var(--font);color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:1px 5px;border-radius:var(--r-sm)">MOI</span>';
+      html += '</div>';
+      if (m.desc) html += '<div class="marker-card-desc">' + escH(m.desc) + '</div>';
+      html += '<div class="marker-card-meta">';
+      html += '<span class="marker-card-coord" onclick="goToMarkerOnMap(\'' + m.map + '\',' + m.lat + ',' + m.lon + ')" title="Ouvrir la carte">&#128205; ' + m.lat.toFixed(1) + ', ' + m.lon.toFixed(1) + '</span>';
+      if (markerMapFilter === 'all') html += '<span class="marker-card-map">' + (MAP_NAMES[m.map]||m.map) + '</span>';
+      html += '<span class="marker-card-cat ' + catClass + '">' + catIcon + ' ' + catName + '</span>';
+      html += '<span class="marker-card-author">' + getRoleBadge(m.author) + ' ' + escH(m.author) + ' &bull; ' + timeAgo(m.createdAt) + '</span>';
+      html += '</div></div>';
+      if (canDelete) {
+        html += '<div class="marker-card-actions">';
+        html += '<button class="task-act-btn del" onclick="deleteSharedMarker(\'' + m.id + '\')" title="Supprimer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+  });
+
+  container.innerHTML = html;
+}
 
 // =============================================
 // BREEDING LIBRARY (shared)
@@ -2261,6 +2581,17 @@ if (window.api && window.api.onTribeBreedingUpdated) {
     STATE.breedingLibrary = data || [];
     renderBreeding();
     showToast('&#129516;', 'Bibliothèque breeding mise à jour');
+  });
+}
+
+// Listen for shared markers updates from maps window
+if (window.api && window.api.onTribeMarkersUpdated) {
+  window.api.onTribeMarkersUpdated(function(data) {
+    STATE.sharedMarkers = data || [];
+    renderSharedMarkers();
+    saveLocal();
+    pushToCloud();
+    showToast('&#128205;', 'Nouveau point partage depuis la carte');
   });
 }
 

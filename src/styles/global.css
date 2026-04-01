@@ -1623,3 +1623,51 @@ body {
 .tb-theme-toggle:active { transform: scale(0.9); }
 .app-shell.light-theme .tb-theme-toggle { color: #9999aa; }
 .app-shell.light-theme .tb-theme-toggle:hover { background: rgba(0,0,0,0.06); color: #444466; }
+
+/* ─── Favorite Servers Widget (Home) ─── */
+.fav-servers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+.fav-srv-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.fav-srv-card:hover {
+  background: rgba(123,147,248,0.06);
+  border-color: rgba(123,147,248,0.2);
+}
+.fav-srv-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.fav-srv-dot.online { background: #2dd4a0; box-shadow: 0 0 6px #2dd4a0; }
+.fav-srv-dot.offline { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+.fav-srv-info { flex: 1; overflow: hidden; }
+.fav-srv-name {
+  font-size: 12px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fav-srv-meta {
+  display: flex; gap: 6px; margin-top: 2px; align-items: center;
+}
+.fav-srv-map {
+  font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  background: rgba(123,147,248,0.12); color: #7B93F8;
+}
+.fav-srv-mode {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 3px;
+}
+.fav-srv-mode.pvp { background: rgba(239,68,68,0.12); color: #ef4444; }
+.fav-srv-mode.pve { background: rgba(45,212,160,0.12); color: #2dd4a0; }
+.fav-srv-stats {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0;
+}
+.fav-srv-players { font-size: 12px; font-weight: 600; }
+.fav-srv-ping { font-size: 10px; color: var(--text-2, #94a3b8); }

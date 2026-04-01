@@ -14,13 +14,14 @@ const EMBEDDED_PAGES = {
   tribe:    { src: '../shell/tribe-tasks.html',     label: 'Tribu' },
   maps:     { src: '../shell/maps-window.html',     label: 'Cartes' },
   ocr:      { src: '../shell/ocr-window.html',      label: 'OCR Scanner' },
+  servers:  { src: '../shell/server-status.html',     label: 'Serveurs' },
   settings: { src: '../shell/settings-window.html',  label: 'Paramètres' },
   comparator: { src: '../shell/comparator-window.html', label: 'Comparateur' },
 };
 
 // CSS injected into each webview to hide its title bar
 const EMBED_CSS = `
-  #breed-bar, #maps-bar, #ocr-bar, #cmp-bar, #titlebar, #mini-bar, #appbar,
+  #breed-bar, #maps-bar, #ocr-bar, #cmp-bar, #srv-bar, #titlebar, #mini-bar, #appbar,
   .bar, .title-bar {
     display: none !important;
   }
@@ -44,8 +45,18 @@ function EmbeddedPage({ pageKey, preloadPath }) {
     const handleReady = () => {
       wv.insertCSS(EMBED_CSS);
     };
+    // Relay IPC messages from webview to main process
+    const handleIpcMessage = (e) => {
+      if (e.channel === 'save-fav-servers' && e.args?.[0]) {
+        window.api?.saveFavServers?.(e.args[0]);
+      }
+    };
     wv.addEventListener('dom-ready', handleReady);
-    return () => wv.removeEventListener('dom-ready', handleReady);
+    wv.addEventListener('ipc-message', handleIpcMessage);
+    return () => {
+      wv.removeEventListener('dom-ready', handleReady);
+      wv.removeEventListener('ipc-message', handleIpcMessage);
+    };
   }, [pageKey]);
 
   if (!page) return null;

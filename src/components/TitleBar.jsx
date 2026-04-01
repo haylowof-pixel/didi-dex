@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon } from './Icons';
+import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon } from './Icons';
 
 /* ── Sun / Moon SVG icons for theme toggle ── */
 const SunIcon = ({ size = 13 }) => (
@@ -31,6 +31,7 @@ const NAV_TOOLS = [
   { key: 'tribe',    Icon: ClipboardIcon, label: 'Tribu Tasks', shortcut: '' },
   { key: 'maps',     Icon: MapIcon,       label: 'Cartes',      shortcut: 'Alt+G' },
   { key: 'ocr',      Icon: ScanIcon,      label: 'OCR Scanner', shortcut: 'Alt+S' },
+  { key: 'servers',  Icon: ServerIcon,    label: 'Serveurs',    shortcut: '' },
 ];
 
 // Tools that still open separate windows (overlays that need to float)
