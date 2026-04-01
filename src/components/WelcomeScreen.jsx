@@ -364,25 +364,25 @@ function FavServers() {
 
   const loadFavs = async () => {
     let list = [];
-    if (window.api?.loadFavServers) {
-      list = await window.api.loadFavServers();
-    } else {
-      try { list = JSON.parse(localStorage.getItem('overseer-fav-servers') || '[]'); } catch(e) {}
-    }
+    try {
+      if (window.api?.loadFavServers) {
+        list = await window.api.loadFavServers();
+      } else {
+        list = JSON.parse(localStorage.getItem('overseer-fav-servers') || '[]');
+      }
+    } catch(e) {}
     setFavs(list || []);
     setLoading(false);
-    if (list && list.length > 0) fetchLive(list);
+    // Fetch live data in background (don't block render)
+    if (list && list.length > 0) {
+      setTimeout(() => fetchLive(list), 100);
+    }
   };
 
   useEffect(() => {
     loadFavs();
-    // Refresh favs list every 10s (picks up changes from server-status page)
-    const favInterval = setInterval(loadFavs, 10000);
-    // Refresh live data every 60s
-    const liveInterval = setInterval(() => {
-      if (favs.length > 0) fetchLive(favs);
-    }, 60000);
-    return () => { clearInterval(favInterval); clearInterval(liveInterval); };
+    const favInterval = setInterval(loadFavs, 15000);
+    return () => clearInterval(favInterval);
   }, []);
 
   if (loading) return null;
