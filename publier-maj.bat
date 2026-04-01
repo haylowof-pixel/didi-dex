@@ -38,6 +38,9 @@ echo.
 :: Get GitHub token
 for /f "tokens=*" %%i in ('gh auth token') do set GH_TOKEN=%%i
 
+:: Skip code signing (no certificate) - keeps rcedit for icon
+set CSC_IDENTITY_AUTO_DISCOVERY=false
+
 call npx vite build
 call npx electron-builder --win --publish always
 

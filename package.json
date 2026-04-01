@@ -35,8 +35,7 @@
       "target": [
         "nsis"
       ],
-      "icon": "public/icon.ico",
-      "forceCodeSigning": false
+      "icon": "public/icon.ico"
     },
     "nsis": {
       "oneClick": false,
