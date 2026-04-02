@@ -50,7 +50,7 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activeP
       {/* Left: Logo + Home */}
       <div className="title-bar-left">
         <button className="tb-home" onClick={onGoHome} title="Accueil">
-          <img src="./new-icon.png" alt="OVERSEER" width="18" height="18" style={{ borderRadius: '4px' }} />
+          <img src="./icon.png" alt="OVERSEER" width="18" height="18" style={{ borderRadius: '4px' }} />
           <span className="title-bar-brand">OVERSEER</span>
         </button>
       </div>
