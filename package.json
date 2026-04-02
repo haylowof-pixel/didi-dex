@@ -1,6 +1,6 @@
 {
   "name": "overseer",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "OVERSEER - ARK companion app with taming calculator, breeding, maps & more",
   "main": "electron/main.js",
   "scripts": {
@@ -36,6 +36,13 @@
         "nsis"
       ],
       "icon": "public/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "rpm"
+      ],
+      "icon": "public/icon.png"
     },
     "nsis": {
       "oneClick": false,
