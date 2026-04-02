@@ -39,7 +39,6 @@
     },
     "linux": {
       "target": [
-        "AppImage",
         "rpm"
       ],
       "icon": "public/icon.png"

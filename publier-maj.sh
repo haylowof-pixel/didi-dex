@@ -36,7 +36,7 @@ export GH_TOKEN=$(gh auth token)
 export CSC_IDENTITY_AUTO_DISCOVERY=false
 
 npx vite build
-npx electron-builder --linux --publish always
+npx electron-builder --linux --win --publish always
 
 echo ""
 echo " ========================================"
