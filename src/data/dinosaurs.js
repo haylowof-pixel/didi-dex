@@ -96,6 +96,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3000,
     affinityPerLevel: 150,
     foodDrainBase: 0.002066,
+    maxFood: 2000,
     tips: 'Use a trap made of stone or metal gates. Aim for the head with tranq arrows for bonus torpor.',
   },
   {
@@ -119,6 +120,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 450,
     tips: 'Bola them first to immobilize, then use tranq arrows. Easy early-game tame.',
   },
   {
@@ -140,6 +142,7 @@ export const dinosaurs = [
     baseTamingAffinity: 750,
     affinityPerLevel: 37.5,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Great beginner tame. Hit from behind - its head gives knockback. Use narcoberries to keep torpor up.',
   },
   {
@@ -162,6 +165,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.001852,
+    maxFood: 1800,
     tips: 'Build a trap with stone gateways (3 in a row). Lure it in, place the last gate behind it.',
   },
   {
@@ -183,6 +187,7 @@ export const dinosaurs = [
     baseTamingAffinity: 450,
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
+    maxFood: 1200,
     tips: 'Bola it first! Low torpor - be careful not to kill it. Great first flying mount.',
   },
   {
@@ -204,6 +209,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1200,
     affinityPerLevel: 60,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Best metal farmer in the game. Use tranq arrows and avoid the tail.',
   },
   {
@@ -225,6 +231,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
+    maxFood: 2000,
     tips: 'Best stone farmer. When curled up, it takes 90% reduced damage - wait for it to uncurl.',
   },
   {
@@ -246,6 +253,7 @@ export const dinosaurs = [
     baseTamingAffinity: 5000,
     affinityPerLevel: 250,
     foodDrainBase: 0.001852,
+    maxFood: 4000,
     tips: 'Extremely hard to tame solo. Use a Tapejara or Argentavis + grappling hook strategy.',
   },
   {
@@ -267,6 +275,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2250,
     affinityPerLevel: 112.5,
     foodDrainBase: 0.002066,
+    maxFood: 2000,
     tips: 'Powerful near water (bipedal stance). Build a stone trap to contain it.',
   },
   {
@@ -288,6 +297,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3000,
     affinityPerLevel: 150,
     foodDrainBase: 0.002066,
+    maxFood: 5000,
     tips: 'Very aggressive! Build a stone trap. Versatile gather - can harvest berries, meat, wood, thatch, fiber.',
   },
   {
@@ -309,6 +319,7 @@ export const dinosaurs = [
     baseTamingAffinity: 10000,
     affinityPerLevel: 500,
     foodDrainBase: 0.002066,
+    maxFood: 5000,
     tips: 'The most dangerous tame. Use a metal trap (4 metal gateways + gates). Need 500+ shocking tranq darts for high levels.',
   },
   {
@@ -329,6 +340,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1200,
     affinityPerLevel: 60,
     foodDrainBase: 0.001543,
+    maxFood: 2000,
     tips: 'Only eats fish! Great cave mount - fits through small openings. Has a water stun attack.',
   },
   {
@@ -350,6 +362,7 @@ export const dinosaurs = [
     baseTamingAffinity: 300,
     affinityPerLevel: 15,
     foodDrainBase: 0.001929,
+    maxFood: 3000,
     tips: 'First tame for many players. Can detect enemies with alarm mode. Very easy knockout.',
   },
   {
@@ -371,6 +384,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Great berry farmer. Plate modes give different abilities: hardening, slowing, sharpening.',
   },
   {
@@ -392,6 +406,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2600,
     affinityPerLevel: 130,
     foodDrainBase: 0.002066,
+    maxFood: 3500,
     tips: 'Courage roar buffs allies, fear roar debuffs enemies. Essential for boss fights.',
   },
   {
@@ -413,6 +428,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001543,
+    maxFood: 1500,
     tips: 'Can latch onto walls and trees. 3 seater mount. Use bola then tranq.',
   },
   {
@@ -434,6 +450,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.001543,
+    maxFood: 2000,
     tips: 'Acts as a natural air conditioner for egg hatching. Insulation scales with melee damage.',
   },
   {
@@ -455,6 +472,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Best wood farmer. Great for general resource gathering. Can be immobilized with chain bola.',
   },
   {
@@ -476,6 +494,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1050,
     affinityPerLevel: 52.5,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Mid-tier predator. Has a headbutt attack. Use a bola or trap to immobilize.',
   },
   {
@@ -498,6 +517,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2400,
     affinityPerLevel: 120,
     foodDrainBase: 0.004156,
+    maxFood: 2000,
     tips: 'Healing pig! Essential for boss fights. Eats food very fast when healing is active.',
   },
   {
@@ -519,6 +539,7 @@ export const dinosaurs = [
     baseTamingAffinity: 5000,
     affinityPerLevel: 250,
     foodDrainBase: 0.002066,
+    maxFood: 4000,
     tips: 'Massive berry farmer. Use its platform saddle for mobile bases. Needs a LOT of narcotics.',
   },
   {
@@ -540,6 +561,7 @@ export const dinosaurs = [
     baseTamingAffinity: 225,
     affinityPerLevel: 11.25,
     foodDrainBase: 0.000868,
+    maxFood: 750,
     tips: 'Petit prédateur cracheur de venin. Très facile à apprivoiser. Bola fonctionne.',
   },
   {
@@ -561,6 +583,7 @@ export const dinosaurs = [
     baseTamingAffinity: 60,
     affinityPerLevel: 3,
     foodDrainBase: 0.000868,
+    maxFood: 200,
     tips: 'Le tame le plus facile du jeu. Utile pour les œufs de kibble Basic.',
   },
   {
@@ -582,6 +605,7 @@ export const dinosaurs = [
     baseTamingAffinity: 225,
     affinityPerLevel: 11.25,
     foodDrainBase: 0.001543,
+    maxFood: 1000,
     tips: 'Pingouin des régions froides. Donne du polymère organique. Fonctionne comme isolant vivant.',
   },
   {
@@ -603,6 +627,7 @@ export const dinosaurs = [
     baseTamingAffinity: 450,
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001929,
+    maxFood: 3000,
     tips: 'Producteur de fumier quand on lui donne des stimberries. Utile pour le compost.',
   },
   {
@@ -686,6 +711,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001929,
+    maxFood: 2000,
     tips: 'Nourrice automatique pour bébés. Peut planer. Piège avec des bolas ou un filet.',
   },
   {
@@ -707,6 +733,7 @@ export const dinosaurs = [
     baseTamingAffinity: 450,
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
+    maxFood: 1200,
     tips: 'Fournit de l\'oxygène sous l\'eau quand tenu comme un masque. Utile pour l\'exploration sous-marine.',
   },
   {
@@ -728,6 +755,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 2000,
     tips: 'Très rapide ! Bola indispensable. Monture 3 places. Perd son torpor très vite.',
   },
   {
@@ -749,6 +777,7 @@ export const dinosaurs = [
     baseTamingAffinity: 750,
     affinityPerLevel: 37.5,
     foodDrainBase: 0.001929,
+    maxFood: 2000,
     tips: 'Transforme les baies en graines. Peut alterner entre bipède et quadrupède. Pas de stamina drain en quadrupède.',
   },
   {
@@ -770,6 +799,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001929,
+    maxFood: 1200,
     tips: 'Le mâle a des bois et peut attaquer, la femelle est plus rapide. Bon collecteur de thatch.',
   },
   {
@@ -791,6 +821,7 @@ export const dinosaurs = [
     baseTamingAffinity: 450,
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
+    maxFood: 1200,
     tips: 'Headbutt torpor attack. Utile pour assommer d\'autres créatures en début de jeu.',
   },
   {
@@ -812,6 +843,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001929,
+    maxFood: 3000,
     tips: 'Scorched Earth. Réservoir d\'eau mobile - boire depuis son inventaire. Bon pour le désert.',
   },
   {
@@ -873,6 +905,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001852,
+    maxFood: 1500,
     tips: 'Lumineux dans les profondeurs. Récolte Angler Gel et Silica Pearls. Dangereux à apprivoiser sous l\'eau.',
   },
   {
@@ -894,6 +927,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 2000,
     tips: 'Transforme les insectes tués en cément paste. Excellent saut et nage rapide.',
   },
   {
@@ -915,6 +949,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Tank de début de jeu. Beaucoup d\'HP et bonne armure. Lent mais résistant.',
   },
   {
@@ -936,6 +971,7 @@ export const dinosaurs = [
     baseTamingAffinity: 750,
     affinityPerLevel: 37.5,
     foodDrainBase: 0.001543,
+    maxFood: 1500,
     tips: 'Saute et saisit les joueurs/petites créatures. Bola possible. Dangereux près des marais.',
   },
   {
@@ -957,6 +993,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1050,
     affinityPerLevel: 52.5,
     foodDrainBase: 0.003156,
+    maxFood: 3500,
     tips: 'Empale et ralentit les attaquants. Bon pour les boss. Attention aux piques en approchant.',
   },
   {
@@ -978,6 +1015,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001543,
+    maxFood: 1200,
     tips: 'Bon collecteur de chitine et kératine. Rapide et agile. Excellent pour les grottes.',
   },
   {
@@ -999,6 +1037,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1200,
     affinityPerLevel: 60,
     foodDrainBase: 0.001543,
+    maxFood: 2000,
     tips: 'Très rapide dans l\'eau. Attaque de roulade mortelle. Bon garde de base amphibie.',
   },
   {
@@ -1019,6 +1058,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 900,
     tips: 'Mange de la viande avariée ! Attaque torpeur avec le dard. Bon pour assommer d\'autres créatures.',
   },
   {
@@ -1040,6 +1080,7 @@ export const dinosaurs = [
     baseTamingAffinity: 750,
     affinityPerLevel: 37.5,
     foodDrainBase: 0.001543,
+    maxFood: 1500,
     tips: 'Rapide et agressif. Peut planer. Bola efficace. Bon pour le combat terrestre rapide.',
   },
   {
@@ -1061,6 +1102,7 @@ export const dinosaurs = [
     baseTamingAffinity: 450,
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
+    maxFood: 1200,
     tips: 'Vole vos objets ! Bola puis assommer. Peut améliorer la qualité de la viande qu\'il chasse.',
   },
   {
@@ -1081,6 +1123,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 1200,
     tips: 'Peut atterrir et nager sur l\'eau. Pêcheur efficace. Mange uniquement du poisson.',
   },
   {
@@ -1102,6 +1145,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 1500,
     tips: 'Scorched Earth. Volant lent mais produit de la soie. Attaque de spores ralentissante.',
   },
   {
@@ -1123,6 +1167,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1200,
     affinityPerLevel: 60,
     foodDrainBase: 0.001543,
+    maxFood: 1500,
     tips: 'Se cache enterrée et attaque par surprise. Assomme les joueurs. Piège efficace en PvP.',
   },
   {
@@ -1144,6 +1189,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001543,
+    maxFood: 1500,
     tips: 'Scorched Earth. Tire des épines à distance. Fonctionne comme un établi mobile.',
   },
   {
@@ -1165,6 +1211,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1050,
     affinityPerLevel: 52.5,
     foodDrainBase: 0.001543,
+    maxFood: 1800,
     tips: 'Extinction. Tourelle vivante ! Tir rapide d\'épines. Excellent pour la défense de base.',
   },
   {
@@ -1247,6 +1294,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2100,
     affinityPerLevel: 105,
     foodDrainBase: 0.001852,
+    maxFood: 2500,
     tips: 'Pack bonus en groupe de 3. L\'alpha du pack a une attaque hémorragie. Piéger avec des gates.',
   },
   {
@@ -1268,6 +1316,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.003156,
+    maxFood: 1500,
     tips: 'Meilleur fermier de bois. Réduit le poids du bois de 75%. Fonctionne comme Smithy mobile.',
   },
   {
@@ -1290,6 +1339,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.001852,
+    maxFood: 3000,
     tips: 'Très puissant et rapide. Récolte fibre, chitine et viande efficacement. Piéger avec des gates.',
   },
   {
@@ -1311,6 +1361,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1050,
     affinityPerLevel: 52.5,
     foodDrainBase: 0.001543,
+    maxFood: 1800,
     tips: 'Pack bonus - plus il y en a, plus ils sont forts. Pas de selle requise. Bon pour les grottes.',
   },
   {
@@ -1332,6 +1383,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2400,
     affinityPerLevel: 120,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Fermier de pétrole et métal sous-marin. Très résistant. Torpille vivante.',
   },
   {
@@ -1353,6 +1405,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Le requin géant. Rapide et puissant sous l\'eau. Piéger dans une cage sous-marine.',
   },
   {
@@ -1374,6 +1427,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2250,
     affinityPerLevel: 112.5,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Plus fort la nuit, dort le jour. Peut saisir et porter des créatures moyennes. Très fort en grotte.',
   },
   {
@@ -1396,6 +1450,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.001852,
+    maxFood: 3000,
     tips: 'Buff insecte quand il tue un insecte. Excellent pour la grotte Broodmother. Bon fermier de chitine.',
   },
   {
@@ -1417,6 +1472,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3600,
     affinityPerLevel: 180,
     foodDrainBase: 0.003156,
+    maxFood: 4000,
     tips: 'Gigantesque herbivore avec selle plateforme. Tank mobile. Piéger avec des metal gates.',
   },
   {
@@ -1438,6 +1494,7 @@ export const dinosaurs = [
     baseTamingAffinity: 4800,
     affinityPerLevel: 240,
     foodDrainBase: 0.002066,
+    maxFood: 3000,
     tips: 'Monture aquatique avec selle plateforme. Très puissant. Piéger dans une cage sous-marine.',
   },
   {
@@ -1459,6 +1516,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.001852,
+    maxFood: 3000,
     tips: 'Extinction. Soigneur volant ! Plongée freeze + heal. Vision thermique. Essentiel pour le breeding.',
   },
   {
@@ -1480,6 +1538,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Charge dévastatrice qui fait d\'énormes dégâts. Collecteur de kératine. Bon contre les boss.',
   },
   {
@@ -1501,6 +1560,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2400,
     affinityPerLevel: 120,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Extinction. Se gonfle et vole/flotte. Tank absorbeur de dégâts. Transport en se propulsant.',
   },
   {
@@ -1522,6 +1582,7 @@ export const dinosaurs = [
     baseTamingAffinity: 8500,
     affinityPerLevel: 425,
     foodDrainBase: 0.002066,
+    maxFood: 5000,
     tips: 'Le prédateur ultime sous-marin. Selle plateforme. Extrêmement long à apprivoiser.',
   },
   {
@@ -1542,6 +1603,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3900,
     affinityPerLevel: 195,
     foodDrainBase: 0.002066,
+    maxFood: 3000,
     tips: 'Aberration. KO seulement avec catapulte/canon ! Peut saisir 2 créatures à la fois. Sauts énormes.',
   },
   {
@@ -1563,6 +1625,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2200,
     affinityPerLevel: 110,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Extinction. Dash aérien + souffle de glace. Extrêmement rapide et agile dans les airs.',
   },
   {
@@ -1626,6 +1689,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
     foodDrainBase: 0.003156,
+    maxFood: 5000,
     tips: 'Lost Island. Épines sur le dos. Peut basculer entre buff froid et buff chaud pour les alliés.',
   },
   {
@@ -1647,6 +1711,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3000,
     affinityPerLevel: 150,
     foodDrainBase: 0.001852,
+    maxFood: 1800,
     tips: 'Grimpeur de falaises ! Attaque par embuscade depuis les arbres. Saignement et pin. Excellent en combat.',
   },
   {
@@ -1668,6 +1733,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2100,
     affinityPerLevel: 105,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Grimpe sur les murs et plafonds ! Morsure venimeuse (rabies). Trouvée dans les grottes.',
   },
   {
@@ -1689,6 +1755,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3750,
     affinityPerLevel: 187.5,
     foodDrainBase: 0.001852,
+    maxFood: 3000,
     tips: 'Attaque en plongée dévastatrice. Pas de selle requise. Le passager peut tirer depuis le dos.',
   },
   {
@@ -1708,6 +1775,7 @@ export const dinosaurs = [
     baseTamingAffinity: 7500,
     affinityPerLevel: 375,
     foodDrainBase: 0.003156,
+    maxFood: 5000,
     tips: 'KO seulement avec canon/catapulte/roquette ! Scorched Earth. Extrêmement résistant aux dégâts.',
   },
   {
@@ -1729,6 +1797,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2500,
     affinityPerLevel: 125,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Prédateur agressif avec attaque venimeuse. Bon combattant de mi-parcours.',
   },
   {
@@ -1750,6 +1819,7 @@ export const dinosaurs = [
     baseTamingAffinity: 12000,
     affinityPerLevel: 600,
     foodDrainBase: 0.002066,
+    maxFood: 3000,
     tips: 'L\'un des plus grands prédateurs aquatiques. Selle plateforme sous-marine massive.',
   },
   {
@@ -1899,6 +1969,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.001929,
+    maxFood: 2000,
     tips: 'Sauts énormes. Porte un bébé dans sa poche pour accélérer la maturation.',
   },
   {
@@ -2013,6 +2084,7 @@ export const dinosaurs = [
     baseTamingAffinity: 150,
     affinityPerLevel: 7.5,
     foodDrainBase: 0.000868,
+    maxFood: 300,
     tips: 'Demande de la prime meat/mutton. Pack bonus. Pet d\'épaule.',
   },
   {
@@ -2033,6 +2105,7 @@ export const dinosaurs = [
     baseTamingAffinity: 300,
     affinityPerLevel: 15,
     foodDrainBase: 0.001543,
+    maxFood: 1000,
     tips: 'Petit volant agressif. Pet d\'épaule. Bon en meute pour la défense.',
   },
   {
@@ -2053,6 +2126,7 @@ export const dinosaurs = [
     baseTamingAffinity: 180,
     affinityPerLevel: 9,
     foodDrainBase: 0.000868,
+    maxFood: 500,
     tips: 'Démonte les joueurs de leur monture ! Bola puis assommer. Utile en PvP.',
   },
   {
@@ -2073,6 +2147,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1275,
     affinityPerLevel: 63.75,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Émet un gaz qui calme ou enrage les créatures. Idéal pour faciliter le taming.',
   },
   {
@@ -2093,6 +2168,7 @@ export const dinosaurs = [
     baseTamingAffinity: 900,
     affinityPerLevel: 45,
     foodDrainBase: 0.001543,
+    maxFood: 1800,
     tips: 'Aberration. Utilise les ziplines. Pack bonus. Réduit le poids de certaines ressources.',
   },
   {
@@ -2375,6 +2451,7 @@ export const dinosaurs = [
     baseTamingAffinity: 120,
     affinityPerLevel: 6,
     foodDrainBase: 0.000868,
+    maxFood: 1000,
     tips: 'Scorched Earth. Pet d\'épaule. Prédit la météo.',
   },
   {
@@ -2396,6 +2473,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3000,
     affinityPerLevel: 150,
     foodDrainBase: 0.002066,
+    maxFood: 3500,
     tips: 'Crocodile géant. Attaque de saisie mortelle. Puissant dans l\'eau.',
   },
   {
@@ -2417,6 +2495,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2700,
     affinityPerLevel: 135,
     foodDrainBase: 0.002066,
+    maxFood: 5000,
     tips: 'Prédateur puissant avec souffle de feu. Bon damage dealer.',
   },
   {
@@ -2438,6 +2517,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2400,
     affinityPerLevel: 120,
     foodDrainBase: 0.002066,
+    maxFood: 2000,
     tips: 'Dragon oriental. Puissant combattant volant avec attaques spéciales.',
   },
   {
@@ -2459,6 +2539,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3600,
     affinityPerLevel: 180,
     foodDrainBase: 0.003156,
+    maxFood: 4000,
     tips: 'Tortue marine géante. Selle plateforme aquatique. Tank sous-marin.',
   },
   {
@@ -2480,6 +2561,7 @@ export const dinosaurs = [
     baseTamingAffinity: 2100,
     affinityPerLevel: 105,
     foodDrainBase: 0.001852,
+    maxFood: 3000,
     tips: 'Grand oiseau. Couve et protège les œufs pour l\'incubation.',
   },
   {
@@ -2618,6 +2700,7 @@ export const dinosaurs = [
     baseTamingAffinity: 225,
     affinityPerLevel: 11.25,
     foodDrainBase: 0.000868,
+    maxFood: 1000,
     tips: 'Parachute vivant ! Le tenir permet de planer. Pet d\'épaule.',
   },
   {
@@ -2652,6 +2735,7 @@ export const dinosaurs = [
     baseTamingAffinity: 0,
     affinityPerLevel: 0,
     foodDrainBase: 0,
+    maxFood: 10000,
     tips: 'KO with cannon only. Temporary tame - starves over time. Largest land creature. Platform saddle.',
   },
   {
@@ -2785,6 +2869,7 @@ export const dinosaurs = [
     baseTamingAffinity: 300,
     affinityPerLevel: 15,
     foodDrainBase: 0.001929,
+    maxFood: 5000,
     tips: 'Tek variant of Parasaur. Same abilities but can drop electronics/element dust on death.',
   },
   {
@@ -2806,6 +2891,7 @@ export const dinosaurs = [
     baseTamingAffinity: 600,
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
+    maxFood: 450,
     tips: 'Tek variant of Raptor. Drops electronics and element dust.',
   },
   {
@@ -2827,6 +2913,7 @@ export const dinosaurs = [
     baseTamingAffinity: 3000,
     affinityPerLevel: 150,
     foodDrainBase: 0.002066,
+    maxFood: 2000,
     tips: 'Tek variant of Rex. Same stats. Drops electronics and element dust.',
   },
   {
@@ -2848,6 +2935,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Tek variant of Stegosaurus. Drops electronics and element dust.',
   },
   {
@@ -2869,6 +2957,7 @@ export const dinosaurs = [
     baseTamingAffinity: 5000,
     affinityPerLevel: 250,
     foodDrainBase: 0.001852,
+    maxFood: 4000,
     tips: 'Tek variant of Quetzal. Same taming method. Drops electronics and element dust.',
   },
   {
@@ -2890,6 +2979,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1350,
     affinityPerLevel: 67.5,
     foodDrainBase: 0.001543,
+    maxFood: 1800,
     tips: 'Ambush predator with bleed attack. Smaller cousin of Thylacoleo.',
   },
   {
@@ -3317,6 +3407,7 @@ export const dinosaurs = [
     baseTamingAffinity: 1500,
     affinityPerLevel: 75,
     foodDrainBase: 0.001852,
+    maxFood: 2000,
     tips: 'Tek variant of Megalodon. Drops electronics and element dust.',
   },
   {
@@ -3338,6 +3429,7 @@ export const dinosaurs = [
     baseTamingAffinity: 750,
     affinityPerLevel: 37.5,
     foodDrainBase: 0.003156,
+    maxFood: 3000,
     tips: 'Tek variant of Trike. Drops electronics and element dust on death.',
   },
   {
@@ -3387,6 +3479,7 @@ export const dinosaurs = [
       { food: 'RAW_MEAT', affinityPerItem: 10, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 5000, affinityPerLevel: 250, foodDrainBase: 0.003,
+    maxFood: 2500,
     tips: 'ASA exclusive. Large predatory fish. Aggressive and fast in water.',
   },
   {
@@ -3400,6 +3493,7 @@ export const dinosaurs = [
       { food: 'RAW_MEAT', affinityPerItem: 10, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 2000, affinityPerLevel: 100, foodDrainBase: 0.003,
+    maxFood: 2000,
     tips: 'ASA Astraeos DLC. Can glide. Saddle carries up to 4 baby creatures as a living feeding trough.',
   },
   {
@@ -3413,6 +3507,7 @@ export const dinosaurs = [
       { food: 'MEJOBERRY', affinityPerItem: 10, foodPerItem: 20, timePerItem: 3 },
     ],
     baseTamingAffinity: 5000, affinityPerLevel: 250, foodDrainBase: 0.002,
+    maxFood: 4000,
     tips: 'ASA Astraeos DLC. Giant armored tortoise. Mobile fortress with openable shell that protects riders.',
   },
   {
@@ -3425,6 +3520,7 @@ export const dinosaurs = [
       { food: 'BERRIES', affinityPerItem: 10, foodPerItem: 20, timePerItem: 3 },
     ],
     baseTamingAffinity: 3000, affinityPerLevel: 150, foodDrainBase: 0.003,
+    maxFood: 3000,
     tips: 'ASA Ragnarok Ascended. Can dismount and throw players. Trapping recommended.',
   },
   {
@@ -3438,6 +3534,7 @@ export const dinosaurs = [
       { food: 'RAW_MEAT', affinityPerItem: 10, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 2500, affinityPerLevel: 125, foodDrainBase: 0.003,
+    maxFood: 2000,
     tips: 'ASA Valguero Ascended. Must activate a Megaraptor Altar with a torch before KO taming.',
   },
   {
@@ -3487,6 +3584,7 @@ export const dinosaurs = [
       { food: 'RAW_MEAT', affinityPerItem: 10, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 4000, affinityPerLevel: 200, foodDrainBase: 0.003,
+    maxFood: 2000,
     tips: 'Lost Colony DLC. Use a Metal/Riot Shield to reflect its torpor spit back at it. High torpor drain — bring lots of Narcotics.',
   },
   {

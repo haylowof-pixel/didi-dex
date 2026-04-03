@@ -10,7 +10,23 @@ import { ASB_TAMING } from './asbTaming';
  *   Raptor 150: 7 Simple Kibble → 10200/7 ≈ 1457 per kibble
  *   All kibble ≈ 1500 affinity per item
  *   Raw Meat ≈ 200, Mutton ≈ 750, Prime ≈ 600
+ *
+ * Food drain multiplier: ASB fr * 150 = food drain/sec at 1x official taming speed.
+ * Verified: Rex 150 kibble → ~69 min, Raptor 150 kibble → ~40 min (1x official).
  */
+
+// Estimate max food stat based on fr tier when dino.maxFood is not explicitly set.
+// These are approximate — explicit dino.maxFood values take priority.
+function estimateMaxFood(fr) {
+  if (fr <= 0.001) return 400;
+  if (fr <= 0.001302) return 800;
+  if (fr <= 0.001543) return 1500;
+  if (fr <= 0.001929) return 2000;
+  if (fr <= 0.002314) return 2500;
+  if (fr <= 0.003156) return 3000;
+  if (fr <= 0.005) return 4000;
+  return 5000;
+}
 
 const FOOD_AFFINITY = {
   KIBBLE_EXTRAORDINARY: 1500,
@@ -115,14 +131,19 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
 
   // --- Taming time ---
   const foodRate = (asb && asb.fr > 0) ? asb.fr : dino.foodDrainBase;
-  const foodDrainPerSec = Math.max(foodRate * 100, 0.05);
+  const foodDrainPerSec = Math.max(foodRate * 150, 0.05);
   const foodPerItem = foodData.foodPerItem || 50;
   const secondsPerFood = foodPerItem / foodDrainPerSec;
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
 
   // --- Starve time ---
+  // Wait for the dino's food bar to drop from max down to just enough to consume
+  // all taming food in one session. Formula: (maxFood - foodNeeded*foodPerItem) / drain.
   const totalFoodPointsNeeded = foodNeeded * foodPerItem;
-  const starveTimeSeconds = Math.ceil(totalFoodPointsNeeded / foodDrainPerSec);
+  const maxFood = dino.maxFood || estimateMaxFood(foodRate);
+  const starveTimeSeconds = maxFood > totalFoodPointsNeeded
+    ? Math.ceil((maxFood - totalFoodPointsNeeded) / foodDrainPerSec)
+    : 0;
 
   // --- Torpor ---
   const maxTorpor = dino.torpor.base + dino.torpor.perLevel * level;
