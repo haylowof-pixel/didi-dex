@@ -16,7 +16,10 @@
     "dododex",
     "overlay"
   ],
-  "author": "",
+  "author": {
+    "name": "haylowof-pixel",
+    "email": "contact@overseer.app"
+  },
   "license": "ISC",
   "type": "commonjs",
   "build": {
