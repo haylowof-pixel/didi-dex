@@ -11,7 +11,7 @@ import { ASB_TAMING } from './asbTaming';
  *   All kibble ≈ 1500 affinity per item
  *   Raw Meat ≈ 200, Mutton ≈ 750, Prime ≈ 600
  *
- * Food drain multiplier: ASB fr * 150 = food drain/sec at 1x official taming speed.
+ * Food drain: ASB fr * fm (foodConsumptionMult, per-creature from ASB data) = food drain/sec at 1x taming speed.
  *
  * ASA_MAX_FOOD: verified maxFood values for ASA (differs from ASE for many dinos).
  * Source: ARK wiki ASA creature pages + community testing.
@@ -320,7 +320,8 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
 
   // --- Taming time ---
   const foodRate = (asb && asb.fr > 0) ? asb.fr : dino.foodDrainBase;
-  const foodDrainPerSec = Math.max(foodRate * 150, 0.05);
+  const foodConsumptionMult = (asb && asb.fm > 0) ? asb.fm : 150;
+  const foodDrainPerSec = Math.max(foodRate * foodConsumptionMult, 0.05);
   const foodPerItem = foodData.foodPerItem || 50;
   const secondsPerFood = foodPerItem / foodDrainPerSec;
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
