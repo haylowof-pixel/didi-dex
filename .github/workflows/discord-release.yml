@@ -1,0 +1,72 @@
+name: Discord Release Notification
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Find the .exe asset URL
+          EXE_URL=$(echo '${{ toJson(github.event.release.assets) }}' \
+            | python3 -c "
+          import json, sys
+          assets = json.load(sys.stdin)
+          exe = next((a for a in assets if a['name'].endswith('.exe')), None)
+          print(exe['browser_download_url'] if exe else '')
+          ")
+
+          # Build the embed description (max 4096 chars)
+          DESCRIPTION=$(echo "$RELEASE_BODY" | head -c 1000)
+
+          # Build JSON payload
+          PAYLOAD=$(python3 -c "
+          import json, os
+
+          tag     = os.environ['RELEASE_TAG']
+          name    = os.environ['RELEASE_NAME']
+          url     = os.environ['RELEASE_URL']
+          desc    = os.environ.get('DESCRIPTION', '')
+          exe_url = os.environ.get('EXE_URL', '')
+
+          fields = []
+          if exe_url:
+              fields.append({
+                  'name': '⬇️ Téléchargement',
+                  'value': f'[OVERSEER Setup {tag}.exe]({exe_url})',
+                  'inline': False
+              })
+
+          payload = {
+              'username': 'OVERSEER',
+              'avatar_url': 'https://raw.githubusercontent.com/haylowof-pixel/overseer-companion/master/public/icon.png',
+              'embeds': [{
+                  'title': f'🚀 Nouvelle version : {name}',
+                  'url': url,
+                  'description': desc if desc else 'Nouvelle mise à jour disponible.',
+                  'color': 0x00D4FF,
+                  'fields': fields,
+                  'footer': {
+                      'text': 'OVERSEER • ARK Companion App'
+                  },
+                  'timestamp': '${{ github.event.release.published_at }}'
+              }]
+          }
+          print(json.dumps(payload))
+          " DESCRIPTION="$DESCRIPTION" EXE_URL="$EXE_URL")
+
+          # Post to Discord
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK"
