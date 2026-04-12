@@ -59,7 +59,7 @@
     "publish": {
       "provider": "github",
       "owner": "haylowof-pixel",
-      "repo": "didi-dex"
+      "repo": "overseer-companion"
     }
   },
   "devDependencies": {
