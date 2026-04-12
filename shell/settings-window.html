@@ -411,6 +411,17 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
         </div>
       </div>
 
+      <div class="kb-row" id="row-toggleQuickLookup">
+        <div class="kb-info">
+          <div class="kb-label">Quick Lookup</div>
+          <div class="kb-desc">Overlay de recherche rapide de dino</div>
+        </div>
+        <div class="kb-key-wrap">
+          <button class="kb-key-btn" id="key-toggleQuickLookup" onclick="startRecording('toggleQuickLookup')">Alt+L</button>
+          <button class="kb-reset-btn" id="reset-toggleQuickLookup" onclick="resetKey('toggleQuickLookup')" title="Reset">↺</button>
+        </div>
+      </div>
+
       <div class="kb-row" id="row-toggleComparator">
         <div class="kb-info">
           <div class="kb-label">Comparateur</div>
@@ -479,7 +490,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 </div>
 
 <script>
-var ACTIONS = ['toggleOverlay', 'toggleWindow', 'toggleTimer', 'toggleWidget', 'toggleWidgetMode', 'toggleMaps', 'toggleOCR', 'toggleComparator'];
+var ACTIONS = ['toggleOverlay', 'toggleWindow', 'toggleTimer', 'toggleWidget', 'toggleWidgetMode', 'toggleMaps', 'toggleOCR', 'toggleQuickLookup', 'toggleComparator'];
 var currentBindings = {};
 var defaultBindings = {};
 var pendingChanges = {};

@@ -22,6 +22,8 @@ let breedingWindow = null;
 let ocrWindow = null;
 let tribeWindow = null;
 let isOverlay = false;
+let quickLookupWindow = null;
+let pendingTimerSync = null;
 let regionSelectorWindow = null;
 let ocrWorker = null; // Persistent Tesseract worker for fast coordinate OCR
 
@@ -45,6 +47,7 @@ const DEFAULT_KEYBINDS = {
   toggleBreeding:'Alt+B',
   toggleOCR:     'Alt+S',
   ocrScan:       'F8',
+  toggleQuickLookup: 'Alt+L',
 };
 
 let currentKeybinds = { ...DEFAULT_KEYBINDS };
@@ -136,6 +139,17 @@ function registerAllShortcuts() {
         else createOCRWindow();
       });
     }
+  } catch (e) {}
+  try {
+    if (currentKeybinds.toggleQuickLookup) {
+      const ok = globalShortcut.register(currentKeybinds.toggleQuickLookup, () => {
+        if (isQuickLookupAlive()) safeDestroyQuickLookup();
+        else createQuickLookupWindow();
+      });
+      console.log('[QuickLookup] shortcut registered:', currentKeybinds.toggleQuickLookup, ok);
+    }
+  } catch (e) { console.error('[QuickLookup] shortcut error:', e); }
+  try {
     // F8 = instant OCR scan (opens OCR if not open, then triggers scan)
     if (currentKeybinds.ocrScan) {
       globalShortcut.register(currentKeybinds.ocrScan, () => {
@@ -343,8 +357,8 @@ function createTimerWindow() {
   const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
 
   timerWindow = new BrowserWindow({
-    width: 380, height: 540, x: sw - 400, y: 20,
-    minWidth: 220, minHeight: 200,
+    width: 240, height: 120, x: sw - 260, y: 20,
+    minWidth: 200, minHeight: 60,
     frame: false, transparent: true, alwaysOnTop: true,
     resizable: true, minimizable: false, maximizable: false,
     skipTaskbar: true, focusable: true,
@@ -359,8 +373,64 @@ function createTimerWindow() {
   timerWindow.setAlwaysOnTop(true, 'screen-saver');
   timerWindow.setIgnoreMouseEvents(false);
 
+  // Flush any queued sync data (from Quick Lookup starve timer)
+  timerWindow.webContents.once('did-finish-load', () => {
+    if (pendingTimerSync && isTimerAlive()) {
+      try { timerWindow.webContents.send('timer-data-update', pendingTimerSync); } catch (e) {}
+      pendingTimerSync = null;
+    }
+  });
+
   timerWindow.on('closed', () => { timerWindow = null; });
   timerWindow.webContents.on('destroyed', () => { timerWindow = null; });
+}
+
+// ===== QUICK LOOKUP OVERLAY =====
+function isQuickLookupAlive() { return quickLookupWindow && !quickLookupWindow.isDestroyed(); }
+
+function safeDestroyQuickLookup() {
+  try { if (isQuickLookupAlive()) quickLookupWindow.destroy(); } catch (e) {}
+  quickLookupWindow = null;
+}
+
+function createQuickLookupWindow() {
+  if (isQuickLookupAlive()) {
+    quickLookupWindow.focus();
+    return;
+  }
+  quickLookupWindow = null;
+  const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize;
+
+  quickLookupWindow = new BrowserWindow({
+    width: 520, height: 58,
+    x: Math.round((sw - 520) / 2),
+    y: Math.round(sh * 0.18),
+    frame: false, transparent: true, alwaysOnTop: true,
+    resizable: false, minimizable: false, maximizable: false,
+    skipTaskbar: true, focusable: true,
+    show: false,
+    backgroundColor: '#00000000', hasShadow: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true, nodeIntegration: false,
+    },
+  });
+
+  quickLookupWindow.loadFile(path.join(__dirname, '..', 'shell', 'quick-lookup.html'));
+  quickLookupWindow.setAlwaysOnTop(true, 'screen-saver');
+  quickLookupWindow.setIgnoreMouseEvents(false);
+
+  quickLookupWindow.once('ready-to-show', () => {
+    if (isQuickLookupAlive()) {
+      quickLookupWindow.show();
+      quickLookupWindow.focus();
+    }
+  });
+
+  // Close when focus is lost (click outside)
+  quickLookupWindow.on('blur', () => { safeDestroyQuickLookup(); });
+  quickLookupWindow.on('closed', () => { quickLookupWindow = null; });
+  quickLookupWindow.webContents.on('destroyed', () => { quickLookupWindow = null; });
 }
 
 // ===== MAPS WINDOW =====
@@ -586,7 +656,7 @@ function saveScale(s) {
   fs.writeFileSync(getScalePath(), JSON.stringify({ scale: s }), 'utf8');
 }
 function applyScaleToAll(s) {
-  const wins = [mainWindow, timerWindow, mapsWindow, widgetWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow];
+  const wins = [mainWindow, timerWindow, mapsWindow, widgetWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
   for (const w of wins) {
     if (w && !w.isDestroyed()) w.webContents.setZoomFactor(s);
   }
@@ -611,8 +681,30 @@ ipcMain.on('resize-window', (_, preset) => {
   mainWindow.center();
 });
 
+// Quick Lookup
+ipcMain.on('open-quick-lookup', () => createQuickLookupWindow());
+ipcMain.on('quick-lookup-close', () => safeDestroyQuickLookup());
+ipcMain.handle('is-quick-lookup-open', () => isQuickLookupAlive());
+ipcMain.on('quick-lookup-resize', (_, h) => {
+  try {
+    if (isQuickLookupAlive()) {
+      const clampedH = Math.max(58, Math.min(640, Math.round(h)));
+      quickLookupWindow.setSize(520, clampedH);
+    }
+  } catch (e) {}
+});
+
 // Timer
 ipcMain.on('open-timer-overlay', () => createTimerWindow());
+ipcMain.on('timer-auto-resize', (_, h) => {
+  try {
+    if (isTimerAlive()) {
+      const clamped = Math.max(60, Math.min(600, Math.round(h)));
+      const [w] = timerWindow.getSize();
+      timerWindow.setSize(w, clamped);
+    }
+  } catch (e) {}
+});
 ipcMain.on('close-timer-overlay', () => safeDestroyTimer());
 ipcMain.on('timer-close', () => safeDestroyTimer());
 ipcMain.handle('is-timer-open', () => isTimerAlive());
@@ -632,9 +724,15 @@ ipcMain.on('resize-timer', (_, preset) => {
   } catch (e) {}
 });
 
-// Sync data → timer + widget + comparator
+// Sync data → timer + widget
 ipcMain.on('sync-timer-data', (_, data) => {
-  try { if (isTimerAlive()) timerWindow.webContents.send('timer-data-update', data); } catch (e) {}
+  if (isTimerAlive()) {
+    try { timerWindow.webContents.send('timer-data-update', data); } catch (e) {}
+    pendingTimerSync = null;
+  } else {
+    // Queue it — will be flushed when timer window finishes loading
+    pendingTimerSync = data;
+  }
   try { if (isWidgetAlive()) widgetWindow.webContents.send('widget-data-update', data); } catch (e) {}
 });
 

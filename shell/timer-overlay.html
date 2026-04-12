@@ -6,380 +6,298 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-/* ===== THEME VARIABLES ===== */
 :root {
-  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
+  --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
   --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
-  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
-  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
-  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
   --font:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;
-  --bar-h:34px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { background: transparent; font-family: var(--font); color: var(--text-1); overflow-y: auto; overflow-x: hidden; height: 100%; -webkit-font-smoothing: antialiased; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
+html, body {
+  background: transparent;
+  font-family: var(--font);
+  color: var(--text-1);
+  overflow: hidden;
+  height: auto;
+  width: 240px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* shell takes exactly content height */
+#shell { height: auto; }
+
+/* ── Shell: widget style ── */
 #shell {
   display: flex; flex-direction: column; height: 100%;
-  background: rgba(0,0,0,0.94); border-radius: var(--r-lg);
+  background: rgba(0,0,0,0.88);
+  border-radius: var(--r-lg);
   border: 1px solid var(--border-1);
-  backdrop-filter: blur(24px); overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+  overflow: hidden;
+  -webkit-app-region: drag;
 }
 
-/* Title bar */
-#mini-bar {
-  display: flex; align-items: center; height: var(--bar-h); padding: 0 10px;
-  background: var(--bg-3); border-bottom: 1px solid var(--border-0);
-  -webkit-app-region: drag; flex-shrink: 0;
+/* All interactive elements must opt out of drag */
+button, input, select, textarea, .resize-handle, a {
+  -webkit-app-region: no-drag;
+  cursor: default;
 }
-#mini-bar .title { font-size: 11px; font-weight: 600; color: var(--text-3); }
+button { cursor: pointer; }
+
+/* ── Titlebar — only draggable zone ── */
+#mini-bar {
+  display: flex; align-items: center;
+  height: 30px; padding: 0 8px;
+  background: transparent;
+  border-bottom: 1px solid var(--border-0);
+  -webkit-app-region: drag;
+  flex-shrink: 0; gap: 5px;
+  cursor: move;
+}
+#mini-bar .title {
+  font-size: 10px; font-weight: 700; color: var(--text-2);
+  white-space: nowrap; flex: 1;
+  display: flex; align-items: center; gap: 5px;
+}
 #mini-bar .timer-count {
-  font-size: 9px; font-weight: 700; color: var(--text-3);
-  margin-left: 4px; padding: 1px 5px; border-radius: 8px;
-  background: var(--bg-1); border: 1px solid var(--border-0);
+  font-size: 8px; font-weight: 700; color: var(--text-3);
+  padding: 1px 5px; border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.bar-actions {
+  display: flex; align-items: center; gap: 4px;
+  margin-left: auto;
 }
 #mini-bar .close-btn {
-  width: 20px; height: 20px; border: none;
-  background: transparent; color: var(--text-3); font-size: 12px;
-  cursor: pointer; border-radius: var(--r-sm); -webkit-app-region: no-drag;
-  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--text-3);
+  font-size: 12px; cursor: pointer; padding: 2px 6px;
+  border-radius: 4px; transition: all .15s; line-height: 1;
 }
-#mini-bar .close-btn:hover { background: var(--red-bg); color: var(--red); }
+#mini-bar .close-btn:hover { background: #c42b1c; color: white; }
 
-#mini-bar .pin-btn {
-  width: 22px; height: 18px; border: 1px solid var(--border-0); border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.03); color: var(--text-3); font-size: 10px;
-  cursor: pointer; transition: all .1s;
-  display: flex; align-items: center; justify-content: center;
-  -webkit-app-region: no-drag; margin-right: 4px;
-}
-#mini-bar .pin-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-2); }
-#mini-bar .pin-btn.active { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-d); }
-
-/* Size presets */
-.size-presets {
-  display: flex; gap: 2px; margin-left: auto; margin-right: 6px;
-  -webkit-app-region: no-drag;
-}
-.size-btn {
-  width: 22px; height: 18px; border: 1px solid var(--border-0); border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.03); color: var(--text-3); font-size: 9px; font-weight: 700;
-  cursor: pointer; font-family: inherit; transition: all .1s;
-  display: flex; align-items: center; justify-content: center;
-  -webkit-app-region: no-drag;
-}
-.size-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-2); border-color: var(--border-1); }
-.size-btn.active { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-d); }
-
-/* Main scrollable area */
+/* ── Content area — no scroll, grows with content ── */
 #timers-area {
-  flex: 1; padding: 6px; display: flex; flex-direction: column; gap: 4px;
-  overflow-y: auto;
+  padding: 5px; display: flex; flex-direction: column; gap: 4px;
+  cursor: move;
 }
 
-/* ===== TIMER CARD ===== */
+/* ══════════════════════════════
+   TIMER CARD — widget card style
+   ══════════════════════════════ */
 .timer-card {
-  border-radius: var(--r-md); padding: 8px 10px; position: relative;
-  background: var(--bg-1);
+  padding: 7px 8px;
+  background: rgba(255,255,255,0.02);
   border: 1px solid var(--border-0);
-  animation: cardIn .25s ease;
-  transition: border-color .3s;
+  border-radius: var(--r-md);
+  animation: cardIn .18s ease;
+  transition: border-color .2s;
 }
 .timer-card:hover { border-color: var(--border-1); }
-.timer-card.synced { border-color: rgba(45,212,160,0.15) !important; }
+.timer-card.synced { border-color: rgba(45,212,160,0.18) !important; }
 
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes cardOut {
-  from { opacity: 1; transform: scale(1); max-height: 200px; }
-  to { opacity: 0; transform: scale(0.95); max-height: 0; padding: 0; margin: 0; }
+  from { opacity:0; transform: translateY(4px); }
+  to   { opacity:1; transform: translateY(0); }
 }
 
-/* Card header */
+/* Card top row: dino name + badge + remove */
 .card-head {
-  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 5px; margin-bottom: 5px;
+}
+.card-icon {
+  width: 20px; height: 20px; border-radius: 4px; object-fit: cover;
+  flex-shrink: 0; background: rgba(255,255,255,0.04);
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+.card-icon-fb {
+  width: 20px; height: 20px; border-radius: 4px;
+  background: rgba(123,147,248,0.1); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
 }
 .card-dino {
-  font-size: 12px; font-weight: 700; color: var(--text-1);
+  font-size: 10px; font-weight: 700; color: var(--text-1);
   flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.card-dino .dino-ico { margin-right: 3px; font-size: 11px; }
 .card-status {
-  font-size: 7px; font-weight: 700; padding: 2px 5px; border-radius: var(--r-sm);
-  text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 7px; font-weight: 700; padding: 1px 5px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: 0.3px;
 }
-.card-status.ready { background: var(--green-bg); color: var(--green); border: 1px solid rgba(45,212,160,0.15); }
-.card-status.running { background: var(--orange-bg); color: var(--orange); border: 1px solid rgba(245,158,11,0.15); }
-.card-status.done { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.15); }
-.card-status.synced {
-  background: var(--green-bg); color: var(--green); border: 1px solid rgba(45,212,160,0.15);
-  animation: badgePop .25s ease;
-}
+.card-status.ready   { background: var(--green-bg); color: var(--green); }
+.card-status.running { background: var(--orange-bg); color: var(--orange); }
+.card-status.done    { background: var(--red-bg); color: var(--red); }
 .card-remove {
-  width: 18px; height: 18px; border: none; border-radius: var(--r-sm);
-  background: transparent; color: var(--text-3); font-size: 11px;
+  width: 16px; height: 16px; border: none; border-radius: 4px;
+  background: transparent; color: var(--text-3); font-size: 10px;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .1s;
+  transition: all .1s; flex-shrink: 0;
 }
 .card-remove:hover { background: var(--red-bg); color: var(--red); }
 
-@keyframes badgePop {
-  0% { opacity: 0; transform: scale(0.8); }
-  60% { transform: scale(1.1); }
-  100% { opacity: 1; transform: scale(1); }
-}
+/* Timer rows — like widget timers */
+.timer-rows { display: flex; flex-direction: column; gap: 4px; }
 
-/* Timer rows inside card */
-.timer-rows { display: flex; flex-direction: column; gap: 3px; }
-
-.t-row {
-  display: flex; align-items: center; gap: 5px;
-  padding: 4px 6px; border-radius: var(--r-sm);
-}
-.t-row.starve { background: rgba(74,237,196,0.03); }
-.t-row.torpor { background: rgba(176,136,221,0.03); }
-
-.t-ico { font-size: 11px; flex-shrink: 0; }
+.t-row { display: flex; align-items: center; gap: 5px; }
+.t-ico  { font-size: 11px; flex-shrink: 0; width: 14px; text-align: center; }
 .t-label {
-  font-size: 8px; font-weight: 600; color: var(--text-3);
-  text-transform: uppercase; width: 36px; flex-shrink: 0;
+  font-size: 7px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; width: 30px; flex-shrink: 0;
+  letter-spacing: 0.3px;
 }
 .t-time {
-  font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums;
-  letter-spacing: 0.3px; min-width: 52px; color: var(--text-0);
+  font-size: 15px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px; min-width: 60px; color: var(--text-0);
 }
 .t-time.starve-c { color: var(--green); }
 .t-time.torpor-c { color: var(--accent-l); }
-.t-time.danger { color: var(--red) !important; animation: pulse 0.8s ease-in-out infinite; }
+.t-time.danger   { color: var(--red) !important; animation: pulse 0.8s ease-in-out infinite; }
 
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
+/* Progress bar — thin like widget */
 .t-bar {
-  flex: 1; height: 2px; background: var(--border-1); border-radius: 1px;
-  overflow: hidden; min-width: 16px;
+  flex: 1; height: 2px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;
 }
-.t-bar-fill { height: 100%; border-radius: 1px; transition: width 1s linear; }
-.t-bar-fill.starve-fill { background: linear-gradient(90deg, #1a6050, #3aba90); }
-.t-bar-fill.torpor-fill { background: linear-gradient(90deg, #4a2070, #8850c0); }
+.t-bar-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+.t-bar-fill.starve-fill { background: linear-gradient(90deg, rgba(45,212,160,0.2), var(--green)); }
+.t-bar-fill.torpor-fill { background: linear-gradient(90deg, rgba(123,147,248,0.2), var(--accent-l)); }
 
+/* Play/pause button */
 .t-btn {
-  width: 26px; height: 22px; border: 1px solid var(--border-0); border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.03); color: var(--green); font-size: 10px; font-weight: 700;
+  width: 20px; height: 18px; border: 1px solid var(--border-0); border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.03); font-size: 9px; font-weight: 700;
   cursor: pointer; font-family: inherit; transition: all .1s;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: var(--green);
 }
-.t-btn:hover { background: rgba(255,255,255,0.06); }
-.t-btn.running { background: var(--red-bg); color: var(--red); border-color: rgba(239,68,68,0.15); }
-.t-btn.torpor-style { background: rgba(255,255,255,0.03); color: var(--accent-l); border-color: var(--border-0); }
-.t-btn.torpor-style:hover { background: rgba(255,255,255,0.06); }
-.t-btn.torpor-style.running { background: var(--red-bg); color: var(--red); border-color: rgba(239,68,68,0.15); }
+.t-btn:hover    { background: rgba(255,255,255,0.07); }
+.t-btn.running  { background: var(--red-bg); color: var(--red); }
+.t-btn.torpor-s { color: var(--accent-l); }
+.t-btn.torpor-s.running { background: var(--red-bg); color: var(--red); }
 
-/* Narcotics row */
+/* Narco mini row */
 .narco-row {
-  display: flex; align-items: center; gap: 3px; margin-top: 3px; padding: 0 6px;
+  display: flex; align-items: center; gap: 3px;
+  margin-top: 4px; padding-top: 4px;
+  border-top: 1px solid var(--border-0);
 }
 .narco-btn {
-  height: 20px; padding: 0 6px; border: 1px solid var(--border-0); border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.03); color: var(--accent-l); font-size: 9px; font-weight: 700;
+  height: 16px; padding: 0 5px; border: 1px solid var(--border-0); border-radius: 4px;
+  background: rgba(255,255,255,0.03); color: var(--accent-l); font-size: 8px; font-weight: 700;
   cursor: pointer; font-family: inherit; transition: all .1s;
   display: flex; align-items: center; gap: 2px;
 }
-.narco-btn:hover { background: rgba(255,255,255,0.06); color: var(--accent-l); }
+.narco-btn:hover { background: rgba(255,255,255,0.06); }
 .narco-count {
-  font-size: 9px; font-weight: 800; color: var(--accent);
-  padding: 0 2px; min-width: 10px; text-align: center;
-  font-variant-numeric: tabular-nums;
+  font-size: 8px; font-weight: 800; color: var(--accent);
+  min-width: 10px; text-align: center; font-variant-numeric: tabular-nums;
 }
 .narco-reset-btn {
-  width: 18px; height: 18px; border: 1px solid var(--border-0); border-radius: var(--r-sm);
-  background: transparent; color: var(--text-3); font-size: 9px;
+  width: 16px; height: 16px; border: 1px solid var(--border-0); border-radius: 4px;
+  background: transparent; color: var(--text-3); font-size: 8px;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   margin-left: auto;
 }
 .narco-reset-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-2); }
 
-/* Food info */
-.food-info {
-  display: flex; align-items: center; gap: 8px; padding: 2px 6px; margin-top: 2px;
-}
-.food-stat { font-size: 9px; color: var(--text-3); }
-.food-stat span { color: var(--green); font-weight: 700; }
-
-/* ===== EMPTY STATE ===== */
+/* ── Empty state ── */
 .empty-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 30px 20px; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 14px 10px; text-align: center;
 }
-.empty-ico { font-size: 28px; margin-bottom: 8px; opacity: 0.3; }
-.empty-title { font-size: 12px; color: var(--text-2); font-weight: 700; margin-bottom: 4px; }
-.empty-sub { font-size: 10px; color: var(--text-3); }
+.empty-ico   { font-size: 18px; margin-bottom: 5px; opacity: 0.2; }
+.empty-title { font-size: 10px; color: var(--text-2); font-weight: 700; margin-bottom: 3px; }
+.empty-sub   { font-size: 9px; color: var(--text-3); line-height: 1.5; }
 
-/* ===== ADD BUTTON ===== */
-.add-row { display: flex; gap: 4px; padding: 0 2px; }
+/* ── Add button ── */
+.add-row { display: flex; }
 .add-btn {
-  flex: 1; height: 28px; border: 1px dashed var(--border-1); border-radius: var(--r-sm);
-  background: transparent; color: var(--text-3); font-size: 10px; font-weight: 700;
+  flex: 1; height: 22px; border: 1px dashed var(--border-1); border-radius: var(--r-sm);
+  background: transparent; color: var(--text-3); font-size: 9px; font-weight: 700;
   cursor: pointer; font-family: inherit; transition: all .15s;
-  text-transform: uppercase; letter-spacing: 0.5px;
+  text-transform: uppercase; letter-spacing: 0.4px;
 }
-.add-btn:hover { border-color: var(--accent-d); color: var(--text-2); background: rgba(255,255,255,0.03); }
+.add-btn:hover { border-color: var(--accent-border); color: var(--accent-l); background: var(--accent-bg); }
 
-/* ===== BREEDING SECTION ===== */
+/* ── Breeding block ── */
 .breed-section {
-  border-radius: var(--r-md); padding: 8px 10px;
-  background: var(--bg-1); border: 1px solid var(--border-0);
-  display: none;
+  border-radius: var(--r-md); padding: 7px 8px;
+  background: rgba(255,255,255,0.02); border: 1px solid var(--border-0); display: none;
 }
 .breed-section.show { display: block; }
-.breed-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-.breed-label { font-size: 11px; font-weight: 700; color: var(--orange); }
+.breed-head { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+.breed-label { font-size: 10px; font-weight: 700; color: var(--orange); }
 .breed-rows { display: flex; flex-direction: column; gap: 3px; }
 .breed-row {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 3px 6px; border-radius: var(--r-sm);
-  background: var(--orange-bg);
+  padding: 2px 5px; border-radius: 4px; background: var(--orange-bg);
 }
-.breed-row-label { font-size: 9px; font-weight: 600; color: var(--text-2); }
-.breed-row-time { font-size: 13px; font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; }
-.breed-row-time.active { color: var(--orange); }
-.breed-bar { width: 100%; height: 2px; background: var(--border-1); border-radius: 1px; margin: 4px 0; overflow: hidden; }
-.breed-bar-fill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, rgba(245,158,11,0.4), var(--orange)); transition: width 1s linear; }
-.breed-bottom { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+.breed-row-label { font-size: 8px; font-weight: 600; color: var(--text-2); }
+.breed-row-time  { font-size: 11px; font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; }
+.breed-bar { width: 100%; height: 2px; background: var(--border-1); border-radius: 1px; margin: 3px 0; overflow: hidden; }
+.breed-bar-fill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, rgba(245,158,11,0.3), var(--orange)); transition: width 1s linear; }
 .breed-start-btn {
-  flex: 1; height: 26px; border: none; border-radius: var(--r-sm);
-  background: var(--orange-bg); color: var(--orange); font-size: 10px; font-weight: 700;
+  width: 100%; height: 22px; border: none; border-radius: 4px; margin-top: 4px;
+  background: var(--orange-bg); color: var(--orange); font-size: 9px; font-weight: 700;
   cursor: pointer; font-family: inherit; text-transform: uppercase; transition: all .1s;
 }
-.breed-start-btn:hover { background: rgba(245,158,11,0.15); }
+.breed-start-btn:hover  { background: rgba(245,158,11,0.14); }
 .breed-start-btn.running { background: var(--red-bg); color: var(--red); }
 
-/* ===== SOUND SETTINGS ===== */
-.settings-block {
-  border-radius: var(--r-md); padding: 0; position: relative;
-  background: var(--bg-1); border: 1px solid var(--border-0);
-  overflow: hidden;
-}
-.settings-header {
-  display: flex; align-items: center; gap: 6px; padding: 6px 10px;
-  cursor: pointer; transition: background .1s;
-}
-.settings-header:hover { background: rgba(255,255,255,0.03); }
-.settings-label { font-size: 10px; font-weight: 700; color: var(--text-2); }
-.settings-arrow { font-size: 8px; color: var(--text-3); margin-left: auto; transition: transform .2s; }
-.settings-arrow.open { transform: rotate(90deg); }
-
-.settings-body { display: none; padding: 6px 10px 10px; }
-.settings-body.show { display: block; }
-
-.setting-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.setting-label { font-size: 9px; font-weight: 600; color: var(--text-3); min-width: 45px; text-transform: uppercase; letter-spacing: 0.3px; }
-
-.sound-presets { display: flex; gap: 3px; flex-wrap: wrap; }
-.sound-preset {
-  padding: 3px 7px; border-radius: var(--r-sm); font-size: 8px; font-weight: 700;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border-0); color: var(--text-3);
-  cursor: pointer; font-family: inherit; transition: all .1s;
-  text-transform: uppercase;
-}
-.sound-preset:hover { background: rgba(255,255,255,0.06); color: var(--text-2); }
-.sound-preset.active { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-d); }
-
-.vol-slider {
-  flex: 1; -webkit-appearance: none; height: 2px;
-  background: var(--border-1); border-radius: 1px; outline: none;
-}
-.vol-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 10px; height: 10px;
-  background: var(--accent); border-radius: 50%; cursor: pointer;
-}
-.vol-val { font-size: 9px; color: var(--text-3); font-weight: 700; min-width: 24px; text-align: right; font-variant-numeric: tabular-nums; }
-
-.tts-toggle {
-  padding: 3px 8px; border-radius: var(--r-sm); font-size: 8px; font-weight: 700;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border-0); color: var(--text-3);
-  cursor: pointer; font-family: inherit; transition: all .1s;
-}
-.tts-toggle:hover { background: rgba(255,255,255,0.06); color: var(--text-2); }
-.tts-toggle.active { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-d); }
-
-.test-sound-btn {
-  padding: 3px 8px; border-radius: var(--r-sm); font-size: 8px; font-weight: 700;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border-0); color: var(--text-3);
-  cursor: pointer; font-family: inherit; transition: all .1s;
-  margin-left: auto;
-}
-.test-sound-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-2); }
-
-/* Resize handle */
+/* ── Resize handle ── */
 .resize-handle {
-  position: fixed; bottom: 0; right: 0;
-  width: 16px; height: 16px; cursor: se-resize;
-  z-index: 100; opacity: 0.3; transition: opacity .2s;
+  position: fixed; bottom: 0; right: 0; width: 14px; height: 14px;
+  cursor: se-resize; z-index: 100; opacity: 0.2; transition: opacity .2s;
 }
-.resize-handle:hover { opacity: 0.7; }
+.resize-handle:hover { opacity: 0.6; }
 .resize-handle::after {
-  content: '';
-  position: absolute; bottom: 3px; right: 3px;
-  width: 8px; height: 8px;
-  border-right: 2px solid var(--text-3);
-  border-bottom: 2px solid var(--text-3);
+  content: ''; position: absolute; bottom: 2px; right: 2px;
+  width: 6px; height: 6px;
+  border-right: 1.5px solid var(--text-3); border-bottom: 1.5px solid var(--text-3);
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
 </style>
 </head>
 <body>
 <div id="shell">
   <div id="mini-bar">
-    <span class="title">⏱ Timers</span>
-    <span class="timer-count" id="timerCount">0</span>
-    <div class="size-presets">
-      <button class="size-btn" onclick="resizePreset('small', this)" title="Small 280x400">S</button>
-      <button class="size-btn active" onclick="resizePreset('medium', this)" title="Medium 380x540">M</button>
-      <button class="size-btn" onclick="resizePreset('large', this)" title="Large 480x700">L</button>
+    <span class="title">
+      ⏱ Timers
+      <span class="timer-count" id="timerCount">0</span>
+    </span>
+    <div class="bar-actions">
+      <button class="close-btn" onclick="window.api && window.api.timerClose()">✕</button>
     </div>
-    <button class="pin-btn active" id="timerPinBtn" onclick="toggleTimerPin()" title="Pin on top">📌</button>
-    <button class="close-btn" onclick="window.api.timerClose()">✕</button>
   </div>
 
   <div id="timers-area">
-    <!-- Timer cards rendered dynamically -->
     <div id="timersList"></div>
 
-    <!-- Empty state -->
     <div class="empty-state" id="emptyState">
       <div class="empty-ico">⏱</div>
       <div class="empty-title">Aucun timer actif</div>
-      <div class="empty-sub">Navigue vers un dino sur Dododex<br>ou clique + pour ajouter manuellement</div>
+      <div class="empty-sub">Utilise Quick Lookup → Starve timer<br>ou clique + ci-dessous</div>
     </div>
 
-    <!-- Add button -->
     <div class="add-row">
-      <button class="add-btn" id="addTimerBtn" onclick="addManualTimer()">+ Ajouter un timer</button>
+      <button class="add-btn" onclick="addManualTimer()">+ Ajouter un timer</button>
     </div>
 
-    <!-- Breeding (shared) -->
     <div class="breed-section" id="breedingBlock">
-      <div class="breed-head">
-        <span>🥚</span>
-        <span class="breed-label">Breeding</span>
-      </div>
+      <div class="breed-head"><span>🥚</span><span class="breed-label">Breeding</span></div>
       <div class="breed-rows">
         <div class="breed-row"><span class="breed-row-label">🥚 Incubation</span><span class="breed-row-time" id="breedInc">--:--:--</span></div>
         <div class="breed-row"><span class="breed-row-label">🍼 Maturation</span><span class="breed-row-time" id="breedMat">--:--:--</span></div>
@@ -387,59 +305,59 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
         <div class="breed-row"><span class="breed-row-label">⏳ Interval</span><span class="breed-row-time" id="breedInt">--:--:--</span></div>
       </div>
       <div class="breed-bar"><div class="breed-bar-fill" id="breedBar" style="width:0%"></div></div>
-      <div class="breed-bottom">
-        <button class="breed-start-btn" id="breedBtnStart" onclick="breedToggle()">START INCUBATION</button>
-      </div>
-    </div>
-
-    <!-- Sound Settings -->
-    <div class="settings-block">
-      <div class="settings-header" onclick="toggleSoundSettings()">
-        <span>🔔</span>
-        <span class="settings-label">Paramètres sonores</span>
-        <span class="settings-arrow" id="settingsArrow">▶</span>
-      </div>
-      <div class="settings-body" id="settingsBody">
-        <div class="setting-row">
-          <span class="setting-label">Sound</span>
-          <div class="sound-presets" id="soundPresets">
-            <button class="sound-preset active" onclick="setSound('beep',this)">Beep</button>
-            <button class="sound-preset" onclick="setSound('chime',this)">Chime</button>
-            <button class="sound-preset" onclick="setSound('alarm',this)">Alarm</button>
-            <button class="sound-preset" onclick="setSound('horn',this)">Horn</button>
-            <button class="sound-preset" onclick="setSound('gentle',this)">Gentle</button>
-          </div>
-        </div>
-        <div class="setting-row">
-          <span class="setting-label">Volume</span>
-          <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="60" oninput="setVolume(this.value)">
-          <span class="vol-val" id="volVal">60%</span>
-        </div>
-        <div class="setting-row">
-          <span class="setting-label">TTS</span>
-          <button class="tts-toggle" id="ttsBtn" onclick="toggleTTS()">OFF</button>
-          <button class="test-sound-btn" onclick="testSound()">🔊 Test</button>
-        </div>
-      </div>
+      <button class="breed-start-btn" id="breedBtnStart" onclick="breedToggle()">START INCUBATION</button>
     </div>
   </div>
   <div class="resize-handle"></div>
 </div>
 
 <script>
-// ===== MULTI-TIMER STATE =====
+// ===== CREATURE ICON RESOLVER (same as quick-lookup) =====
+var ICON_SPECIAL = {
+  'Therizinosaurus':'Therizinosaur','Spinosaurus':'Spino','Sarcosuchus':'Sarco',
+  'Pulmonoscorpius':'Scorpion','Castoroides':'Giant_Beaver','Araneo':'Spider',
+  'Compsognathus':'Compy','Triceratops':'Trike','Pachycephalosaurus':'Pachy',
+  'Thylacosmilus':'Thylacoleo','Sabertooth Salmon':'Salmon','Megapiranha':'Piranha',
+  'DodoRex':'Dodorex','Super Turkey':'Turkey','Royal Griffin':'Griffin',
+  'Quetzalcoatlus':'Quetzal','Woolly Rhino':'Woolly_Rhinoceros','Woolly Mammoth':'Mammoth',
+  'Tek Quetzal':'Tek_Quetzal','X-Woolly Rhino':'Woolly_Rhinoceros','X-Woolly Mammoth':'Mammoth',
+  'Alpha Rex':'Rex','Alpha Raptor':'Raptor','Alpha Carno':'Carnotaurus',
+  'Alpha Mosasaur':'Mosasaurus','Alpha Tusoteuthis':'Tusoteuthis',
+  'Alpha Leedsichthys':'Leedsichthys','Alpha Megalodon':'Megalodon',
+  'Zombie Wyvern':'Wyvern','Skeletal Rex':'Rex','Bunny Dodo':'Dodo',
+};
+var ICON_BASE = {
+  'Therizinosaurus':'Therizinosaur','Spinosaurus':'Spino','Sarcosuchus':'Sarco',
+  'Pulmonoscorpius':'Scorpion','Castoroides':'Giant_Beaver','Araneo':'Spider',
+  'Compsognathus':'Compy','Triceratops':'Trike','Pachycephalosaurus':'Pachy',
+  'Woolly Rhino':'Woolly_Rhinoceros','Woolly Mammoth':'Mammoth','Quetzalcoatlus':'Quetzal',
+};
+function resolveVariant(name) {
+  if (name.startsWith('R-')) { var b=name.slice(2); return ICON_BASE[b]||ICON_SPECIAL[b]||b.replace(/ /g,'_'); }
+  if (name.startsWith('Aberrant ')) { var b=name.slice(9); return ICON_BASE[b]||ICON_SPECIAL[b]||b.replace(/ /g,'_'); }
+  if (name.startsWith('X-')) { if (ICON_SPECIAL[name]) return ICON_SPECIAL[name]; var b=name.slice(2); return ICON_BASE[b]||ICON_SPECIAL[b]||b.replace(/ /g,'_'); }
+  return null;
+}
+function getIconUrl(name) {
+  var v = resolveVariant(name);
+  if (v) return 'https://ark.wiki.gg/images/thumb/'+v+'.png/64px-'+v+'.png';
+  var w = ICON_SPECIAL[name] || name.replace(/ /g,'_');
+  return 'https://ark.wiki.gg/images/thumb/'+w+'.png/64px-'+w+'.png';
+}
+
+// ===== STATE =====
 var timers = [];
 var nextTimerId = 1;
 var lastSyncData = null;
 
-// ===== CREATE TIMER OBJECT =====
+// ===== CREATE TIMER =====
 function createTimerObj(data) {
   var t = {
     id: 'tm_' + (nextTimerId++),
     dinoName: (data && data.dinoName) || 'Dino #' + nextTimerId,
+    foodRequired: (data && data.foodRequired) || '0',
     foodCurrent: parseFloat((data && data.foodCurrent) || 0),
     foodMax: parseFloat((data && data.foodMax) || 0),
-    foodRequired: (data && data.foodRequired) || '0',
     starveTotal: 0, starveLeft: 0, starveRunning: false, starveInterval: null, starveAlarmFired: false,
     torporTotal: 0, torporLeft: 0, torporRunning: false, torporInterval: null, torporAlarmFired: false,
     torporDrainRate: 0,
@@ -447,595 +365,317 @@ function createTimerObj(data) {
     torporMax: parseFloat((data && data.torporMax) || 0),
     narcoCount: 0, bioCount: 0
   };
-
-  // Parse starve time
-  if (data && data.starveTime) {
-    t.starveTotal = parseTimeStr(data.starveTime);
-    t.starveLeft = t.starveTotal;
-  }
-  if (t.starveTotal === 0 && t.foodCurrent > 0) {
-    t.starveTotal = Math.round(t.foodCurrent * 10);
-    t.starveLeft = t.starveTotal;
-  }
-
-  // Parse torpor time
-  if (data && data.torporTime) {
-    t.torporTotal = parseTimeStr(data.torporTime);
-    t.torporLeft = t.torporTotal;
-  }
+  if (data && data.starveTime) { t.starveTotal = parseTimeStr(data.starveTime); t.starveLeft = t.starveTotal; }
+  if (t.starveTotal === 0 && t.foodCurrent > 0) { t.starveTotal = Math.round(t.foodCurrent * 10); t.starveLeft = t.starveTotal; }
+  if (data && data.torporTime) { t.torporTotal = parseTimeStr(data.torporTime); t.torporLeft = t.torporTotal; }
   t.torporDrainRate = Math.max(0.1, Math.round((t.torporMax || 1) * 0.03 * 100) / 100);
-  if (t.torporTotal === 0 && t.torporCurrent > 0) {
-    t.torporTotal = Math.round(t.torporCurrent / t.torporDrainRate);
-    t.torporLeft = t.torporTotal;
-  }
-
+  if (t.torporTotal === 0 && t.torporCurrent > 0) { t.torporTotal = Math.round(t.torporCurrent / t.torporDrainRate); t.torporLeft = t.torporTotal; }
   return t;
 }
 
-// ===== PARSE / FORMAT HELPERS =====
+// ===== HELPERS =====
 function parseTimeStr(str) {
   if (!str) return 0;
   var total = 0;
-  var d = str.match(/(\d+)\s*d/i);
-  var h = str.match(/(\d+)\s*h/i);
-  var m = str.match(/(\d+)\s*m/i);
-  var s = str.match(/(\d+)\s*s/i);
+  var d = str.match(/(\d+)\s*d/i); var h = str.match(/(\d+)\s*h/i);
+  var m = str.match(/(\d+)\s*m/i); var s = str.match(/(\d+)\s*s/i);
   if (d) total += parseInt(d[1]) * 86400;
   if (h) total += parseInt(h[1]) * 3600;
   if (m) total += parseInt(m[1]) * 60;
   if (s) total += parseInt(s[1]);
   if (total === 0) {
     var c = str.split(':');
-    if (c.length === 3) total = parseInt(c[0]) * 3600 + parseInt(c[1]) * 60 + parseInt(c[2]);
-    else if (c.length === 2) total = parseInt(c[0]) * 60 + parseInt(c[1]);
+    if (c.length === 3) total = parseInt(c[0])*3600 + parseInt(c[1])*60 + parseInt(c[2]);
+    else if (c.length === 2) total = parseInt(c[0])*60 + parseInt(c[1]);
   }
   return total || 0;
 }
 
 function fmtTime(sec) {
   sec = Math.max(0, sec);
-  var h = Math.floor(sec / 3600);
-  var m = Math.floor((sec % 3600) / 60);
-  var s = sec % 60;
+  var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
   if (h > 0) return h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
   return m + ':' + String(s).padStart(2,'0');
 }
-
 function formatHMS(sec) {
   if (sec <= 0) return '0:00:00';
-  var h = Math.floor(sec / 3600);
-  var m = Math.floor((sec % 3600) / 60);
-  var s = sec % 60;
+  var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
   return h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
 }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function findTimer(id) { for (var i=0;i<timers.length;i++) if (timers[i].id===id) return timers[i]; return null; }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ===== DOM RENDERING =====
+// ===== RENDER =====
 function renderAll() {
   var list = document.getElementById('timersList');
   var empty = document.getElementById('emptyState');
-  var countEl = document.getElementById('timerCount');
-
-  countEl.textContent = timers.length;
+  document.getElementById('timerCount').textContent = timers.length;
   empty.style.display = timers.length === 0 ? 'flex' : 'none';
 
-  // Rebuild DOM if card count changed
   var existing = list.querySelectorAll('.timer-card');
   if (existing.length !== timers.length) {
     list.innerHTML = '';
-    for (var i = 0; i < timers.length; i++) {
-      list.appendChild(buildCard(timers[i]));
-    }
+    for (var i = 0; i < timers.length; i++) list.appendChild(buildCard(timers[i]));
   }
-
-  // Update all displays
-  for (var i = 0; i < timers.length; i++) {
-    updateCardDisplay(timers[i]);
-  }
+  for (var i = 0; i < timers.length; i++) updateCardDisplay(timers[i]);
 }
 
 function buildCard(t) {
   var card = document.createElement('div');
   card.className = 'timer-card';
   card.id = 'card-' + t.id;
+  var iconUrl = getIconUrl(t.dinoName);
+  var iconHtml = '<img class="card-icon" src="' + iconUrl + '" alt="" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">'
+               + '<div class="card-icon-fb" style="display:none">🦖</div>';
   card.innerHTML =
     '<div class="card-head">' +
-      '<span class="card-dino"><span class="dino-ico">🦖</span> ' + escHtml(t.dinoName) + '</span>' +
+      iconHtml +
+      '<span class="card-dino">' + escHtml(t.dinoName) + '</span>' +
       '<span class="card-status ready" id="st-' + t.id + '">READY</span>' +
-      '<button class="card-remove" onclick="removeTimer(\'' + t.id + '\')" title="Supprimer">✕</button>' +
+      '<button class="card-remove" onclick="removeTimer(\'' + t.id + '\')">✕</button>' +
     '</div>' +
     '<div class="timer-rows">' +
-      '<div class="t-row starve">' +
+      '<div class="t-row">' +
         '<span class="t-ico">🍖</span>' +
         '<span class="t-label">Starve</span>' +
         '<span class="t-time starve-c" id="sv-' + t.id + '">' + fmtTime(t.starveLeft) + '</span>' +
         '<div class="t-bar"><div class="t-bar-fill starve-fill" id="svb-' + t.id + '" style="width:100%"></div></div>' +
         '<button class="t-btn" id="svt-' + t.id + '" onclick="toggleStarve(\'' + t.id + '\')">▶</button>' +
       '</div>' +
-      '<div class="t-row torpor">' +
+      '<div class="t-row">' +
         '<span class="t-ico">💜</span>' +
         '<span class="t-label">Torpor</span>' +
         '<span class="t-time torpor-c" id="tp-' + t.id + '">' + fmtTime(t.torporLeft) + '</span>' +
         '<div class="t-bar"><div class="t-bar-fill torpor-fill" id="tpb-' + t.id + '" style="width:100%"></div></div>' +
-        '<button class="t-btn torpor-style" id="tpt-' + t.id + '" onclick="toggleTorpor(\'' + t.id + '\')">▶</button>' +
+        '<button class="t-btn torpor-s" id="tpt-' + t.id + '" onclick="toggleTorpor(\'' + t.id + '\')">▶</button>' +
       '</div>' +
     '</div>' +
     '<div class="narco-row">' +
       '<button class="narco-btn" onclick="addNarco(\'' + t.id + '\')">💊 +40 <span class="narco-count" id="nc-' + t.id + '">0</span></button>' +
       '<button class="narco-btn" onclick="addBio(\'' + t.id + '\')">☠️ +80 <span class="narco-count" id="bc-' + t.id + '">0</span></button>' +
       '<button class="narco-reset-btn" onclick="resetNarco(\'' + t.id + '\')" title="Reset">↺</button>' +
-    '</div>' +
-    '<div class="food-info">' +
-      '<span class="food-stat">Food requis: <span id="fi-' + t.id + '">' + escHtml(String(t.foodRequired)) + '</span></span>' +
     '</div>';
   return card;
 }
 
 function updateCardDisplay(t) {
-  var sv  = document.getElementById('sv-' + t.id);
-  var tp  = document.getElementById('tp-' + t.id);
-  var svb = document.getElementById('svb-' + t.id);
-  var tpb = document.getElementById('tpb-' + t.id);
-  var svt = document.getElementById('svt-' + t.id);
-  var tpt = document.getElementById('tpt-' + t.id);
-  var st  = document.getElementById('st-' + t.id);
+  var sv=document.getElementById('sv-'+t.id), tp=document.getElementById('tp-'+t.id);
+  var svb=document.getElementById('svb-'+t.id), tpb=document.getElementById('tpb-'+t.id);
+  var svt=document.getElementById('svt-'+t.id), tpt=document.getElementById('tpt-'+t.id);
+  var st=document.getElementById('st-'+t.id);
   if (!sv) return;
 
-  // Starve
   sv.textContent = fmtTime(t.starveLeft);
   sv.classList.toggle('danger', t.starveLeft <= 30 && t.starveLeft > 0);
-  var sPct = t.starveTotal > 0 ? (t.starveLeft / t.starveTotal) * 100 : 0;
-  svb.style.width = sPct + '%';
+  svb.style.width = (t.starveTotal > 0 ? (t.starveLeft/t.starveTotal)*100 : 0) + '%';
   svt.textContent = t.starveRunning ? '⏸' : '▶';
   svt.classList.toggle('running', t.starveRunning);
 
-  // Torpor
   tp.textContent = fmtTime(t.torporLeft);
   tp.classList.toggle('danger', t.torporLeft <= 60 && t.torporLeft > 0);
-  var tPct = t.torporTotal > 0 ? (t.torporLeft / t.torporTotal) * 100 : 0;
-  tpb.style.width = tPct + '%';
+  tpb.style.width = (t.torporTotal > 0 ? (t.torporLeft/t.torporTotal)*100 : 0) + '%';
   tpt.textContent = t.torporRunning ? '⏸' : '▶';
   tpt.classList.toggle('running', t.torporRunning);
 
-  // Status badge
   var anyRunning = t.starveRunning || t.torporRunning;
-  var starveEnded = t.starveTotal > 0 && t.starveLeft <= 0;
-  var torporEnded = t.torporTotal > 0 && t.torporLeft <= 0;
-  if ((starveEnded || torporEnded) && !anyRunning) {
-    st.className = 'card-status done'; st.textContent = 'DONE';
-  } else if (anyRunning) {
-    st.className = 'card-status running'; st.textContent = 'RUNNING';
-  } else {
-    st.className = 'card-status ready'; st.textContent = 'READY';
-  }
+  var ended = (t.starveTotal>0&&t.starveLeft<=0)||(t.torporTotal>0&&t.torporLeft<=0);
+  if (ended && !anyRunning) { st.className='card-status done'; st.textContent='DONE'; }
+  else if (anyRunning)      { st.className='card-status running'; st.textContent='RUNNING'; }
+  else                      { st.className='card-status ready'; st.textContent='READY'; }
 
-  // Narco counts
-  var nc = document.getElementById('nc-' + t.id);
-  var bc = document.getElementById('bc-' + t.id);
+  var nc=document.getElementById('nc-'+t.id), bc=document.getElementById('bc-'+t.id);
   if (nc) nc.textContent = t.narcoCount;
   if (bc) bc.textContent = t.bioCount;
 }
 
-// ===== FIND TIMER BY ID =====
-function findTimer(id) {
-  for (var i = 0; i < timers.length; i++) {
-    if (timers[i].id === id) return timers[i];
-  }
-  return null;
-}
-
-// ===== STARVE TIMER ACTIONS =====
+// ===== TIMER ACTIONS =====
 function toggleStarve(id) {
-  var t = findTimer(id);
-  if (!t) return;
-
+  var t = findTimer(id); if (!t) return;
   if (!t.starveRunning) {
     if (t.starveLeft <= 0 && t.starveTotal > 0) t.starveLeft = t.starveTotal;
     if (t.starveLeft <= 0) return;
-    t.starveRunning = true;
-    t.starveAlarmFired = false;
+    t.starveRunning = true; t.starveAlarmFired = false;
     t.starveInterval = setInterval(function() {
       t.starveLeft--;
       updateCardDisplay(t);
-      if (!t.starveAlarmFired && t.starveLeft === 300) {
-        playAlarm(t.dinoName + ' — Starve dans 5 min');
-        t.starveAlarmFired = true;
-      }
-      if (t.starveLeft <= 0) {
-        clearInterval(t.starveInterval); t.starveRunning = false;
-        playAlarm(t.dinoName + ' est affamé — prêt à tame !');
-        updateCardDisplay(t);
-      }
+      if (!t.starveAlarmFired && t.starveLeft === 300) { playAlarm(t.dinoName + ' — 5 min restantes'); t.starveAlarmFired = true; }
+      if (t.starveLeft <= 0) { clearInterval(t.starveInterval); t.starveRunning = false; playAlarm(t.dinoName + ' est prêt !'); updateCardDisplay(t); }
     }, 1000);
   } else {
-    t.starveRunning = false;
-    clearInterval(t.starveInterval);
+    t.starveRunning = false; clearInterval(t.starveInterval);
   }
   updateCardDisplay(t);
 }
 
-// ===== TORPOR TIMER ACTIONS =====
 function toggleTorpor(id) {
-  var t = findTimer(id);
-  if (!t) return;
-
+  var t = findTimer(id); if (!t) return;
   if (!t.torporRunning) {
     if (t.torporLeft <= 0 && t.torporTotal > 0) t.torporLeft = t.torporTotal;
     if (t.torporLeft <= 0) return;
-    t.torporRunning = true;
-    t.torporAlarmFired = false;
+    t.torporRunning = true; t.torporAlarmFired = false;
     t.torporInterval = setInterval(function() {
       t.torporLeft--;
       updateCardDisplay(t);
-      if (!t.torporAlarmFired && t.torporLeft === 300) {
-        playAlarm(t.dinoName + ' — Torpor critique !');
-        t.torporAlarmFired = true;
-      }
-      if (t.torporLeft <= 0) {
-        clearInterval(t.torporInterval); t.torporRunning = false;
-        playAlarm(t.dinoName + ' se réveille ! Narcos !');
-        updateCardDisplay(t);
-      }
+      if (!t.torporAlarmFired && t.torporLeft === 300) { playAlarm(t.dinoName + ' — Torpor critique !'); t.torporAlarmFired = true; }
+      if (t.torporLeft <= 0) { clearInterval(t.torporInterval); t.torporRunning = false; playAlarm(t.dinoName + ' se réveille !'); updateCardDisplay(t); }
     }, 1000);
   } else {
-    t.torporRunning = false;
-    clearInterval(t.torporInterval);
+    t.torporRunning = false; clearInterval(t.torporInterval);
   }
   updateCardDisplay(t);
 }
 
-// ===== NARCOTIC ACTIONS =====
 function addNarco(id) {
-  var t = findTimer(id);
-  if (!t) return;
-  var addSec = Math.round(40 / (t.torporDrainRate || 0.3));
-  t.torporLeft = Math.min(t.torporTotal, t.torporLeft + addSec);
-  t.narcoCount++;
-  updateCardDisplay(t);
+  var t = findTimer(id); if (!t) return;
+  t.torporLeft = Math.min(t.torporTotal, t.torporLeft + Math.round(40/(t.torporDrainRate||0.3)));
+  t.narcoCount++; updateCardDisplay(t);
 }
-
 function addBio(id) {
-  var t = findTimer(id);
-  if (!t) return;
-  var addSec = Math.round(80 / (t.torporDrainRate || 0.3));
-  t.torporLeft = Math.min(t.torporTotal, t.torporLeft + addSec);
-  t.bioCount++;
-  updateCardDisplay(t);
+  var t = findTimer(id); if (!t) return;
+  t.torporLeft = Math.min(t.torporTotal, t.torporLeft + Math.round(80/(t.torporDrainRate||0.3)));
+  t.bioCount++; updateCardDisplay(t);
 }
-
 function resetNarco(id) {
-  var t = findTimer(id);
-  if (!t) return;
-  t.narcoCount = 0;
-  t.bioCount = 0;
-  updateCardDisplay(t);
+  var t = findTimer(id); if (!t) return;
+  t.narcoCount = 0; t.bioCount = 0; updateCardDisplay(t);
 }
 
-// ===== REMOVE TIMER =====
 function removeTimer(id) {
   var t = findTimer(id);
-  if (t) {
-    if (t.starveInterval) clearInterval(t.starveInterval);
-    if (t.torporInterval) clearInterval(t.torporInterval);
-  }
+  if (t) { if (t.starveInterval) clearInterval(t.starveInterval); if (t.torporInterval) clearInterval(t.torporInterval); }
   timers = timers.filter(function(x) { return x.id !== id; });
   var card = document.getElementById('card-' + id);
-  if (card) {
-    card.style.animation = 'cardOut .2s ease forwards';
-    card.style.overflow = 'hidden';
-    setTimeout(function() { renderAll(); }, 220);
-  } else {
-    renderAll();
-  }
+  if (card) { card.style.opacity = '0'; card.style.transform = 'scaleY(0)'; setTimeout(function() { renderAll(); }, 180); }
+  else renderAll();
 }
 
-// ===== ADD MANUAL TIMER =====
 function addManualTimer() {
-  var name = 'Dino #' + nextTimerId;
-  if (lastSyncData && lastSyncData.dinoName) {
-    name = lastSyncData.dinoName;
-  }
-  var t = createTimerObj(lastSyncData || { dinoName: name });
-  timers.push(t);
-  renderAll();
-  // Scroll to new card
+  var t = createTimerObj(lastSyncData || {});
+  timers.push(t); renderAll();
   var area = document.getElementById('timers-area');
   area.scrollTop = area.scrollHeight;
 }
 
-// ===== SYNC FROM DODODEX =====
+// ===== SYNC FROM QUICK LOOKUP / DODODEX =====
 if (window.api && window.api.onTimerDataUpdate) {
   window.api.onTimerDataUpdate(function(data) {
     lastSyncData = data;
     if (!data.dinoName) return;
 
-    // Find existing timer for this dino
     var existing = null;
     for (var i = 0; i < timers.length; i++) {
       if (timers[i].dinoName === data.dinoName) { existing = timers[i]; break; }
     }
 
     if (existing) {
-      // Update existing if not running
-      if (!existing.starveRunning) {
-        existing.foodCurrent = parseFloat(data.foodCurrent || 0);
-        existing.foodMax = parseFloat(data.foodMax || 0);
-        existing.foodRequired = data.foodRequired || '0';
-        if (data.starveTime) {
-          var sTotal = parseTimeStr(data.starveTime);
-          if (sTotal > 0) { existing.starveTotal = sTotal; existing.starveLeft = sTotal; }
-        }
-        var fi = document.getElementById('fi-' + existing.id);
-        if (fi) fi.textContent = existing.foodRequired;
+      if (!existing.starveRunning && data.starveTime) {
+        var sTotal = parseTimeStr(data.starveTime);
+        if (sTotal > 0) { existing.starveTotal = sTotal; existing.starveLeft = sTotal; }
       }
-      if (!existing.torporRunning) {
-        existing.torporCurrent = parseFloat(data.torporCurrent || 0);
-        existing.torporMax = parseFloat(data.torporMax || 0);
-        existing.torporDrainRate = Math.max(0.1, Math.round((existing.torporMax || 1) * 0.03 * 100) / 100);
-        if (data.torporTime) {
-          var tTotal = parseTimeStr(data.torporTime);
-          if (tTotal > 0) { existing.torporTotal = tTotal; existing.torporLeft = tTotal; }
-        }
+      if (!existing.torporRunning && data.torporTime) {
+        var tTotal = parseTimeStr(data.torporTime);
+        if (tTotal > 0) { existing.torporTotal = tTotal; existing.torporLeft = tTotal; }
       }
-      // Flash synced border
+      existing.foodRequired = data.foodRequired || existing.foodRequired;
       var card = document.getElementById('card-' + existing.id);
-      if (card) {
-        card.classList.add('synced');
-        setTimeout(function() { card.classList.remove('synced'); }, 1500);
-      }
+      if (card) { card.classList.add('synced'); setTimeout(function(){ card.classList.remove('synced'); }, 1200); }
       updateCardDisplay(existing);
     } else {
-      // Create new timer card
       var t = createTimerObj(data);
-      timers.push(t);
-      renderAll();
-      // Scroll to show new card
+      timers.push(t); renderAll();
       var area = document.getElementById('timers-area');
       area.scrollTop = area.scrollHeight;
     }
 
-    // Handle breeding data
+    // Breeding
     if (data.breeding) {
       var bb = data.breeding;
       var breedBlock = document.getElementById('breedingBlock');
-      var hasData = bb.incubation || bb.maturation || bb.imprinting || bb.interval;
-      if (hasData) breedBlock.classList.add('show');
+      if (bb.incubation || bb.maturation) breedBlock.classList.add('show');
       if (bb.incubation) { document.getElementById('breedInc').textContent = bb.incubation; if (!breedRunning) breedIncTotal = parseTimeStr(bb.incubation); }
       if (bb.maturation) { document.getElementById('breedMat').textContent = bb.maturation; if (!breedRunning) breedMatTotal = parseTimeStr(bb.maturation); }
       if (bb.imprinting) document.getElementById('breedImp').textContent = bb.imprinting;
-      if (bb.interval) document.getElementById('breedInt').textContent = bb.interval;
+      if (bb.interval)   document.getElementById('breedInt').textContent = bb.interval;
     }
   });
 }
 
-// ===== BREEDING STATE (shared) =====
-var breedIncTotal = 0, breedIncLeft = 0, breedRunning = false, breedInterval = null, breedAlarmFired = false;
-var breedPhase = 'incubation';
-var breedMatTotal = 0, breedMatLeft = 0;
+// ===== BREEDING =====
+var breedIncTotal=0, breedIncLeft=0, breedMatTotal=0, breedMatLeft=0;
+var breedRunning=false, breedInterval=null, breedAlarmFired=false, breedPhase='incubation';
 
 function breedToggle() {
   var btn = document.getElementById('breedBtnStart');
   if (!breedRunning) {
-    if (breedPhase === 'incubation' && breedIncTotal <= 0) return;
+    if (breedIncTotal <= 0) return;
     breedRunning = true; breedAlarmFired = false;
-    breedIncLeft = breedIncTotal;
-    breedMatLeft = breedMatTotal;
+    breedIncLeft = breedIncTotal; breedMatLeft = breedMatTotal;
     btn.textContent = '⏸ PAUSE'; btn.classList.add('running');
     breedInterval = setInterval(function() {
       if (breedPhase === 'incubation') {
         breedIncLeft--;
         document.getElementById('breedInc').textContent = formatHMS(breedIncLeft);
-        document.getElementById('breedInc').classList.add('active');
         var pct = breedIncTotal > 0 ? ((breedIncTotal - breedIncLeft) / breedIncTotal) * 100 : 0;
         document.getElementById('breedBar').style.width = pct + '%';
         if (!breedAlarmFired && breedIncLeft === 300) { playAlarm('Incubation presque terminée'); breedAlarmFired = true; }
-        if (breedIncLeft <= 0) {
-          playAlarm('Oeuf éclos — le bébé a faim !');
-          breedPhase = 'maturation'; breedAlarmFired = false;
-          btn.textContent = '⏸ PAUSE (MATUR.)';
-          document.getElementById('breedInc').classList.remove('active');
-        }
+        if (breedIncLeft <= 0) { playAlarm('Oeuf éclos !'); breedPhase = 'maturation'; breedAlarmFired = false; }
       } else {
         breedMatLeft--;
         document.getElementById('breedMat').textContent = formatHMS(breedMatLeft);
-        document.getElementById('breedMat').classList.add('active');
         var pct2 = breedMatTotal > 0 ? ((breedMatTotal - breedMatLeft) / breedMatTotal) * 100 : 0;
         document.getElementById('breedBar').style.width = pct2 + '%';
         if (!breedAlarmFired && breedMatLeft === 300) { playAlarm('Maturation presque terminée'); breedAlarmFired = true; }
         if (breedMatLeft <= 0) {
-          clearInterval(breedInterval); breedRunning = false;
-          breedPhase = 'incubation';
+          clearInterval(breedInterval); breedRunning = false; breedPhase = 'incubation';
           btn.textContent = 'START INCUBATION'; btn.classList.remove('running');
-          document.getElementById('breedMat').classList.remove('active');
           playAlarm('Bébé adulte !');
         }
       }
     }, 1000);
   } else {
-    breedRunning = false; clearInterval(breedInterval);
-    breedPhase = 'incubation';
+    breedRunning = false; clearInterval(breedInterval); breedPhase = 'incubation';
     btn.textContent = 'START INCUBATION'; btn.classList.remove('running');
-    document.getElementById('breedInc').classList.remove('active');
-    document.getElementById('breedMat').classList.remove('active');
   }
 }
 
-// ===== SOUND SYSTEM =====
-var soundPreset = 'beep';
-var soundVolume = 0.6;
-var ttsEnabled = false;
-
-try {
-  var saved = localStorage.getItem('ark-timer-settings');
-  if (saved) {
-    var s = JSON.parse(saved);
-    if (s.soundPreset) soundPreset = s.soundPreset;
-    if (s.soundVolume !== undefined) soundVolume = s.soundVolume;
-    if (s.ttsEnabled !== undefined) ttsEnabled = s.ttsEnabled;
-  }
-} catch(e) {}
-
+// ===== SOUND =====
+var soundPreset = 'beep', soundVolume = 0.6;
 var SOUND_PRESETS = {
   beep: function(ctx, vol) {
-    for (var i = 0; i < 3; i++) {
-      var o = ctx.createOscillator(), g = ctx.createGain();
+    for (var i=0;i<3;i++) {
+      var o=ctx.createOscillator(), g=ctx.createGain();
       o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = 880; o.type = 'sine'; g.gain.value = 0;
-      var t = ctx.currentTime + i * 0.3;
-      g.gain.setValueAtTime(vol, t);
-      g.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-      o.start(t); o.stop(t + 0.25);
-    }
-  },
-  chime: function(ctx, vol) {
-    var notes = [523, 659, 784, 1047];
-    for (var i = 0; i < notes.length; i++) {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = notes[i]; o.type = 'sine'; g.gain.value = 0;
-      var t = ctx.currentTime + i * 0.15;
-      g.gain.setValueAtTime(vol * 0.7, t);
-      g.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-      o.start(t); o.stop(t + 0.45);
-    }
-  },
-  alarm: function(ctx, vol) {
-    for (var i = 0; i < 6; i++) {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = i % 2 === 0 ? 800 : 600; o.type = 'square';
-      g.gain.value = 0;
-      var t = ctx.currentTime + i * 0.15;
-      g.gain.setValueAtTime(vol * 0.4, t);
-      g.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
-      o.start(t); o.stop(t + 0.14);
-    }
-  },
-  horn: function(ctx, vol) {
-    for (var i = 0; i < 2; i++) {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = 220; o.type = 'sawtooth'; g.gain.value = 0;
-      var t = ctx.currentTime + i * 0.6;
-      g.gain.setValueAtTime(vol * 0.3, t);
-      g.gain.linearRampToValueAtTime(vol * 0.5, t + 0.1);
-      g.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-      o.start(t); o.stop(t + 0.55);
-    }
-  },
-  gentle: function(ctx, vol) {
-    for (var i = 0; i < 2; i++) {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = 440; o.type = 'triangle'; g.gain.value = 0;
-      var t = ctx.currentTime + i * 0.5;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol * 0.4, t + 0.1);
-      g.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-      o.start(t); o.stop(t + 0.45);
+      o.frequency.value=880; o.type='sine';
+      var t=ctx.currentTime+i*0.3;
+      g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.01,t+0.2);
+      o.start(t); o.stop(t+0.25);
     }
   }
 };
-
-function playAlarm(ttsMsg) {
-  try {
-    var ctx = new AudioContext();
-    var fn = SOUND_PRESETS[soundPreset] || SOUND_PRESETS.beep;
-    fn(ctx, soundVolume);
-  } catch(e) {}
-
-  if (ttsEnabled && ttsMsg) {
-    try {
-      var utter = new SpeechSynthesisUtterance(ttsMsg);
-      utter.volume = soundVolume;
-      utter.rate = 1;
-      speechSynthesis.speak(utter);
-    } catch(e) {}
-  }
-
-  if (window.api && window.api.showNotification && ttsMsg) {
-    window.api.showNotification({ title: '🦖 ARK Timer', body: ttsMsg });
-  }
+function playAlarm(msg) {
+  try { var ctx=new AudioContext(); (SOUND_PRESETS[soundPreset]||SOUND_PRESETS.beep)(ctx,soundVolume); } catch(e) {}
+  if (window.api && window.api.showNotification && msg) window.api.showNotification({ title:'🦖 ARK Timer', body: msg });
 }
 
-function testSound() { playAlarm('Test notification'); }
-
-function setSound(preset, btn) {
-  soundPreset = preset;
-  document.querySelectorAll('.sound-preset').forEach(function(b) { b.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
-  saveSettings();
-  try { var ctx = new AudioContext(); (SOUND_PRESETS[preset] || SOUND_PRESETS.beep)(ctx, soundVolume); } catch(e) {}
-}
-
-function setVolume(val) {
-  soundVolume = parseInt(val) / 100;
-  document.getElementById('volVal').textContent = val + '%';
-  saveSettings();
-}
-
-function toggleTTS() {
-  ttsEnabled = !ttsEnabled;
-  var btn = document.getElementById('ttsBtn');
-  btn.textContent = ttsEnabled ? 'ON' : 'OFF';
-  btn.classList.toggle('active', ttsEnabled);
-  saveSettings();
-}
-
-function saveSettings() {
-  try {
-    localStorage.setItem('ark-timer-settings', JSON.stringify({
-      soundPreset: soundPreset, soundVolume: soundVolume, ttsEnabled: ttsEnabled
-    }));
-  } catch(e) {}
-}
-
-function toggleSoundSettings() {
-  document.getElementById('settingsBody').classList.toggle('show');
-  document.getElementById('settingsArrow').classList.toggle('open');
-}
-
-// ===== CLICK-THROUGH VISUAL INDICATOR =====
-var shell = document.getElementById('shell');
+// ===== CLICK-THROUGH =====
 if (window.api && window.api.onClickThroughChanged) {
   window.api.onClickThroughChanged(function(v) {
-    shell.style.opacity = v ? '0.7' : '1';
-    shell.style.borderColor = v ? '#111' : '#1a1a1a';
+    document.getElementById('shell').style.opacity = v ? '0.65' : '1';
   });
 }
 
-// ===== SIZE PRESETS =====
-function resizePreset(preset, btn) {
-  if (window.api && window.api.resizeTimer) window.api.resizeTimer(preset);
-  document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
+// ===== AUTO-RESIZE WINDOW TO CONTENT =====
+function syncHeight() {
+  if (window.api && window.api.timerAutoResize) {
+    window.api.timerAutoResize(document.getElementById('shell').scrollHeight);
+  }
 }
-
-// ===== PIN TOGGLE =====
-function toggleTimerPin() {
-  if (window.api && window.api.timerTogglePin) window.api.timerTogglePin();
-}
-if (window.api && window.api.onTimerPinChanged) {
-  window.api.onTimerPinChanged(function(val) {
-    document.getElementById('timerPinBtn').classList.toggle('active', val);
-  });
-}
+var ro = new ResizeObserver(syncHeight);
+ro.observe(document.getElementById('shell'));
 
 // ===== INIT =====
-(function() {
-  document.getElementById('volSlider').value = Math.round(soundVolume * 100);
-  document.getElementById('volVal').textContent = Math.round(soundVolume * 100) + '%';
-  var ttsBtn = document.getElementById('ttsBtn');
-  ttsBtn.textContent = ttsEnabled ? 'ON' : 'OFF';
-  ttsBtn.classList.toggle('active', ttsEnabled);
-  document.querySelectorAll('.sound-preset').forEach(function(b) {
-    b.classList.toggle('active', b.textContent.toLowerCase() === soundPreset);
-  });
-  renderAll();
-})();
+renderAll();
+setTimeout(syncHeight, 80);
 </script>
 </body>
 </html>

@@ -9,8 +9,14 @@ contextBridge.exposeInMainWorld('api', {
   getOverlay:     () => ipcRenderer.invoke('get-overlay'),
   onOverlay:      (cb) => ipcRenderer.on('overlay-changed', (_, v) => cb(v)),
   resizeWindow:   (preset) => ipcRenderer.send('resize-window', preset),
+  // Quick Lookup
+  openQuickLookup:     () => ipcRenderer.send('open-quick-lookup'),
+  quickLookupClose:    () => ipcRenderer.send('quick-lookup-close'),
+  isQuickLookupOpen:   () => ipcRenderer.invoke('is-quick-lookup-open'),
+  quickLookupResize:   (h) => ipcRenderer.send('quick-lookup-resize', h),
   // Timer
   openTimerOverlay:  () => ipcRenderer.send('open-timer-overlay'),
+  timerAutoResize:   (h) => ipcRenderer.send('timer-auto-resize', h),
   closeTimerOverlay: () => ipcRenderer.send('close-timer-overlay'),
   isTimerOpen:       () => ipcRenderer.invoke('is-timer-open'),
   timerClose:        () => ipcRenderer.send('timer-close'),
