@@ -170,8 +170,11 @@ function registerAllShortcuts() {
 }
 
 // ===== AUTO-UPDATER =====
+let lastUpdateStatus = null; // Cache last status so late-opening windows can catch up
+
 // Broadcast update-status to ALL webContents (main window, webviews, separate windows)
 function broadcastUpdateStatus(data) {
+  lastUpdateStatus = data;
   const { webContents } = require('electron');
   webContents.getAllWebContents().forEach(wc => {
     try { if (!wc.isDestroyed()) wc.send('update-status', data); } catch (e) {}
@@ -584,6 +587,17 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile(path.join(__dirname, '..', 'shell', 'settings-window.html'));
   settingsWindow.setAlwaysOnTop(true, 'floating');
+
+  // Send cached update status so settings shows correct state immediately
+  settingsWindow.webContents.once('did-finish-load', () => {
+    if (lastUpdateStatus) {
+      try { settingsWindow.webContents.send('update-status', lastUpdateStatus); } catch (e) {}
+    }
+    // Also trigger a fresh check in packaged mode
+    if (app.isPackaged) {
+      autoUpdater.checkForUpdates().catch(() => {});
+    }
+  });
 
   settingsWindow.on('closed', () => { settingsWindow = null; });
   settingsWindow.webContents.on('destroyed', () => { settingsWindow = null; });

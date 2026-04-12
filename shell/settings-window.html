@@ -849,6 +849,11 @@ if (window.api && window.api.onUpdateStatus) {
   });
 }
 
+// Trigger a manual update check on open so status is always fresh
+if (window.api && window.api.checkForUpdates) {
+  window.api.checkForUpdates().catch(function() {});
+}
+
 // Video background replaces canvas animation
 </script>
 <script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
