@@ -117,6 +117,9 @@
     background: var(--accent-dim);
     border-left-color: var(--accent);
   }
+  .result-item.history-item {
+    color: var(--text-2);
+  }
   .result-icon {
     width: 28px; height: 28px;
     border-radius: 6px;
@@ -144,6 +147,17 @@
   }
   .badge-ko  { background: rgba(239,95,95,0.15); color: var(--red); }
   .badge-pas { background: rgba(45,212,160,0.15); color: var(--green); }
+
+  /* History section header */
+  .section-header {
+    padding: 6px 16px 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(123,147,248,0.07);
+  }
 
   /* ── Taming panel ── */
   #taming-panel {
@@ -263,10 +277,111 @@
     color: var(--accent);
   }
 
-  /* Stats grid */
+  /* ── Food compare section ── */
+  #food-compare {
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  #food-compare-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #food-compare-header:hover { background: rgba(255,255,255,0.02); }
+  #food-compare-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #food-compare-toggle {
+    font-size: 10px;
+    color: var(--text-3);
+    transition: transform 0.15s;
+  }
+  #food-compare-toggle.collapsed { transform: rotate(-90deg); }
+  #food-compare-cards {
+    display: flex;
+    gap: 6px;
+    padding: 0 16px 8px;
+    overflow-x: auto;
+  }
+  #food-compare-cards::-webkit-scrollbar { height: 3px; }
+  #food-compare-cards::-webkit-scrollbar-track { background: transparent; }
+  #food-compare-cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .food-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: rgba(255,255,255,0.02);
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.12s, background 0.12s;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .food-card:hover { border-color: var(--border-hi); background: rgba(255,255,255,0.04); }
+  .food-card.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .food-card-row1 {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+  }
+  .food-card-icon {
+    width: 20px; height: 20px;
+    object-fit: contain;
+    border-radius: 3px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+  }
+  .food-card-icon-fb {
+    width: 20px; height: 20px;
+    border-radius: 3px;
+    background: rgba(123,147,248,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .food-card-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+  .food-card-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .food-card-time {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 1px;
+  }
+
+  /* Stats grid — 4 columns, 2 rows = 8 cells */
   #stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 1px;
     background: var(--border);
     border-top: none;
@@ -277,7 +392,36 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
+    position: relative;
   }
+  .stat-cell.tame-time-cell {
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+  .stat-cell.starve-time-cell {
+    border-left: 2px solid var(--orange);
+    padding-left: 12px;
+  }
+  .stat-cell.narco-cell {
+    cursor: pointer;
+    user-select: none;
+  }
+  .stat-cell.narco-cell:hover { background: rgba(255,255,255,0.02); }
+  .narco-toggle-dots {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .narco-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--text-3);
+    transition: background 0.12s;
+  }
+  .narco-dot.active { background: var(--accent); }
   .stat-label {
     font-size: 10px;
     font-weight: 600;
@@ -298,6 +442,26 @@
   .stat-value.green { color: var(--green); }
   .stat-value.orange { color: var(--orange); }
   .stat-value.accent { color: var(--accent); }
+
+  /* Effectiveness cell glow */
+  .stat-cell.eff-low {
+    box-shadow: inset 0 0 0 1px rgba(239,95,95,0.18), inset 0 0 12px rgba(239,95,95,0.07);
+  }
+
+  /* Effectiveness enhanced display */
+  #eff-bar-wrap {
+    margin-top: 3px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  #eff-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.25s, background-color 0.25s;
+    background: var(--green);
+  }
 
   /* Food icon */
   #food-icon-wrap {
@@ -349,14 +513,38 @@
     opacity: 0.35;
     cursor: default;
   }
+
+  /* Effectiveness badge — enhanced */
   #effectiveness-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: rgba(45,212,160,0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    min-width: 70px;
+  }
+  #eff-pct-text {
+    font-size: 15px;
+    font-weight: 800;
     color: var(--green);
-    margin-left: auto;
+    line-height: 1;
+  }
+  #eff-footer-bar-wrap {
+    width: 70px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  #eff-footer-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.25s, background-color 0.25s;
+    background: var(--green);
+  }
+  #eff-bonus-text {
+    font-size: 10px;
+    color: var(--text-3);
+    white-space: nowrap;
   }
 
   /* Empty state */
@@ -384,7 +572,7 @@
       <div id="kbd-hint"><kbd>↑↓</kbd> navigate &nbsp; <kbd>↵</kbd> select &nbsp; <kbd>Esc</kbd> close</div>
     </div>
 
-    <!-- Results -->
+    <!-- Results (also used for history) -->
     <div id="results"></div>
 
     <!-- Empty -->
@@ -417,43 +605,71 @@
           </div>
         </div>
         <div id="speed-wrap">
-          <button class="speed-btn" data-mult="1" onclick="setMult(1)">1×</button>
-          <button class="speed-btn" data-mult="2" onclick="setMult(2)">2×</button>
-          <button class="speed-btn" data-mult="3" onclick="setMult(3)">3×</button>
-          <button class="speed-btn" data-mult="5" onclick="setMult(5)">5×</button>
+          <button class="speed-btn" data-mult="1"  onclick="setMult(1)">1×</button>
+          <button class="speed-btn" data-mult="2"  onclick="setMult(2)">2×</button>
+          <button class="speed-btn" data-mult="3"  onclick="setMult(3)">3×</button>
+          <button class="speed-btn" data-mult="5"  onclick="setMult(5)">5×</button>
+          <button class="speed-btn" data-mult="10" onclick="setMult(10)">10×</button>
         </div>
       </div>
 
+      <!-- Food comparison section -->
+      <div id="food-compare">
+        <div id="food-compare-header" onclick="toggleFoodCompare()">
+          <div id="food-compare-title">Food comparison</div>
+          <div id="food-compare-toggle">▾</div>
+        </div>
+        <div id="food-compare-cards"></div>
+      </div>
+
       <div id="stats-grid">
+        <!-- Row 1 -->
         <div class="stat-cell">
           <div class="stat-label">Food needed</div>
           <div class="stat-value" id="stat-food">—</div>
           <div class="stat-sub" id="stat-food-name"></div>
         </div>
-        <div class="stat-cell">
+        <div class="stat-cell tame-time-cell">
           <div class="stat-label">Tame time</div>
           <div class="stat-value accent" id="stat-time">—</div>
           <div class="stat-sub" id="stat-per-food"></div>
         </div>
-        <div class="stat-cell">
+        <div class="stat-cell starve-time-cell">
           <div class="stat-label">Starve timer</div>
           <div class="stat-value orange" id="stat-starve">—</div>
           <div class="stat-sub">before 1st food</div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-label">Narcotics</div>
+        <div class="stat-cell narco-cell" id="narco-cell" onclick="cycleNarcoMode()">
+          <div class="narco-toggle-dots">
+            <div class="narco-dot active" id="narco-dot-0"></div>
+            <div class="narco-dot" id="narco-dot-1"></div>
+            <div class="narco-dot" id="narco-dot-2"></div>
+          </div>
+          <div class="stat-label" id="narco-label">Narcotics 💊</div>
           <div class="stat-value" id="stat-narco">—</div>
-          <div class="stat-sub" id="stat-narco-sub"></div>
+          <div class="stat-sub" id="stat-narco-sub">narcotics needed</div>
         </div>
-        <div class="stat-cell">
+        <!-- Row 2 -->
+        <div class="stat-cell" id="eff-cell">
           <div class="stat-label">Effectiveness</div>
           <div class="stat-value green" id="stat-eff">—</div>
+          <div id="eff-bar-wrap"><div id="eff-bar-fill" style="width:0%"></div></div>
           <div class="stat-sub" id="stat-bonus"></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Torpor</div>
+          <div class="stat-value" id="stat-torpor">—</div>
+          <div class="stat-sub" id="stat-torpor-sub">drain category</div>
         </div>
         <div class="stat-cell">
           <div class="stat-label">Max level</div>
           <div class="stat-value" id="stat-maxlvl">—</div>
           <div class="stat-sub">after tame</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Bonus levels</div>
+          <div class="stat-value accent" id="stat-bonus-lvl">—</div>
+          <div class="stat-sub">from effectiveness</div>
         </div>
       </div>
 
@@ -463,7 +679,11 @@
           <span><kbd>Esc</kbd> close</span>
         </div>
         <button id="starve-btn" disabled onclick="sendStarveTimer()">⏱ Starve timer</button>
-        <div id="effectiveness-badge">— %</div>
+        <div id="effectiveness-badge">
+          <div id="eff-pct-text">— %</div>
+          <div id="eff-footer-bar-wrap"><div id="eff-footer-bar-fill" style="width:0%"></div></div>
+          <div id="eff-bonus-text">+0 bonus levels</div>
+        </div>
       </div>
     </div>
 
@@ -473,16 +693,101 @@
 <script src="quick-lookup-data.js"></script>
 <script>
 // ── State ──────────────────────────────────────────
-let selectedDino = null;
-let focusedIndex = -1;
-let currentMult  = 1;
+let selectedDino   = null;
+let focusedIndex   = -1;
+let currentMult    = 1;
 let currentResults = [];
+let narcoMode      = 0;  // 0=Narcotics, 1=Narcoberries, 2=Bio Toxin
+let foodCompareVisible = true;
 
 // ── DOM refs ───────────────────────────────────────
 const searchEl    = document.getElementById('search');
 const resultsEl   = document.getElementById('results');
 const emptyEl     = document.getElementById('empty');
 const tamingPanel = document.getElementById('taming-panel');
+
+// ── Helpers ────────────────────────────────────────
+function fmtSec(s) {
+  if (!s && s !== 0) return '—';
+  s = Math.ceil(s);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return h + 'h ' + m + 'm ' + sec + 's';
+  if (m > 0) return m + 'm ' + sec + 's';
+  return sec + 's';
+}
+
+// ── Recent history (localStorage) ─────────────────
+const HISTORY_KEY = 'ql_history';
+const HISTORY_MAX = 5;
+
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function saveToHistory(dinoName) {
+  let hist = loadHistory();
+  // Remove duplicate if exists
+  hist = hist.filter(n => n !== dinoName);
+  // Add to front
+  hist.unshift(dinoName);
+  // Trim to max
+  hist = hist.slice(0, HISTORY_MAX);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+}
+
+function showHistory() {
+  const hist = loadHistory();
+  if (!hist.length) {
+    resultsEl.classList.remove('visible');
+    resultsEl.innerHTML = '';
+    return;
+  }
+
+  // Find dino objects for each history name
+  const histDinos = hist
+    .map(name => dinosaurs.find(d => d.name === name))
+    .filter(Boolean);
+
+  if (!histDinos.length) {
+    resultsEl.classList.remove('visible');
+    resultsEl.innerHTML = '';
+    return;
+  }
+
+  resultsEl.innerHTML = '';
+  resultsEl.classList.add('visible');
+
+  // Section header
+  const hdr = document.createElement('div');
+  hdr.className = 'section-header';
+  hdr.textContent = 'RÉCENTS';
+  resultsEl.appendChild(hdr);
+
+  histDinos.forEach((dino) => {
+    const el = document.createElement('div');
+    el.className = 'result-item history-item';
+
+    const iconUrl = getIconUrl(dino);
+    const iconHtml = iconUrl
+      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
+      : `<div class="result-icon-fallback">🦕</div>`;
+
+    el.innerHTML = `
+      ${iconHtml}
+      <div style="flex:1;min-width:0">
+        <div class="result-name">${dino.name}</div>
+        <div class="result-sub">${dino.category || 'Creature'}</div>
+      </div>
+      <span style="font-size:15px;opacity:0.6">🕐</span>
+    `;
+    el.addEventListener('mousedown', (e) => { e.preventDefault(); selectDino(dino); });
+    resultsEl.appendChild(el);
+  });
+}
 
 // ── Search ─────────────────────────────────────────
 function score(dino, q) {
@@ -502,7 +807,11 @@ function score(dino, q) {
 
 function search(q) {
   q = q.trim().toLowerCase();
-  if (!q) { hideResults(); return; }
+  if (!q) {
+    hideResults();
+    if (!selectedDino) showHistory();
+    return;
+  }
 
   const scored = dinosaurs
     .map(d => ({ d, s: score(d, q) }))
@@ -640,11 +949,98 @@ function getFoodIconUrl(foodKey) {
   return (ft && ft.icon) ? ft.icon : null;
 }
 
+// ── Narco mode cycling ──────────────────────────────
+const NARCO_MODES = [
+  { label: 'Narcotics 💊',   key: 'narcoticsNeeded',  sub: 'narcotics needed' },
+  { label: 'Narcoberries 🫐', key: 'narcoberriesNeeded', sub: 'narcoberries needed' },
+  { label: 'Bio Toxin ☠️',   key: 'bioToxinNeeded',   sub: 'bio toxin needed' },
+];
+
+function cycleNarcoMode() {
+  narcoMode = (narcoMode + 1) % 3;
+  updateNarcoDots();
+  if (_lastResult) updateNarcoDisplay(_lastResult);
+}
+
+function updateNarcoDots() {
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('narco-dot-' + i).classList.toggle('active', i === narcoMode);
+  }
+}
+
+function updateNarcoDisplay(r) {
+  const mode = NARCO_MODES[narcoMode];
+  document.getElementById('narco-label').textContent = mode.label;
+  document.getElementById('stat-narco').textContent  = r[mode.key] || 0;
+  document.getElementById('stat-narco-sub').textContent = mode.sub;
+}
+
+// ── Food compare section ────────────────────────────
+function toggleFoodCompare() {
+  foodCompareVisible = !foodCompareVisible;
+  const cards = document.getElementById('food-compare-cards');
+  const toggle = document.getElementById('food-compare-toggle');
+  cards.style.display = foodCompareVisible ? '' : 'none';
+  toggle.classList.toggle('collapsed', !foodCompareVisible);
+  syncWindowSize();
+}
+
+function renderFoodCompare() {
+  if (!selectedDino) return;
+  const cardsEl = document.getElementById('food-compare-cards');
+  cardsEl.innerHTML = '';
+
+  const level   = parseInt(document.getElementById('level-input').value) || 150;
+  const curFood = document.getElementById('food-select').value;
+  const foods   = selectedDino.tamingFoods.slice(0, 4);
+
+  foods.forEach(f => {
+    const fk = f.food;
+    const r  = calculateTaming(selectedDino, level, fk, currentMult);
+    if (!r) return;
+
+    const card = document.createElement('div');
+    card.className = 'food-card' + (fk === curFood ? ' active' : '');
+
+    const iconUrl = getFoodIconUrl(fk);
+    const iconHtml = iconUrl
+      ? `<img class="food-card-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
+      : `<div class="food-card-icon-fb">🍖</div>`;
+
+    const foodName = (FOOD_TYPES[fk] && FOOD_TYPES[fk].name) || fk;
+
+    card.innerHTML = `
+      <div class="food-card-row1">
+        ${iconHtml}
+        <span class="food-card-name" title="${foodName}">${foodName}</span>
+        <span class="food-card-count">${r.foodNeeded}×</span>
+      </div>
+      <div class="food-card-time">${r.totalTimeFmt || '—'}</div>
+    `;
+
+    card.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const sel = document.getElementById('food-select');
+      sel.value = fk;
+      recalculate();
+    });
+
+    cardsEl.appendChild(card);
+  });
+}
+
 // ── Select dino ─────────────────────────────────────
 function selectDino(dino) {
   selectedDino = dino;
   hideResults();
   emptyEl.classList.remove('visible');
+
+  // Save to history
+  saveToHistory(dino.name);
+
+  // Reset narco mode
+  narcoMode = 0;
+  updateNarcoDots();
 
   // Update header
   const iconUrl = getIconUrl(dino);
@@ -659,9 +1055,12 @@ function selectDino(dino) {
     fbEl.style.display = 'flex';
   }
   document.getElementById('dino-title').textContent = dino.name;
-  document.getElementById('dino-sub').textContent = dino.tamingMethod === 'KNOCKOUT' ? 'Knockout taming' : 'Passive taming';
 
+  // dino-sub: taming method + torpor drain category placeholder (will be updated after recalc)
   const isKO = dino.tamingMethod === 'KNOCKOUT' || dino.tamingMethod === 'KNOCKOUT_PASSIVE';
+  const methodStr = isKO ? 'Knockout' : 'Passive';
+  document.getElementById('dino-sub').textContent = methodStr + ' taming';
+
   document.getElementById('dino-badge').innerHTML =
     `<span class="badge ${isKO ? 'badge-ko' : 'badge-pas'}">${isKO ? 'KO' : 'Passive'}</span>`;
 
@@ -701,16 +1100,49 @@ function recalculate() {
   document.getElementById('stat-time').textContent      = r.totalTimeFmt;
   document.getElementById('stat-per-food').textContent  = r.secondsPerFood + 's / item';
   document.getElementById('stat-starve').textContent    = r.starveTimeFmt || '—';
-  document.getElementById('stat-narco').textContent     = r.narcoticsNeeded || 0;
-  document.getElementById('stat-narco-sub').textContent = 'narcotics needed';
-  document.getElementById('stat-eff').textContent       = r.effectiveness + '%';
-  document.getElementById('stat-bonus').textContent     = '+' + r.bonusLevels + ' bonus levels';
-  document.getElementById('stat-maxlvl').textContent    = r.maxLevel;
 
+  // Narco display (respects current mode)
+  updateNarcoDisplay(r);
+
+  // Effectiveness — enhanced display (stat cell)
   const eff = r.effectiveness;
-  document.getElementById('effectiveness-badge').textContent = eff + '%';
-  document.getElementById('effectiveness-badge').style.color =
-    eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+  document.getElementById('stat-eff').textContent = eff + '%';
+  document.getElementById('stat-eff').className   = 'stat-value ' + (eff >= 95 ? 'green' : eff >= 70 ? 'orange' : 'red');
+  document.getElementById('stat-bonus').textContent = '+' + r.bonusLevels + ' bonus lvls';
+
+  // Effectiveness bar in stat cell
+  const effBarFill = document.getElementById('eff-bar-fill');
+  effBarFill.style.width = eff + '%';
+  effBarFill.style.backgroundColor = eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+
+  // Effectiveness cell glow when < 70%
+  const effCell = document.getElementById('eff-cell');
+  effCell.classList.toggle('eff-low', eff < 70);
+
+  // Footer effectiveness badge — enhanced
+  document.getElementById('eff-pct-text').textContent  = eff + '%';
+  document.getElementById('eff-pct-text').style.color  = eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+  document.getElementById('eff-bonus-text').textContent = '+' + r.bonusLevels + ' bonus levels';
+  const footerBarFill = document.getElementById('eff-footer-bar-fill');
+  footerBarFill.style.width = eff + '%';
+  footerBarFill.style.backgroundColor = eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+
+  // Max level & bonus levels
+  document.getElementById('stat-maxlvl').textContent  = r.maxLevel;
+  document.getElementById('stat-bonus-lvl').textContent = '+' + r.bonusLevels;
+
+  // Torpor timer
+  const torporSec = r.torporTimerSeconds;
+  document.getElementById('stat-torpor').textContent     = torporSec ? fmtSec(torporSec) : '—';
+  document.getElementById('stat-torpor-sub').textContent = r.torporDrainCategory ? r.torporDrainCategory + ' drain' : 'drain category';
+
+  // Update dino-sub with method + torpor drain
+  const isKO = selectedDino.tamingMethod === 'KNOCKOUT' || selectedDino.tamingMethod === 'KNOCKOUT_PASSIVE';
+  const methodStr = isKO ? 'Knockout' : 'Passive';
+  const drainCat  = r.torporDrainCategory || null;
+  document.getElementById('dino-sub').textContent = drainCat
+    ? methodStr + ' • ' + drainCat + ' torpor drain'
+    : methodStr + ' taming';
 
   // Update food icon
   const foodIconEl = document.getElementById('food-icon');
@@ -724,6 +1156,9 @@ function recalculate() {
 
   // Enable starve timer button
   document.getElementById('starve-btn').disabled = !r.starveTimeFmt;
+
+  // Render food compare cards
+  renderFoodCompare();
 }
 
 // ── Send starve timer to overlay ─────────────────────
@@ -770,6 +1205,8 @@ searchEl.addEventListener('keydown', e => {
       selectedDino = null;
       hideResults();
       searchEl.value = '';
+      // Show history on clear
+      showHistory();
     } else {
       close();
     }
@@ -825,6 +1262,8 @@ if (window.api && window.api.onQuickLookupToggle) {
     tamingPanel.classList.remove('visible');
     selectedDino = null;
     searchEl.focus();
+    // Show recent history when panel opens with empty search
+    showHistory();
   });
 }
 
@@ -840,7 +1279,11 @@ const ro = new ResizeObserver(() => syncWindowSize());
 ro.observe(document.getElementById('panel'));
 
 // Auto-focus on open
-window.addEventListener('DOMContentLoaded', () => { searchEl.focus(); syncWindowSize(); });
+window.addEventListener('DOMContentLoaded', () => {
+  searchEl.focus();
+  syncWindowSize();
+  showHistory();
+});
 setTimeout(() => { searchEl.focus(); syncWindowSize(); }, 50);
 </script>
 </body>
