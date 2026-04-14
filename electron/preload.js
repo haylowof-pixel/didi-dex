@@ -108,6 +108,11 @@ contextBridge.exposeInMainWorld('api', {
   onTribeBreedingUpdated: (cb) => ipcRenderer.on('tribe-breeding-updated', (_, data) => cb(data)),
   shareMarkerToTribe: (marker) => ipcRenderer.invoke('share-marker-to-tribe', marker),
   onTribeMarkersUpdated: (cb) => ipcRenderer.on('tribe-markers-updated', (_, data) => cb(data)),
+  // Maps markers
+  loadMapsMarkers:   () => ipcRenderer.invoke('maps-load-markers'),
+  saveMapsMarkers:   (data) => ipcRenderer.send('maps-save-markers', data),
+  exportTribePois:   () => ipcRenderer.invoke('maps-export-pois'),
+  importTribePois:   () => ipcRenderer.invoke('maps-import-pois'),
   // GPS Tracker
   captureRegion:      (rect) => ipcRenderer.invoke('capture-region', rect),
   ocrCoordinates:     (dataUrl) => ipcRenderer.invoke('ocr-coordinates', dataUrl),

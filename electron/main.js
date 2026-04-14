@@ -773,6 +773,48 @@ ipcMain.on('maps-toggle-pin', () => {
   }
 });
 
+// Maps markers persistence
+const MAPS_MARKERS_FILE = path.join(app.getPath('userData'), 'maps-markers.json');
+ipcMain.handle('maps-load-markers', () => {
+  try {
+    if (!fs.existsSync(MAPS_MARKERS_FILE)) return { personal: [], tribe: [] };
+    return JSON.parse(fs.readFileSync(MAPS_MARKERS_FILE, 'utf8'));
+  } catch (e) { return { personal: [], tribe: [] }; }
+});
+ipcMain.on('maps-save-markers', (_, data) => {
+  try { fs.writeFileSync(MAPS_MARKERS_FILE, JSON.stringify(data, null, 2)); } catch (e) {}
+});
+ipcMain.handle('maps-export-pois', async () => {
+  const parentWin = isMapsAlive() ? mapsWindow : mainWindow;
+  const { filePath } = await dialog.showSaveDialog(parentWin, {
+    title: 'Exporter les marqueurs de tribu',
+    defaultPath: 'overseer-tribe-markers.json',
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+  });
+  if (!filePath) return { ok: false };
+  try {
+    const data = fs.existsSync(MAPS_MARKERS_FILE)
+      ? JSON.parse(fs.readFileSync(MAPS_MARKERS_FILE, 'utf8'))
+      : { personal: [], tribe: [] };
+    fs.writeFileSync(filePath, JSON.stringify({ tribe: data.tribe || [] }, null, 2));
+    return { ok: true };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
+ipcMain.handle('maps-import-pois', async () => {
+  const parentWin = isMapsAlive() ? mapsWindow : mainWindow;
+  const { filePaths } = await dialog.showOpenDialog(parentWin, {
+    title: 'Importer des marqueurs de tribu',
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+    properties: ['openFile'],
+  });
+  if (!filePaths || !filePaths[0]) return { ok: false };
+  try {
+    const imported = JSON.parse(fs.readFileSync(filePaths[0], 'utf8'));
+    const markers = imported.tribe || imported.personal || [];
+    return { ok: true, markers };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
+
 // Widget
 ipcMain.on('open-widget', () => createWidgetWindow());
 ipcMain.on('close-widget', () => safeDestroyWidget());
