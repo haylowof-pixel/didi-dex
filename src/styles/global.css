@@ -1332,8 +1332,14 @@ body {
   display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
 }
 .tp-ko-quality-label { font-size: 10px; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
-.tp-ko-slider { flex: 1; accent-color: var(--accent-l); height: 3px; cursor: pointer; }
-.tp-ko-quality-val { font-size: 11px; font-weight: 700; color: var(--accent-l); min-width: 36px; text-align: right; }
+.tp-ko-quality-input {
+  width: 64px; padding: 3px 6px; font-size: 13px; font-weight: 700;
+  background: var(--bg-input); border: 1px solid var(--border-1);
+  border-radius: 6px; color: var(--accent-l); font-family: inherit;
+  text-align: right; outline: none;
+}
+.tp-ko-quality-input:focus { border-color: var(--accent-border); }
+.tp-ko-quality-pct { font-size: 12px; font-weight: 700; color: var(--text-3); }
 
 .tp-ko-presets { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
 .tp-btn-xs {
@@ -1651,6 +1657,83 @@ body {
     radial-gradient(ellipse 500px 350px at 10% 20%, rgba(123,147,248,0.03) 0%, transparent 70%),
     radial-gradient(ellipse 400px 400px at 90% 80%, rgba(96,165,250,0.02) 0%, transparent 70%);
 }
+
+/* ============================================
+   Noir Theme Override
+   ============================================ */
+.app-shell.noir-theme {
+  --bg-base: #000000;
+  --bg-panel: rgba(8,8,8,0.98);
+  --bg-surface: rgba(12,12,12,0.95);
+  --bg-tertiary: rgba(14,14,14,0.92);
+  --bg-hover: rgba(24,24,24,0.9);
+  --bg-active: rgba(32,32,32,0.8);
+  --bg-input: rgba(10,10,10,0.98);
+  --bg-tooltip: rgba(4,4,4,0.99);
+
+  --bg-0: #000000;
+  --bg-1: rgba(8,8,8,0.98);
+  --bg-2: rgba(14,14,14,0.95);
+  --bg-3: rgba(20,20,20,0.9);
+  --bg-4: rgba(28,28,28,0.85);
+
+  --glass-bg: rgba(255,255,255,0.02);
+  --glass-bg-hover: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.06);
+
+  --border-0: rgba(255,255,255,0.06);
+  --border-1: rgba(255,255,255,0.10);
+  --border-2: rgba(255,255,255,0.18);
+  --border-3: rgba(255,255,255,0.28);
+
+  --text-0: #ffffff;
+  --text-1: #c8c8c8;
+  --text-2: #888888;
+  --text-3: #505050;
+
+  --accent: #7B93F8;
+  --accent-l: #a0b4ff;
+  --accent-d: #5B75DA;
+  --accent-glow: rgba(123,147,248,0.28);
+  --accent-bg: rgba(123,147,248,0.10);
+  --accent-border: rgba(123,147,248,0.30);
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.95);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.95);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.98);
+  --shadow-glow: 0 0 24px rgba(123,147,248,0.22);
+  --shadow-glow-accent: 0 0 30px rgba(123,147,248,0.28), 0 0 60px rgba(123,147,248,0.12);
+}
+
+/* Hide video bg in noir — pure black */
+.app-shell.noir-theme .app-video-bg { opacity: 0; }
+.app-shell.noir-theme .app-video-overlay { background: #000; opacity: 1; }
+.app-shell.noir-theme::before { display: none; }
+
+/* Title bar */
+.app-shell.noir-theme .title-bar {
+  background: rgba(0,0,0,0.99);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+/* Sidebar */
+.app-shell.noir-theme .sidebar {
+  background: rgba(4,4,4,0.99);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Panels & cards */
+.app-shell.noir-theme .tp-section,
+.app-shell.noir-theme .key-stat-card,
+.app-shell.noir-theme .food-table-section {
+  background: rgba(8,8,8,0.98);
+  border-color: rgba(255,255,255,0.07);
+}
+
+/* Scrollbar */
+.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+.app-shell.noir-theme ::selection { background: rgba(123,147,248,0.3); color: #fff; }
 
 /* Theme toggle button */
 .tb-theme-toggle {

@@ -94,12 +94,13 @@ export default function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('overseer-favorites') || '[]'));
   const [showSearch, setShowSearch] = useState(false);
   const [globalQuery, setGlobalQuery] = useState('');
-  const [lightTheme, setLightTheme] = useState(() => localStorage.getItem('overseer-theme') === 'light');
+  const [theme, setTheme] = useState(() => localStorage.getItem('overseer-theme') || 'dark');
 
-  const toggleTheme = useCallback(() => {
-    setLightTheme(prev => {
-      const next = !prev;
-      localStorage.setItem('overseer-theme', next ? 'light' : 'dark');
+  const cycleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'noir' : prev === 'noir' ? 'light' : 'dark';
+      localStorage.setItem('overseer-theme', next);
+      window.api?.setTheme?.(next);
       return next;
     });
   }, []);
@@ -167,7 +168,7 @@ export default function App() {
   const showEmbedded = activePage && EMBEDDED_PAGES[activePage];
 
   return (
-    <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${lightTheme ? 'light-theme' : ''}`}>
+    <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${theme !== 'dark' ? theme + '-theme' : ''}`}>
       {/* Global video background */}
       <video
         className="app-video-bg"
@@ -182,8 +183,8 @@ export default function App() {
         onGoHome={goHome}
         activePage={activePage}
         onNavigate={navigateTo}
-        lightTheme={lightTheme}
-        onToggleTheme={toggleTheme}
+        theme={theme}
+        onCycleTheme={cycleTheme}
       />
       <div className="main-layout">
         {showSidebar && (

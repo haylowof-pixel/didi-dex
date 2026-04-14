@@ -384,16 +384,16 @@ function KnockoutCalc({ dino, level }) {
         <span>Knockout Calculator</span>
       </div>
 
-      {/* Quality slider */}
+      {/* Quality input */}
       <div className="tp-ko-quality-row">
         <span className="tp-ko-quality-label">Dégâts arme</span>
         <input
-          type="range" min={100} max={500} step={10}
+          type="number" min={100} max={999} step={10}
           value={quality}
-          onChange={e => setQuality(Number(e.target.value))}
-          className="tp-ko-slider"
+          onChange={e => { const v = parseInt(e.target.value); if (!isNaN(v) && v >= 100) setQuality(v); }}
+          className="tp-ko-quality-input"
         />
-        <span className="tp-ko-quality-val">{quality}%</span>
+        <span className="tp-ko-quality-pct">%</span>
       </div>
       <div className="tp-ko-presets">
         {QUALITY_PRESETS.map(p => (

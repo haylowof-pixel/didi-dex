@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('asb-values.json'\\)\\); rex=[s for s in d['species'] if s['name']=='Rex' and 'Boss' not in s.get\\('variants',[]\\) and 'Aberrant' not in s.get\\('variants',[]\\)]; print\\(json.dumps\\(rex[0] if rex else {}, indent=2\\)\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const d=JSON.parse\\(fs.readFileSync\\('asb-values.json'\\)\\); const rex=d.species.filter\\(s=>s.name==='Rex' && !s.variants?.includes\\('Boss'\\) && !s.blueprintPath?.includes\\('Aberrant'\\)\\); console.log\\(JSON.stringify\\(rex[0]||{},null,2\\)\\);\")",
+      "Bash(node -e ':*)"
+    ]
+  }
+}

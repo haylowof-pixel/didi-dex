@@ -25,6 +25,13 @@ const MoonIcon = ({ size = 13 }) => (
   </svg>
 );
 
+/* Noir icon — filled circle (pure black / void) */
+const NoirIcon = ({ size = 13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="9"/>
+  </svg>
+);
+
 // Tools that navigate within the main window
 const NAV_TOOLS = [
   { key: 'breeding', Icon: DnaIcon,       label: 'Breeding',    shortcut: 'Alt+B' },
@@ -40,7 +47,15 @@ const WINDOW_TOOLS = [
   { key: 'widget', Icon: WidgetIcon, label: 'Widget Mini',   shortcut: 'Alt+W', action: () => window.api?.openWidget() },
 ];
 
-export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activePage, onNavigate, lightTheme, onToggleTheme }) {
+const THEME_CYCLE = { dark: 'noir', noir: 'light', light: 'dark' };
+const THEME_LABELS = { dark: 'Noir', noir: 'Clair', light: 'Sombre' };
+const ThemeIcon = ({ theme, size = 12 }) => {
+  if (theme === 'noir') return <NoirIcon size={size} />;
+  if (theme === 'light') return <MoonIcon size={size} />;
+  return <SunIcon size={size} />;
+};
+
+export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activePage, onNavigate, theme = 'dark', onCycleTheme }) {
   const minimize = () => window.api?.minimize();
   const maximize = () => window.api?.maximize();
   const close = () => window.api?.close();
@@ -95,10 +110,10 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activeP
 
         <button
           className="tb-theme-toggle"
-          onClick={onToggleTheme}
-          title={lightTheme ? 'Mode sombre' : 'Mode clair'}
+          onClick={onCycleTheme}
+          title={`Thème : ${theme.charAt(0).toUpperCase() + theme.slice(1)} → ${THEME_CYCLE[theme].charAt(0).toUpperCase() + THEME_CYCLE[theme].slice(1)}`}
         >
-          {lightTheme ? <MoonIcon size={12} /> : <SunIcon size={12} />}
+          <ThemeIcon theme={theme} size={12} />
         </button>
 
         <button

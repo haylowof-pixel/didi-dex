@@ -164,7 +164,13 @@
     display: none;
     flex-direction: column;
     gap: 0;
+    max-height: 560px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
+  #taming-panel::-webkit-scrollbar { width: 4px; }
+  #taming-panel::-webkit-scrollbar-track { background: transparent; }
+  #taming-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
   #taming-panel.visible { display: flex; }
 
   /* Dino header */
@@ -547,6 +553,86 @@
     white-space: nowrap;
   }
 
+  /* ── Theme: Noir ── */
+  html.noir-theme {
+    --bg-deep: #000000;
+    --bg-panel: rgba(6,6,6,0.99);
+    --border: rgba(255,255,255,0.07);
+    --border-hi: rgba(255,255,255,0.18);
+    --text-1: #ffffff;
+    --text-2: #c0c0c0;
+    --text-3: #606060;
+    --accent: #7B93F8;
+    --green: #2dd4a0;
+    --red: #ef5f5f;
+    --orange: #f0993e;
+  }
+  html.noir-theme body { background: transparent; }
+  html.noir-theme #panel {
+    background: rgba(4,4,4,0.99);
+    border-color: rgba(255,255,255,0.07);
+    box-shadow: 0 20px 60px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  html.noir-theme #search-row { border-bottom-color: rgba(255,255,255,0.06); }
+  html.noir-theme #results { border-bottom-color: rgba(255,255,255,0.06); }
+  html.noir-theme .result-item:hover, html.noir-theme .result-item.focused {
+    background: rgba(255,255,255,0.04);
+    border-left-color: var(--accent);
+  }
+  html.noir-theme #stats-grid { background: rgba(255,255,255,0.05); }
+  html.noir-theme .stat-cell { background: rgba(4,4,4,0.99); }
+  html.noir-theme #food-compare { border-top-color: rgba(255,255,255,0.06); }
+  html.noir-theme #food-compare-header { border-bottom-color: rgba(255,255,255,0.06); }
+  html.noir-theme .food-card { background: rgba(6,6,6,0.98); border-color: rgba(255,255,255,0.07); }
+  html.noir-theme .food-card.active { border-color: rgba(123,147,248,0.3); }
+  html.noir-theme #footer { border-top-color: rgba(255,255,255,0.06); }
+  html.noir-theme #ko-section { border-top-color: rgba(255,255,255,0.06); }
+  html.noir-theme .ko-cell { background: rgba(6,6,6,0.98); border-color: rgba(255,255,255,0.07); }
+  html.noir-theme .ko-tab, html.noir-theme .ko-preset-btn, html.noir-theme .ko-quality-input {
+    background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08);
+  }
+  html.noir-theme .ko-tab.active, html.noir-theme .ko-preset-btn.active {
+    background: rgba(123,147,248,0.12); border-color: rgba(123,147,248,0.3);
+  }
+
+  /* ── Theme: Light ── */
+  html.light-theme {
+    --bg-deep: #f0f0f5;
+    --bg-panel: rgba(255,255,255,0.96);
+    --border: rgba(0,0,0,0.08);
+    --border-hi: rgba(123,147,248,0.35);
+    --accent: #5B75DA;
+    --accent-dim: rgba(91,117,218,0.08);
+    --text-1: #1a1a2e;
+    --text-2: #444466;
+    --text-3: #9090aa;
+    --green: #1aab7a;
+    --red: #d94040;
+    --orange: #c07020;
+  }
+  html.light-theme body { background: #eeeef5; }
+  html.light-theme #panel {
+    background: rgba(255,255,255,0.96);
+    border-color: rgba(0,0,0,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  html.light-theme #search-row { border-bottom-color: rgba(0,0,0,0.07); }
+  html.light-theme #search { color: #1a1a2e; }
+  html.light-theme #results { border-bottom-color: rgba(0,0,0,0.07); }
+  html.light-theme .result-item:hover, html.light-theme .result-item.focused {
+    background: rgba(91,117,218,0.06);
+  }
+  html.light-theme #stats-grid { background: rgba(0,0,0,0.06); }
+  html.light-theme .stat-cell { background: rgba(255,255,255,0.97); }
+  html.light-theme .stat-value { color: #1a1a2e; }
+  html.light-theme #food-compare { border-top-color: rgba(0,0,0,0.07); }
+  html.light-theme #food-compare-header { border-bottom-color: rgba(0,0,0,0.07); }
+  html.light-theme .food-card { background: #f8f8fc; border-color: rgba(0,0,0,0.07); }
+  html.light-theme .food-card.active { border-color: rgba(91,117,218,0.3); }
+  html.light-theme #footer { border-top-color: rgba(0,0,0,0.07); background: rgba(250,250,253,0.98); }
+  html.light-theme #ko-section { border-top-color: rgba(0,0,0,0.07); }
+  html.light-theme .ko-cell { background: #f8f8fc; border-color: rgba(0,0,0,0.07); }
+
   /* Empty state */
   #empty {
     padding: 24px 16px;
@@ -581,8 +667,14 @@
     display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
   }
   .ko-quality-label { font-size: 10px; color: var(--text-3); font-weight: 600; text-transform: uppercase; flex-shrink: 0; }
-  .ko-slider { flex: 1; accent-color: var(--accent); height: 3px; cursor: pointer; }
-  .ko-quality-val { font-size: 11px; font-weight: 700; color: var(--accent); min-width: 36px; text-align: right; }
+  .ko-quality-input {
+    width: 64px; padding: 3px 6px; font-size: 13px; font-weight: 700;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--accent); font-family: inherit;
+    text-align: right; outline: none;
+  }
+  .ko-quality-input:focus { border-color: var(--border-hi); }
+  .ko-quality-pct { font-size: 12px; font-weight: 700; color: var(--text-3); }
 
   .ko-presets { display: flex; gap: 4px; margin-bottom: 8px; }
   .ko-preset-btn {
@@ -745,8 +837,8 @@
         <div id="ko-body">
           <div class="ko-quality-row">
             <span class="ko-quality-label">Dégâts arme</span>
-            <input type="range" id="ko-quality-slider" class="ko-slider" min="100" max="500" step="10" value="100" oninput="onKoQuality(this.value)"/>
-            <span class="ko-quality-val" id="ko-quality-val">100%</span>
+            <input type="number" id="ko-quality-input" class="ko-quality-input" min="100" max="999" step="10" value="100" oninput="onKoQuality(this.value)"/>
+            <span class="ko-quality-pct">%</span>
           </div>
           <div class="ko-presets">
             <button class="ko-preset-btn active" onclick="setKoQuality(100)">100%</button>
@@ -1254,7 +1346,7 @@ function recalculate() {
 // ── Knockout Calculator ──────────────────────────────
 var koQuality = 100;
 var koWeapon  = 'bow';
-var koVisible = true;
+var koVisible = false;
 
 function toggleKO() {
   koVisible = !koVisible;
@@ -1264,10 +1356,10 @@ function toggleKO() {
 }
 
 function onKoQuality(v) {
-  koQuality = parseInt(v);
-  document.getElementById('ko-quality-val').textContent = koQuality + '%';
-  // update active preset button
-  document.querySelectorAll('.ko-preset-btn').forEach(b => {
+  var parsed = parseInt(v);
+  if (isNaN(parsed) || parsed < 100) return;
+  koQuality = parsed;
+  document.querySelectorAll('.ko-preset-btn').forEach(function(b) {
     b.classList.toggle('active', parseInt(b.textContent) === koQuality);
   });
   renderKOStats();
@@ -1275,9 +1367,8 @@ function onKoQuality(v) {
 
 function setKoQuality(v) {
   koQuality = v;
-  document.getElementById('ko-quality-slider').value = v;
-  document.getElementById('ko-quality-val').textContent = v + '%';
-  document.querySelectorAll('.ko-preset-btn').forEach(b => {
+  document.getElementById('ko-quality-input').value = v;
+  document.querySelectorAll('.ko-preset-btn').forEach(function(b) {
     b.classList.toggle('active', parseInt(b.textContent) === v);
   });
   renderKOStats();
@@ -1289,6 +1380,10 @@ function renderKO() {
   const koSection = document.getElementById('ko-section');
   koSection.classList.toggle('visible', isKO);
   if (!isKO) return;
+
+  // Init collapsed state
+  document.getElementById('ko-body').style.display = koVisible ? '' : 'none';
+  document.getElementById('ko-toggle').classList.toggle('collapsed', !koVisible);
 
   // Build weapon tabs
   const tabsEl = document.getElementById('ko-weapon-tabs');
@@ -1467,6 +1562,21 @@ window.addEventListener('DOMContentLoaded', () => {
   showHistory();
 });
 setTimeout(() => { searchEl.focus(); syncWindowSize(); }, 50);
+
+// ── Theme ────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.classList.remove('noir-theme', 'light-theme');
+  if (theme === 'noir' || theme === 'light') {
+    document.documentElement.classList.add(theme + '-theme');
+  }
+}
+applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+if (window.api && window.api.onThemeChange) {
+  window.api.onThemeChange(function(theme) {
+    localStorage.setItem('overseer-theme', theme);
+    applyTheme(theme);
+  });
+}
 </script>
 </body>
 </html>

@@ -1614,3 +1614,13 @@ ipcMain.on('save-fav-servers', (_, data) => {
     fs.writeFileSync(getFavServersPath(), JSON.stringify(data, null, 2), 'utf8');
   } catch(e) {}
 });
+
+// ── Theme broadcast ────────────────────────────────────────────────────────
+ipcMain.on('set-theme', (_, theme) => {
+  // Broadcast to all open windows so shell pages can update
+  BrowserWindow.getAllWindows().forEach(win => {
+    if (!win.isDestroyed()) {
+      win.webContents.send('theme-changed', theme);
+    }
+  });
+});

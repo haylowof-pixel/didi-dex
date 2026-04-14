@@ -135,4 +135,7 @@ contextBridge.exposeInMainWorld('api', {
   installUpdate:     () => ipcRenderer.send('install-update'),
   getAppVersion:     () => ipcRenderer.invoke('get-app-version'),
   onUpdateStatus:    (cb) => ipcRenderer.on('update-status', (_, data) => cb(data)),
+  // Theme
+  setTheme:          (theme) => ipcRenderer.send('set-theme', theme),
+  onThemeChange:     (cb) => ipcRenderer.on('theme-changed', (_, theme) => cb(theme)),
 });

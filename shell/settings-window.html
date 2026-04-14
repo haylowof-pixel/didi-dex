@@ -308,6 +308,16 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
   <!-- Content -->
   <div id="content">
 
+    <!-- Theme -->
+    <div class="section">
+      <div class="section-title"><span class="s-ico">🎨</span>Thème</div>
+      <div class="scale-presets" id="theme-btns" style="gap:8px;flex-wrap:wrap">
+        <button class="scale-preset" id="theme-dark"  onclick="setThemeOption('dark')" style="width:auto;padding:6px 16px">🌌 Sombre</button>
+        <button class="scale-preset" id="theme-noir"  onclick="setThemeOption('noir')" style="width:auto;padding:6px 16px">⚫ Noir</button>
+        <button class="scale-preset" id="theme-light" onclick="setThemeOption('light')" style="width:auto;padding:6px 16px">☀️ Clair</button>
+      </div>
+    </div>
+
     <!-- Scale -->
     <div class="section">
       <div class="section-title"><span class="s-ico">🔍</span>Échelle de l'interface</div>
@@ -855,6 +865,31 @@ if (window.api && window.api.checkForUpdates) {
 }
 
 // Video background replaces canvas animation
+
+// ── Theme ────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.classList.remove('noir-theme', 'light-theme');
+  if (theme === 'noir' || theme === 'light') document.documentElement.classList.add(theme + '-theme');
+  document.querySelectorAll('#theme-btns .scale-preset').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  var btn = document.getElementById('theme-' + theme);
+  if (btn) btn.classList.add('active');
+}
+
+function setThemeOption(theme) {
+  localStorage.setItem('overseer-theme', theme);
+  applyTheme(theme);
+  if (window.api && window.api.setTheme) window.api.setTheme(theme);
+}
+
+applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+if (window.api && window.api.onThemeChange) {
+  window.api.onThemeChange(function(theme) {
+    localStorage.setItem('overseer-theme', theme);
+    applyTheme(theme);
+  });
+}
 </script>
 <script>/* IFRAME_DETECT */ if(window.self !== window.top) document.body.classList.add("embedded");</script>
 </body>

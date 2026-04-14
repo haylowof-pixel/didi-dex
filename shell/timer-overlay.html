@@ -676,6 +676,18 @@ ro.observe(document.getElementById('shell'));
 // ===== INIT =====
 renderAll();
 setTimeout(syncHeight, 80);
+
+// ── Theme ──
+(function() {
+  function applyTheme(t) {
+    document.documentElement.classList.remove('noir-theme','light-theme');
+    if (t === 'noir' || t === 'light') document.documentElement.classList.add(t + '-theme');
+  }
+  applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+  if (window.api && window.api.onThemeChange) {
+    window.api.onThemeChange(function(t) { localStorage.setItem('overseer-theme', t); applyTheme(t); });
+  }
+})();
 </script>
 </body>
 </html>
