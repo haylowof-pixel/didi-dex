@@ -51,6 +51,8 @@ var FOOD_TYPES = {
   PLANT_SPECIES_Y_SEED: { name: 'Plant Species Y Seed', icon: W('Plant_Species_Y_Seed'), img: W('Plant_Species_Y_Seed'), color: '#00b894' },
   SEEDS: { name: 'Seeds', icon: W('Amarberry_Seed'), img: W('Amarberry_Seed'), color: '#badc58' },
   CHITIN: { name: 'Chitin', icon: W('Chitin'), img: W('Chitin'), color: '#786fa6' },
+  PLANT_SPECIES_Z_SEED: { name: 'Plant Species Z Seed', icon: W('Plant_Species_Z_Seed'), img: W('Plant_Species_Z_Seed'), color: '#6c5ce7' },
+  ASCERBIC_MUSHROOM: { name: 'Ascerbic Mushroom', icon: W('Ascerbic_Mushroom'), img: W('Ascerbic_Mushroom'), color: '#55efc4' },
 };
 
 var NARCOTICS = {
@@ -2174,6 +2176,26 @@ var dinosaurs = [
     tips: 'Aberration. Utilise les ziplines. Pack bonus. Réduit le poids de certaines ressources.',
   },
   {
+    id: 'cosmo',
+    name: 'Cosmo',
+    aka: 'Spider, Araignée',
+    category: CATEGORIES.CARNIVORE,
+    tamingMethod: TAMING_METHOD.PASSIVE,
+    icon: '🕷️',
+    image: null,
+    baseHealth: 120,
+    torpor: { base: 0, perLevel: 0, depletion: 0 },
+    tamingFoods: [
+      { food: 'PLANT_SPECIES_Z_SEED', affinityPerItem: 176, foodPerItem: 0, timePerItem: 30 },
+      { food: 'ASCERBIC_MUSHROOM', affinityPerItem: 38, foodPerItem: 0, timePerItem: 30 },
+      { food: 'CHITIN', affinityPerItem: 24, foodPerItem: 0, timePerItem: 15 },
+    ],
+    baseTamingAffinity: 250,
+    affinityPerLevel: 35,
+    foodDrainBase: 0.001302,
+    tips: 'Aberration. Tame passif — jeu feu rouge/vert. Pet d\'épaule. Tire des toiles sur les ennemis.',
+  },
+  {
     id: 'rollrat',
     name: 'Roll Rat',
     aka: 'Roll Rat',
@@ -2390,7 +2412,7 @@ var dinosaurs = [
     baseHealth: 95,
     torpor: { base: 50, perLevel: 3, depletion: 0 },
     tamingFoods: [
-      { food: 'CHITIN', affinityPerItem: 80, foodPerItem: 0, timePerItem: 15 },
+      { food: 'CHITIN', affinityPerItem: 12, foodPerItem: 0, timePerItem: 15 },
     ],
     baseTamingAffinity: 300,
     affinityPerLevel: 15,
@@ -2697,7 +2719,7 @@ var dinosaurs = [
     torpor: { base: 75, perLevel: 4.5, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_SIMPLE', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
-      { food: 'CHITIN', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
+      { food: 'CHITIN', affinityPerItem: 12, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 225,
     affinityPerLevel: 11.25,
@@ -3675,185 +3697,182 @@ var ASB_TAMING = {"Aberrant Achatina":{"a0":4000,"aL":150,"fr":0.001736,"fm":864
 // These are the base food stat values in ARK: Survival Ascended.
 const ASA_MAX_FOOD = {
   // ── Apex / Large carnivores ──────────────────────────────────────────────
-  'Rex':                3000,
-  'Giganotosaurus':     12000,
-  'Spinosaurus':        3000,
-  'Yutyrannus':         4000,
-  'Carcharodontosaurus':8000,
-  'Allosaurus':         4000,
-  'Megalosaurus':       3500,
-  'Baryonyx':           3000,
-  'Carnotaurus':        3000,
-  'Therizinosaur':      8000,  // herbivore but large
-  'Therizinosaurus':    8000,
+  'Rex':                1350,
+  'Giganotosaurus':     4350,
+  'Spinosaurus':        1350,
+  'Yutyrannus':         1650,
+  'Carcharodontosaurus':3250,
+  'Allosaurus':         1650,
+  'Megalosaurus':       1350,
+  'Baryonyx':           1100,
+  'Carnotaurus':        1100,
+  'Therizinosaur':      3250,
+  'Therizinosaurus':    3250,
 
   // ── Medium carnivores ────────────────────────────────────────────────────
-  'Raptor':             1500,
-  'Dilophosaur':        1200,
-  'Compy':              450,
-  'Kaprosuchus':        2000,
-  'Sarco':              3000,
-  'Sabertooth':         2000,
-  'Terror Bird':        2000,
-  'Deinonychus':        1500,
-  'Thylacoleo':         2500,
-  'Megalania':          3000,
-  'Direwolf':           2000,
-  'Dire Bear':          6000,
-  'Megatherium':        8000,
-  'Purlovia':           2000,
-  'Titanoboa':          2000,
+  'Raptor':             550,
+  'Dilophosaur':        450,
+  'Compy':              200,
+  'Kaprosuchus':        800,
+  'Sarco':              1100,
+  'Sabertooth':         800,
+  'Terror Bird':        800,
+  'Deinonychus':        550,
+  'Thylacoleo':         1000,
+  'Megalania':          1100,
+  'Direwolf':           800,
+  'Dire Bear':          2200,
+  'Megatherium':        3250,
+  'Purlovia':           800,
+  'Titanoboa':          800,
 
   // ── Flying carnivores ────────────────────────────────────────────────────
-  'Argentavis':         3000,
-  'Pteranodon':         1500,
-  'Quetzal':            8000,  // ASA Quetzal significantly higher
-  'Quetzalcoatlus':     8000,
-  'Tapejara':           2000,
-  'Dimorphodon':        1000,
-  'Griffin':            3000,
-  'Royal Griffin':      3000,
-  'Tropeognathus':      3000,
+  'Argentavis':         800,
+  'Pteranodon':         500,
+  'Quetzal':            2750,
+  'Quetzalcoatlus':     2750,
+  'Tapejara':           800,
+  'Dimorphodon':        400,
+  'Griffin':            1100,
+  'Royal Griffin':      1100,
+  'Tropeognathus':      1100,
 
   // ── Aquatic ─────────────────────────────────────────────────────────────
-  'Megalodon':          3000,
-  'Mosasaurus':         14000,
-  'Plesiosaur':         8000,
-  'Tusoteuthis':        16000,
-  'Anglerfish':         2000,
-  'Beelzebufo':         3000,
-  'Baryonyx':           3000,
-  'Electrophorus':      2000,
-  'Liopleurodon':       3000,
-  'Dunkleosteus':       2500,
-  'Basilosaurus':       10000,
-  'Cnidaria':           1000,
-  'Manta':              2000,
+  'Megalodon':          1100,
+  'Mosasaurus':         5500,
+  'Plesiosaur':         3250,
+  'Tusoteuthis':        6500,
+  'Anglerfish':         800,
+  'Beelzebufo':         1100,
+  'Electrophorus':      800,
+  'Liopleurodon':       1100,
+  'Dunkleosteus':       1000,
+  'Basilosaurus':       3800,
+  'Cnidaria':           400,
+  'Manta':              800,
 
   // ── Large herbivores ─────────────────────────────────────────────────────
-  'Brontosaurus':       8000,
-  'Triceratops':        6000,
-  'Stegosaurus':        6000,
-  'Ankylosaurus':       6000,
-  'Doedicurus':         4000,
-  'Kentrosaurus':       6000,
-  'Mammoth':            6000,
-  'Woolly Mammoth':     6000,
-  'Paraceratherium':    12000,
-  'Woolly Rhino':       6000,
-  'Megachelon':         16000,
-  'Diplodocus':         8000,
-  'Pachyrhinosaurus':   8000,
-  'Chalicotherium':     8000,
-  'Castoroides':        3000,
-  'Megatherium':        8000,
-  'Carbonemys':         6000,
-  'Procoptodon':        4000,
+  'Brontosaurus':       3800,
+  'Triceratops':        2750,
+  'Stegosaurus':        2700,
+  'Ankylosaurus':       2750,
+  'Doedicurus':         1650,
+  'Kentrosaurus':       2750,
+  'Mammoth':            2450,
+  'Woolly Mammoth':     2450,
+  'Paraceratherium':    4900,
+  'Woolly Rhino':       2450,
+  'Megachelon':         6550,
+  'Diplodocus':         3250,
+  'Pachyrhinosaurus':   3250,
+  'Chalicotherium':     3250,
+  'Castoroides':        1200,
+  'Carbonemys':         2450,
+  'Procoptodon':        1650,
 
   // ── Medium herbivores ────────────────────────────────────────────────────
-  'Parasaur':           4000,
-  'Iguanodon':          3000,
-  'Trike':              6000,  // alias
-  'Stego':              6000,  // alias
-  'Morellatops':        5000,
-  'Gallimimus':         3000,
-  'Megaloceros':        2000,
-  'Pachycephalosaurus': 1800,
-  'Pachy':              1800,
-  'Moschops':           3000,
-  'Phiomia':            5000,
-  'Ovis':               2500,
-  'Equus':              3500,
-  'Roll Rat':           3500,
-  'Maewing':            3000,
+  'Parasaur':           1650,
+  'Iguanodon':          1200,
+  'Trike':              2750,
+  'Stego':              2700,
+  'Morellatops':        1900,
+  'Gallimimus':         1200,
+  'Megaloceros':        800,
+  'Pachycephalosaurus': 700,
+  'Pachy':              700,
+  'Moschops':           1200,
+  'Phiomia':            1900,
+  'Ovis':               1000,
+  'Equus':              1350,
+  'Roll Rat':           1350,
+  'Maewing':            1200,
 
   // ── Small / passive ──────────────────────────────────────────────────────
-  'Lystrosaurus':       450,
-  'Dodo':               450,
-  'Mesopithecus':       500,
-  'Kairuku':            1500,
-  'Jerboa':             800,
-  'Compsognathus':      450,
-  'Dung Beetle':        1000,
-  'Archaeopteryx':      800,
-  'Achatina':           1000,
-  'Hesperornis':        1500,
-  'Ichthyornis':        1500,
-  'Diplocaulus':        1500,
-  'Vulture':            1000,
-  'Pegomastax':         800,
-  'Sinomacrops':        800,
-  'Microraptor':        800,
-  'Otter':              1200,
-  'Bulbdog':            800,
-  'Featherlight':       800,
-  'Glowtail':           800,
-  'Shinehorn':          800,
+  'Lystrosaurus':       200,
+  'Dodo':               200,
+  'Mesopithecus':       200,
+  'Kairuku':            550,
+  'Jerboa':             350,
+  'Compsognathus':      200,
+  'Dung Beetle':        400,
+  'Archaeopteryx':      350,
+  'Achatina':           400,
+  'Hesperornis':        550,
+  'Ichthyornis':        550,
+  'Diplocaulus':        550,
+  'Vulture':            400,
+  'Pegomastax':         350,
+  'Sinomacrops':        350,
+  'Microraptor':        350,
+  'Otter':              500,
+  'Bulbdog':            350,
+  'Featherlight':       350,
+  'Glowtail':           350,
+  'Shinehorn':          350,
 
   // ── Special / Scorched Earth ─────────────────────────────────────────────
-  'Thorny Dragon':      2000,
-  'Lymantria':          2500,
-  'Mantis':             3000,
-  'Phoenix':            5000,
+  'Thorny Dragon':      800,
+  'Lymantria':          1000,
+  'Mantis':             1200,
+  'Phoenix':            1900,
 
   // ── Aberration ───────────────────────────────────────────────────────────
-  'Rock Drake':         5000,
-  'Ravager':            2500,
-  'Basilisk':           4000,
-  'Reaper King':        12000,
-  'Karkinos':           10000,
-  'Nameless':           4000,
-  'Meganeura':          800,
+  'Rock Drake':         1900,
+  'Ravager':            1000,
+  'Cosmo':              300,
+  'Basilisk':           1650,
+  'Reaper King':        4900,
+  'Karkinos':           3800,
+  'Nameless':           1650,
+  'Meganeura':          350,
 
   // ── Extinction ───────────────────────────────────────────────────────────
-  'Gacha':              8000,
-  'Snow Owl':           3500,
-  'Gasbags':            8000,
-  'Velonasaur':         3000,
-  'Managarmr':          3000,
+  'Gacha':              3250,
+  'Snow Owl':           1350,
+  'Gasbags':            3250,
+  'Velonasaur':         1200,
+  'Managarmr':          1200,
 
   // ── Genesis / Lost Island / Fjordur ─────────────────────────────────────
-  'Shadowmane':         6000,
-  'Ferox':              2000,
-  'Noglin':             800,
-  'Astrodelphis':       3000,
-  'Bloodstalker':       8000,
-  'Maewing':            3000,
-  'Fjordhawk':          2000,
-  'Desmodus':           3000,
-  'Andrewsarchus':      8000,
-  'Amargasaurus':       12000,
-  'Dinopithecus':       3500,
-  'Rhyniognatha':       8000,
+  'Shadowmane':         2450,
+  'Ferox':              800,
+  'Noglin':             350,
+  'Astrodelphis':       1200,
+  'Bloodstalker':       3250,
+  'Fjordhawk':          800,
+  'Desmodus':           1200,
+  'Andrewsarchus':      3250,
+  'Amargasaurus':       4900,
+  'Dinopithecus':       1350,
+  'Rhyniognatha':       3250,
 
   // ── Misc ────────────────────────────────────────────────────────────────
-  'Pelagornis':         2000,
-  'Daeodon':            4000,
-  'Gigantopithecus':    4000,
-  'Giant Bee':          800,
-  'Ichthyosaurus':      2000,
-  'Sarcosuchus':        3000,
-  'Araneo':             3000,
-  'Arthropluera':       3000,
-  'Piranha':            1000,
-  'Pulmonoscorpius':    1800,
-  'Kaprosuchus':        2000,
-  'Dilophosaur':        1200,
-  'Dimetrodon':         3000,
+  'Pelagornis':         800,
+  'Daeodon':            1650,
+  'Gigantopithecus':    1650,
+  'Giant Bee':          350,
+  'Ichthyosaurus':      800,
+  'Sarcosuchus':        1100,
+  'Araneo':             1200,
+  'Arthropluera':       1100,
+  'Piranha':            400,
+  'Pulmonoscorpius':    700,
+  'Kaprosuchus':        800,
+  'Dimetrodon':         1200,
 };
 
 // Estimate max food based on fr tier when no explicit value is available.
 // Thresholds calibrated for ASA food drain rates.
 function estimateMaxFood(fr) {
-  if (fr <= 0.001)     return 600;
-  if (fr <= 0.001302)  return 1200;
-  if (fr <= 0.001543)  return 2000;
-  if (fr <= 0.001929)  return 3500;
-  if (fr <= 0.002314)  return 4000;
-  if (fr <= 0.003156)  return 6000;
-  if (fr <= 0.005)     return 8000;
-  if (fr <= 0.008)     return 10000;
-  return 14000;
+  if (fr <= 0.001)     return 200;
+  if (fr <= 0.001302)  return 450;
+  if (fr <= 0.001543)  return 750;
+  if (fr <= 0.001929)  return 1200;
+  if (fr <= 0.002314)  return 1550;
+  if (fr <= 0.003156)  return 2200;
+  if (fr <= 0.005)     return 3000;
+  if (fr <= 0.008)     return 3800;
+  return 5500;
 }
 
 const FOOD_AFFINITY = {
@@ -3896,7 +3915,6 @@ const FOOD_AFFINITY = {
   MUTAGEL: 1200,
   DEATHWORM_HORN: 1600,
   PLANT_SPECIES_Y_SEED: 200,
-  CHITIN: 150,
 };
 
 // Map dinosaurs.js names to ASB_TAMING keys
@@ -3984,12 +4002,9 @@ function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
   const secondsPerFood = foodPerItem / foodDrainPerSec;
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
 
-  // --- Starve time (ASA corrected maxFood) ---
-  const totalFoodPointsNeeded = foodNeeded * foodPerItem;
+  // --- Starve time: maxFood / (drain × tamingMult) — matches Dododex ---
   const maxFood = getMaxFood(dino, foodRate);
-  const starveTimeSeconds = maxFood > totalFoodPointsNeeded
-    ? Math.ceil((maxFood - totalFoodPointsNeeded) / foodDrainPerSec)
-    : 0;
+  const starveTimeSeconds = Math.ceil(maxFood / (foodDrainPerSec * tamingMultiplier));
 
   // --- Torpor ---
   const maxTorpor = dino.torpor.base + dino.torpor.perLevel * level;
