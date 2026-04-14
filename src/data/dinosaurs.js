@@ -47,6 +47,8 @@ export const FOOD_TYPES = {
   MUTAGEL: { name: 'Mutagel', icon: W('Mutagel'), img: W('Mutagel'), color: '#00b894' },
   DEATHWORM_HORN: { name: 'Deathworm Horn', icon: W('Deathworm_Horn'), img: W('Deathworm_Horn'), color: '#fdcb6e' },
   PLANT_SPECIES_Y_SEED: { name: 'Plant Species Y Seed', icon: W('Plant_Species_Y_Seed'), img: W('Plant_Species_Y_Seed'), color: '#00b894' },
+  PLANT_SPECIES_Z_SEED: { name: 'Plant Species Z Seed', icon: W('Plant_Species_Z_Seed'), img: W('Plant_Species_Z_Seed'), color: '#6c5ce7' },
+  ASCERBIC_MUSHROOM: { name: 'Ascerbic Mushroom', icon: W('Ascerbic_Mushroom'), img: W('Ascerbic_Mushroom'), color: '#55efc4' },
   SEEDS: { name: 'Seeds', icon: W('Amarberry_Seed'), img: W('Amarberry_Seed'), color: '#badc58' },
   CHITIN: { name: 'Chitin', icon: W('Chitin'), img: W('Chitin'), color: '#786fa6' },
 };
@@ -2172,6 +2174,26 @@ export const dinosaurs = [
     tips: 'Aberration. Utilise les ziplines. Pack bonus. Réduit le poids de certaines ressources.',
   },
   {
+    id: 'cosmo',
+    name: 'Cosmo',
+    aka: 'Spider, Araignée',
+    category: CATEGORIES.CARNIVORE,
+    tamingMethod: TAMING_METHOD.PASSIVE,
+    icon: '🕷️',
+    image: null,
+    baseHealth: 120,
+    torpor: { base: 0, perLevel: 0, depletion: 0 },
+    tamingFoods: [
+      { food: 'PLANT_SPECIES_Z_SEED', affinityPerItem: 176, foodPerItem: 0, timePerItem: 30 },
+      { food: 'ASCERBIC_MUSHROOM', affinityPerItem: 38, foodPerItem: 0, timePerItem: 30 },
+      { food: 'CHITIN', affinityPerItem: 24, foodPerItem: 0, timePerItem: 15 },
+    ],
+    baseTamingAffinity: 250,
+    affinityPerLevel: 35,
+    foodDrainBase: 0.001302,
+    tips: 'Aberration. Tame passif — jeu feu rouge/vert. Pet d\'épaule. Tire des toiles sur les ennemis.',
+  },
+  {
     id: 'rollrat',
     name: 'Roll Rat',
     aka: 'Roll Rat',
@@ -2388,7 +2410,7 @@ export const dinosaurs = [
     baseHealth: 95,
     torpor: { base: 50, perLevel: 3, depletion: 0 },
     tamingFoods: [
-      { food: 'CHITIN', affinityPerItem: 80, foodPerItem: 0, timePerItem: 15 },
+      { food: 'CHITIN', affinityPerItem: 12, foodPerItem: 0, timePerItem: 15 },
     ],
     baseTamingAffinity: 300,
     affinityPerLevel: 15,
@@ -2695,7 +2717,7 @@ export const dinosaurs = [
     torpor: { base: 75, perLevel: 4.5, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_SIMPLE', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
-      { food: 'CHITIN', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
+      { food: 'CHITIN', affinityPerItem: 12, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 225,
     affinityPerLevel: 11.25,

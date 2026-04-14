@@ -151,6 +151,7 @@ const ASA_MAX_FOOD = {
   // ── Aberration ───────────────────────────────────────────────────────────
   'Rock Drake':         1900,
   'Ravager':            1000,
+  'Cosmo':              300,
   'Basilisk':           1650,
   'Reaper King':        4900,
   'Karkinos':           3800,
@@ -245,7 +246,6 @@ const FOOD_AFFINITY = {
   MUTAGEL: 1200,
   DEATHWORM_HORN: 1600,
   PLANT_SPECIES_Y_SEED: 200,
-  CHITIN: 150,
 };
 
 // Map dinosaurs.js names to ASB_TAMING keys
