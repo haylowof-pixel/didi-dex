@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { formatTimerDisplay } from '../data/tamingCalculator';
+import { formatTimerDisplay, calculateKnockout, WEAPONS } from '../data/tamingCalculator';
 import { ClockIcon, DropletIcon, ZapIcon, ShieldIcon, PlayIcon, PauseIcon, ResetIcon, PlusIcon, PillIcon, AlertIcon, SkullIcon, SparklesIcon, InfoIcon } from './Icons';
 import { NARCOTICS } from '../data/dinosaurs';
 
@@ -343,7 +343,10 @@ export default function TamingPanel({ result, dino, level }) {
       </div>
       )}
 
-      {/* SECTION 6: Tips */}
+      {/* SECTION 6: Knockout Calculator (Knockout only) */}
+      {!isPassive && <KnockoutCalc dino={dino} level={level} />}
+
+      {/* SECTION 7: Tips */}
       {dino.tips && (
         <div className="tp-section tp-tips">
           <div className="tp-section-header">
@@ -351,6 +354,89 @@ export default function TamingPanel({ result, dino, level }) {
             <span>Tips</span>
           </div>
           <div className="tp-info-text">{dino.tips}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const QUALITY_PRESETS = [
+  { label: '100%', value: 100 },
+  { label: '200%', value: 200 },
+  { label: '300%', value: 300 },
+  { label: '400%', value: 400 },
+];
+
+function KnockoutCalc({ dino, level }) {
+  const [quality, setQuality] = useState(100);
+  const [activeWeapon, setActiveWeapon] = useState('bow');
+
+  const koResults = useMemo(() => calculateKnockout(dino, level, quality), [dino, level, quality]);
+  const selected = koResults.find(w => w.key === activeWeapon) || koResults[0];
+
+  const riskColor = selected.killRisk === 'high' ? 'var(--red)' : selected.killRisk === 'med' ? 'var(--orange)' : 'var(--green)';
+  const riskLabel = selected.killRisk === 'high' ? 'Danger' : selected.killRisk === 'med' ? 'Risque' : 'Safe';
+
+  return (
+    <div className="tp-section tp-knockout">
+      <div className="tp-section-header">
+        <SkullIcon size={14} />
+        <span>Knockout Calculator</span>
+      </div>
+
+      {/* Quality slider */}
+      <div className="tp-ko-quality-row">
+        <span className="tp-ko-quality-label">Dégâts arme</span>
+        <input
+          type="range" min={100} max={500} step={10}
+          value={quality}
+          onChange={e => setQuality(Number(e.target.value))}
+          className="tp-ko-slider"
+        />
+        <span className="tp-ko-quality-val">{quality}%</span>
+      </div>
+      <div className="tp-ko-presets">
+        {QUALITY_PRESETS.map(p => (
+          <button key={p.value}
+            className={`tp-btn tp-btn-xs ${quality === p.value ? 'active' : ''}`}
+            onClick={() => setQuality(p.value)}
+          >{p.label}</button>
+        ))}
+      </div>
+
+      {/* Weapon tabs */}
+      <div className="tp-ko-weapon-tabs">
+        {koResults.map(w => (
+          <button key={w.key}
+            className={`tp-ko-tab ${activeWeapon === w.key ? 'active' : ''}`}
+            onClick={() => setActiveWeapon(w.key)}
+          >{w.icon} {w.name}</button>
+        ))}
+      </div>
+
+      {/* Selected weapon stats */}
+      {selected && (
+        <div className="tp-ko-stats">
+          <div className="tp-ko-ammo">{selected.ammo}</div>
+          <div className="tp-ko-grid">
+            <div className="tp-ko-cell">
+              <div className="tp-ko-cell-label">Corps</div>
+              <div className="tp-ko-cell-shots">{selected.shotsBody}</div>
+              <div className="tp-ko-cell-sub">tirs</div>
+              <div className="tp-ko-cell-dmg">{selected.dmgBody} dmg</div>
+            </div>
+            <div className="tp-ko-cell tp-ko-cell-head">
+              <div className="tp-ko-cell-label">Tête 🎯</div>
+              <div className="tp-ko-cell-shots">{selected.shotsHead}</div>
+              <div className="tp-ko-cell-sub">tirs</div>
+              <div className="tp-ko-cell-dmg">{selected.dmgHead} dmg</div>
+            </div>
+            <div className="tp-ko-cell tp-ko-cell-risk">
+              <div className="tp-ko-cell-label">Risque de mort</div>
+              <div className="tp-ko-cell-shots" style={{ color: riskColor }}>{riskLabel}</div>
+              <div className="tp-ko-cell-sub" style={{ color: riskColor }}>{selected.dmgBody} / tir</div>
+            </div>
+          </div>
         </div>
       )}
     </div>

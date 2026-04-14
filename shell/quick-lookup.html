@@ -556,6 +556,68 @@
     display: none;
   }
   #empty.visible { display: block; }
+
+  /* ── Knockout Calculator ── */
+  #ko-section {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  #ko-section.visible { display: block; }
+
+  #ko-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #ko-header:hover { background: rgba(255,255,255,0.02); }
+  #ko-header-title { font-size: 11px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; flex: 1; }
+  #ko-toggle { font-size: 12px; color: var(--text-3); transition: transform 0.15s; }
+  #ko-toggle.collapsed { transform: rotate(-90deg); }
+
+  #ko-body { padding: 0 14px 12px; }
+
+  .ko-quality-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .ko-quality-label { font-size: 10px; color: var(--text-3); font-weight: 600; text-transform: uppercase; flex-shrink: 0; }
+  .ko-slider { flex: 1; accent-color: var(--accent); height: 3px; cursor: pointer; }
+  .ko-quality-val { font-size: 11px; font-weight: 700; color: var(--accent); min-width: 36px; text-align: right; }
+
+  .ko-presets { display: flex; gap: 4px; margin-bottom: 8px; }
+  .ko-preset-btn {
+    padding: 2px 8px; font-size: 10px; font-weight: 600;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 5px; color: var(--text-3); cursor: pointer; font-family: inherit;
+    transition: all 0.12s;
+  }
+  .ko-preset-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+  .ko-preset-btn.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
+
+  .ko-weapon-tabs { display: flex; gap: 3px; margin-bottom: 10px; flex-wrap: wrap; }
+  .ko-tab {
+    padding: 4px 8px; font-size: 10px; font-weight: 600;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text-3); cursor: pointer; font-family: inherit;
+    transition: all 0.12s; white-space: nowrap;
+  }
+  .ko-tab:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+  .ko-tab.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
+
+  .ko-ammo { font-size: 10px; color: var(--text-3); margin-bottom: 8px; font-style: italic; }
+
+  .ko-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+  }
+  .ko-cell {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 6px; text-align: center;
+  }
+  .ko-cell-head { border-color: var(--border-hi); }
+  .ko-cell-label { font-size: 9px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .ko-cell-shots { font-size: 20px; font-weight: 900; color: var(--text-1); line-height: 1; }
+  .ko-cell-sub { font-size: 9px; color: var(--text-3); margin: 2px 0; }
+  .ko-cell-dmg { font-size: 10px; color: var(--text-2); font-weight: 600; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -670,6 +732,31 @@
           <div class="stat-label">Bonus levels</div>
           <div class="stat-value accent" id="stat-bonus-lvl">—</div>
           <div class="stat-sub">from effectiveness</div>
+        </div>
+      </div>
+
+      <!-- Knockout Calculator (shown for KO dinos only) -->
+      <div id="ko-section">
+        <div id="ko-header" onclick="toggleKO()">
+          <span>☠️</span>
+          <div id="ko-header-title">Knockout Calculator</div>
+          <div id="ko-toggle">▾</div>
+        </div>
+        <div id="ko-body">
+          <div class="ko-quality-row">
+            <span class="ko-quality-label">Dégâts arme</span>
+            <input type="range" id="ko-quality-slider" class="ko-slider" min="100" max="500" step="10" value="100" oninput="onKoQuality(this.value)"/>
+            <span class="ko-quality-val" id="ko-quality-val">100%</span>
+          </div>
+          <div class="ko-presets">
+            <button class="ko-preset-btn active" onclick="setKoQuality(100)">100%</button>
+            <button class="ko-preset-btn" onclick="setKoQuality(200)">200%</button>
+            <button class="ko-preset-btn" onclick="setKoQuality(300)">300%</button>
+            <button class="ko-preset-btn" onclick="setKoQuality(400)">400%</button>
+          </div>
+          <div class="ko-weapon-tabs" id="ko-weapon-tabs"></div>
+          <div class="ko-ammo" id="ko-ammo"></div>
+          <div class="ko-grid" id="ko-grid"></div>
         </div>
       </div>
 
@@ -1159,6 +1246,101 @@ function recalculate() {
 
   // Render food compare cards
   renderFoodCompare();
+
+  // Render knockout calculator if KO dino
+  renderKO();
+}
+
+// ── Knockout Calculator ──────────────────────────────
+var koQuality = 100;
+var koWeapon  = 'bow';
+var koVisible = true;
+
+function toggleKO() {
+  koVisible = !koVisible;
+  document.getElementById('ko-body').style.display = koVisible ? '' : 'none';
+  document.getElementById('ko-toggle').classList.toggle('collapsed', !koVisible);
+  syncWindowSize();
+}
+
+function onKoQuality(v) {
+  koQuality = parseInt(v);
+  document.getElementById('ko-quality-val').textContent = koQuality + '%';
+  // update active preset button
+  document.querySelectorAll('.ko-preset-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.textContent) === koQuality);
+  });
+  renderKOStats();
+}
+
+function setKoQuality(v) {
+  koQuality = v;
+  document.getElementById('ko-quality-slider').value = v;
+  document.getElementById('ko-quality-val').textContent = v + '%';
+  document.querySelectorAll('.ko-preset-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.textContent) === v);
+  });
+  renderKOStats();
+}
+
+function renderKO() {
+  if (!selectedDino) return;
+  const isKO = selectedDino.tamingMethod === 'Knockout' || selectedDino.tamingMethod === 'KNOCKOUT';
+  const koSection = document.getElementById('ko-section');
+  koSection.classList.toggle('visible', isKO);
+  if (!isKO) return;
+
+  // Build weapon tabs
+  const tabsEl = document.getElementById('ko-weapon-tabs');
+  tabsEl.innerHTML = '';
+  WEAPONS.forEach(w => {
+    const btn = document.createElement('button');
+    btn.className = 'ko-tab' + (w.key === koWeapon ? ' active' : '');
+    btn.textContent = w.icon + ' ' + w.name;
+    btn.onclick = function() {
+      koWeapon = w.key;
+      tabsEl.querySelectorAll('.ko-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderKOStats();
+    };
+    tabsEl.appendChild(btn);
+  });
+
+  renderKOStats();
+}
+
+function renderKOStats() {
+  if (!selectedDino) return;
+  const level = parseInt(document.getElementById('level-input').value) || 150;
+  const results = calculateKnockout(selectedDino, level, koQuality);
+  const w = results.find(r => r.key === koWeapon) || results[0];
+  if (!w) return;
+
+  document.getElementById('ko-ammo').textContent = w.ammo;
+
+  const riskColor = w.killRisk === 'high' ? 'var(--red)' : w.killRisk === 'med' ? 'var(--orange)' : 'var(--green)';
+  const riskLabel = w.killRisk === 'high' ? 'Danger' : w.killRisk === 'med' ? 'Risque' : 'Safe';
+
+  document.getElementById('ko-grid').innerHTML = `
+    <div class="ko-cell">
+      <div class="ko-cell-label">Corps</div>
+      <div class="ko-cell-shots">${w.shotsBody}</div>
+      <div class="ko-cell-sub">tirs</div>
+      <div class="ko-cell-dmg">${w.dmgBody} dmg</div>
+    </div>
+    <div class="ko-cell ko-cell-head">
+      <div class="ko-cell-label">Tête 🎯</div>
+      <div class="ko-cell-shots">${w.shotsHead}</div>
+      <div class="ko-cell-sub">tirs</div>
+      <div class="ko-cell-dmg">${w.dmgHead} dmg</div>
+    </div>
+    <div class="ko-cell">
+      <div class="ko-cell-label">Risque de mort</div>
+      <div class="ko-cell-shots" style="color:${riskColor}">${riskLabel}</div>
+      <div class="ko-cell-sub" style="color:${riskColor}">${w.dmgBody} dmg/tir</div>
+    </div>
+  `;
+  syncWindowSize();
 }
 
 // ── Send starve timer to overlay ─────────────────────

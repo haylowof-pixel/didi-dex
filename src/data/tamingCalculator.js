@@ -396,6 +396,45 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
   };
 }
 
+// ── Knockout weapon data ─────────────────────────────────────────────────────
+// baseDamage / baseTorpor at 100% weapon quality, primitive grade.
+// Torpor from tranq arrow = damage × 2. Headshot = 3× damage & torpor for most creatures.
+export const WEAPONS = [
+  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',    icon: '🏹', baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
+  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',    icon: '🎯', baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
+  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart',  icon: '🔫', baseDamage: 26,  baseTorpor: 221, headMult: 3 },
+  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',    icon: '🏹', baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
+];
+
+/**
+ * Calculate shots to KO and kill risk for each weapon.
+ * @param {Object} dino  - dinosaur object with torpor + baseHealth
+ * @param {number} level - wild level
+ * @param {number} qualityPct - weapon damage % (100 = primitive, 200 = apprentice…)
+ */
+export function calculateKnockout(dino, level, qualityPct = 100) {
+  const maxTorpor = dino.torpor.base + dino.torpor.perLevel * level;
+  // Rough estimated HP: baseHealth + 1% per level (half points in HP, ~2% gain per wild level)
+  const estimatedHP = Math.max(1, dino.baseHealth * (1 + 0.01 * level));
+  const mult = qualityPct / 100;
+
+  return WEAPONS.map(w => {
+    const torpBody = w.baseTorpor * mult;
+    const torpHead = torpBody * w.headMult;
+    const dmgBody  = Math.round(w.baseDamage * mult);
+    const dmgHead  = Math.round(w.baseDamage * mult * w.headMult);
+
+    const shotsBody = maxTorpor > 0 ? Math.ceil(maxTorpor / torpBody) : 0;
+    const shotsHead = maxTorpor > 0 ? Math.ceil(maxTorpor / torpHead) : 0;
+
+    // Kill risk: % of estimated HP per body shot
+    const dmgPct = dmgBody / estimatedHP * 100;
+    const killRisk = dmgPct >= 15 ? 'high' : dmgPct >= 5 ? 'med' : 'low';
+
+    return { ...w, dmgBody, dmgHead, shotsBody, shotsHead, killRisk };
+  });
+}
+
 export function formatTime(totalSeconds) {
   if (totalSeconds <= 0) return '0s';
   const hours = Math.floor(totalSeconds / 3600);

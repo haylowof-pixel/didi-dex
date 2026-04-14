@@ -4075,6 +4075,34 @@ function formatTime(totalSeconds) {
   return parts.join(' ');
 }
 
+// ── Knockout Calculator ──────────────────────────────────────────────────────
+var WEAPONS = [
+  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',   icon: '🏹', baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
+  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',   icon: '🎯', baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
+  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart', icon: '🔫', baseDamage: 26,  baseTorpor: 221, headMult: 3 },
+  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',   icon: '🏹', baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
+];
+
+function calculateKnockout(dino, level, qualityPct) {
+  qualityPct = qualityPct || 100;
+  var maxTorpor = dino.torpor.base + dino.torpor.perLevel * level;
+  var estimatedHP = Math.max(1, dino.baseHealth * (1 + 0.01 * level));
+  var mult = qualityPct / 100;
+
+  return WEAPONS.map(function(w) {
+    var torpBody = w.baseTorpor * mult;
+    var torpHead = torpBody * w.headMult;
+    var dmgBody  = Math.round(w.baseDamage * mult);
+    var dmgHead  = Math.round(w.baseDamage * mult * w.headMult);
+    var shotsBody = maxTorpor > 0 ? Math.ceil(maxTorpor / torpBody) : 0;
+    var shotsHead = maxTorpor > 0 ? Math.ceil(maxTorpor / torpHead) : 0;
+    var dmgPct   = dmgBody / estimatedHP * 100;
+    var killRisk = dmgPct >= 15 ? 'high' : dmgPct >= 5 ? 'med' : 'low';
+    return { key: w.key, name: w.name, ammo: w.ammo, icon: w.icon,
+             dmgBody: dmgBody, dmgHead: dmgHead, shotsBody: shotsBody, shotsHead: shotsHead, killRisk: killRisk };
+  });
+}
+
 function formatTimerDisplay(totalSeconds) {
   if (totalSeconds <= 0) return '0:00';
   const s = Math.max(0, Math.floor(totalSeconds));
