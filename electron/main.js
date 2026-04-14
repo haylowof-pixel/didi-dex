@@ -225,10 +225,10 @@ function setupAutoUpdater() {
   // Check for updates
   autoUpdater.checkForUpdates().catch(() => {});
 
-  // Check again every 5 minutes
+  // Check again every 2 minutes
   setInterval(() => {
     autoUpdater.checkForUpdates().catch(() => {});
-  }, 5 * 60 * 1000);
+  }, 2 * 60 * 1000);
 }
 
 // IPC for manual update check
