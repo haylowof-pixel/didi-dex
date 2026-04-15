@@ -1,31 +1,43 @@
 @echo off
-setlocal enabledelayedexpansion
-title OVERSEER — Dev
-
-:: ── OVERSEER Dev Launcher ─────────────────────────────────────────────────
+title OVERSEER Dev
 cd /d "%~dp0"
+set PATH=C:\Program Files\nodejs;%PATH%
+
+:: Chemin absolu du worktree sans backslash final
+set "APPDIR=%~dp0"
+if "%APPDIR:~-1%"=="\" set "APPDIR=%APPDIR:~0,-1%"
 
 echo.
-echo  OVERSEER Dev Launcher
-echo  ─────────────────────
+echo  OVERSEER Dev - %APPDIR%
+echo  ----------------------------------------
 
-:: Tue l'instance electron eventuelle deja ouverte
 taskkill /f /im electron.exe >nul 2>&1
 
-:: node_modules present ?
 if not exist "node_modules" (
-    echo  [INFO] node_modules absent — npm install en cours...
+    echo  [INFO] Installation des dependances...
     call npm install
     if errorlevel 1 ( echo  [ERREUR] npm install echoue. & pause & exit /b 1 )
 )
 
 echo  [1/2] Vite build...
-call npx vite build
+call node_modules\.bin\vite.cmd build
 if errorlevel 1 ( echo  [ERREUR] vite build echoue. & pause & exit /b 1 )
 
 echo  [2/2] Lancement Electron...
+
+:: Recupere le chemin exact de l'exe electron depuis les node_modules locaux
+for /f "usebackq delims=" %%E in (`node -p "require('electron')"`) do set "ELECTRONEXE=%%E"
+
+if "%ELECTRONEXE%"=="" (
+    echo  [ERREUR] Electron introuvable dans node_modules.
+    pause & exit /b 1
+)
+
+echo  Electron : %ELECTRONEXE%
+echo  App      : %APPDIR%
 echo.
-npx electron .
+
+"%ELECTRONEXE%" "%APPDIR%"
 
 echo.
 echo  App fermee.

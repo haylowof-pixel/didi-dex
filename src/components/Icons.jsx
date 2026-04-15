@@ -27,36 +27,40 @@ export const DnaIcon = ({ size = 16 }) => <I size={size} d={<>
 </>}/>;
 
 export const TimerIcon = ({ size = 16 }) => <I size={size} d={<>
-  <circle cx="12" cy="13" r="8"/>
-  <path d="M12 9v4l2 2M5 3l2 2M19 3l-2 2M12 3v2"/>
+  <circle cx="12" cy="14" r="7"/>
+  <path d="M12 10v4l2.5 2.5"/>
+  <path d="M10 2h4"/>
+  <path d="M12 2v3"/>
+  <path d="M19.5 5.5l-1.5 1.5"/>
 </>}/>;
 
 export const MapIcon = ({ size = 16 }) => <I size={size} d={<>
-  <path d="m3 7 6-3 6 3 6-3v13l-6 3-6-3-6 3z"/>
-  <path d="M9 4v13M15 7v13"/>
+  <circle cx="12" cy="10" r="3"/>
+  <path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/>
 </>}/>;
 
 export const ScanIcon = ({ size = 16 }) => <I size={size} d={<>
-  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-  <path d="M7 12h10M12 7v10"/>
-</>}/>;
-
-export const WidgetIcon = ({ size = 16 }) => <I size={size} d={<>
-  <rect x="3" y="3" width="7" height="7" rx="1"/>
-  <rect x="14" y="3" width="7" height="7" rx="1"/>
-  <rect x="3" y="14" width="7" height="7" rx="1"/>
-  <rect x="14" y="14" width="7" height="7" rx="1"/>
+  <path d="M3 9V5a2 2 0 0 1 2-2h4M15 3h4a2 2 0 0 1 2 2v4M21 15v4a2 2 0 0 1-2 2h-4M9 21H5a2 2 0 0 1-2-2v-4"/>
+  <rect x="7" y="7" width="10" height="10" rx="1"/>
+  <path d="M10 12h4M12 10v4"/>
 </>}/>;
 
 export const SettingsIcon = ({ size = 16 }) => <I size={size} d={<>
-  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-  <circle cx="12" cy="12" r="3"/>
+  <path d="M4 21v-7"/>
+  <path d="M4 10V3"/>
+  <path d="M12 21v-9"/>
+  <path d="M12 8V3"/>
+  <path d="M20 21v-5"/>
+  <path d="M20 12V3"/>
+  <path d="M1 14h6"/>
+  <path d="M9 8h6"/>
+  <path d="M17 16h6"/>
 </>}/>;
 
 export const LayersIcon = ({ size = 16 }) => <I size={size} d={<>
-  <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
-  <path d="m22 12-8.58 3.91a2 2 0 0 1-1.66 0L2 12"/>
-  <path d="m22 17-8.58 3.91a2 2 0 0 1-1.66 0L2 17"/>
+  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+  <path d="M2 12l10 5 10-5"/>
+  <path d="M2 17l10 5 10-5"/>
 </>}/>;
 
 // ─── Actions ───

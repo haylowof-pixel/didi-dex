@@ -553,87 +553,6 @@
     white-space: nowrap;
   }
 
-  /* ── Theme: Noir — Pure Black + Cyan (#22D3EE) ── */
-  html.noir-theme {
-    --bg-deep: #000000;
-    --bg-panel: #090910;
-    --border: rgba(34,211,238,0.14);
-    --border-hi: rgba(34,211,238,0.38);
-    --accent: #22D3EE;
-    --accent-dim: rgba(34,211,238,0.10);
-    --text-1: #ffffff;
-    --text-2: #A8D8DF;
-    --text-3: #4A7A84;
-    --green: #2dd4a0;
-    --red: #ef5f5f;
-    --orange: #f0993e;
-  }
-  html.noir-theme body { background: transparent; }
-  html.noir-theme #panel {
-    background: #090910;
-    border-color: rgba(34,211,238,0.16);
-    box-shadow: 0 20px 60px rgba(0,0,0,1), 0 0 0 1px rgba(34,211,238,0.06);
-  }
-  html.noir-theme #search-row { border-bottom-color: rgba(34,211,238,0.10); }
-  html.noir-theme #results { border-bottom-color: rgba(34,211,238,0.10); }
-  html.noir-theme .result-item:hover, html.noir-theme .result-item.focused {
-    background: rgba(34,211,238,0.06);
-    border-left-color: var(--accent);
-  }
-  html.noir-theme #stats-grid { background: rgba(34,211,238,0.04); }
-  html.noir-theme .stat-cell { background: #090910; border-color: rgba(34,211,238,0.10); }
-  html.noir-theme #food-compare { border-top-color: rgba(34,211,238,0.10); }
-  html.noir-theme #food-compare-header { border-bottom-color: rgba(34,211,238,0.10); }
-  html.noir-theme .food-card { background: #0e0e18; border-color: rgba(34,211,238,0.12); }
-  html.noir-theme .food-card.active { border-color: rgba(34,211,238,0.40); background: rgba(34,211,238,0.06); }
-  html.noir-theme #footer { border-top-color: rgba(34,211,238,0.10); }
-  html.noir-theme #ko-section { border-top-color: rgba(34,211,238,0.10); }
-  html.noir-theme .ko-cell { background: #0e0e18; border-color: rgba(34,211,238,0.12); }
-  html.noir-theme .ko-tab, html.noir-theme .ko-preset-btn, html.noir-theme .ko-quality-input {
-    background: rgba(34,211,238,0.04); border-color: rgba(34,211,238,0.14); color: #A8D8DF;
-  }
-  html.noir-theme .ko-tab.active, html.noir-theme .ko-preset-btn.active {
-    background: rgba(34,211,238,0.12); border-color: rgba(34,211,238,0.40); color: #22D3EE;
-  }
-
-  /* ── Theme: Light ── */
-  html.light-theme {
-    --bg-deep: #f0f0f5;
-    --bg-panel: rgba(255,255,255,0.96);
-    --border: rgba(0,0,0,0.08);
-    --border-hi: rgba(123,147,248,0.35);
-    --accent: #5B75DA;
-    --accent-dim: rgba(91,117,218,0.08);
-    --text-1: #1a1a2e;
-    --text-2: #444466;
-    --text-3: #9090aa;
-    --green: #1aab7a;
-    --red: #d94040;
-    --orange: #c07020;
-  }
-  html.light-theme body { background: #eeeef5; }
-  html.light-theme #panel {
-    background: rgba(255,255,255,0.96);
-    border-color: rgba(0,0,0,0.08);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  }
-  html.light-theme #search-row { border-bottom-color: rgba(0,0,0,0.07); }
-  html.light-theme #search { color: #1a1a2e; }
-  html.light-theme #results { border-bottom-color: rgba(0,0,0,0.07); }
-  html.light-theme .result-item:hover, html.light-theme .result-item.focused {
-    background: rgba(91,117,218,0.06);
-  }
-  html.light-theme #stats-grid { background: rgba(0,0,0,0.06); }
-  html.light-theme .stat-cell { background: rgba(255,255,255,0.97); }
-  html.light-theme .stat-value { color: #1a1a2e; }
-  html.light-theme #food-compare { border-top-color: rgba(0,0,0,0.07); }
-  html.light-theme #food-compare-header { border-bottom-color: rgba(0,0,0,0.07); }
-  html.light-theme .food-card { background: #f8f8fc; border-color: rgba(0,0,0,0.07); }
-  html.light-theme .food-card.active { border-color: rgba(91,117,218,0.3); }
-  html.light-theme #footer { border-top-color: rgba(0,0,0,0.07); background: rgba(250,250,253,0.98); }
-  html.light-theme #ko-section { border-top-color: rgba(0,0,0,0.07); }
-  html.light-theme .ko-cell { background: #f8f8fc; border-color: rgba(0,0,0,0.07); }
-
   /* Empty state */
   #empty {
     padding: 24px 16px;
@@ -1567,25 +1486,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 setTimeout(() => { searchEl.focus(); syncWindowSize(); }, 50);
 
-// ── Theme ────────────────────────────────────────────
-function applyTheme(theme) {
-  document.documentElement.classList.remove('noir-theme', 'light-theme');
-  if (theme === 'noir' || theme === 'light') {
-    document.documentElement.classList.add(theme + '-theme');
-  }
-}
-// Always ask main process for the current theme (fixes "stuck" bug when window was closed during theme change)
-if (window.api && window.api.getTheme) {
-  window.api.getTheme().then(function(t) { applyTheme(t || 'dark'); });
-} else {
-  applyTheme(localStorage.getItem('overseer-theme') || 'dark');
-}
-if (window.api && window.api.onThemeChange) {
-  window.api.onThemeChange(function(theme) {
-    localStorage.setItem('overseer-theme', theme);
-    applyTheme(theme);
-  });
-}
 </script>
 </body>
 </html>

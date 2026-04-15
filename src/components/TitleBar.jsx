@@ -1,36 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon } from './Icons';
-
-/* ── Sun / Moon SVG icons for theme toggle ── */
-const SunIcon = ({ size = 13 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="5"/>
-    <line x1="12" y1="1"  x2="12" y2="3"/>
-    <line x1="12" y1="21" x2="12" y2="23"/>
-    <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-    <line x1="1"  y1="12" x2="3"  y2="12"/>
-    <line x1="21" y1="12" x2="23" y2="12"/>
-    <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
-    <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
-  </svg>
-);
-
-const MoonIcon = ({ size = 13 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-  </svg>
-);
-
-/* Noir icon — filled circle (pure black / void) */
-const NoirIcon = ({ size = 13 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="12" r="9"/>
-  </svg>
-);
+import { DnaIcon, TimerIcon, MapIcon, ScanIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon } from './Icons';
 
 // Tools that navigate within the main window
 const NAV_TOOLS = [
@@ -41,21 +11,33 @@ const NAV_TOOLS = [
   { key: 'servers',  Icon: ServerIcon,    label: 'Serveurs',    shortcut: '' },
 ];
 
-// Tools that still open separate windows (overlays that need to float)
-const WINDOW_TOOLS = [
-  { key: 'timer',  Icon: TimerIcon,  label: 'Timer Overlay', shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
-  { key: 'widget', Icon: WidgetIcon, label: 'Widget Mini',   shortcut: 'Alt+W', action: () => window.api?.openWidget() },
-];
+export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activePage, onNavigate }) {
+  const [timerOpen, setTimerOpen] = useState(false);
 
-const THEME_CYCLE = { dark: 'noir', noir: 'light', light: 'dark' };
-const THEME_LABELS = { dark: 'Noir', noir: 'Clair', light: 'Sombre' };
-const ThemeIcon = ({ theme, size = 12 }) => {
-  if (theme === 'noir') return <NoirIcon size={size} />;
-  if (theme === 'light') return <MoonIcon size={size} />;
-  return <SunIcon size={size} />;
-};
+  useEffect(() => {
+    window.api?.isTimerOpen?.()?.then?.(setTimerOpen);
+    // Keep local state in sync when timer is closed from within the timer window
+    window.api?.onTimerPinChanged?.(() => {});
+  }, []);
 
-export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activePage, onNavigate, theme = 'dark', onCycleTheme }) {
+  // Sync timerOpen when the timer window closes itself
+  useEffect(() => {
+    const interval = setInterval(() => {
+      window.api?.isTimerOpen?.()?.then?.(v => setTimerOpen(!!v));
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const toggleTimer = useCallback(() => {
+    if (timerOpen) {
+      window.api?.closeTimerOverlay?.();
+      setTimerOpen(false);
+    } else {
+      window.api?.openTimerOverlay?.();
+      setTimerOpen(true);
+    }
+  }, [timerOpen]);
+
   const minimize = () => window.api?.minimize();
   const maximize = () => window.api?.maximize();
   const close = () => window.api?.close();
@@ -72,7 +54,6 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activeP
 
       {/* Center: Tool buttons */}
       <div className="tb-tools">
-        {/* Nav tools — navigate within the app */}
         {NAV_TOOLS.map(t => (
           <button
             key={t.key}
@@ -80,23 +61,19 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activeP
             onClick={() => onNavigate(t.key)}
             title={t.shortcut ? `${t.label} (${t.shortcut})` : t.label}
           >
-            <t.Icon size={13} />
+            <t.Icon size={14} />
           </button>
         ))}
 
         <div className="tb-sep" />
 
-        {/* Window tools — open separate windows */}
-        {WINDOW_TOOLS.map(t => (
-          <button
-            key={t.key}
-            className="tb-tool"
-            onClick={t.action}
-            title={t.shortcut ? `${t.label} (${t.shortcut})` : t.label}
-          >
-            <t.Icon size={13} />
-          </button>
-        ))}
+        <button
+          className={`tb-tool ${timerOpen ? 'active' : ''}`}
+          onClick={toggleTimer}
+          title="Timer Overlay (Alt+M)"
+        >
+          <TimerIcon size={14} />
+        </button>
 
         <div className="tb-sep" />
 
@@ -105,15 +82,7 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activeP
           onClick={() => onNavigate('settings')}
           title="Paramètres"
         >
-          <SettingsIcon size={13} />
-        </button>
-
-        <button
-          className="tb-theme-toggle"
-          onClick={onCycleTheme}
-          title={`Thème : ${theme.charAt(0).toUpperCase() + theme.slice(1)} → ${THEME_CYCLE[theme].charAt(0).toUpperCase() + THEME_CYCLE[theme].slice(1)}`}
-        >
-          <ThemeIcon theme={theme} size={12} />
+          <SettingsIcon size={14} />
         </button>
 
         <button

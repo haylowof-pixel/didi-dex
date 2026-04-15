@@ -94,16 +94,6 @@ export default function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('overseer-favorites') || '[]'));
   const [showSearch, setShowSearch] = useState(false);
   const [globalQuery, setGlobalQuery] = useState('');
-  const [theme, setTheme] = useState(() => localStorage.getItem('overseer-theme') || 'dark');
-
-  const cycleTheme = useCallback(() => {
-    setTheme(prev => {
-      const next = prev === 'dark' ? 'noir' : prev === 'noir' ? 'light' : 'dark';
-      localStorage.setItem('overseer-theme', next);
-      window.api?.setTheme?.(next);
-      return next;
-    });
-  }, []);
 
   const toggleFavorite = useCallback((dinoId) => {
     setFavorites(prev => {
@@ -168,7 +158,7 @@ export default function App() {
   const showEmbedded = activePage && EMBEDDED_PAGES[activePage];
 
   return (
-    <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${theme !== 'dark' ? theme + '-theme' : ''}`}>
+    <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''}`}>
       {/* Global video background */}
       <video
         className="app-video-bg"
@@ -183,8 +173,6 @@ export default function App() {
         onGoHome={goHome}
         activePage={activePage}
         onNavigate={navigateTo}
-        theme={theme}
-        onCycleTheme={cycleTheme}
       />
       <div className="main-layout">
         {showSidebar && (
