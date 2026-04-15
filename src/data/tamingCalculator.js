@@ -401,10 +401,16 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
 // Torpor from tranq arrow = damage × 2. Headshot = 3× damage & torpor for most creatures.
 const WW = (name, size = 40) => `https://ark.wiki.gg/images/thumb/${name}.png/${size}px-${name}.png`;
 export const WEAPONS = [
-  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',   img: WW('Bow'),          ammoImg: WW('Tranquilizer_Arrow', 28),          baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
-  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',   img: WW('Crossbow'),     ammoImg: WW('Tranquilizer_Arrow', 28),          baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
-  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart', img: WW('Longneck_Rifle'), ammoImg: WW('Shocking_Tranquilizer_Dart', 28), baseDamage: 26,  baseTorpor: 221, headMult: 3 },
-  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',   img: WW('Compound_Bow'), ammoImg: WW('Tranquilizer_Arrow', 28),          baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
+  { key: 'slingshot',      name: 'Fronde',       ammo: 'Pierre',          img: WW('Slingshot'),        ammoImg: WW('Stone', 28),                        baseDamage: 14,  baseTorpor: 7.5,  headMult: 3 },
+  { key: 'bow',            name: 'Arc',          ammo: 'Flèche Tranq',    img: WW('Bow'),              ammoImg: WW('Tranq_Arrow', 28),           baseDamage: 20,  baseTorpor: 40,   headMult: 3 },
+  { key: 'crossbow',       name: 'Arbalète',     ammo: 'Flèche Tranq',    img: WW('Crossbow'),         ammoImg: WW('Tranq_Arrow', 28),           baseDamage: 35,  baseTorpor: 70,   headMult: 3 },
+  { key: 'compound_bow',   name: 'Arc Compound', ammo: 'Flèche Tranq',    img: WW('Compound_Bow'),     ammoImg: WW('Tranq_Arrow', 28),           baseDamage: 27,  baseTorpor: 54,   headMult: 3 },
+  { key: 'fab_crossbow',   name: 'Arbalète Fab.', ammo: 'Flèche Tranq',    img: WW('Fabricated_Crossbow'), ammoImg: WW('Tranq_Arrow', 28),               baseDamage: 70,  baseTorpor: 140,  headMult: 3 },
+  { key: 'longneck_dart',  name: 'Longneck',     ammo: 'Dart Tranq',      img: WW('Longneck_Rifle'),   ammoImg: WW('Tranquilizer_Dart', 28),            baseDamage: 26,  baseTorpor: 40,   headMult: 3 },
+  { key: 'longneck_shock', name: 'Longneck',     ammo: 'Dart Électrique', img: WW('Longneck_Rifle'),   ammoImg: WW('Shocking_Tranquilizer_Dart', 28),   baseDamage: 26,  baseTorpor: 221,  headMult: 3 },
+  { key: 'sniper_shock',   name: 'Sniper Fab.',  ammo: 'Dart Électrique', img: WW('Fabricated_Sniper_Rifle'), ammoImg: WW('Shocking_Tranquilizer_Dart', 28), baseDamage: 97, baseTorpor: 826, headMult: 3 },
+  { key: 'harpoon',        name: 'Harpoon',      ammo: 'Bolt Tranq',      img: WW('Harpoon_Launcher'), ammoImg: WW('Tranq_Spear_Bolt', 28),             baseDamage: 105, baseTorpor: 300,  headMult: 3 },
+  { key: 'ballista',       name: 'Balliste',     ammo: 'Bolt Tranq',      img: WW('Ballista_Turret'),  ammoImg: WW('Spear_Bolt', 28),            baseDamage: 75,  baseTorpor: 2000, headMult: 1 },
 ];
 
 /**

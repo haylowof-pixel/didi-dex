@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { DnaIcon, TimerIcon, MapIcon, ScanIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon } from './Icons';
+import { DnaIcon, TimerIcon, MapIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon } from './Icons';
 
 // Tools that navigate within the main window
 const NAV_TOOLS = [
   { key: 'breeding', Icon: DnaIcon,       label: 'Breeding',    shortcut: 'Alt+B' },
   { key: 'tribe',    Icon: ClipboardIcon, label: 'Tribu Tasks', shortcut: '' },
   { key: 'maps',     Icon: MapIcon,       label: 'Cartes',      shortcut: 'Alt+G' },
-  { key: 'ocr',      Icon: ScanIcon,      label: 'OCR Scanner', shortcut: 'Alt+S' },
   { key: 'servers',  Icon: ServerIcon,    label: 'Serveurs',    shortcut: '' },
 ];
 

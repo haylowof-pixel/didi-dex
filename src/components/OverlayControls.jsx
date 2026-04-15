@@ -1,12 +1,11 @@
 import React from 'react';
-import { DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon } from './Icons';
+import { DnaIcon, TimerIcon, MapIcon, ScanIcon, SettingsIcon, LayersIcon } from './Icons';
 
 const TOOLS = [
   { key: 'breeding', Icon: DnaIcon,      label: 'Breeding', shortcut: 'Alt+B', action: () => window.api?.openBreeding() },
   { key: 'timer',    Icon: TimerIcon,    label: 'Timer',    shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
   { key: 'maps',     Icon: MapIcon,      label: 'Maps',     shortcut: 'Alt+G', action: () => window.api?.openMapsWindow('the-island', 'The Island') },
   { key: 'ocr',      Icon: ScanIcon,     label: 'OCR',      shortcut: 'Alt+S', action: () => window.api?.openOCR() },
-  { key: 'widget',   Icon: WidgetIcon,   label: 'Widget',   shortcut: 'Alt+W', action: () => window.api?.openWidget() },
   { key: 'settings', Icon: SettingsIcon, label: 'Settings', shortcut: '',      action: () => window.api?.openSettings() },
 ];
 

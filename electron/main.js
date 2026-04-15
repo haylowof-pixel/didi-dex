@@ -16,7 +16,7 @@ let mainWindow;
 let splashWindow = null;
 let timerWindow = null;
 let mapsWindow = null;
-let widgetWindow = null;
+
 let settingsWindow = null;
 let breedingWindow = null;
 let ocrWindow = null;
@@ -27,22 +27,11 @@ let pendingTimerSync = null;
 let regionSelectorWindow = null;
 let ocrWorker = null; // Persistent Tesseract worker for fast coordinate OCR
 
-// ===== WIDGET MODE STATE =====
-let widgetMode = 'mini';
-const WIDGET_SIZES = {
-  mini:     { w: 220, h: 70 },
-  standard: { w: 280, h: 140 },
-  detailed: { w: 340, h: 260 },
-};
-const WIDGET_MODES = ['mini', 'standard', 'detailed'];
-
 // ===== KEYBINDS CONFIG =====
 const DEFAULT_KEYBINDS = {
   toggleOverlay: 'Alt+O',
   toggleWindow:  'Alt+T',
   toggleTimer:   'Alt+M',
-  toggleWidget:  'Alt+W',
-  toggleWidgetMode: 'Alt+Shift+W',
   toggleMaps:    'Alt+G',
   toggleBreeding:'Alt+B',
   toggleOCR:     'Alt+S',
@@ -96,23 +85,6 @@ function registerAllShortcuts() {
       globalShortcut.register(currentKeybinds.toggleTimer, () => {
         if (isTimerAlive()) safeDestroyTimer();
         else createTimerWindow();
-      });
-    }
-  } catch (e) {}
-  try {
-    if (currentKeybinds.toggleWidget) {
-      globalShortcut.register(currentKeybinds.toggleWidget, () => {
-        if (isWidgetAlive()) safeDestroyWidget();
-        else createWidgetWindow();
-      });
-    }
-  } catch (e) {}
-  try {
-    if (currentKeybinds.toggleWidgetMode) {
-      globalShortcut.register(currentKeybinds.toggleWidgetMode, () => {
-        if (isWidgetAlive()) {
-          cycleWidgetMode();
-        }
       });
     }
   } catch (e) {}
@@ -311,18 +283,15 @@ function createWindow() {
     mainWindow = null;
     safeDestroyTimer();
     safeDestroyMaps();
-    safeDestroyWidget();
     safeDestroySettings();
     safeDestroyBreeding();
   });
 
   mainWindow.on('focus', () => {
     setTimerClickThrough(false);
-    setWidgetClickThrough(false);
   });
   mainWindow.on('blur', () => {
     setTimerClickThrough(true);
-    setWidgetClickThrough(true);
   });
 
   // Ad blocker
@@ -482,66 +451,6 @@ function createMapsWindow(mapSlug, mapName) {
   }
 }
 
-// ===== WIDGET MINI =====
-function isWidgetAlive() { return widgetWindow && !widgetWindow.isDestroyed(); }
-
-function safeDestroyWidget() {
-  try { if (isWidgetAlive()) widgetWindow.destroy(); } catch (e) {}
-  widgetWindow = null;
-}
-
-function setWidgetClickThrough(enabled) {
-  try {
-    if (isWidgetAlive()) {
-      widgetWindow.setIgnoreMouseEvents(enabled, enabled ? { forward: true } : {});
-      widgetWindow.webContents.send('widget-click-through-changed', enabled);
-    }
-  } catch (e) {}
-}
-
-function cycleWidgetMode() {
-  const idx = WIDGET_MODES.indexOf(widgetMode);
-  const next = WIDGET_MODES[(idx + 1) % WIDGET_MODES.length];
-  setWidgetMode(next);
-}
-
-function setWidgetMode(mode) {
-  if (!WIDGET_SIZES[mode]) return;
-  widgetMode = mode;
-  if (isWidgetAlive()) {
-    const { w, h } = WIDGET_SIZES[mode];
-    try { widgetWindow.setSize(w, h); } catch (e) {}
-    try { widgetWindow.webContents.send('widget-mode-changed', mode); } catch (e) {}
-  }
-}
-
-function createWidgetWindow() {
-  if (isWidgetAlive()) return;
-  widgetWindow = null;
-  widgetMode = 'mini'; // Reset mode on new widget
-  const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
-
-  widgetWindow = new BrowserWindow({
-    width: WIDGET_SIZES.mini.w, height: WIDGET_SIZES.mini.h, x: sw - 240, y: 80,
-    frame: false, transparent: true, alwaysOnTop: true,
-    resizable: false, minimizable: false, maximizable: false,
-    skipTaskbar: true, focusable: false,
-    backgroundColor: '#00000000', hasShadow: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true, nodeIntegration: false,
-    },
-  });
-
-  widgetWindow.loadFile(path.join(__dirname, '..', 'shell', 'widget-mini.html'));
-  widgetWindow.setAlwaysOnTop(true, 'screen-saver');
-  // Start click-through — will become interactive when main window gets focus
-  widgetWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  widgetWindow.on('closed', () => { widgetWindow = null; });
-  widgetWindow.webContents.on('destroyed', () => { widgetWindow = null; });
-}
-
 // ===== OVERLAY =====
 function toggleOverlay() {
   if (!mainWindow || mainWindow.isDestroyed()) return;
@@ -670,7 +579,7 @@ function saveScale(s) {
   fs.writeFileSync(getScalePath(), JSON.stringify({ scale: s }), 'utf8');
 }
 function applyScaleToAll(s) {
-  const wins = [mainWindow, timerWindow, mapsWindow, widgetWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
+  const wins = [mainWindow, timerWindow, mapsWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
   for (const w of wins) {
     if (w && !w.isDestroyed()) w.webContents.setZoomFactor(s);
   }
@@ -738,16 +647,14 @@ ipcMain.on('resize-timer', (_, preset) => {
   } catch (e) {}
 });
 
-// Sync data → timer + widget
+// Sync data → timer
 ipcMain.on('sync-timer-data', (_, data) => {
   if (isTimerAlive()) {
     try { timerWindow.webContents.send('timer-data-update', data); } catch (e) {}
     pendingTimerSync = null;
   } else {
-    // Queue it — will be flushed when timer window finishes loading
     pendingTimerSync = data;
   }
-  try { if (isWidgetAlive()) widgetWindow.webContents.send('widget-data-update', data); } catch (e) {}
 });
 
 // Maps
@@ -814,21 +721,6 @@ ipcMain.handle('maps-import-pois', async () => {
     return { ok: true, markers };
   } catch (e) { return { ok: false, error: e.message }; }
 });
-
-// Widget
-ipcMain.on('open-widget', () => createWidgetWindow());
-ipcMain.on('close-widget', () => safeDestroyWidget());
-ipcMain.on('widget-close', () => safeDestroyWidget());
-ipcMain.handle('is-widget-open', () => isWidgetAlive());
-ipcMain.on('widget-set-mode', (_, mode, w, h) => {
-  setWidgetMode(mode);
-});
-ipcMain.on('widget-cycle-mode', () => {
-  if (isWidgetAlive()) {
-    cycleWidgetMode();
-  }
-});
-ipcMain.handle('get-widget-mode', () => widgetMode);
 
 // Settings
 ipcMain.on('open-settings', () => createSettingsWindow());

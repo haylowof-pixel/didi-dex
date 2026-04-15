@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, CalculatorIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, ClipboardIcon, FarmingIcon, TamingLassoIcon, BuildingIcon, RaidIcon, TaskClipboardIcon, CheckIcon, ServerIcon } from './Icons';
+import { LogoIcon, CalculatorIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, ClipboardIcon, FarmingIcon, TamingLassoIcon, BuildingIcon, RaidIcon, TaskClipboardIcon, CheckIcon, ServerIcon } from './Icons';
 
 /* ─── Background handled by global app-video-bg ─── */
 function AnimatedCanvasBg() {
@@ -34,9 +34,8 @@ const getFeatures = (onNavigate) => [
   { Icon: DnaIcon,        title: 'ASB Breeding',      desc: 'Stat extractor, library, breeding planner', shortcut: 'Alt+B', action: () => onNavigate?.('breeding') },
   { Icon: TimerIcon,      title: 'Timer Overlay',     desc: 'Timers flottants pendant le jeu',          shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
   { Icon: MapIcon,        title: 'Cartes Interactives', desc: 'Cartes interactives des maps ARK',         shortcut: 'Alt+G', action: () => onNavigate?.('maps') },
-  { Icon: ScanIcon,       title: 'OCR Scanner',        desc: 'Capture & extraction automatique des stats', shortcut: 'Alt+S', action: () => onNavigate?.('ocr') },
+  { Icon: ScanIcon,       title: 'OCR Scanner',        desc: 'Capture & extraction automatique des stats', shortcut: 'Alt+S', action: () => window.api?.openOCR?.() },
   { Icon: ServerIcon,     title: 'Server Status',      desc: 'Status des serveurs ARK en temps réel',                       action: () => onNavigate?.('servers') },
-  { Icon: WidgetIcon,     title: 'Widget Mini',        desc: 'Widget compact toujours visible',          shortcut: 'Alt+W', action: () => window.api?.openWidget() },
 ];
 
 const CATEGORY_ICONS = {
@@ -489,7 +488,7 @@ function QuickStats() {
         <div className="quick-stat-val">🗺️</div>
         <div className="quick-stat-label">Cartes</div>
       </div>
-      <div className="quick-stat" onClick={() => window.__navigate?.('ocr')}>
+      <div className="quick-stat" onClick={() => window.api?.openOCR?.()}>
         <div className="quick-stat-icon" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }}>
           <ScanIcon size={16} />
         </div>

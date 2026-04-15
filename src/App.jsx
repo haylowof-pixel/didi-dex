@@ -13,7 +13,6 @@ const EMBEDDED_PAGES = {
   breeding: { src: '../shell/breeding-window.html', label: 'Breeding' },
   tribe:    { src: '../shell/tribe-tasks.html',     label: 'Tribu' },
   maps:     { src: '../shell/maps-window.html',     label: 'Cartes' },
-  ocr:      { src: '../shell/ocr-window.html',      label: 'OCR Scanner' },
   servers:  { src: '../shell/server-status.html',     label: 'Serveurs' },
   settings: { src: '../shell/settings-window.html',  label: 'Paramètres' },
   comparator: { src: '../shell/comparator-window.html', label: 'Comparateur' },

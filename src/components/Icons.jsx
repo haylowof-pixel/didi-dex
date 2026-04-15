@@ -21,10 +21,17 @@ export const CalculatorIcon = ({ size = 16 }) => <I size={size} d={<>
   <path d="M8 6h8M8 10h8M8 14h4M8 18h4M16 14v4"/>
 </>}/>;
 
-export const DnaIcon = ({ size = 16 }) => <I size={size} d={<>
-  <path d="M2 15c6.667-6 13.333 0 20-6"/>
-  <path d="M9 3.236s1.612 2.164 3.5 3.264M5.5 9.5c1.667.333 3.333.333 5 0M6 16.5c2-.333 4-.333 6 0M14.5 20.764s-1.612-2.164-3.5-3.264"/>
-</>}/>;
+export const DnaIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 3c1.5 2.5 4 4 7 4s5.5-1.5 7-4"/>
+    <path d="M5 21c1.5-2.5 4-4 7-4s5.5 1.5 7 4"/>
+    <path d="M5 3c0 5 7 6 7 9s-7 4-7 9"/>
+    <path d="M19 3c0 5-7 6-7 9s7 4 7 9"/>
+    <line x1="8.5" y1="8" x2="15.5" y2="8"/>
+    <line x1="7" y1="12" x2="17" y2="12"/>
+    <line x1="8.5" y1="16" x2="15.5" y2="16"/>
+  </svg>
+);
 
 export const TimerIcon = ({ size = 16 }) => <I size={size} d={<>
   <circle cx="12" cy="14" r="7"/>

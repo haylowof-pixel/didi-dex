@@ -608,18 +608,21 @@
 
   .ko-weapon-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
   .ko-tab {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 6px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 7px 8px 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
     background: rgba(255,255,255,0.04); border: 1px solid var(--border);
     border-radius: 8px; color: var(--text-3); cursor: pointer; font-family: inherit;
-    transition: all 0.12s; white-space: nowrap; min-width: 58px;
+    transition: all 0.12s; min-width: 64px;
   }
-  .ko-tab img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; }
+  .ko-tab-imgs { display: flex; align-items: center; gap: 3px; }
+  .ko-tab-imgs .weapon-img { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; }
+  .ko-tab-imgs .ammo-img  { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+  .ko-tab-plus { font-size: 10px; opacity: 0.45; line-height: 1; }
+  .ko-tab-name { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ko-tab-ammo-name { font-size: 8px; font-weight: 500; text-transform: none; letter-spacing: 0; opacity: 0.7; white-space: nowrap; }
   .ko-tab:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
   .ko-tab.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
-
-  .ko-ammo { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--text-3); margin-bottom: 8px; font-style: italic; }
-  .ko-ammo img { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
+  .ko-tab.active .ko-tab-ammo-name { color: var(--accent); }
 
   .ko-grid {
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
@@ -770,7 +773,6 @@
             <button class="ko-preset-btn" onclick="setKoQuality(400)">400%</button>
           </div>
           <div class="ko-weapon-tabs" id="ko-weapon-tabs"></div>
-          <div class="ko-ammo" id="ko-ammo"></div>
           <div class="ko-grid" id="ko-grid"></div>
         </div>
       </div>
@@ -1314,7 +1316,7 @@ function renderKO() {
   WEAPONS.forEach(w => {
     const btn = document.createElement('button');
     btn.className = 'ko-tab' + (w.key === koWeapon ? ' active' : '');
-    btn.innerHTML = '<img src="' + w.img + '" alt="' + w.name + '" onerror="this.style.display=\'none\'"/><span>' + w.name + '</span>';
+    btn.innerHTML = '<div class="ko-tab-imgs"><img class="weapon-img" src="' + w.img + '" alt="' + w.name + '" onerror="this.style.display=\'none\'"/><span class="ko-tab-plus">+</span><img class="ammo-img" src="' + w.ammoImg + '" alt="' + w.ammo + '" onerror="this.style.display=\'none\'"/></div><span class="ko-tab-name">' + w.name + '</span><span class="ko-tab-ammo-name">' + w.ammo + '</span>';
     btn.onclick = function() {
       koWeapon = w.key;
       tabsEl.querySelectorAll('.ko-tab').forEach(b => b.classList.remove('active'));
@@ -1334,7 +1336,6 @@ function renderKOStats() {
   const w = results.find(r => r.key === koWeapon) || results[0];
   if (!w) return;
 
-  document.getElementById('ko-ammo').innerHTML = '<img src="' + w.ammoImg + '" alt="' + w.ammo + '" onerror="this.style.display=\'none\'"/><span>' + w.ammo + '</span>';
 
   const riskColor = w.killRisk === 'high' ? 'var(--red)' : w.killRisk === 'med' ? 'var(--orange)' : 'var(--green)';
   const riskLabel = w.killRisk === 'high' ? 'Danger' : w.killRisk === 'med' ? 'Risque' : 'Safe';

@@ -41,17 +41,6 @@ contextBridge.exposeInMainWorld('api', {
   loadSavedMapImage: (slug) => ipcRenderer.invoke('load-saved-map-image', slug),
   clearMapImage:     (slug) => ipcRenderer.send('clear-map-image', slug),
   downloadMapImage:  (slug) => ipcRenderer.invoke('download-map-image', slug),
-  // Widget
-  openWidget:        () => ipcRenderer.send('open-widget'),
-  closeWidget:       () => ipcRenderer.send('close-widget'),
-  widgetClose:       () => ipcRenderer.send('widget-close'),
-  isWidgetOpen:      () => ipcRenderer.invoke('is-widget-open'),
-  onWidgetDataUpdate:(cb) => ipcRenderer.on('widget-data-update', (_, data) => cb(data)),
-  onWidgetClickThroughChanged: (cb) => ipcRenderer.on('widget-click-through-changed', (_, v) => cb(v)),
-  widgetSetMode:     (mode, w, h) => ipcRenderer.send('widget-set-mode', mode, w, h),
-  onWidgetCycleMode: (cb) => ipcRenderer.on('widget-cycle-mode', () => cb()),
-  getWidgetMode:     () => ipcRenderer.invoke('get-widget-mode'),
-  onWidgetModeChanged: (cb) => ipcRenderer.on('widget-mode-changed', (_, mode) => cb(mode)),
   // OCR
   openOCR:           () => ipcRenderer.send('open-ocr'),
   ocrClose:          () => ipcRenderer.send('ocr-close'),
