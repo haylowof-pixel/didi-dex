@@ -1616,7 +1616,10 @@ ipcMain.on('save-fav-servers', (_, data) => {
 });
 
 // ── Theme broadcast ────────────────────────────────────────────────────────
+let currentTheme = 'dark'; // persisted in main process so late-opening windows get the right theme
+
 ipcMain.on('set-theme', (_, theme) => {
+  currentTheme = theme;
   // Broadcast to all open windows so shell pages can update
   BrowserWindow.getAllWindows().forEach(win => {
     if (!win.isDestroyed()) {
@@ -1624,3 +1627,6 @@ ipcMain.on('set-theme', (_, theme) => {
     }
   });
 });
+
+// Any window can call this on load to get the current theme (fixes "stuck" bug)
+ipcMain.handle('get-theme', () => currentTheme);

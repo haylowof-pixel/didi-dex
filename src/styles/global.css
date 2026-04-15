@@ -1665,97 +1665,93 @@ body {
 }
 
 /* ============================================
-   Noir Theme Override — Amber/Gold on Deep Black
-   Completely different from Dark (blue-purple → amber)
+   Noir Theme — Pure Black, Timer-Widget Aesthetic
+   Same blue-violet accent family as dark, but on true #000000
+   More solid, high-contrast, no video/glow noise
    ============================================ */
 .app-shell.noir-theme {
-  /* ── Backgrounds — pure warm black ── */
+  /* ── Backgrounds — pure black, solid ── */
   --bg-base:    #000000;
-  --bg-panel:   rgba(8,5,2,0.98);
-  --bg-surface: rgba(14,9,4,0.96);
-  --bg-tertiary:rgba(18,12,5,0.94);
-  --bg-hover:   rgba(26,16,6,0.92);
-  --bg-active:  rgba(36,22,8,0.88);
-  --bg-input:   rgba(10,6,2,0.98);
-  --bg-tooltip: rgba(4,2,1,0.99);
+  --bg-panel:   rgba(10,10,12,0.99);
+  --bg-surface: rgba(16,16,20,0.98);
+  --bg-tertiary:rgba(20,20,24,0.97);
+  --bg-hover:   rgba(28,28,36,0.96);
+  --bg-active:  rgba(38,38,50,0.94);
+  --bg-input:   rgba(8,8,10,0.99);
+  --bg-tooltip: rgba(4,4,6,1.0);
 
   --bg-0: #000000;
-  --bg-1: rgba(8,5,2,0.98);
-  --bg-2: rgba(16,10,4,0.96);
-  --bg-3: rgba(24,15,6,0.92);
-  --bg-4: rgba(34,22,8,0.88);
+  --bg-1: #0a0a0d;
+  --bg-2: #101014;
+  --bg-3: #181820;
+  --bg-4: #20202a;
 
-  --glass-bg:       rgba(232,160,32,0.04);
-  --glass-bg-hover: rgba(232,160,32,0.08);
-  --glass-border:   rgba(232,160,32,0.10);
-  --glass-blur: 16px;
-  --glass-blur-heavy: 32px;
+  --glass-bg:       rgba(255,255,255,0.03);
+  --glass-bg-hover: rgba(255,255,255,0.06);
+  --glass-border:   rgba(255,255,255,0.08);
+  --glass-blur: 12px;
+  --glass-blur-heavy: 24px;
 
-  /* ── Borders — amber-tinted ── */
-  --border-0: rgba(232,160,32,0.10);
-  --border-1: rgba(232,160,32,0.18);
-  --border-2: rgba(232,160,32,0.30);
-  --border-3: rgba(232,160,32,0.45);
+  /* ── Borders — white, higher contrast than dark ── */
+  --border-0: rgba(255,255,255,0.07);
+  --border-1: rgba(255,255,255,0.12);
+  --border-2: rgba(255,255,255,0.20);
+  --border-3: rgba(255,255,255,0.32);
 
-  /* ── Text — warm white / aged paper tones ── */
-  --text-0: #FFF5E0;
-  --text-1: #C8A868;
-  --text-2: #7A5C30;
-  --text-3: #4A3218;
+  /* ── Text — crisp white ── */
+  --text-0: #FFFFFF;
+  --text-1: #C0C0CC;
+  --text-2: #70708A;
+  --text-3: #404055;
 
-  /* ── Accent — Amber/Gold (replaces blue-purple entirely) ── */
-  --accent:        #E8A020;
-  --accent-l:      #F5C048;
-  --accent-d:      #B47810;
-  --accent-glow:   rgba(232,160,32,0.32);
-  --accent-bg:     rgba(232,160,32,0.12);
-  --accent-border: rgba(232,160,32,0.38);
+  /* ── Accent — same blue-violet family, slightly brighter ── */
+  --accent:        #8BA4FF;
+  --accent-l:      #A8BEFF;
+  --accent-d:      #6B85E8;
+  --accent-glow:   rgba(139,164,255,0.30);
+  --accent-bg:     rgba(139,164,255,0.12);
+  --accent-border: rgba(139,164,255,0.32);
 
-  /* ── Shadows — deep black + amber glow ── */
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.98);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.98);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.99);
-  --shadow-glow: 0 0 24px rgba(232,160,32,0.20);
-  --shadow-glow-accent: 0 0 30px rgba(232,160,32,0.28), 0 0 60px rgba(232,160,32,0.10);
+  /* ── Shadows — maximum depth ── */
+  --shadow-sm: 0 1px 4px rgba(0,0,0,1);
+  --shadow-md: 0 4px 20px rgba(0,0,0,1);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,1);
+  --shadow-glow: 0 0 24px rgba(139,164,255,0.22);
+  --shadow-glow-accent: 0 0 30px rgba(139,164,255,0.28), 0 0 60px rgba(139,164,255,0.10);
 }
 
-/* ── Video bg hidden — replace with subtle amber ambient ── */
+/* ── No video, no ambient mesh — pure black ── */
 .app-shell.noir-theme .app-video-bg { opacity: 0; }
 .app-shell.noir-theme .app-video-overlay { background: #000; opacity: 1; }
-.app-shell.noir-theme::before {
-  background:
-    radial-gradient(ellipse 700px 450px at 15% 25%, rgba(232,160,32,0.05) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 350px at 85% 75%, rgba(180,120,16,0.04) 0%, transparent 70%);
-  animation: none;
-}
+.app-shell.noir-theme::before { display: none; }
 
-/* ── Title bar ── */
+/* ── Title bar — pure black bar ── */
 .app-shell.noir-theme .title-bar {
-  background: rgba(0,0,0,0.99);
-  border-bottom: 1px solid rgba(232,160,32,0.12);
+  background: #000000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-/* ── Sidebar ── */
+/* ── Sidebar — near black ── */
 .app-shell.noir-theme .sidebar {
-  background: rgba(4,2,1,0.99);
-  border-right: 1px solid rgba(232,160,32,0.10);
+  background: #06060a;
+  border-right: 1px solid rgba(255,255,255,0.07);
 }
 .app-shell.noir-theme .search-input {
-  background: rgba(10,6,2,0.95);
-  border-color: rgba(232,160,32,0.15);
-  color: #FFF5E0;
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.10);
+  color: #fff;
 }
-.app-shell.noir-theme .search-input::placeholder { color: #4A3218; }
+.app-shell.noir-theme .search-input::placeholder { color: #404055; }
 .app-shell.noir-theme .dino-list-item:hover {
-  background: rgba(232,160,32,0.05);
-  border-color: rgba(232,160,32,0.14);
+  background: rgba(139,164,255,0.06);
+  border-color: rgba(139,164,255,0.14);
 }
 .app-shell.noir-theme .dino-list-item.active {
-  background: rgba(232,160,32,0.09);
-  border-color: rgba(232,160,32,0.22);
+  background: rgba(139,164,255,0.10);
+  border-color: rgba(139,164,255,0.22);
 }
 
-/* ── Panels & cards ── */
+/* ── Panels & cards — solid dark ── */
 .app-shell.noir-theme .tp-section,
 .app-shell.noir-theme .key-stat-card,
 .app-shell.noir-theme .food-table-section,
@@ -1764,14 +1760,14 @@ body {
 .app-shell.noir-theme .stat-card,
 .app-shell.noir-theme .food-card,
 .app-shell.noir-theme .method-card {
-  background: rgba(10,6,2,0.97);
-  border-color: rgba(232,160,32,0.12);
+  background: rgba(14,14,18,0.99);
+  border-color: rgba(255,255,255,0.08);
 }
 
-/* ── Scrollbar — amber tinted ── */
-.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(232,160,32,0.18); border-radius: 10px; }
-.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(232,160,32,0.35); }
-.app-shell.noir-theme ::selection { background: rgba(232,160,32,0.30); color: #000; }
+/* ── Scrollbar ── */
+.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 10px; }
+.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
+.app-shell.noir-theme ::selection { background: rgba(139,164,255,0.30); color: #fff; }
 
 /* Theme toggle button */
 .tb-theme-toggle {

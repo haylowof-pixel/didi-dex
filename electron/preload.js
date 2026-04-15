@@ -137,5 +137,6 @@ contextBridge.exposeInMainWorld('api', {
   onUpdateStatus:    (cb) => ipcRenderer.on('update-status', (_, data) => cb(data)),
   // Theme
   setTheme:          (theme) => ipcRenderer.send('set-theme', theme),
+  getTheme:          () => ipcRenderer.invoke('get-theme'),
   onThemeChange:     (cb) => ipcRenderer.on('theme-changed', (_, theme) => cb(theme)),
 });

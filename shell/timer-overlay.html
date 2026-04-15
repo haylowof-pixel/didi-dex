@@ -270,15 +270,15 @@ button { cursor: pointer; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
 
-/* ── Noir Theme — Amber/Gold on Deep Black ── */
+/* ── Noir Theme — Pure Black, Timer Widget Style ── */
 html.noir-theme {
-  --bg-0:#000000; --bg-1:rgba(8,5,2,0.99); --bg-2:rgba(14,9,4,0.97); --bg-3:rgba(22,14,6,0.95);
-  --border-0:rgba(232,160,32,0.10); --border-1:rgba(232,160,32,0.18); --border-2:rgba(232,160,32,0.30);
-  --text-0:#FFF5E0; --text-1:#C8A868; --text-2:#7A5C30; --text-3:#4A3218;
-  --accent:#E8A020; --accent-l:#F5C048; --accent-d:#B47810;
-  --accent-bg:rgba(232,160,32,0.12); --accent-border:rgba(232,160,32,0.38);
+  --bg-0:#000000; --bg-1:#0a0a0d; --bg-2:#101014; --bg-3:#181820;
+  --border-0:rgba(255,255,255,0.07); --border-1:rgba(255,255,255,0.12); --border-2:rgba(255,255,255,0.20);
+  --text-0:#FFFFFF; --text-1:#C0C0CC; --text-2:#70708A; --text-3:#404055;
+  --accent:#8BA4FF; --accent-l:#A8BEFF; --accent-d:#6B85E8;
+  --accent-bg:rgba(139,164,255,0.12); --accent-border:rgba(139,164,255,0.32);
 }
-html.noir-theme ::-webkit-scrollbar-thumb { background: rgba(232,160,32,0.15); }
+html.noir-theme ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); }
 
 /* ── Light Theme ── */
 html.light-theme {
@@ -703,7 +703,11 @@ setTimeout(syncHeight, 80);
     document.documentElement.classList.remove('noir-theme','light-theme');
     if (t === 'noir' || t === 'light') document.documentElement.classList.add(t + '-theme');
   }
-  applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+  if (window.api && window.api.getTheme) {
+    window.api.getTheme().then(function(t) { applyTheme(t || 'dark'); });
+  } else {
+    applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+  }
   if (window.api && window.api.onThemeChange) {
     window.api.onThemeChange(function(t) { localStorage.setItem('overseer-theme', t); applyTheme(t); });
   }

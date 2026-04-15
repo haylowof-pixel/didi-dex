@@ -290,20 +290,20 @@ html, body {
 #content::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 
-/* ── Noir Theme — Amber/Gold on Deep Black ── */
+/* ── Noir Theme — Pure Black, Timer Widget Style ── */
 html.noir-theme {
-  --bg-0:#000000; --bg-1:rgba(8,5,2,0.99); --bg-2:rgba(14,9,4,0.97); --bg-3:rgba(22,14,6,0.95); --bg-4:rgba(30,20,8,0.92);
-  --border-0:rgba(232,160,32,0.10); --border-1:rgba(232,160,32,0.18); --border-2:rgba(232,160,32,0.30);
-  --text-0:#FFF5E0; --text-1:#C8A868; --text-2:#7A5C30; --text-3:#4A3218;
-  --accent:#E8A020; --accent-l:#F5C048; --accent-d:#B47810;
-  --accent-bg:rgba(232,160,32,0.12); --accent-border:rgba(232,160,32,0.38); --accent-glow:rgba(232,160,32,0.20);
-  --glass-bg:rgba(232,160,32,0.04); --glass-border:rgba(232,160,32,0.12);
+  --bg-0:#000000; --bg-1:#0a0a0d; --bg-2:#101014; --bg-3:#181820; --bg-4:#20202a;
+  --border-0:rgba(255,255,255,0.07); --border-1:rgba(255,255,255,0.12); --border-2:rgba(255,255,255,0.20);
+  --text-0:#FFFFFF; --text-1:#C0C0CC; --text-2:#70708A; --text-3:#404055;
+  --accent:#8BA4FF; --accent-l:#A8BEFF; --accent-d:#6B85E8;
+  --accent-bg:rgba(139,164,255,0.12); --accent-border:rgba(139,164,255,0.32); --accent-glow:rgba(139,164,255,0.22);
+  --glass-bg:rgba(255,255,255,0.04); --glass-border:rgba(255,255,255,0.08);
 }
-html.noir-theme body { background: #000; color: #FFF5E0; }
-html.noir-theme #titlebar { background: rgba(0,0,0,0.99); border-bottom-color: rgba(232,160,32,0.12); }
+html.noir-theme body { background: #000; color: #fff; }
+html.noir-theme #titlebar { background: #000; border-bottom-color: rgba(255,255,255,0.08); }
 html.noir-theme #bgVideo { opacity: 0; }
-html.noir-theme ::-webkit-scrollbar-thumb { background: rgba(232,160,32,0.18); }
-html.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(232,160,32,0.35); }
+html.noir-theme ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); }
+html.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
 
 /* ── Light Theme ── */
 html.light-theme {
@@ -910,7 +910,11 @@ function setThemeOption(theme) {
   if (window.api && window.api.setTheme) window.api.setTheme(theme);
 }
 
-applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+if (window.api && window.api.getTheme) {
+  window.api.getTheme().then(function(t) { applyTheme(t || 'dark'); });
+} else {
+  applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+}
 if (window.api && window.api.onThemeChange) {
   window.api.onThemeChange(function(theme) {
     localStorage.setItem('overseer-theme', theme);

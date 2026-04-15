@@ -553,49 +553,49 @@
     white-space: nowrap;
   }
 
-  /* ── Theme: Noir — Amber/Gold on Deep Black ── */
+  /* ── Theme: Noir — Pure Black, Timer Widget Style ── */
   html.noir-theme {
     --bg-deep: #000000;
-    --bg-panel: rgba(8,5,2,0.99);
-    --border: rgba(232,160,32,0.14);
-    --border-hi: rgba(232,160,32,0.38);
-    --accent: #E8A020;
-    --accent-dim: rgba(232,160,32,0.12);
-    --text-1: #FFF5E0;
-    --text-2: #C8A868;
-    --text-3: #7A5C30;
+    --bg-panel: rgba(10,10,14,0.99);
+    --border: rgba(255,255,255,0.09);
+    --border-hi: rgba(139,164,255,0.35);
+    --accent: #8BA4FF;
+    --accent-dim: rgba(139,164,255,0.12);
+    --text-1: #ffffff;
+    --text-2: #C0C0CC;
+    --text-3: #70708A;
     --green: #2dd4a0;
     --red: #ef5f5f;
     --orange: #f0993e;
   }
   html.noir-theme body { background: transparent; }
   html.noir-theme #panel {
-    background: rgba(6,4,1,0.99);
-    border-color: rgba(232,160,32,0.16);
-    box-shadow: 0 20px 60px rgba(0,0,0,1), 0 0 0 1px rgba(232,160,32,0.08);
+    background: #0a0a0d;
+    border-color: rgba(255,255,255,0.09);
+    box-shadow: 0 20px 60px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.05);
   }
-  html.noir-theme #search-row { border-bottom-color: rgba(232,160,32,0.10); }
-  html.noir-theme #results { border-bottom-color: rgba(232,160,32,0.10); }
+  html.noir-theme #search-row { border-bottom-color: rgba(255,255,255,0.07); }
+  html.noir-theme #results { border-bottom-color: rgba(255,255,255,0.07); }
   html.noir-theme .result-item:hover, html.noir-theme .result-item.focused {
-    background: rgba(232,160,32,0.05);
+    background: rgba(139,164,255,0.07);
     border-left-color: var(--accent);
   }
-  html.noir-theme #stats-grid { background: rgba(232,160,32,0.04); }
-  html.noir-theme .stat-cell { background: rgba(6,4,1,0.99); border-color: rgba(232,160,32,0.10); }
-  html.noir-theme #food-compare { border-top-color: rgba(232,160,32,0.10); }
-  html.noir-theme #food-compare-header { border-bottom-color: rgba(232,160,32,0.10); }
-  html.noir-theme .food-card { background: rgba(8,5,2,0.98); border-color: rgba(232,160,32,0.12); }
-  html.noir-theme .food-card.active { border-color: rgba(232,160,32,0.40); }
-  html.noir-theme #footer { border-top-color: rgba(232,160,32,0.10); }
-  html.noir-theme #ko-section { border-top-color: rgba(232,160,32,0.10); }
-  html.noir-theme .ko-cell { background: rgba(8,5,2,0.98); border-color: rgba(232,160,32,0.12); }
+  html.noir-theme #stats-grid { background: rgba(255,255,255,0.04); }
+  html.noir-theme .stat-cell { background: #0a0a0d; border-color: rgba(255,255,255,0.07); }
+  html.noir-theme #food-compare { border-top-color: rgba(255,255,255,0.07); }
+  html.noir-theme #food-compare-header { border-bottom-color: rgba(255,255,255,0.07); }
+  html.noir-theme .food-card { background: rgba(14,14,18,0.99); border-color: rgba(255,255,255,0.08); }
+  html.noir-theme .food-card.active { border-color: rgba(139,164,255,0.35); }
+  html.noir-theme #footer { border-top-color: rgba(255,255,255,0.07); }
+  html.noir-theme #ko-section { border-top-color: rgba(255,255,255,0.07); }
+  html.noir-theme .ko-cell { background: rgba(14,14,18,0.99); border-color: rgba(255,255,255,0.08); }
   html.noir-theme .ko-tab, html.noir-theme .ko-preset-btn, html.noir-theme .ko-quality-input {
-    background: rgba(232,160,32,0.04); border-color: rgba(232,160,32,0.14);
-    color: #C8A868;
+    background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.09);
+    color: #C0C0CC;
   }
   html.noir-theme .ko-tab.active, html.noir-theme .ko-preset-btn.active {
-    background: rgba(232,160,32,0.12); border-color: rgba(232,160,32,0.40);
-    color: #E8A020;
+    background: rgba(139,164,255,0.12); border-color: rgba(139,164,255,0.35);
+    color: #8BA4FF;
   }
 
   /* ── Theme: Light ── */
@@ -1576,7 +1576,12 @@ function applyTheme(theme) {
     document.documentElement.classList.add(theme + '-theme');
   }
 }
-applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+// Always ask main process for the current theme (fixes "stuck" bug when window was closed during theme change)
+if (window.api && window.api.getTheme) {
+  window.api.getTheme().then(function(t) { applyTheme(t || 'dark'); });
+} else {
+  applyTheme(localStorage.getItem('overseer-theme') || 'dark');
+}
 if (window.api && window.api.onThemeChange) {
   window.api.onThemeChange(function(theme) {
     localStorage.setItem('overseer-theme', theme);
