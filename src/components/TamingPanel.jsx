@@ -410,14 +410,20 @@ function KnockoutCalc({ dino, level }) {
           <button key={w.key}
             className={`tp-ko-tab ${activeWeapon === w.key ? 'active' : ''}`}
             onClick={() => setActiveWeapon(w.key)}
-          >{w.icon} {w.name}</button>
+          >
+            <img src={w.img} alt={w.name} className="tp-ko-tab-img" onError={e => { e.target.style.display = 'none'; }} />
+            <span>{w.name}</span>
+          </button>
         ))}
       </div>
 
       {/* Selected weapon stats */}
       {selected && (
         <div className="tp-ko-stats">
-          <div className="tp-ko-ammo">{selected.ammo}</div>
+          <div className="tp-ko-ammo">
+            <img src={selected.ammoImg} alt={selected.ammo} className="tp-ko-ammo-img" onError={e => { e.target.style.display = 'none'; }} />
+            <span>{selected.ammo}</span>
+          </div>
           <div className="tp-ko-grid">
             <div className="tp-ko-cell">
               <div className="tp-ko-cell-label">Corps</div>

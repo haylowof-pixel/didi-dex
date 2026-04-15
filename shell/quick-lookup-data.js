@@ -4076,11 +4076,12 @@ function formatTime(totalSeconds) {
 }
 
 // ── Knockout Calculator ──────────────────────────────────────────────────────
+function WW(name, size) { size = size || 40; return 'https://ark.wiki.gg/images/thumb/' + name + '.png/' + size + 'px-' + name + '.png'; }
 var WEAPONS = [
-  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',   icon: '🏹', baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
-  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',   icon: '🎯', baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
-  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart', icon: '🔫', baseDamage: 26,  baseTorpor: 221, headMult: 3 },
-  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',   icon: '🏹', baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
+  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',   img: WW('Bow'),           ammoImg: WW('Tranquilizer_Arrow', 28),           baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
+  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',   img: WW('Crossbow'),      ammoImg: WW('Tranquilizer_Arrow', 28),           baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
+  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart', img: WW('Longneck_Rifle'), ammoImg: WW('Shocking_Tranquilizer_Dart', 28),  baseDamage: 26,  baseTorpor: 221, headMult: 3 },
+  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',   img: WW('Compound_Bow'),  ammoImg: WW('Tranquilizer_Arrow', 28),           baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
 ];
 
 function calculateKnockout(dino, level, qualityPct) {

@@ -399,11 +399,12 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
 // ── Knockout weapon data ─────────────────────────────────────────────────────
 // baseDamage / baseTorpor at 100% weapon quality, primitive grade.
 // Torpor from tranq arrow = damage × 2. Headshot = 3× damage & torpor for most creatures.
+const WW = (name, size = 40) => `https://ark.wiki.gg/images/thumb/${name}.png/${size}px-${name}.png`;
 export const WEAPONS = [
-  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',    icon: '🏹', baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
-  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',    icon: '🎯', baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
-  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart',  icon: '🔫', baseDamage: 26,  baseTorpor: 221, headMult: 3 },
-  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',    icon: '🏹', baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
+  { key: 'bow',          name: 'Arc',          ammo: 'Tranq Arrow',   img: WW('Bow'),          ammoImg: WW('Tranquilizer_Arrow', 28),          baseDamage: 20,  baseTorpor: 40,  headMult: 3 },
+  { key: 'crossbow',     name: 'Arbalète',     ammo: 'Tranq Arrow',   img: WW('Crossbow'),     ammoImg: WW('Tranquilizer_Arrow', 28),          baseDamage: 35,  baseTorpor: 70,  headMult: 3 },
+  { key: 'longneck',     name: 'Longneck',     ammo: 'Shocking Dart', img: WW('Longneck_Rifle'), ammoImg: WW('Shocking_Tranquilizer_Dart', 28), baseDamage: 26,  baseTorpor: 221, headMult: 3 },
+  { key: 'compound_bow', name: 'Arc Compound', ammo: 'Tranq Arrow',   img: WW('Compound_Bow'), ammoImg: WW('Tranquilizer_Arrow', 28),          baseDamage: 27,  baseTorpor: 54,  headMult: 3 },
 ];
 
 /**

@@ -1352,20 +1352,26 @@ body {
 .tp-btn-xs.active { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-l); }
 
 .tp-ko-weapon-tabs {
-  display: flex; gap: 3px; margin-bottom: 10px; flex-wrap: wrap;
+  display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;
 }
 .tp-ko-tab {
-  padding: 4px 8px; font-size: 10px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 6px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
   background: var(--bg-tertiary); border: 1px solid var(--border-0);
-  border-radius: 6px; color: var(--text-3); cursor: pointer;
+  border-radius: 8px; color: var(--text-3); cursor: pointer;
   font-family: inherit; transition: all var(--dur-fast) var(--ease);
-  white-space: nowrap;
+  white-space: nowrap; min-width: 58px;
 }
+.tp-ko-tab-img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; }
 .tp-ko-tab:hover { background: var(--bg-hover); color: var(--text-1); }
 .tp-ko-tab.active { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-l); }
 
 .tp-ko-stats { }
-.tp-ko-ammo { font-size: 10px; color: var(--text-3); margin-bottom: 8px; font-style: italic; }
+.tp-ko-ammo {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; color: var(--text-3); margin-bottom: 8px; font-style: italic;
+}
+.tp-ko-ammo-img { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
 
 .tp-ko-grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
@@ -1659,81 +1665,113 @@ body {
 }
 
 /* ============================================
-   Noir Theme Override
+   Noir Theme Override — Amber/Gold on Deep Black
+   Completely different from Dark (blue-purple → amber)
    ============================================ */
 .app-shell.noir-theme {
-  --bg-base: #000000;
-  --bg-panel: rgba(8,8,8,0.98);
-  --bg-surface: rgba(12,12,12,0.95);
-  --bg-tertiary: rgba(14,14,14,0.92);
-  --bg-hover: rgba(24,24,24,0.9);
-  --bg-active: rgba(32,32,32,0.8);
-  --bg-input: rgba(10,10,10,0.98);
-  --bg-tooltip: rgba(4,4,4,0.99);
+  /* ── Backgrounds — pure warm black ── */
+  --bg-base:    #000000;
+  --bg-panel:   rgba(8,5,2,0.98);
+  --bg-surface: rgba(14,9,4,0.96);
+  --bg-tertiary:rgba(18,12,5,0.94);
+  --bg-hover:   rgba(26,16,6,0.92);
+  --bg-active:  rgba(36,22,8,0.88);
+  --bg-input:   rgba(10,6,2,0.98);
+  --bg-tooltip: rgba(4,2,1,0.99);
 
   --bg-0: #000000;
-  --bg-1: rgba(8,8,8,0.98);
-  --bg-2: rgba(14,14,14,0.95);
-  --bg-3: rgba(20,20,20,0.9);
-  --bg-4: rgba(28,28,28,0.85);
+  --bg-1: rgba(8,5,2,0.98);
+  --bg-2: rgba(16,10,4,0.96);
+  --bg-3: rgba(24,15,6,0.92);
+  --bg-4: rgba(34,22,8,0.88);
 
-  --glass-bg: rgba(255,255,255,0.02);
-  --glass-bg-hover: rgba(255,255,255,0.05);
-  --glass-border: rgba(255,255,255,0.06);
+  --glass-bg:       rgba(232,160,32,0.04);
+  --glass-bg-hover: rgba(232,160,32,0.08);
+  --glass-border:   rgba(232,160,32,0.10);
+  --glass-blur: 16px;
+  --glass-blur-heavy: 32px;
 
-  --border-0: rgba(255,255,255,0.06);
-  --border-1: rgba(255,255,255,0.10);
-  --border-2: rgba(255,255,255,0.18);
-  --border-3: rgba(255,255,255,0.28);
+  /* ── Borders — amber-tinted ── */
+  --border-0: rgba(232,160,32,0.10);
+  --border-1: rgba(232,160,32,0.18);
+  --border-2: rgba(232,160,32,0.30);
+  --border-3: rgba(232,160,32,0.45);
 
-  --text-0: #ffffff;
-  --text-1: #c8c8c8;
-  --text-2: #888888;
-  --text-3: #505050;
+  /* ── Text — warm white / aged paper tones ── */
+  --text-0: #FFF5E0;
+  --text-1: #C8A868;
+  --text-2: #7A5C30;
+  --text-3: #4A3218;
 
-  --accent: #7B93F8;
-  --accent-l: #a0b4ff;
-  --accent-d: #5B75DA;
-  --accent-glow: rgba(123,147,248,0.28);
-  --accent-bg: rgba(123,147,248,0.10);
-  --accent-border: rgba(123,147,248,0.30);
+  /* ── Accent — Amber/Gold (replaces blue-purple entirely) ── */
+  --accent:        #E8A020;
+  --accent-l:      #F5C048;
+  --accent-d:      #B47810;
+  --accent-glow:   rgba(232,160,32,0.32);
+  --accent-bg:     rgba(232,160,32,0.12);
+  --accent-border: rgba(232,160,32,0.38);
 
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.95);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.95);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.98);
-  --shadow-glow: 0 0 24px rgba(123,147,248,0.22);
-  --shadow-glow-accent: 0 0 30px rgba(123,147,248,0.28), 0 0 60px rgba(123,147,248,0.12);
+  /* ── Shadows — deep black + amber glow ── */
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.98);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.98);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.99);
+  --shadow-glow: 0 0 24px rgba(232,160,32,0.20);
+  --shadow-glow-accent: 0 0 30px rgba(232,160,32,0.28), 0 0 60px rgba(232,160,32,0.10);
 }
 
-/* Hide video bg in noir — pure black */
+/* ── Video bg hidden — replace with subtle amber ambient ── */
 .app-shell.noir-theme .app-video-bg { opacity: 0; }
 .app-shell.noir-theme .app-video-overlay { background: #000; opacity: 1; }
-.app-shell.noir-theme::before { display: none; }
+.app-shell.noir-theme::before {
+  background:
+    radial-gradient(ellipse 700px 450px at 15% 25%, rgba(232,160,32,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 85% 75%, rgba(180,120,16,0.04) 0%, transparent 70%);
+  animation: none;
+}
 
-/* Title bar */
+/* ── Title bar ── */
 .app-shell.noir-theme .title-bar {
   background: rgba(0,0,0,0.99);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(232,160,32,0.12);
 }
 
-/* Sidebar */
+/* ── Sidebar ── */
 .app-shell.noir-theme .sidebar {
-  background: rgba(4,4,4,0.99);
-  border-right: 1px solid rgba(255,255,255,0.06);
+  background: rgba(4,2,1,0.99);
+  border-right: 1px solid rgba(232,160,32,0.10);
+}
+.app-shell.noir-theme .search-input {
+  background: rgba(10,6,2,0.95);
+  border-color: rgba(232,160,32,0.15);
+  color: #FFF5E0;
+}
+.app-shell.noir-theme .search-input::placeholder { color: #4A3218; }
+.app-shell.noir-theme .dino-list-item:hover {
+  background: rgba(232,160,32,0.05);
+  border-color: rgba(232,160,32,0.14);
+}
+.app-shell.noir-theme .dino-list-item.active {
+  background: rgba(232,160,32,0.09);
+  border-color: rgba(232,160,32,0.22);
 }
 
-/* Panels & cards */
+/* ── Panels & cards ── */
 .app-shell.noir-theme .tp-section,
 .app-shell.noir-theme .key-stat-card,
-.app-shell.noir-theme .food-table-section {
-  background: rgba(8,8,8,0.98);
-  border-color: rgba(255,255,255,0.07);
+.app-shell.noir-theme .food-table-section,
+.app-shell.noir-theme .glass-card,
+.app-shell.noir-theme .detail-card,
+.app-shell.noir-theme .stat-card,
+.app-shell.noir-theme .food-card,
+.app-shell.noir-theme .method-card {
+  background: rgba(10,6,2,0.97);
+  border-color: rgba(232,160,32,0.12);
 }
 
-/* Scrollbar */
-.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
-.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
-.app-shell.noir-theme ::selection { background: rgba(123,147,248,0.3); color: #fff; }
+/* ── Scrollbar — amber tinted ── */
+.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(232,160,32,0.18); border-radius: 10px; }
+.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(232,160,32,0.35); }
+.app-shell.noir-theme ::selection { background: rgba(232,160,32,0.30); color: #000; }
 
 /* Theme toggle button */
 .tb-theme-toggle {

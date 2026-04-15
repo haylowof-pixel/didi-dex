@@ -553,46 +553,49 @@
     white-space: nowrap;
   }
 
-  /* ── Theme: Noir ── */
+  /* ── Theme: Noir — Amber/Gold on Deep Black ── */
   html.noir-theme {
     --bg-deep: #000000;
-    --bg-panel: rgba(6,6,6,0.99);
-    --border: rgba(255,255,255,0.07);
-    --border-hi: rgba(255,255,255,0.18);
-    --text-1: #ffffff;
-    --text-2: #c0c0c0;
-    --text-3: #606060;
-    --accent: #7B93F8;
+    --bg-panel: rgba(8,5,2,0.99);
+    --border: rgba(232,160,32,0.14);
+    --border-hi: rgba(232,160,32,0.38);
+    --accent: #E8A020;
+    --accent-dim: rgba(232,160,32,0.12);
+    --text-1: #FFF5E0;
+    --text-2: #C8A868;
+    --text-3: #7A5C30;
     --green: #2dd4a0;
     --red: #ef5f5f;
     --orange: #f0993e;
   }
   html.noir-theme body { background: transparent; }
   html.noir-theme #panel {
-    background: rgba(4,4,4,0.99);
-    border-color: rgba(255,255,255,0.07);
-    box-shadow: 0 20px 60px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.04);
+    background: rgba(6,4,1,0.99);
+    border-color: rgba(232,160,32,0.16);
+    box-shadow: 0 20px 60px rgba(0,0,0,1), 0 0 0 1px rgba(232,160,32,0.08);
   }
-  html.noir-theme #search-row { border-bottom-color: rgba(255,255,255,0.06); }
-  html.noir-theme #results { border-bottom-color: rgba(255,255,255,0.06); }
+  html.noir-theme #search-row { border-bottom-color: rgba(232,160,32,0.10); }
+  html.noir-theme #results { border-bottom-color: rgba(232,160,32,0.10); }
   html.noir-theme .result-item:hover, html.noir-theme .result-item.focused {
-    background: rgba(255,255,255,0.04);
+    background: rgba(232,160,32,0.05);
     border-left-color: var(--accent);
   }
-  html.noir-theme #stats-grid { background: rgba(255,255,255,0.05); }
-  html.noir-theme .stat-cell { background: rgba(4,4,4,0.99); }
-  html.noir-theme #food-compare { border-top-color: rgba(255,255,255,0.06); }
-  html.noir-theme #food-compare-header { border-bottom-color: rgba(255,255,255,0.06); }
-  html.noir-theme .food-card { background: rgba(6,6,6,0.98); border-color: rgba(255,255,255,0.07); }
-  html.noir-theme .food-card.active { border-color: rgba(123,147,248,0.3); }
-  html.noir-theme #footer { border-top-color: rgba(255,255,255,0.06); }
-  html.noir-theme #ko-section { border-top-color: rgba(255,255,255,0.06); }
-  html.noir-theme .ko-cell { background: rgba(6,6,6,0.98); border-color: rgba(255,255,255,0.07); }
+  html.noir-theme #stats-grid { background: rgba(232,160,32,0.04); }
+  html.noir-theme .stat-cell { background: rgba(6,4,1,0.99); border-color: rgba(232,160,32,0.10); }
+  html.noir-theme #food-compare { border-top-color: rgba(232,160,32,0.10); }
+  html.noir-theme #food-compare-header { border-bottom-color: rgba(232,160,32,0.10); }
+  html.noir-theme .food-card { background: rgba(8,5,2,0.98); border-color: rgba(232,160,32,0.12); }
+  html.noir-theme .food-card.active { border-color: rgba(232,160,32,0.40); }
+  html.noir-theme #footer { border-top-color: rgba(232,160,32,0.10); }
+  html.noir-theme #ko-section { border-top-color: rgba(232,160,32,0.10); }
+  html.noir-theme .ko-cell { background: rgba(8,5,2,0.98); border-color: rgba(232,160,32,0.12); }
   html.noir-theme .ko-tab, html.noir-theme .ko-preset-btn, html.noir-theme .ko-quality-input {
-    background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08);
+    background: rgba(232,160,32,0.04); border-color: rgba(232,160,32,0.14);
+    color: #C8A868;
   }
   html.noir-theme .ko-tab.active, html.noir-theme .ko-preset-btn.active {
-    background: rgba(123,147,248,0.12); border-color: rgba(123,147,248,0.3);
+    background: rgba(232,160,32,0.12); border-color: rgba(232,160,32,0.40);
+    color: #E8A020;
   }
 
   /* ── Theme: Light ── */
@@ -686,17 +689,20 @@
   .ko-preset-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
   .ko-preset-btn.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
 
-  .ko-weapon-tabs { display: flex; gap: 3px; margin-bottom: 10px; flex-wrap: wrap; }
+  .ko-weapon-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
   .ko-tab {
-    padding: 4px 8px; font-size: 10px; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 6px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
     background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-    border-radius: 6px; color: var(--text-3); cursor: pointer; font-family: inherit;
-    transition: all 0.12s; white-space: nowrap;
+    border-radius: 8px; color: var(--text-3); cursor: pointer; font-family: inherit;
+    transition: all 0.12s; white-space: nowrap; min-width: 58px;
   }
+  .ko-tab img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; }
   .ko-tab:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
   .ko-tab.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
 
-  .ko-ammo { font-size: 10px; color: var(--text-3); margin-bottom: 8px; font-style: italic; }
+  .ko-ammo { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--text-3); margin-bottom: 8px; font-style: italic; }
+  .ko-ammo img { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
 
   .ko-grid {
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
@@ -1391,7 +1397,7 @@ function renderKO() {
   WEAPONS.forEach(w => {
     const btn = document.createElement('button');
     btn.className = 'ko-tab' + (w.key === koWeapon ? ' active' : '');
-    btn.textContent = w.icon + ' ' + w.name;
+    btn.innerHTML = '<img src="' + w.img + '" alt="' + w.name + '" onerror="this.style.display=\'none\'"/><span>' + w.name + '</span>';
     btn.onclick = function() {
       koWeapon = w.key;
       tabsEl.querySelectorAll('.ko-tab').forEach(b => b.classList.remove('active'));
@@ -1411,7 +1417,7 @@ function renderKOStats() {
   const w = results.find(r => r.key === koWeapon) || results[0];
   if (!w) return;
 
-  document.getElementById('ko-ammo').textContent = w.ammo;
+  document.getElementById('ko-ammo').innerHTML = '<img src="' + w.ammoImg + '" alt="' + w.ammo + '" onerror="this.style.display=\'none\'"/><span>' + w.ammo + '</span>';
 
   const riskColor = w.killRisk === 'high' ? 'var(--red)' : w.killRisk === 'med' ? 'var(--orange)' : 'var(--green)';
   const riskLabel = w.killRisk === 'high' ? 'Danger' : w.killRisk === 'med' ? 'Risque' : 'Safe';
