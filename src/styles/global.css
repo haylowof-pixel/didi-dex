@@ -1665,93 +1665,128 @@ body {
 }
 
 /* ============================================
-   Noir Theme — Pure Black, Timer-Widget Aesthetic
-   Same blue-violet accent family as dark, but on true #000000
-   More solid, high-contrast, no video/glow noise
+   NOIR THEME — Pure Black + Cyan (#22D3EE)
+   True alternative: different accent, no glass, no video,
+   solid panels, crisp terminal aesthetic.
+   Overrides ALL hardcoded rgba(123,147,248) values.
    ============================================ */
 .app-shell.noir-theme {
-  /* ── Backgrounds — pure black, solid ── */
+  /* ── Backgrounds — pure black ── */
   --bg-base:    #000000;
-  --bg-panel:   rgba(10,10,12,0.99);
-  --bg-surface: rgba(16,16,20,0.98);
-  --bg-tertiary:rgba(20,20,24,0.97);
-  --bg-hover:   rgba(28,28,36,0.96);
-  --bg-active:  rgba(38,38,50,0.94);
-  --bg-input:   rgba(8,8,10,0.99);
-  --bg-tooltip: rgba(4,4,6,1.0);
+  --bg-panel:   #090910;
+  --bg-surface: #0e0e18;
+  --bg-tertiary:#13131e;
+  --bg-hover:   #1a1a28;
+  --bg-active:  #20202e;
+  --bg-input:   #060610;
+  --bg-tooltip: #030308;
 
   --bg-0: #000000;
-  --bg-1: #0a0a0d;
-  --bg-2: #101014;
-  --bg-3: #181820;
-  --bg-4: #20202a;
+  --bg-1: #090910;
+  --bg-2: #0e0e18;
+  --bg-3: #161624;
+  --bg-4: #1e1e2c;
 
-  --glass-bg:       rgba(255,255,255,0.03);
-  --glass-bg-hover: rgba(255,255,255,0.06);
-  --glass-border:   rgba(255,255,255,0.08);
-  --glass-blur: 12px;
-  --glass-blur-heavy: 24px;
+  --glass-bg:       rgba(34,211,238,0.03);
+  --glass-bg-hover: rgba(34,211,238,0.07);
+  --glass-border:   rgba(34,211,238,0.10);
+  --glass-blur: 0px;
+  --glass-blur-heavy: 0px;
 
-  /* ── Borders — white, higher contrast than dark ── */
-  --border-0: rgba(255,255,255,0.07);
-  --border-1: rgba(255,255,255,0.12);
-  --border-2: rgba(255,255,255,0.20);
-  --border-3: rgba(255,255,255,0.32);
+  /* ── Borders — cyan tint ── */
+  --border-0: rgba(34,211,238,0.08);
+  --border-1: rgba(34,211,238,0.15);
+  --border-2: rgba(34,211,238,0.25);
+  --border-3: rgba(34,211,238,0.42);
 
-  /* ── Text — crisp white ── */
+  /* ── Text ── */
   --text-0: #FFFFFF;
-  --text-1: #C0C0CC;
-  --text-2: #70708A;
-  --text-3: #404055;
+  --text-1: #A8D8DF;
+  --text-2: #4A7A84;
+  --text-3: #234048;
 
-  /* ── Accent — same blue-violet family, slightly brighter ── */
-  --accent:        #8BA4FF;
-  --accent-l:      #A8BEFF;
-  --accent-d:      #6B85E8;
-  --accent-glow:   rgba(139,164,255,0.30);
-  --accent-bg:     rgba(139,164,255,0.12);
-  --accent-border: rgba(139,164,255,0.32);
+  /* ── Accent — CYAN (totally different from blue-violet) ── */
+  --accent:        #22D3EE;
+  --accent-l:      #67E8F9;
+  --accent-d:      #0891B2;
+  --accent-glow:   rgba(34,211,238,0.28);
+  --accent-bg:     rgba(34,211,238,0.10);
+  --accent-border: rgba(34,211,238,0.30);
 
-  /* ── Shadows — maximum depth ── */
+  /* ── Shadows ── */
   --shadow-sm: 0 1px 4px rgba(0,0,0,1);
   --shadow-md: 0 4px 20px rgba(0,0,0,1);
   --shadow-lg: 0 8px 40px rgba(0,0,0,1);
-  --shadow-glow: 0 0 24px rgba(139,164,255,0.22);
-  --shadow-glow-accent: 0 0 30px rgba(139,164,255,0.28), 0 0 60px rgba(139,164,255,0.10);
+  --shadow-glow: 0 0 24px rgba(34,211,238,0.18);
+  --shadow-glow-accent: 0 0 30px rgba(34,211,238,0.25), 0 0 60px rgba(34,211,238,0.08);
+
+  /* ── Semantic — unchanged ── */
+  --green: #2dd4a0; --orange: #f0993e; --red: #ef5f5f;
 }
 
-/* ── No video, no ambient mesh — pure black ── */
+/* ── Kill video + mesh ── */
 .app-shell.noir-theme .app-video-bg { opacity: 0; }
 .app-shell.noir-theme .app-video-overlay { background: #000; opacity: 1; }
 .app-shell.noir-theme::before { display: none; }
 
-/* ── Title bar — pure black bar ── */
+/* ── TITLE BAR — solid black, no blur, cyan border ── */
 .app-shell.noir-theme .title-bar {
   background: #000000;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(34,211,238,0.14);
+}
+/* Override hardcoded rgba(123,147,248) button hover/active */
+.app-shell.noir-theme .tb-tool:hover {
+  background: rgba(34,211,238,0.08);
+  color: #fff;
+  box-shadow: none;
+}
+.app-shell.noir-theme .tb-tool.active {
+  background: rgba(34,211,238,0.10);
+  color: #67E8F9;
+  box-shadow: inset 0 -2px 0 #22D3EE, 0 0 14px rgba(34,211,238,0.15);
+}
+.app-shell.noir-theme .tb-tool:active {
+  background: rgba(34,211,238,0.14);
+  color: #22D3EE;
+}
+.app-shell.noir-theme .tb-overlay-toggle.active {
+  background: rgba(34,211,238,0.10);
+  border-color: rgba(34,211,238,0.30);
+  color: #67E8F9;
 }
 
-/* ── Sidebar — near black ── */
+/* ── SIDEBAR — solid, no blur, cyan accents ── */
 .app-shell.noir-theme .sidebar {
-  background: #06060a;
-  border-right: 1px solid rgba(255,255,255,0.07);
+  background: #04040c;
+  backdrop-filter: none !important;
+  border-right: 1px solid rgba(34,211,238,0.10);
 }
 .app-shell.noir-theme .search-input {
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.10);
+  background: rgba(34,211,238,0.04);
+  border-color: rgba(34,211,238,0.12);
+  backdrop-filter: none !important;
   color: #fff;
 }
-.app-shell.noir-theme .search-input::placeholder { color: #404055; }
+.app-shell.noir-theme .search-input::placeholder { color: #234048; }
+.app-shell.noir-theme .search-input:focus {
+  background: rgba(34,211,238,0.06);
+  border-color: rgba(34,211,238,0.28);
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.08);
+}
 .app-shell.noir-theme .dino-list-item:hover {
-  background: rgba(139,164,255,0.06);
-  border-color: rgba(139,164,255,0.14);
+  background: rgba(34,211,238,0.05);
+  border-color: rgba(34,211,238,0.14);
 }
 .app-shell.noir-theme .dino-list-item.active {
-  background: rgba(139,164,255,0.10);
-  border-color: rgba(139,164,255,0.22);
+  background: rgba(34,211,238,0.09);
+  border-color: rgba(34,211,238,0.22);
+}
+.app-shell.noir-theme .dino-list-item.active .dino-icon {
+  background: rgba(34,211,238,0.10);
 }
 
-/* ── Panels & cards — solid dark ── */
+/* ── ALL PANELS / CARDS — solid, no blur, cyan border ── */
 .app-shell.noir-theme .tp-section,
 .app-shell.noir-theme .key-stat-card,
 .app-shell.noir-theme .food-table-section,
@@ -1759,15 +1794,44 @@ body {
 .app-shell.noir-theme .detail-card,
 .app-shell.noir-theme .stat-card,
 .app-shell.noir-theme .food-card,
-.app-shell.noir-theme .method-card {
-  background: rgba(14,14,18,0.99);
-  border-color: rgba(255,255,255,0.08);
+.app-shell.noir-theme .method-card,
+.app-shell.noir-theme .control-group,
+.app-shell.noir-theme .dino-detail-panel {
+  background: #0a0a14;
+  border-color: rgba(34,211,238,0.10);
+  backdrop-filter: none !important;
+  box-shadow: none;
+}
+.app-shell.noir-theme .tp-section:hover { border-color: rgba(34,211,238,0.18); }
+.app-shell.noir-theme .food-card.active,
+.app-shell.noir-theme .method-card.active {
+  border-color: rgba(34,211,238,0.35);
+  background: rgba(34,211,238,0.06);
+  box-shadow: 0 0 20px rgba(34,211,238,0.06);
+}
+.app-shell.noir-theme .control-group:hover { border-color: rgba(34,211,238,0.18); }
+
+/* ── TP section header accent line ── */
+.app-shell.noir-theme .tp-section-header { border-top-color: rgba(34,211,238,0.20); }
+
+/* ── KO cell head ── */
+.app-shell.noir-theme .tp-ko-cell-head { border-color: rgba(34,211,238,0.22); }
+
+/* ── Narco buttons ── */
+.app-shell.noir-theme .tp-narc-btn:hover { background: rgba(34,211,238,0.10); color: #22D3EE; }
+
+/* ── Inputs (level, quality…) ── */
+.app-shell.noir-theme .level-input:focus,
+.app-shell.noir-theme .mult-input:focus,
+.app-shell.noir-theme .tp-ko-quality-input:focus {
+  border-color: #22D3EE;
+  box-shadow: 0 0 0 2px rgba(34,211,238,0.10);
 }
 
 /* ── Scrollbar ── */
-.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 10px; }
-.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
-.app-shell.noir-theme ::selection { background: rgba(139,164,255,0.30); color: #fff; }
+.app-shell.noir-theme ::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.15); border-radius: 10px; }
+.app-shell.noir-theme ::-webkit-scrollbar-thumb:hover { background: rgba(34,211,238,0.30); }
+.app-shell.noir-theme ::selection { background: rgba(34,211,238,0.25); color: #000; }
 
 /* Theme toggle button */
 .tb-theme-toggle {
