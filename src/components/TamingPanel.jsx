@@ -4,7 +4,7 @@ import { formatTimerDisplay, calculateKnockout, WEAPONS } from '../data/tamingCa
 import { ClockIcon, DropletIcon, ZapIcon, ShieldIcon, PlayIcon, PauseIcon, ResetIcon, PlusIcon, PillIcon, AlertIcon, SkullIcon, SparklesIcon, InfoIcon } from './Icons';
 import { NARCOTICS } from '../data/dinosaurs';
 
-export default function TamingPanel({ result, dino, level }) {
+export default function TamingPanel({ result, dino, level, sanguineElixir }) {
   const isPassive = dino.tamingMethod === 'Passive';
 
   const [starveTimeLeft, setStarveTimeLeft] = useState(result.starveTimeSeconds);
@@ -100,7 +100,9 @@ export default function TamingPanel({ result, dino, level }) {
 
   const addNarc = (type, torpAmount) => {
     setNarcUsed(prev => ({ ...prev, [type]: prev[type] + 1 }));
-    setTorporTimeLeft(prev => Math.min(result.torporTimerSeconds, prev + torpAmount / result.torporDrainPerSec));
+    if (result.torporDrainPerSec > 0) {
+      setTorporTimeLeft(prev => Math.min(result.torporTimerSeconds, prev + torpAmount / result.torporDrainPerSec));
+    }
   };
 
   const torporPercent = result.torporTimerSeconds > 0 ? (torporTimeLeft / result.torporTimerSeconds) * 100 : 0;
@@ -149,6 +151,17 @@ export default function TamingPanel({ result, dino, level }) {
         <div className="tp-section-header">
           <DropletIcon size={14} />
           <span>Avec {result.foodName}</span>
+          {sanguineElixir && (
+            <span className="tp-sanguine-badge">
+              <img
+                src="https://ark.wiki.gg/images/thumb/Sanguine_Elixir.png/20px-Sanguine_Elixir.png"
+                alt=""
+                style={{ width: 14, height: 14, verticalAlign: 'middle', marginRight: 3 }}
+                onError={e => { e.target.style.display = 'none'; }}
+              />
+              +30%
+            </span>
+          )}
         </div>
         <div className="tp-total-time">
           <span className="tp-total-time-label">TEMPS TOTAL</span>
@@ -173,10 +186,10 @@ export default function TamingPanel({ result, dino, level }) {
           <div className="tp-progress-bar tp-progress-orange" style={{ width: `${starvePercent}%` }} />
         </div>
         <div className="tp-info-text">
-          Le starve taming consiste à laisser la faim du dino descendre avant de le nourrir d'un coup.
+          Attendez que la barre de faim descende suffisamment, puis donnez <strong>{result.foodNeeded} {result.foodName}</strong>.
           {!starveExpanded && <button className="tp-read-more" onClick={() => setStarveExpanded(true)}>(lire plus)</button>}
           {starveExpanded && (
-            <span> Attendez que le timer arrive à 0, puis donnez toute la nourriture d'un coup. Cela garantit que vous ne perdez rien si le dino se réveille.{' '}
+            <span> La durée varie selon la nourriture choisie : une nourriture à haute valeur (ex. kibble) demande plus d'attente car la barre doit descendre davantage pour accepter chaque item. Attendez que le timer arrive à 0 avant de déposer la nourriture.{' '}
               <button className="tp-read-more" onClick={() => setStarveExpanded(false)}>(réduire)</button>
             </span>
           )}
@@ -262,11 +275,11 @@ export default function TamingPanel({ result, dino, level }) {
           )}
           <div className="tp-eff-item">
             <div className="tp-eff-label">Lvl {level}</div>
-            <div className="tp-eff-sublabel">With Bonus</div>
+            <div className="tp-eff-sublabel">Wild</div>
           </div>
           <div className="tp-eff-item tp-eff-max">
             <div className="tp-eff-label">Lvl {result.maxLevel}</div>
-            <div className="tp-eff-sublabel">Max After Taming</div>
+            <div className="tp-eff-sublabel">Tamed Max</div>
           </div>
         </div>
       </div>

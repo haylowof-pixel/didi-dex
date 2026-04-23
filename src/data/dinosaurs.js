@@ -75,6 +75,38 @@ export const TAMING_METHOD = {
   NONE: 'Cannot be tamed',
 };
 
+export const ROLES = {
+  // Resources
+  WOOD:            { label: 'Bois',        img: W('Wood'),                color: '#8B5E3C' },
+  STONE:           { label: 'Pierre',      img: W('Stone'),               color: '#95a5a6' },
+  METAL:           { label: 'Métal',       img: W('Metal_Ingot'),         color: '#636e72' },
+  FLINT:           { label: 'Silex',       img: W('Flint'),               color: '#b2bec3' },
+  FIBER:           { label: 'Fibre',       img: W('Fiber'),               color: '#27ae60' },
+  THATCH:          { label: 'Chaume',      img: W('Thatch'),              color: '#d4a017' },
+  HIDE:            { label: 'Peau',        img: W('Hide'),                color: '#b7853c' },
+  CHITIN:          { label: 'Chitine',     img: W('Chitin'),              color: '#786fa6' },
+  KERATIN:         { label: 'Kératine',    img: W('Keratin'),             color: '#f0932b' },
+  PELT:            { label: 'Fourrure',    img: W('Pelt'),                color: '#d1a463' },
+  BERRIES:         { label: 'Baies',       img: W('Amarberry'),           color: '#6c5ce7' },
+  MEAT:            { label: 'Viande',      img: W('Raw_Meat'),            color: '#e55039' },
+  FISH:            { label: 'Poisson',     img: W('Raw_Fish_Meat'),       color: '#0984e3' },
+  OIL:             { label: 'Pétrole',     img: W('Oil_(Liquid)'),        color: '#2d3436' },
+  CRYSTAL:         { label: 'Cristal',     img: W('Crystal'),             color: '#74b9ff' },
+  OBSIDIAN:        { label: 'Obsidienne',  img: W('Obsidian'),            color: '#636e72' },
+  PEARLS:          { label: 'Perles',      img: W('Silica_Pearls'),       color: '#dfe6e9' },
+  POLYMER:         { label: 'Polymère',    img: W('Organic_Polymer'),     color: '#55efc4' },
+  CEMENTING_PASTE: { label: 'Ciment',      img: W('Cementing_Paste'),     color: '#b2bec3' },
+  RARE_FLOWER:     { label: 'Fleur Rare',  img: W('Rare_Flower'),         color: '#fd79a8' },
+  RARE_MUSHROOM:   { label: 'Champignon',  img: W('Rare_Mushroom'),       color: '#a29bfe' },
+  // Utility / Combat
+  TRANSPORT:       { label: 'Transport',   img: W('Quetzal_Saddle'),      color: '#0984e3' },
+  BOSS:            { label: 'Boss Fight',  img: W('Trophy_Base'),         color: '#d63031' },
+  COMBAT:          { label: 'Combat',      img: W('Battle_Tartare'),      color: '#e17055' },
+  SCOUT:           { label: 'Scout',       img: W('Spyglass'),            color: '#00b894' },
+  HEALING:         { label: 'Soin',        img: W('Medical_Brew'),        color: '#00cec9' },
+  SUPPORT:         { label: 'Support',     img: W('Yutyrannus_Saddle'),   color: '#6c5ce7' },
+};
+
 export const dinosaurs = [
   {
     id: 'rex',
@@ -100,6 +132,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 2000,
     tips: 'Use a trap made of stone or metal gates. Aim for the head with tranq arrows for bonus torpor.',
+    roles: ['BOSS', 'MEAT', 'HIDE'],
   },
   {
     id: 'raptor',
@@ -124,6 +157,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 450,
     tips: 'Bola them first to immobilize, then use tranq arrows. Easy early-game tame.',
+    roles: ['SCOUT', 'MEAT', 'HIDE'],
   },
   {
     id: 'trike',
@@ -146,6 +180,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3000,
     tips: 'Great beginner tame. Hit from behind - its head gives knockback. Use narcoberries to keep torpor up.',
+    roles: ['BERRIES', 'FIBER', 'WOOD'],
   },
   {
     id: 'argentavis',
@@ -169,6 +204,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 1800,
     tips: 'Build a trap with stone gateways (3 in a row). Lure it in, place the last gate behind it.',
+    roles: ['TRANSPORT', 'METAL'],
   },
   {
     id: 'pteranodon',
@@ -191,6 +227,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1200,
     tips: 'Bola it first! Low torpor - be careful not to kill it. Great first flying mount.',
+    roles: ['SCOUT', 'TRANSPORT'],
   },
   {
     id: 'ankylosaurus',
@@ -213,6 +250,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3000,
     tips: 'Best metal farmer in the game. Use tranq arrows and avoid the tail.',
+    roles: ['METAL', 'FLINT', 'STONE'],
   },
   {
     id: 'doedicurus',
@@ -235,6 +273,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 2000,
     tips: 'Best stone farmer. When curled up, it takes 90% reduced damage - wait for it to uncurl.',
+    roles: ['STONE', 'FLINT'],
   },
   {
     id: 'quetzal',
@@ -257,6 +296,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 4000,
     tips: 'Extremely hard to tame solo. Use a Tapejara or Argentavis + grappling hook strategy.',
+    roles: ['TRANSPORT', 'BOSS'],
   },
   {
     id: 'spino',
@@ -270,15 +310,18 @@ export const dinosaurs = [
     torpor: { base: 850, perLevel: 51, depletion: 0.45 },
     tamingFoods: [
       { food: 'KIBBLE_EXCEPTIONAL', affinityPerItem: 120, foodPerItem: 79.98, timePerItem: 3 },
-      { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
-      { food: 'RAW_PRIME', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
-      { food: 'RAW_MEAT', affinityPerItem: 10, foodPerItem: 50, timePerItem: 3 },
+      { food: 'RAW_PRIME_FISH_MEAT', affinityPerItem: 48, foodPerItem: 25, timePerItem: 3 },
+      { food: 'RAW_MUTTON', affinityPerItem: 48, foodPerItem: 50, timePerItem: 3 },
+      { food: 'RAW_PRIME', affinityPerItem: 38.4, foodPerItem: 50, timePerItem: 3 },
+      { food: 'RAW_FISH', affinityPerItem: 16, foodPerItem: 25, timePerItem: 3 },
+      { food: 'RAW_MEAT', affinityPerItem: 12.8, foodPerItem: 50, timePerItem: 3 },
     ],
     baseTamingAffinity: 2250,
     affinityPerLevel: 112.5,
     foodDrainBase: 0.002066,
     maxFood: 2000,
     tips: 'Powerful near water (bipedal stance). Build a stone trap to contain it.',
+    roles: ['MEAT', 'FISH'],
   },
   {
     id: 'therizinosaurus',
@@ -289,7 +332,7 @@ export const dinosaurs = [
     icon: '🦃',
     image: null,
     baseHealth: 870,
-    torpor: { base: 1000, perLevel: 60, depletion: 0.45 },
+    torpor: { base: 925, perLevel: 55.5, depletion: 0.45 },
     tamingFoods: [
       { food: 'KIBBLE_EXCEPTIONAL', affinityPerItem: 120, foodPerItem: 79.98, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -301,6 +344,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 5000,
     tips: 'Very aggressive! Build a stone trap. Versatile gather - can harvest berries, meat, wood, thatch, fiber.',
+    roles: ['WOOD', 'FIBER', 'BERRIES', 'THATCH'],
   },
   {
     id: 'giga',
@@ -323,6 +367,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 5000,
     tips: 'The most dangerous tame. Use a metal trap (4 metal gateways + gates). Need 500+ shocking tranq darts for high levels.',
+    roles: ['BOSS', 'COMBAT'],
   },
   {
     id: 'baryonyx',
@@ -344,6 +389,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 2000,
     tips: 'Only eats fish! Great cave mount - fits through small openings. Has a water stun attack.',
+    roles: ['MEAT', 'FISH'],
   },
   {
     id: 'parasaur',
@@ -354,7 +400,7 @@ export const dinosaurs = [
     icon: '🦕',
     image: null,
     baseHealth: 200,
-    torpor: { base: 100, perLevel: 6, depletion: 0.3 },
+    torpor: { base: 150, perLevel: 9, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_BASIC', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -366,6 +412,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001929,
     maxFood: 3000,
     tips: 'First tame for many players. Can detect enemies with alarm mode. Very easy knockout.',
+    roles: ['SCOUT', 'BERRIES'],
   },
   {
     id: 'stego',
@@ -388,6 +435,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3000,
     tips: 'Great berry farmer. Plate modes give different abilities: hardening, slowing, sharpening.',
+    roles: ['BERRIES', 'FIBER'],
   },
   {
     id: 'yutyrannus',
@@ -398,7 +446,7 @@ export const dinosaurs = [
     icon: '🦖',
     image: null,
     baseHealth: 1025,
-    torpor: { base: 1050, perLevel: 63, depletion: 0.45 },
+    torpor: { base: 1550, perLevel: 93, depletion: 0.45 },
     tamingFoods: [
       { food: 'KIBBLE_EXCEPTIONAL', affinityPerItem: 120, foodPerItem: 79.98, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -410,6 +458,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 3500,
     tips: 'Courage roar buffs allies, fear roar debuffs enemies. Essential for boss fights.',
+    roles: ['SUPPORT', 'BOSS'],
   },
   {
     id: 'tapejara',
@@ -432,6 +481,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1500,
     tips: 'Can latch onto walls and trees. 3 seater mount. Use bola then tranq.',
+    roles: ['SCOUT'],
   },
   {
     id: 'dimetrodon',
@@ -454,6 +504,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 2000,
     tips: 'Acts as a natural air conditioner for egg hatching. Insulation scales with melee damage.',
+    roles: ['SUPPORT'],
   },
   {
     id: 'mammoth',
@@ -476,6 +527,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3000,
     tips: 'Best wood farmer. Great for general resource gathering. Can be immobilized with chain bola.',
+    roles: ['WOOD', 'THATCH'],
   },
   {
     id: 'carno',
@@ -498,6 +550,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 2000,
     tips: 'Mid-tier predator. Has a headbutt attack. Use a bola or trap to immobilize.',
+    roles: ['MEAT', 'HIDE', 'SCOUT'],
   },
   {
     id: 'daeodon',
@@ -521,6 +574,7 @@ export const dinosaurs = [
     foodDrainBase: 0.004156,
     maxFood: 2000,
     tips: 'Healing pig! Essential for boss fights. Eats food very fast when healing is active.',
+    roles: ['HEALING'],
   },
   {
     id: 'bronto',
@@ -531,7 +585,7 @@ export const dinosaurs = [
     icon: '🦕',
     image: null,
     baseHealth: 2300,
-    torpor: { base: 1900, perLevel: 114, depletion: 0.5 },
+    torpor: { base: 2000, perLevel: 120, depletion: 0.5 },
     tamingFoods: [
       { food: 'KIBBLE_EXCEPTIONAL', affinityPerItem: 120, foodPerItem: 79.98, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -543,6 +597,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 4000,
     tips: 'Massive berry farmer. Use its platform saddle for mobile bases. Needs a LOT of narcotics.',
+    roles: ['BERRIES', 'BOSS'],
   },
   {
     id: 'dilophosaur',
@@ -565,6 +620,7 @@ export const dinosaurs = [
     foodDrainBase: 0.000868,
     maxFood: 750,
     tips: 'Petit prédateur cracheur de venin. Très facile à apprivoiser. Bola fonctionne.',
+    roles: ['SCOUT'],
   },
   {
     id: 'dodo',
@@ -619,7 +675,7 @@ export const dinosaurs = [
     icon: '🐷',
     image: null,
     baseHealth: 300,
-    torpor: { base: 120, perLevel: 7.2, depletion: 0.3 },
+    torpor: { base: 240, perLevel: 14.4, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_BASIC', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -631,6 +687,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001929,
     maxFood: 3000,
     tips: 'Producteur de fumier quand on lui donne des stimberries. Utile pour le compost.',
+    roles: ['MEAT'],
   },
   {
     id: 'lystrosaurus',
@@ -691,6 +748,7 @@ export const dinosaurs = [
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
     tips: 'Tame passif - demande une nourriture aléatoire différente à chaque fois. Bon collecteur polyvalent.',
+    roles: ['FIBER', 'MEAT', 'CHITIN'],
   },
   {
     id: 'maewing',
@@ -759,6 +817,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 2000,
     tips: 'Très rapide ! Bola indispensable. Monture 3 places. Perd son torpor très vite.',
+    roles: ['SCOUT'],
   },
   {
     id: 'iguanodon',
@@ -769,7 +828,7 @@ export const dinosaurs = [
     icon: '🦕',
     image: null,
     baseHealth: 350,
-    torpor: { base: 250, perLevel: 15, depletion: 0.3 },
+    torpor: { base: 210, perLevel: 12.6, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_SIMPLE', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -791,7 +850,7 @@ export const dinosaurs = [
     icon: '🦌',
     image: null,
     baseHealth: 300,
-    torpor: { base: 300, perLevel: 18, depletion: 0.3 },
+    torpor: { base: 175, perLevel: 10.5, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_SIMPLE', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -803,6 +862,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001929,
     maxFood: 1200,
     tips: 'Le mâle a des bois et peut attaquer, la femelle est plus rapide. Bon collecteur de thatch.',
+    roles: ['PELT', 'HIDE'],
   },
   {
     id: 'pachy',
@@ -825,6 +885,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1200,
     tips: 'Headbutt torpor attack. Utile pour assommer d\'autres créatures en début de jeu.',
+    roles: ['STONE', 'FLINT'],
   },
   {
     id: 'morellatops',
@@ -835,7 +896,7 @@ export const dinosaurs = [
     icon: '🐪',
     image: null,
     baseHealth: 350,
-    torpor: { base: 300, perLevel: 18, depletion: 0.3 },
+    torpor: { base: 315, perLevel: 18.9, depletion: 0.3 },
     tamingFoods: [
       { food: 'KIBBLE_SIMPLE', affinityPerItem: 135, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -847,6 +908,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001929,
     maxFood: 3000,
     tips: 'Scorched Earth. Réservoir d\'eau mobile - boire depuis son inventaire. Bon pour le désert.',
+    roles: ['BERRIES'],
   },
   {
     id: 'ichthyosaurus',
@@ -931,6 +993,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 2000,
     tips: 'Transforme les insectes tués en cément paste. Excellent saut et nage rapide.',
+    roles: ['CEMENTING_PASTE', 'POLYMER'],
   },
   {
     id: 'carbonemys',
@@ -953,6 +1016,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3000,
     tips: 'Tank de début de jeu. Beaucoup d\'HP et bonne armure. Lent mais résistant.',
+    roles: ['TRANSPORT'],
   },
   {
     id: 'kaprosuchus',
@@ -963,7 +1027,7 @@ export const dinosaurs = [
     icon: '🐊',
     image: null,
     baseHealth: 300,
-    torpor: { base: 250, perLevel: 15, depletion: 0.35 },
+    torpor: { base: 200, perLevel: 12, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -975,6 +1039,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1500,
     tips: 'Saute et saisit les joueurs/petites créatures. Bola possible. Dangereux près des marais.',
+    roles: ['SCOUT', 'MEAT'],
   },
   {
     id: 'kentrosaurus',
@@ -985,7 +1050,7 @@ export const dinosaurs = [
     icon: '🦕',
     image: null,
     baseHealth: 350,
-    torpor: { base: 350, perLevel: 21, depletion: 0.35 },
+    torpor: { base: 500, perLevel: 30, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -997,6 +1062,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3500,
     tips: 'Empale et ralentit les attaquants. Bon pour les boss. Attention aux piques en approchant.',
+    roles: ['STONE'],
   },
   {
     id: 'sabertooth',
@@ -1007,7 +1073,7 @@ export const dinosaurs = [
     icon: '🐅',
     image: null,
     baseHealth: 300,
-    torpor: { base: 300, perLevel: 18, depletion: 0.35 },
+    torpor: { base: 500, perLevel: 30, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1019,6 +1085,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1200,
     tips: 'Bon collecteur de chitine et kératine. Rapide et agile. Excellent pour les grottes.',
+    roles: ['HIDE', 'CHITIN'],
   },
   {
     id: 'sarco',
@@ -1041,6 +1108,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 2000,
     tips: 'Très rapide dans l\'eau. Attaque de roulade mortelle. Bon garde de base amphibie.',
+    roles: ['MEAT', 'HIDE'],
   },
   {
     id: 'pulmonoscorpius',
@@ -1051,7 +1119,7 @@ export const dinosaurs = [
     icon: '🦂',
     image: null,
     baseHealth: 280,
-    torpor: { base: 200, perLevel: 12, depletion: 0.35 },
+    torpor: { base: 150, perLevel: 9, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'SPOILED_MEAT', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1062,6 +1130,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 900,
     tips: 'Mange de la viande avariée ! Attaque torpeur avec le dard. Bon pour assommer d\'autres créatures.',
+    roles: ['CHITIN'],
   },
   {
     id: 'terrorbird',
@@ -1072,7 +1141,7 @@ export const dinosaurs = [
     icon: '🐓',
     image: null,
     baseHealth: 240,
-    torpor: { base: 250, perLevel: 15, depletion: 0.35 },
+    torpor: { base: 300, perLevel: 18, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1084,6 +1153,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1500,
     tips: 'Rapide et agressif. Peut planer. Bola efficace. Bon pour le combat terrestre rapide.',
+    roles: ['SCOUT', 'COMBAT'],
   },
   {
     id: 'ichthyornis',
@@ -1159,7 +1229,7 @@ export const dinosaurs = [
     icon: '🦡',
     image: null,
     baseHealth: 400,
-    torpor: { base: 400, perLevel: 24, depletion: 0.35 },
+    torpor: { base: 500, perLevel: 30, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1171,6 +1241,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1500,
     tips: 'Se cache enterrée et attaque par surprise. Assomme les joueurs. Piège efficace en PvP.',
+    roles: ['SCOUT'],
   },
   {
     id: 'thornydragon',
@@ -1225,7 +1296,7 @@ export const dinosaurs = [
     icon: '🦕',
     image: null,
     baseHealth: 1300,
-    torpor: { base: 450, perLevel: 27, depletion: 0 },
+    torpor: { base: 3000, perLevel: 180, depletion: 0 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 0, timePerItem: 30 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 0, timePerItem: 30 },
@@ -1236,6 +1307,7 @@ export const dinosaurs = [
     affinityPerLevel: 75,
     foodDrainBase: 0.002066,
     tips: 'Tame passif - approcher et nourrir. Pousse sans faire de dégâts. Monture 11 places.',
+    roles: ['BERRIES'],
   },
   {
     id: 'equus',
@@ -1246,7 +1318,7 @@ export const dinosaurs = [
     icon: '🐎',
     image: null,
     baseHealth: 240,
-    torpor: { base: 200, perLevel: 12, depletion: 0 },
+    torpor: { base: 420, perLevel: 25.2, depletion: 0 },
     tamingFoods: [
       { food: 'KIBBLE_REGULAR', affinityPerItem: 120, foodPerItem: 0, timePerItem: 30 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 0, timePerItem: 30 },
@@ -1256,6 +1328,7 @@ export const dinosaurs = [
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
     tips: 'Nourrir puis monter pour apprivoiser. Fonctions lasso et mortier mobile. Rapide.',
+    roles: ['SCOUT'],
   },
   {
     id: 'gigantopithecus',
@@ -1286,7 +1359,7 @@ export const dinosaurs = [
     icon: '🦖',
     image: null,
     baseHealth: 700,
-    torpor: { base: 700, perLevel: 42, depletion: 0.4 },
+    torpor: { base: 1000, perLevel: 60, depletion: 0.4 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1298,6 +1371,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 2500,
     tips: 'Pack bonus en groupe de 3. L\'alpha du pack a une attaque hémorragie. Piéger avec des gates.',
+    roles: ['MEAT', 'HIDE', 'COMBAT'],
   },
   {
     id: 'castoroides',
@@ -1308,7 +1382,7 @@ export const dinosaurs = [
     icon: '🦫',
     image: null,
     baseHealth: 475,
-    torpor: { base: 600, perLevel: 36, depletion: 0.35 },
+    torpor: { base: 350, perLevel: 21, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -1320,6 +1394,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 1500,
     tips: 'Meilleur fermier de bois. Réduit le poids du bois de 75%. Fonctionne comme Smithy mobile.',
+    roles: ['WOOD', 'THATCH', 'CEMENTING_PASTE'],
   },
   {
     id: 'direbear',
@@ -1330,7 +1405,7 @@ export const dinosaurs = [
     icon: '🐻',
     image: null,
     baseHealth: 400,
-    torpor: { base: 500, perLevel: 30, depletion: 0.4 },
+    torpor: { base: 1000, perLevel: 60, depletion: 0.4 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'HONEY', affinityPerItem: 80, foodPerItem: 60, timePerItem: 3 },
@@ -1343,6 +1418,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 3000,
     tips: 'Très puissant et rapide. Récolte fibre, chitine et viande efficacement. Piéger avec des gates.',
+    roles: ['RARE_FLOWER', 'RARE_MUSHROOM', 'BERRIES'],
   },
   {
     id: 'direwolf',
@@ -1353,7 +1429,7 @@ export const dinosaurs = [
     icon: '🐺',
     image: null,
     baseHealth: 280,
-    torpor: { base: 350, perLevel: 21, depletion: 0.35 },
+    torpor: { base: 450, perLevel: 27, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1365,6 +1441,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1800,
     tips: 'Pack bonus - plus il y en a, plus ils sont forts. Pas de selle requise. Bon pour les grottes.',
+    roles: ['CHITIN', 'HIDE'],
   },
   {
     id: 'dunkleosteus',
@@ -1387,6 +1464,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 2000,
     tips: 'Fermier de pétrole et métal sous-marin. Très résistant. Torpille vivante.',
+    roles: ['STONE', 'OIL'],
   },
   {
     id: 'megalodon',
@@ -1397,7 +1475,7 @@ export const dinosaurs = [
     icon: '🦈',
     image: null,
     baseHealth: 600,
-    torpor: { base: 500, perLevel: 30, depletion: 0.4 },
+    torpor: { base: 800, perLevel: 48, depletion: 0.4 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1409,6 +1487,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 2000,
     tips: 'Le requin géant. Rapide et puissant sous l\'eau. Piéger dans une cage sous-marine.',
+    roles: ['COMBAT'],
   },
   {
     id: 'megalosaurus',
@@ -1419,7 +1498,7 @@ export const dinosaurs = [
     icon: '🦖',
     image: null,
     baseHealth: 800,
-    torpor: { base: 750, perLevel: 45, depletion: 0.4 },
+    torpor: { base: 700, perLevel: 47, depletion: 0.4 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1431,6 +1510,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 2000,
     tips: 'Plus fort la nuit, dort le jour. Peut saisir et porter des créatures moyennes. Très fort en grotte.',
+    roles: ['COMBAT'],
   },
   {
     id: 'megatherium',
@@ -1454,6 +1534,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 3000,
     tips: 'Buff insecte quand il tue un insecte. Excellent pour la grotte Broodmother. Bon fermier de chitine.',
+    roles: ['CHITIN', 'BOSS'],
   },
   {
     id: 'paraceratherium',
@@ -1476,6 +1557,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 4000,
     tips: 'Gigantesque herbivore avec selle plateforme. Tank mobile. Piéger avec des metal gates.',
+    roles: ['TRANSPORT'],
   },
   {
     id: 'plesiosaur',
@@ -1498,6 +1580,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 3000,
     tips: 'Monture aquatique avec selle plateforme. Très puissant. Piéger dans une cage sous-marine.',
+    roles: ['TRANSPORT'],
   },
   {
     id: 'snowowl',
@@ -1508,7 +1591,7 @@ export const dinosaurs = [
     icon: '🦉',
     image: null,
     baseHealth: 700,
-    torpor: { base: 600, perLevel: 36, depletion: 0.35 },
+    torpor: { base: 590, perLevel: 35.4, depletion: 0.35 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1520,6 +1603,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 3000,
     tips: 'Extinction. Soigneur volant ! Plongée freeze + heal. Vision thermique. Essentiel pour le breeding.',
+    roles: ['HEALING', 'SCOUT'],
   },
   {
     id: 'woollyrhino',
@@ -1530,7 +1614,7 @@ export const dinosaurs = [
     icon: '🦏',
     image: null,
     baseHealth: 500,
-    torpor: { base: 500, perLevel: 30, depletion: 0.4 },
+    torpor: { base: 600, perLevel: 36, depletion: 0.4 },
     tamingFoods: [
       { food: 'KIBBLE_SUPERIOR', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'CROPS', affinityPerItem: 15, foodPerItem: 40, timePerItem: 3 },
@@ -1542,6 +1626,7 @@ export const dinosaurs = [
     foodDrainBase: 0.003156,
     maxFood: 3000,
     tips: 'Charge dévastatrice qui fait d\'énormes dégâts. Collecteur de kératine. Bon contre les boss.',
+    roles: ['BOSS', 'COMBAT', 'KERATIN'],
   },
   {
     id: 'gasbags',
@@ -1586,6 +1671,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 5000,
     tips: 'Le prédateur ultime sous-marin. Selle plateforme. Extrêmement long à apprivoiser.',
+    roles: ['TRANSPORT', 'BOSS'],
   },
   {
     id: 'karkinos',
@@ -1607,6 +1693,7 @@ export const dinosaurs = [
     foodDrainBase: 0.002066,
     maxFood: 3000,
     tips: 'Aberration. KO seulement avec catapulte/canon ! Peut saisir 2 créatures à la fois. Sauts énormes.',
+    roles: ['POLYMER', 'TRANSPORT'],
   },
   {
     id: 'managarmr',
@@ -1617,7 +1704,7 @@ export const dinosaurs = [
     icon: '🐺',
     image: null,
     baseHealth: 750,
-    torpor: { base: 725, perLevel: 43.5, depletion: 0.45 },
+    torpor: { base: 800, perLevel: 48, depletion: 0.45 },
     tamingFoods: [
       { food: 'KIBBLE_EXCEPTIONAL', affinityPerItem: 120, foodPerItem: 79.98, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1629,6 +1716,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 2000,
     tips: 'Extinction. Dash aérien + souffle de glace. Extrêmement rapide et agile dans les airs.',
+    roles: ['COMBAT', 'SCOUT'],
   },
   {
     id: 'basilosaurus',
@@ -1650,6 +1738,7 @@ export const dinosaurs = [
     affinityPerLevel: 250,
     foodDrainBase: 0.002066,
     tips: 'Tame passif - nourrir dans l\'eau. Immune au cnidaria et électrophorus. Génère de l\'huile.',
+    roles: ['TRANSPORT', 'OIL'],
   },
   {
     id: 'tropeognathus',
@@ -1703,7 +1792,7 @@ export const dinosaurs = [
     icon: '🐆',
     image: null,
     baseHealth: 700,
-    torpor: { base: 1000, perLevel: 60, depletion: 0.45 },
+    torpor: { base: 700, perLevel: 42, depletion: 0.45 },
     tamingFoods: [
       { food: 'KIBBLE_EXTRAORDINARY', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1715,6 +1804,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 1800,
     tips: 'Grimpeur de falaises ! Attaque par embuscade depuis les arbres. Saignement et pin. Excellent en combat.',
+    roles: ['SCOUT', 'COMBAT'],
   },
   {
     id: 'megalania',
@@ -1747,7 +1837,7 @@ export const dinosaurs = [
     icon: '🦅',
     image: null,
     baseHealth: 1125,
-    torpor: { base: 1200, perLevel: 72, depletion: 0.45 },
+    torpor: { base: 1500, perLevel: 90, depletion: 0.45 },
     tamingFoods: [
       { food: 'KIBBLE_EXTRAORDINARY', affinityPerItem: 120, foodPerItem: 80, timePerItem: 3 },
       { food: 'RAW_MUTTON', affinityPerItem: 50, foodPerItem: 50, timePerItem: 3 },
@@ -1759,6 +1849,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001852,
     maxFood: 3000,
     tips: 'Attaque en plongée dévastatrice. Pas de selle requise. Le passager peut tirer depuis le dos.',
+    roles: ['TRANSPORT', 'COMBAT'],
   },
   {
     id: 'rockelmental',
@@ -1841,6 +1932,7 @@ export const dinosaurs = [
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
     tips: 'Tame passif avec Sweet Veggie Cake uniquement. Source de Raw Mutton.',
+    roles: ['MEAT', 'PELT'],
   },
   {
     id: 'achatina',
@@ -1973,6 +2065,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001929,
     maxFood: 2000,
     tips: 'Sauts énormes. Porte un bébé dans sa poche pour accélérer la maturation.',
+    roles: ['BERRIES', 'TRANSPORT'],
   },
   {
     id: 'pegomastax',
@@ -2049,6 +2142,7 @@ export const dinosaurs = [
     affinityPerLevel: 15,
     foodDrainBase: 0.001543,
     tips: 'Tame passif - donner du poisson mort. Pet d\'épaule. Isolation thermique + perles.',
+    roles: ['PEARLS'],
   },
   {
     id: 'hesperornis',
@@ -2088,6 +2182,7 @@ export const dinosaurs = [
     foodDrainBase: 0.000868,
     maxFood: 300,
     tips: 'Demande de la prime meat/mutton. Pack bonus. Pet d\'épaule.',
+    roles: ['SCOUT'],
   },
   {
     id: 'dimorphodon',
@@ -2109,6 +2204,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1000,
     tips: 'Petit volant agressif. Pet d\'épaule. Bon en meute pour la défense.',
+    roles: ['SCOUT'],
   },
   {
     id: 'microraptor',
@@ -2172,6 +2268,7 @@ export const dinosaurs = [
     foodDrainBase: 0.001543,
     maxFood: 1800,
     tips: 'Aberration. Utilise les ziplines. Pack bonus. Réduit le poids de certaines ressources.',
+    roles: ['TRANSPORT'],
   },
   {
     id: 'cosmo',
@@ -2323,6 +2420,7 @@ export const dinosaurs = [
     affinityPerLevel: 150,
     foodDrainBase: 0.001852,
     tips: 'Genesis 2. Tame passif avec Fish Basket pendant son sommeil. Invisibilité + téléportation.',
+    roles: ['COMBAT', 'SCOUT'],
   },
   {
     id: 'desmodus',
@@ -2633,6 +2731,7 @@ export const dinosaurs = [
     affinityPerLevel: 0,
     foodDrainBase: 0,
     tips: 'Aberration. Vol d\'œuf ! Invisibilité + grimpe les murs. Bébé nourri avec Nameless Venom.',
+    roles: ['SCOUT', 'TRANSPORT'],
   },
   {
     id: 'phoenix',
@@ -2667,6 +2766,7 @@ export const dinosaurs = [
     affinityPerLevel: 300,
     foodDrainBase: 0.002066,
     tips: 'Aberration. Tame passif en lançant des œufs de Rock Drake près de lui.',
+    roles: ['OIL'],
   },
   {
     id: 'manta',

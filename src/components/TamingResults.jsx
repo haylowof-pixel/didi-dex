@@ -30,7 +30,7 @@ export default function TamingResults({ result, foodOverride, level }) {
       icon: '💜',
       label: 'Torpeur max',
       value: result.maxTorpor.toLocaleString(),
-      sub: `-${result.torporDrainPerMin}/min`,
+      sub: `-${(result.torporDrainPerSec * 60).toFixed(1)}/min`,
       cls: 'torpor',
     },
     {
@@ -64,7 +64,7 @@ export default function TamingResults({ result, foodOverride, level }) {
       <div className="calc-section-title">
         <span className="icon">📊</span> Résultats
         <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--text-muted)' }}>
-          Niveau {level} — Torpeur drain: {result.totalTorporDrain.toLocaleString()} total
+          Niveau {level} — Torpeur drain: {(result.torporDrainPerSec * result.totalTimeSeconds).toLocaleString(undefined, { maximumFractionDigits: 0 })} total
         </span>
       </div>
       <div className="results-grid">

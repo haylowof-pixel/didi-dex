@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FOOD_TYPES } from '../data/dinosaurs';
+import { FOOD_TYPES, ROLES } from '../data/dinosaurs';
 import { calculateTaming } from '../data/tamingCalculator';
 import TamingPanel from './TamingPanel';
 import { getCreatureIconUrl, getCreatureImageFallbacks } from '../data/creatureIcons';
@@ -66,25 +66,49 @@ function formatTime(seconds) {
   return `${s}s`;
 }
 
+function RoleBadges({ roles }) {
+  if (!roles || roles.length === 0) return null;
+  return (
+    <div className="role-badges">
+      {roles.map(roleKey => {
+        const role = ROLES[roleKey];
+        if (!role) return null;
+        return (
+          <div key={roleKey} className="role-badge" style={{ '--role-color': role.color }}>
+            <img
+              src={role.img}
+              alt={role.label}
+              className="role-badge-img"
+              onError={e => { e.target.style.display = 'none'; }}
+            />
+            <span className="role-badge-label">{role.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function DinoDetail({ dino }) {
   const [level, setLevel] = useState(30);
   const [levelInput, setLevelInput] = useState('30');
   const [selectedFood, setSelectedFood] = useState(dino.tamingFoods[0]?.food || null);
   const [tamingMultiplier, setTamingMultiplier] = useState(1);
+  const [sanguineElixir, setSanguineElixir] = useState(false);
 
   const result = useMemo(() => {
-    return calculateTaming(dino, level, selectedFood, tamingMultiplier);
-  }, [dino, level, selectedFood, tamingMultiplier]);
+    return calculateTaming(dino, level, selectedFood, tamingMultiplier, sanguineElixir);
+  }, [dino, level, selectedFood, tamingMultiplier, sanguineElixir]);
 
   // Calculate all food results for the comparison table
   const allFoodResults = useMemo(() => {
     return dino.tamingFoods.map(tf => {
       const foodInfo = FOOD_TYPES[tf.food];
       if (!foodInfo) return null;
-      const res = calculateTaming(dino, level, tf.food, tamingMultiplier);
+      const res = calculateTaming(dino, level, tf.food, tamingMultiplier, sanguineElixir);
       return { ...res, foodKey: tf.food, foodInfo };
     }).filter(Boolean);
-  }, [dino, level, tamingMultiplier]);
+  }, [dino, level, tamingMultiplier, sanguineElixir]);
 
   const handleLevelSlider = useCallback((e) => {
     const v = parseInt(e.target.value);
@@ -131,6 +155,7 @@ export default function DinoDetail({ dino }) {
               <span className={`dtag ${categoryClass}`}>{dino.category}</span>
               <span className="dtag method">{dino.tamingMethod}</span>
             </div>
+            <RoleBadges roles={dino.roles} />
           </div>
         </div>
       </motion.div>
@@ -195,6 +220,28 @@ export default function DinoDetail({ dino }) {
             </div>
           </div>
         </div>
+
+        {/* ── Sanguine Elixir toggle ── */}
+        <div className="control-group sanguine-group">
+          <label className="control-label">Bonus</label>
+          <button
+            className={`sanguine-toggle ${sanguineElixir ? 'active' : ''}`}
+            onClick={() => setSanguineElixir(v => !v)}
+            title="Sanguine Elixir: +30% taming affinity par nourriture"
+          >
+            <img
+              src="https://ark.wiki.gg/images/thumb/Sanguine_Elixir.png/32px-Sanguine_Elixir.png"
+              alt="Sanguine Elixir"
+              className="sanguine-icon"
+              onError={e => { e.target.style.display = 'none'; }}
+            />
+            <div className="sanguine-text">
+              <span className="sanguine-name">Sanguine Elixir</span>
+              <span className="sanguine-bonus">+30% affinité</span>
+            </div>
+            <div className={`sanguine-pip ${sanguineElixir ? 'on' : ''}`} />
+          </button>
+        </div>
       </motion.div>
 
       {/* ── FOOD COMPARISON TABLE ── */}
@@ -247,7 +294,7 @@ export default function DinoDetail({ dino }) {
       {/* ── TIMERS & NARCOTIC PANEL ── */}
       {result && (
         <motion.div variants={itemVariants}>
-          <TamingPanel result={result} dino={dino} level={level} />
+          <TamingPanel result={result} dino={dino} level={level} sanguineElixir={sanguineElixir} />
         </motion.div>
       )}
     </motion.div>
