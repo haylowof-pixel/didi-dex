@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Publier Mise à Jour
-Exec=konsole --noclose -e bash "/run/media/haylow/00EE8E58EE8E45BE/TEST/ark-taming-app/publier-maj.sh"
-Icon=system-software-update
-Terminal=false

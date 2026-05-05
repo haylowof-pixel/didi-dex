@@ -2,7 +2,123 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { formatTimerDisplay } from '../data/tamingCalculator';
 import { ClockIcon, DropletIcon, ZapIcon, ShieldIcon, PlayIcon, PauseIcon, ResetIcon, PlusIcon, PillIcon, AlertIcon, SkullIcon, SparklesIcon, InfoIcon } from './Icons';
-import { NARCOTICS } from '../data/dinosaurs';
+import { NARCOTICS, TRAP_TYPES } from '../data/dinosaurs';
+
+function TrapSchema({ trapType }) {
+  if (!trapType || !TRAP_TYPES[trapType]) return null;
+  const trap = TRAP_TYPES[trapType];
+
+  // SVG diagrams drawn top-down
+  const diagrams = {
+    '2gate': (
+      <svg viewBox="0 0 120 80" width="120" height="80" style={{display:'block',margin:'0 auto'}}>
+        {/* Left gate */}
+        <rect x="4" y="8" width="10" height="64" rx="2" fill="#ef4444" opacity="0.85"/>
+        <rect x="2" y="4" width="14" height="6" rx="1" fill="#ef4444"/>
+        <rect x="2" y="70" width="14" height="6" rx="1" fill="#ef4444"/>
+        {/* Right gate */}
+        <rect x="106" y="8" width="10" height="64" rx="2" fill="#ef4444" opacity="0.85"/>
+        <rect x="104" y="4" width="14" height="6" rx="1" fill="#ef4444"/>
+        <rect x="104" y="70" width="14" height="6" rx="1" fill="#ef4444"/>
+        {/* Top walls */}
+        <rect x="18" y="4" width="20" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        <rect x="42" y="4" width="20" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        <rect x="66" y="4" width="20" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        {/* Bottom walls */}
+        <rect x="18" y="69" width="20" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        <rect x="42" y="69" width="20" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        <rect x="66" y="69" width="20" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        {/* Dino */}
+        <text x="60" y="44" textAnchor="middle" fontSize="20" dominantBaseline="middle">🦖</text>
+        {/* Arrows (close gates) */}
+        <text x="24" y="44" textAnchor="middle" fontSize="11" fill="#ef4444" dominantBaseline="middle">→</text>
+        <text x="96" y="44" textAnchor="middle" fontSize="11" fill="#ef4444" dominantBaseline="middle">←</text>
+      </svg>
+    ),
+    '1gate': (
+      <svg viewBox="0 0 100 70" width="100" height="70" style={{display:'block',margin:'0 auto'}}>
+        {/* Gate (left side) */}
+        <rect x="4" y="6" width="10" height="58" rx="2" fill="#f59e0b" opacity="0.85"/>
+        <rect x="2" y="2" width="14" height="6" rx="1" fill="#f59e0b"/>
+        <rect x="2" y="62" width="14" height="6" rx="1" fill="#f59e0b"/>
+        {/* Walls top */}
+        <rect x="18" y="2" width="65" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        {/* Walls bottom */}
+        <rect x="18" y="61" width="65" height="7" rx="1" fill="#94a3b8" opacity="0.7"/>
+        {/* Dino */}
+        <text x="60" y="38" textAnchor="middle" fontSize="18" dominantBaseline="middle">🦕</text>
+        {/* Arrow toward gate */}
+        <text x="28" y="38" textAnchor="middle" fontSize="13" fill="#f59e0b" dominantBaseline="middle">←</text>
+      </svg>
+    ),
+    'large_trap': (
+      <svg viewBox="0 0 90 70" width="90" height="70" style={{display:'block',margin:'0 auto'}}>
+        {/* Trap jaws */}
+        <rect x="15" y="28" width="60" height="14" rx="3" fill="#f59e0b" opacity="0.2" stroke="#f59e0b" strokeWidth="1.5"/>
+        {/* Teeth top */}
+        {[20,30,40,50,60,70].map(function(x,i){return(<polygon key={i} points={`${x},28 ${x+4},28 ${x+2},18`} fill="#f59e0b" opacity="0.8"/>);})}
+        {/* Teeth bottom */}
+        {[22,32,42,52,62].map(function(x,i){return(<polygon key={i} points={`${x},42 ${x+4},42 ${x+2},52`} fill="#f59e0b" opacity="0.8"/>);})}
+        {/* Chain */}
+        <line x1="45" y1="54" x2="45" y2="65" stroke="#94a3b8" strokeWidth="2" strokeDasharray="3,2"/>
+        {/* Label */}
+        <text x="45" y="10" textAnchor="middle" fontSize="8" fill="#f59e0b">GRAND PIÈGE</text>
+        {/* Dino */}
+        <text x="45" y="62" textAnchor="middle" fontSize="14" dominantBaseline="middle">⬇</text>
+      </svg>
+    ),
+    'bear_trap': (
+      <svg viewBox="0 0 80 60" width="80" height="60" style={{display:'block',margin:'0 auto'}}>
+        <rect x="20" y="22" width="40" height="10" rx="2" fill="#60a5fa" opacity="0.2" stroke="#60a5fa" strokeWidth="1.5"/>
+        {[24,30,36,42,48,54].map(function(x,i){return(<polygon key={i} points={`${x},22 ${x+3},22 ${x+1.5},14`} fill="#60a5fa" opacity="0.8"/>);})}
+        {[26,32,38,44,50].map(function(x,i){return(<polygon key={i} points={`${x},32 ${x+3},32 ${x+1.5},40`} fill="#60a5fa" opacity="0.8"/>);})}
+        <line x1="40" y1="42" x2="40" y2="52" stroke="#94a3b8" strokeWidth="2" strokeDasharray="3,2"/>
+        <text x="40" y="8" textAnchor="middle" fontSize="8" fill="#60a5fa">PIÈGE</text>
+      </svg>
+    ),
+    'bola': (
+      <svg viewBox="0 0 80 60" width="80" height="60" style={{display:'block',margin:'0 auto'}}>
+        {/* Bola ball left */}
+        <circle cx="18" cy="18" r="6" fill="#a78bfa" opacity="0.9"/>
+        {/* Bola ball right */}
+        <circle cx="62" cy="18" r="6" fill="#a78bfa" opacity="0.9"/>
+        {/* Bola ball bottom */}
+        <circle cx="40" cy="42" r="6" fill="#a78bfa" opacity="0.9"/>
+        {/* Strings */}
+        <line x1="18" y1="18" x2="40" y2="30" stroke="#a78bfa" strokeWidth="1.5"/>
+        <line x1="62" y1="18" x2="40" y2="30" stroke="#a78bfa" strokeWidth="1.5"/>
+        <line x1="40" y1="42" x2="40" y2="30" stroke="#a78bfa" strokeWidth="1.5"/>
+        <circle cx="40" cy="30" r="2" fill="#c4b5fd"/>
+        <text x="40" y="8" textAnchor="middle" fontSize="8" fill="#a78bfa">BOLA</text>
+      </svg>
+    ),
+    'chain_bola': (
+      <svg viewBox="0 0 80 60" width="80" height="60" style={{display:'block',margin:'0 auto'}}>
+        <circle cx="20" cy="20" r="7" fill="#ec4899" opacity="0.9"/>
+        <circle cx="60" cy="20" r="7" fill="#ec4899" opacity="0.9"/>
+        <circle cx="40" cy="44" r="7" fill="#ec4899" opacity="0.9"/>
+        <line x1="20" y1="20" x2="40" y2="32" stroke="#ec4899" strokeWidth="2"/>
+        <line x1="60" y1="20" x2="40" y2="32" stroke="#ec4899" strokeWidth="2"/>
+        <line x1="40" y1="44" x2="40" y2="32" stroke="#ec4899" strokeWidth="2"/>
+        <circle cx="40" cy="32" r="3" fill="#f9a8d4"/>
+        <text x="40" y="8" textAnchor="middle" fontSize="8" fill="#ec4899">CHAIN BOLA</text>
+      </svg>
+    ),
+  };
+
+  return (
+    <div className="tp-trap-schema">
+      <div className="tp-trap-header">
+        <span className="tp-trap-icon">🪤</span>
+        <span className="tp-trap-title">{trap.label}</span>
+      </div>
+      <div className="tp-trap-diagram">
+        {diagrams[trapType] || null}
+      </div>
+      <div className="tp-trap-desc">{trap.desc}</div>
+    </div>
+  );
+}
 
 export default function TamingPanel({ result, dino, level }) {
   const isPassive = dino.tamingMethod === 'Passive';
@@ -328,7 +444,12 @@ export default function TamingPanel({ result, dino, level }) {
       </div>
       )}
 
-      {/* SECTION 5: Narcotics (Knockout only) */}
+      {/* SECTION 5: Trap Schema (Knockout only) */}
+      {!isPassive && dino.trap && (
+        <TrapSchema trapType={dino.trap} />
+      )}
+
+      {/* SECTION 6: Narcotics (Knockout only) */}
       {!isPassive && (
       <div className="tp-section">
         <div className="tp-section-header">
@@ -343,7 +464,7 @@ export default function TamingPanel({ result, dino, level }) {
       </div>
       )}
 
-      {/* SECTION 6: Tips */}
+      {/* SECTION 7: Tips */}
       {dino.tips && (
         <div className="tp-section tp-tips">
           <div className="tp-section-header">

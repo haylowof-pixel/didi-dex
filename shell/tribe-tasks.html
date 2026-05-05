@@ -58,7 +58,7 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 
 /* ===== TOAST NOTIFICATIONS ===== */
 .toast-container{position:fixed;top:46px;right:12px;z-index:1000;display:flex;flex-direction:column;gap:6px;pointer-events:none}
-.toast{background:rgba(20,20,30,0.92);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--r-md);padding:10px 16px;font:500 11px var(--font);color:var(--text-0);display:flex;align-items:center;gap:8px;min-width:220px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:toastIn .3s ease forwards;pointer-events:auto}
+.toast{background:rgba(20,20,30,0.92);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--r-md);padding:10px 16px;font:500 11px var(--font);color:var(--text-0);display:flex;align-items:center;gap:8px;min-width:240px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:toastIn .3s ease forwards;pointer-events:auto;border-left-width:3px}
 .toast.out{animation:toastOut .4s ease forwards}
 .toast-icon{font-size:14px;flex-shrink:0}
 .toast-body{flex:1;line-height:1.4}
@@ -1149,16 +1149,50 @@ function initBubbles() {
 // =============================================
 // TOAST NOTIFICATIONS
 // =============================================
-function showToast(icon, message) {
+function playToastSound(type) {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if (type === 'done') {
+      // Pleasant ascending chime for task completion
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+      osc.start(); osc.stop(ctx.currentTime + 0.5);
+    } else {
+      osc.type = 'sine';
+      osc.frequency.value = 520;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+      osc.start(); osc.stop(ctx.currentTime + 0.3);
+    }
+  } catch(e) {}
+}
+
+function showToast(icon, message, type) {
+  type = type || 'info';
+  var borderColor = type === 'done' ? 'var(--green)' : type === 'farm' ? 'var(--orange)' : 'var(--accent)';
   var container = document.getElementById('toastContainer');
   var toast = document.createElement('div');
   toast.className = 'toast';
+  toast.style.borderLeft = '3px solid ' + borderColor;
   toast.innerHTML = '<span class="toast-icon">'+icon+'</span><span class="toast-body">'+message+'</span>';
   container.appendChild(toast);
+  playToastSound(type);
+  // Native OS notification
+  if (window.Notification && Notification.permission === 'granted') {
+    var plain = toast.querySelector('.toast-body').innerText || toast.querySelector('.toast-body').textContent;
+    new Notification('OVERSEER — Tribu', { body: plain, icon: '../assets/icon.png' });
+  }
   setTimeout(function() {
     toast.classList.add('out');
     setTimeout(function() { toast.remove(); }, 400);
-  }, 4000);
+  }, 5000);
 }
 
 // =============================================
@@ -1495,18 +1529,19 @@ function detectChanges(oldTasks, newTasks) {
   oldTasks.forEach(function(t) { oldMap[t.id] = t; });
   newTasks.forEach(function(t) {
     if (!oldMap[t.id]) {
-      if (t.author !== STATE.pseudo) showToast('&#10133;', '<span class="toast-member">'+escH(t.author)+'</span> a ajoute la tache "'+escH(t.title)+'"');
+      if (t.author !== STATE.pseudo) showToast('&#10133;', '<span class="toast-member">'+escH(t.author)+'</span> a ajouté : <strong>'+escH(t.title.toUpperCase())+'</strong>', 'new');
     } else {
       var old = oldMap[t.id];
-      if (t.done && !old.done && t.doneBy && t.doneBy !== STATE.pseudo) {
-        showToast('&#9989;', '<span class="toast-member">'+escH(t.doneBy)+'</span> a termine "'+escH(t.title)+'"');
+      if (t.done && !old.done && t.doneBy) {
+        var who = escH(t.doneBy);
+        showToast('&#9989;', '<span class="toast-member">'+who+'</span> a rempli cette tâche : <strong>'+escH(t.title.toUpperCase())+'</strong>', 'done');
       }
       if (t.items && old.items) {
         var oldTotal = 0, newTotal = 0;
         old.items.forEach(function(it) { oldTotal += (it.collected||0); });
         t.items.forEach(function(it) { newTotal += (it.collected||0); });
         if (newTotal > oldTotal && t.lastEditor && t.lastEditor !== STATE.pseudo) {
-          showToast('&#128230;', '<span class="toast-member">'+escH(t.lastEditor)+'</span> a farme +'+(newTotal-oldTotal)+' items sur "'+escH(t.title)+'"');
+          showToast('&#128230;', '<span class="toast-member">'+escH(t.lastEditor)+'</span> a farmé <strong>+'+(newTotal-oldTotal)+'</strong> sur "'+escH(t.title)+'"', 'farm');
         }
       }
     }
@@ -2308,6 +2343,10 @@ function getCategoryIcon(cat) {
 // INIT
 // =============================================
 function init() {
+  // Request notification permission
+  if (window.Notification && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
   initBubbles();
   var saved = loadLocal();
   if (saved && saved.tribeCode && saved.cloudId) {

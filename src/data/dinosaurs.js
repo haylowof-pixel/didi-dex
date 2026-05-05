@@ -73,6 +73,15 @@ export const TAMING_METHOD = {
   NONE: 'Cannot be tamed',
 };
 
+export const TRAP_TYPES = {
+  '2gate':      { label: 'Double Gateway Trap', desc: 'Attire le dino entre 2 portails, ferme les deux', color: '#ef4444' },
+  '1gate':      { label: 'Single Gateway Trap', desc: 'Accoins le dino contre un portail avec des murs', color: '#f59e0b' },
+  'large_trap': { label: 'Large Bear Trap',     desc: 'Pose un grand piège au sol, attire le dino dessus', color: '#f59e0b' },
+  'bear_trap':  { label: 'Bear Trap',           desc: 'Pose un piège ordinaire au sol', color: '#60a5fa' },
+  'bola':       { label: 'Bola',                desc: 'Lance une bola pour immobiliser la créature', color: '#a78bfa' },
+  'chain_bola': { label: 'Chain Bola / Trap',   desc: 'Arbalète à bola ou large piège nécessaire', color: '#ec4899' },
+};
+
 export const dinosaurs = [
   {
     id: 'rex',
@@ -97,6 +106,7 @@ export const dinosaurs = [
     affinityPerLevel: 150,
     foodDrainBase: 0.002066,
     maxFood: 2000,
+    trap: '2gate',
     tips: 'Use a trap made of stone or metal gates. Aim for the head with tranq arrows for bonus torpor.',
   },
   {
@@ -121,6 +131,7 @@ export const dinosaurs = [
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
     maxFood: 450,
+    trap: 'bola',
     tips: 'Bola them first to immobilize, then use tranq arrows. Easy early-game tame.',
   },
   {
@@ -143,6 +154,7 @@ export const dinosaurs = [
     affinityPerLevel: 37.5,
     foodDrainBase: 0.003156,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Great beginner tame. Hit from behind - its head gives knockback. Use narcoberries to keep torpor up.',
   },
   {
@@ -166,6 +178,7 @@ export const dinosaurs = [
     affinityPerLevel: 90,
     foodDrainBase: 0.001852,
     maxFood: 1800,
+    trap: 'large_trap',
     tips: 'Build a trap with stone gateways (3 in a row). Lure it in, place the last gate behind it.',
   },
   {
@@ -188,6 +201,7 @@ export const dinosaurs = [
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
     maxFood: 1200,
+    trap: 'bola',
     tips: 'Bola it first! Low torpor - be careful not to kill it. Great first flying mount.',
   },
   {
@@ -210,6 +224,7 @@ export const dinosaurs = [
     affinityPerLevel: 60,
     foodDrainBase: 0.003156,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Best metal farmer in the game. Use tranq arrows and avoid the tail.',
   },
   {
@@ -232,6 +247,7 @@ export const dinosaurs = [
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
     maxFood: 2000,
+    trap: '1gate',
     tips: 'Best stone farmer. When curled up, it takes 90% reduced damage - wait for it to uncurl.',
   },
   {
@@ -254,6 +270,7 @@ export const dinosaurs = [
     affinityPerLevel: 250,
     foodDrainBase: 0.001852,
     maxFood: 4000,
+    trap: '2gate',
     tips: 'Extremely hard to tame solo. Use a Tapejara or Argentavis + grappling hook strategy.',
   },
   {
@@ -276,6 +293,7 @@ export const dinosaurs = [
     affinityPerLevel: 112.5,
     foodDrainBase: 0.002066,
     maxFood: 2000,
+    trap: '2gate',
     tips: 'Powerful near water (bipedal stance). Build a stone trap to contain it.',
   },
   {
@@ -298,6 +316,7 @@ export const dinosaurs = [
     affinityPerLevel: 150,
     foodDrainBase: 0.002066,
     maxFood: 5000,
+    trap: '2gate',
     tips: 'Very aggressive! Build a stone trap. Versatile gather - can harvest berries, meat, wood, thatch, fiber.',
   },
   {
@@ -320,6 +339,7 @@ export const dinosaurs = [
     affinityPerLevel: 500,
     foodDrainBase: 0.002066,
     maxFood: 5000,
+    trap: '2gate',
     tips: 'The most dangerous tame. Use a metal trap (4 metal gateways + gates). Need 500+ shocking tranq darts for high levels.',
   },
   {
@@ -341,6 +361,7 @@ export const dinosaurs = [
     affinityPerLevel: 60,
     foodDrainBase: 0.001543,
     maxFood: 2000,
+    trap: '1gate',
     tips: 'Only eats fish! Great cave mount - fits through small openings. Has a water stun attack.',
   },
   {
@@ -363,6 +384,7 @@ export const dinosaurs = [
     affinityPerLevel: 15,
     foodDrainBase: 0.001929,
     maxFood: 3000,
+    trap: 'bola',
     tips: 'First tame for many players. Can detect enemies with alarm mode. Very easy knockout.',
   },
   {
@@ -385,6 +407,7 @@ export const dinosaurs = [
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
     maxFood: 3000,
+    trap: '1gate',
     tips: 'Great berry farmer. Plate modes give different abilities: hardening, slowing, sharpening.',
   },
   {
@@ -407,6 +430,7 @@ export const dinosaurs = [
     affinityPerLevel: 130,
     foodDrainBase: 0.002066,
     maxFood: 3500,
+    trap: '2gate',
     tips: 'Courage roar buffs allies, fear roar debuffs enemies. Essential for boss fights.',
   },
   {
@@ -429,6 +453,7 @@ export const dinosaurs = [
     affinityPerLevel: 45,
     foodDrainBase: 0.001543,
     maxFood: 1500,
+    trap: 'bola',
     tips: 'Can latch onto walls and trees. 3 seater mount. Use bola then tranq.',
   },
   {
@@ -451,6 +476,7 @@ export const dinosaurs = [
     affinityPerLevel: 90,
     foodDrainBase: 0.001543,
     maxFood: 2000,
+    trap: 'bear_trap',
     tips: 'Acts as a natural air conditioner for egg hatching. Insulation scales with melee damage.',
   },
   {
@@ -473,6 +499,7 @@ export const dinosaurs = [
     affinityPerLevel: 90,
     foodDrainBase: 0.003156,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Best wood farmer. Great for general resource gathering. Can be immobilized with chain bola.',
   },
   {
@@ -495,6 +522,7 @@ export const dinosaurs = [
     affinityPerLevel: 52.5,
     foodDrainBase: 0.001852,
     maxFood: 2000,
+    trap: 'large_trap',
     tips: 'Mid-tier predator. Has a headbutt attack. Use a bola or trap to immobilize.',
   },
   {
@@ -518,6 +546,7 @@ export const dinosaurs = [
     affinityPerLevel: 120,
     foodDrainBase: 0.004156,
     maxFood: 2000,
+    trap: '2gate',
     tips: 'Healing pig! Essential for boss fights. Eats food very fast when healing is active.',
   },
   {
@@ -540,6 +569,7 @@ export const dinosaurs = [
     affinityPerLevel: 250,
     foodDrainBase: 0.002066,
     maxFood: 4000,
+    trap: '2gate',
     tips: 'Massive berry farmer. Use its platform saddle for mobile bases. Needs a LOT of narcotics.',
   },
   {
@@ -562,6 +592,7 @@ export const dinosaurs = [
     affinityPerLevel: 11.25,
     foodDrainBase: 0.000868,
     maxFood: 750,
+    trap: 'bola',
     tips: 'Petit prédateur cracheur de venin. Très facile à apprivoiser. Bola fonctionne.',
   },
   {
@@ -756,6 +787,7 @@ export const dinosaurs = [
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
     maxFood: 2000,
+    trap: 'bola',
     tips: 'Très rapide ! Bola indispensable. Monture 3 places. Perd son torpor très vite.',
   },
   {
@@ -800,6 +832,7 @@ export const dinosaurs = [
     affinityPerLevel: 45,
     foodDrainBase: 0.001929,
     maxFood: 1200,
+    trap: 'large_trap',
     tips: 'Le mâle a des bois et peut attaquer, la femelle est plus rapide. Bon collecteur de thatch.',
   },
   {
@@ -822,6 +855,7 @@ export const dinosaurs = [
     affinityPerLevel: 22.5,
     foodDrainBase: 0.001543,
     maxFood: 1200,
+    trap: 'bear_trap',
     tips: 'Headbutt torpor attack. Utile pour assommer d\'autres créatures en début de jeu.',
   },
   {
@@ -972,6 +1006,7 @@ export const dinosaurs = [
     affinityPerLevel: 37.5,
     foodDrainBase: 0.001543,
     maxFood: 1500,
+    trap: 'bola',
     tips: 'Saute et saisit les joueurs/petites créatures. Bola possible. Dangereux près des marais.',
   },
   {
@@ -994,6 +1029,7 @@ export const dinosaurs = [
     affinityPerLevel: 52.5,
     foodDrainBase: 0.003156,
     maxFood: 3500,
+    trap: '1gate',
     tips: 'Empale et ralentit les attaquants. Bon pour les boss. Attention aux piques en approchant.',
   },
   {
@@ -1016,6 +1052,7 @@ export const dinosaurs = [
     affinityPerLevel: 45,
     foodDrainBase: 0.001543,
     maxFood: 1200,
+    trap: 'large_trap',
     tips: 'Bon collecteur de chitine et kératine. Rapide et agile. Excellent pour les grottes.',
   },
   {
@@ -1038,6 +1075,7 @@ export const dinosaurs = [
     affinityPerLevel: 60,
     foodDrainBase: 0.001543,
     maxFood: 2000,
+    trap: 'large_trap',
     tips: 'Très rapide dans l\'eau. Attaque de roulade mortelle. Bon garde de base amphibie.',
   },
   {
@@ -1059,6 +1097,7 @@ export const dinosaurs = [
     affinityPerLevel: 30,
     foodDrainBase: 0.001543,
     maxFood: 900,
+    trap: 'bear_trap',
     tips: 'Mange de la viande avariée ! Attaque torpeur avec le dard. Bon pour assommer d\'autres créatures.',
   },
   {
@@ -1081,6 +1120,7 @@ export const dinosaurs = [
     affinityPerLevel: 37.5,
     foodDrainBase: 0.001543,
     maxFood: 1500,
+    trap: 'bola',
     tips: 'Rapide et agressif. Peut planer. Bola efficace. Bon pour le combat terrestre rapide.',
   },
   {
@@ -1168,6 +1208,7 @@ export const dinosaurs = [
     affinityPerLevel: 60,
     foodDrainBase: 0.001543,
     maxFood: 1500,
+    trap: 'bear_trap',
     tips: 'Se cache enterrée et attaque par surprise. Assomme les joueurs. Piège efficace en PvP.',
   },
   {
@@ -1295,6 +1336,7 @@ export const dinosaurs = [
     affinityPerLevel: 105,
     foodDrainBase: 0.001852,
     maxFood: 2500,
+    trap: '2gate',
     tips: 'Pack bonus en groupe de 3. L\'alpha du pack a une attaque hémorragie. Piéger avec des gates.',
   },
   {
@@ -1317,6 +1359,7 @@ export const dinosaurs = [
     affinityPerLevel: 90,
     foodDrainBase: 0.003156,
     maxFood: 1500,
+    trap: 'large_trap',
     tips: 'Meilleur fermier de bois. Réduit le poids du bois de 75%. Fonctionne comme Smithy mobile.',
   },
   {
@@ -1340,6 +1383,7 @@ export const dinosaurs = [
     affinityPerLevel: 75,
     foodDrainBase: 0.001852,
     maxFood: 3000,
+    trap: '1gate',
     tips: 'Très puissant et rapide. Récolte fibre, chitine et viande efficacement. Piéger avec des gates.',
   },
   {
@@ -1362,6 +1406,7 @@ export const dinosaurs = [
     affinityPerLevel: 52.5,
     foodDrainBase: 0.001543,
     maxFood: 1800,
+    trap: 'large_trap',
     tips: 'Pack bonus - plus il y en a, plus ils sont forts. Pas de selle requise. Bon pour les grottes.',
   },
   {
@@ -1406,6 +1451,7 @@ export const dinosaurs = [
     affinityPerLevel: 75,
     foodDrainBase: 0.001852,
     maxFood: 2000,
+    trap: 'bear_trap',
     tips: 'Le requin géant. Rapide et puissant sous l\'eau. Piéger dans une cage sous-marine.',
   },
   {
@@ -1428,6 +1474,7 @@ export const dinosaurs = [
     affinityPerLevel: 112.5,
     foodDrainBase: 0.001852,
     maxFood: 2000,
+    trap: '2gate',
     tips: 'Plus fort la nuit, dort le jour. Peut saisir et porter des créatures moyennes. Très fort en grotte.',
   },
   {
@@ -1451,6 +1498,7 @@ export const dinosaurs = [
     affinityPerLevel: 90,
     foodDrainBase: 0.001852,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Buff insecte quand il tue un insecte. Excellent pour la grotte Broodmother. Bon fermier de chitine.',
   },
   {
@@ -1473,6 +1521,7 @@ export const dinosaurs = [
     affinityPerLevel: 180,
     foodDrainBase: 0.003156,
     maxFood: 4000,
+    trap: '2gate',
     tips: 'Gigantesque herbivore avec selle plateforme. Tank mobile. Piéger avec des metal gates.',
   },
   {
@@ -1539,6 +1588,7 @@ export const dinosaurs = [
     affinityPerLevel: 75,
     foodDrainBase: 0.003156,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Charge dévastatrice qui fait d\'énormes dégâts. Collecteur de kératine. Bon contre les boss.',
   },
   {
@@ -1583,6 +1633,7 @@ export const dinosaurs = [
     affinityPerLevel: 425,
     foodDrainBase: 0.002066,
     maxFood: 5000,
+    trap: '2gate',
     tips: 'Le prédateur ultime sous-marin. Selle plateforme. Extrêmement long à apprivoiser.',
   },
   {
@@ -1604,6 +1655,7 @@ export const dinosaurs = [
     affinityPerLevel: 195,
     foodDrainBase: 0.002066,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Aberration. KO seulement avec catapulte/canon ! Peut saisir 2 créatures à la fois. Sauts énormes.',
   },
   {
@@ -1626,6 +1678,7 @@ export const dinosaurs = [
     affinityPerLevel: 110,
     foodDrainBase: 0.001852,
     maxFood: 2000,
+    trap: '2gate',
     tips: 'Extinction. Dash aérien + souffle de glace. Extrêmement rapide et agile dans les airs.',
   },
   {
@@ -1712,6 +1765,7 @@ export const dinosaurs = [
     affinityPerLevel: 150,
     foodDrainBase: 0.001852,
     maxFood: 1800,
+    trap: 'large_trap',
     tips: 'Grimpeur de falaises ! Attaque par embuscade depuis les arbres. Saignement et pin. Excellent en combat.',
   },
   {
@@ -1756,6 +1810,7 @@ export const dinosaurs = [
     affinityPerLevel: 187.5,
     foodDrainBase: 0.001852,
     maxFood: 3000,
+    trap: '2gate',
     tips: 'Attaque en plongée dévastatrice. Pas de selle requise. Le passager peut tirer depuis le dos.',
   },
   {
@@ -3585,6 +3640,7 @@ export const dinosaurs = [
     ],
     baseTamingAffinity: 4000, affinityPerLevel: 200, foodDrainBase: 0.003,
     maxFood: 2000,
+    trap: '2gate',
     tips: 'Lost Colony DLC. Use a Metal/Riot Shield to reflect its torpor spit back at it. High torpor drain — bring lots of Narcotics.',
   },
   {
