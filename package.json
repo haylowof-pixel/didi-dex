@@ -1,6 +1,6 @@
 {
     "name":  "overseer",
-    "version":  "3.2.3",
+    "version":  "3.3.1",
     "description":  "OVERSEER - ARK companion app with taming calculator, breeding, maps \u0026 more",
     "main":  "electron/main.js",
     "scripts":  {
@@ -59,7 +59,7 @@
                   "publish":  {
                                   "provider":  "github",
                                   "owner":  "haylowof-pixel",
-                                  "repo":  "didi-dex"
+                                  "repo":  "overseer-companion"
                               }
               },
     "devDependencies":  {
