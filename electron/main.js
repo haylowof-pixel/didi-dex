@@ -16,35 +16,27 @@ let mainWindow;
 let splashWindow = null;
 let timerWindow = null;
 let mapsWindow = null;
-let widgetWindow = null;
+
 let settingsWindow = null;
 let breedingWindow = null;
 let ocrWindow = null;
 let tribeWindow = null;
 let isOverlay = false;
+let quickLookupWindow = null;
+let pendingTimerSync = null;
 let regionSelectorWindow = null;
 let ocrWorker = null; // Persistent Tesseract worker for fast coordinate OCR
-
-// ===== WIDGET MODE STATE =====
-let widgetMode = 'mini';
-const WIDGET_SIZES = {
-  mini:     { w: 220, h: 70 },
-  standard: { w: 280, h: 140 },
-  detailed: { w: 340, h: 260 },
-};
-const WIDGET_MODES = ['mini', 'standard', 'detailed'];
 
 // ===== KEYBINDS CONFIG =====
 const DEFAULT_KEYBINDS = {
   toggleOverlay: 'Alt+O',
   toggleWindow:  'Alt+T',
   toggleTimer:   'Alt+M',
-  toggleWidget:  'Alt+W',
-  toggleWidgetMode: 'Alt+Shift+W',
   toggleMaps:    'Alt+G',
   toggleBreeding:'Alt+B',
   toggleOCR:     'Alt+S',
   ocrScan:       'F8',
+  toggleQuickLookup: 'Alt+L',
 };
 
 let currentKeybinds = { ...DEFAULT_KEYBINDS };
@@ -97,23 +89,6 @@ function registerAllShortcuts() {
     }
   } catch (e) {}
   try {
-    if (currentKeybinds.toggleWidget) {
-      globalShortcut.register(currentKeybinds.toggleWidget, () => {
-        if (isWidgetAlive()) safeDestroyWidget();
-        else createWidgetWindow();
-      });
-    }
-  } catch (e) {}
-  try {
-    if (currentKeybinds.toggleWidgetMode) {
-      globalShortcut.register(currentKeybinds.toggleWidgetMode, () => {
-        if (isWidgetAlive()) {
-          cycleWidgetMode();
-        }
-      });
-    }
-  } catch (e) {}
-  try {
     if (currentKeybinds.toggleMaps) {
       globalShortcut.register(currentKeybinds.toggleMaps, () => {
         if (isMapsAlive()) safeDestroyMaps();
@@ -136,6 +111,17 @@ function registerAllShortcuts() {
         else createOCRWindow();
       });
     }
+  } catch (e) {}
+  try {
+    if (currentKeybinds.toggleQuickLookup) {
+      const ok = globalShortcut.register(currentKeybinds.toggleQuickLookup, () => {
+        if (isQuickLookupAlive()) safeDestroyQuickLookup();
+        else createQuickLookupWindow();
+      });
+      console.log('[QuickLookup] shortcut registered:', currentKeybinds.toggleQuickLookup, ok);
+    }
+  } catch (e) { console.error('[QuickLookup] shortcut error:', e); }
+  try {
     // F8 = instant OCR scan (opens OCR if not open, then triggers scan)
     if (currentKeybinds.ocrScan) {
       globalShortcut.register(currentKeybinds.ocrScan, () => {
@@ -156,8 +142,11 @@ function registerAllShortcuts() {
 }
 
 // ===== AUTO-UPDATER =====
+let lastUpdateStatus = null; // Cache last status so late-opening windows can catch up
+
 // Broadcast update-status to ALL webContents (main window, webviews, separate windows)
 function broadcastUpdateStatus(data) {
+  lastUpdateStatus = data;
   const { webContents } = require('electron');
   webContents.getAllWebContents().forEach(wc => {
     try { if (!wc.isDestroyed()) wc.send('update-status', data); } catch (e) {}
@@ -208,10 +197,10 @@ function setupAutoUpdater() {
   // Check for updates
   autoUpdater.checkForUpdates().catch(() => {});
 
-  // Check again every 30 minutes
+  // Check again every 2 minutes
   setInterval(() => {
     autoUpdater.checkForUpdates().catch(() => {});
-  }, 30 * 60 * 1000);
+  }, 2 * 60 * 1000);
 }
 
 // IPC for manual update check
@@ -294,18 +283,15 @@ function createWindow() {
     mainWindow = null;
     safeDestroyTimer();
     safeDestroyMaps();
-    safeDestroyWidget();
     safeDestroySettings();
     safeDestroyBreeding();
   });
 
   mainWindow.on('focus', () => {
     setTimerClickThrough(false);
-    setWidgetClickThrough(false);
   });
   mainWindow.on('blur', () => {
     setTimerClickThrough(true);
-    setWidgetClickThrough(true);
   });
 
   // Ad blocker
@@ -343,8 +329,8 @@ function createTimerWindow() {
   const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
 
   timerWindow = new BrowserWindow({
-    width: 380, height: 540, x: sw - 400, y: 20,
-    minWidth: 220, minHeight: 200,
+    width: 240, height: 120, x: sw - 260, y: 20,
+    minWidth: 200, minHeight: 60,
     frame: false, transparent: true, alwaysOnTop: true,
     resizable: true, minimizable: false, maximizable: false,
     skipTaskbar: true, focusable: true,
@@ -359,8 +345,64 @@ function createTimerWindow() {
   timerWindow.setAlwaysOnTop(true, 'screen-saver');
   timerWindow.setIgnoreMouseEvents(false);
 
+  // Flush any queued sync data (from Quick Lookup starve timer)
+  timerWindow.webContents.once('did-finish-load', () => {
+    if (pendingTimerSync && isTimerAlive()) {
+      try { timerWindow.webContents.send('timer-data-update', pendingTimerSync); } catch (e) {}
+      pendingTimerSync = null;
+    }
+  });
+
   timerWindow.on('closed', () => { timerWindow = null; });
   timerWindow.webContents.on('destroyed', () => { timerWindow = null; });
+}
+
+// ===== QUICK LOOKUP OVERLAY =====
+function isQuickLookupAlive() { return quickLookupWindow && !quickLookupWindow.isDestroyed(); }
+
+function safeDestroyQuickLookup() {
+  try { if (isQuickLookupAlive()) quickLookupWindow.destroy(); } catch (e) {}
+  quickLookupWindow = null;
+}
+
+function createQuickLookupWindow() {
+  if (isQuickLookupAlive()) {
+    quickLookupWindow.focus();
+    return;
+  }
+  quickLookupWindow = null;
+  const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize;
+
+  quickLookupWindow = new BrowserWindow({
+    width: 520, height: 58,
+    x: Math.round((sw - 520) / 2),
+    y: Math.round(sh * 0.18),
+    frame: false, transparent: true, alwaysOnTop: true,
+    resizable: false, minimizable: false, maximizable: false,
+    skipTaskbar: true, focusable: true,
+    show: false,
+    backgroundColor: '#00000000', hasShadow: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true, nodeIntegration: false,
+    },
+  });
+
+  quickLookupWindow.loadFile(path.join(__dirname, '..', 'shell', 'quick-lookup.html'));
+  quickLookupWindow.setAlwaysOnTop(true, 'screen-saver');
+  quickLookupWindow.setIgnoreMouseEvents(false);
+
+  quickLookupWindow.once('ready-to-show', () => {
+    if (isQuickLookupAlive()) {
+      quickLookupWindow.show();
+      quickLookupWindow.focus();
+    }
+  });
+
+  // Close when focus is lost (click outside)
+  quickLookupWindow.on('blur', () => { safeDestroyQuickLookup(); });
+  quickLookupWindow.on('closed', () => { quickLookupWindow = null; });
+  quickLookupWindow.webContents.on('destroyed', () => { quickLookupWindow = null; });
 }
 
 // ===== MAPS WINDOW =====
@@ -409,66 +451,6 @@ function createMapsWindow(mapSlug, mapName) {
   }
 }
 
-// ===== WIDGET MINI =====
-function isWidgetAlive() { return widgetWindow && !widgetWindow.isDestroyed(); }
-
-function safeDestroyWidget() {
-  try { if (isWidgetAlive()) widgetWindow.destroy(); } catch (e) {}
-  widgetWindow = null;
-}
-
-function setWidgetClickThrough(enabled) {
-  try {
-    if (isWidgetAlive()) {
-      widgetWindow.setIgnoreMouseEvents(enabled, enabled ? { forward: true } : {});
-      widgetWindow.webContents.send('widget-click-through-changed', enabled);
-    }
-  } catch (e) {}
-}
-
-function cycleWidgetMode() {
-  const idx = WIDGET_MODES.indexOf(widgetMode);
-  const next = WIDGET_MODES[(idx + 1) % WIDGET_MODES.length];
-  setWidgetMode(next);
-}
-
-function setWidgetMode(mode) {
-  if (!WIDGET_SIZES[mode]) return;
-  widgetMode = mode;
-  if (isWidgetAlive()) {
-    const { w, h } = WIDGET_SIZES[mode];
-    try { widgetWindow.setSize(w, h); } catch (e) {}
-    try { widgetWindow.webContents.send('widget-mode-changed', mode); } catch (e) {}
-  }
-}
-
-function createWidgetWindow() {
-  if (isWidgetAlive()) return;
-  widgetWindow = null;
-  widgetMode = 'mini'; // Reset mode on new widget
-  const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
-
-  widgetWindow = new BrowserWindow({
-    width: WIDGET_SIZES.mini.w, height: WIDGET_SIZES.mini.h, x: sw - 240, y: 80,
-    frame: false, transparent: true, alwaysOnTop: true,
-    resizable: false, minimizable: false, maximizable: false,
-    skipTaskbar: true, focusable: false,
-    backgroundColor: '#00000000', hasShadow: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true, nodeIntegration: false,
-    },
-  });
-
-  widgetWindow.loadFile(path.join(__dirname, '..', 'shell', 'widget-mini.html'));
-  widgetWindow.setAlwaysOnTop(true, 'screen-saver');
-  // Start click-through — will become interactive when main window gets focus
-  widgetWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  widgetWindow.on('closed', () => { widgetWindow = null; });
-  widgetWindow.webContents.on('destroyed', () => { widgetWindow = null; });
-}
-
 // ===== OVERLAY =====
 function toggleOverlay() {
   if (!mainWindow || mainWindow.isDestroyed()) return;
@@ -514,6 +496,17 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile(path.join(__dirname, '..', 'shell', 'settings-window.html'));
   settingsWindow.setAlwaysOnTop(true, 'floating');
+
+  // Send cached update status so settings shows correct state immediately
+  settingsWindow.webContents.once('did-finish-load', () => {
+    if (lastUpdateStatus) {
+      try { settingsWindow.webContents.send('update-status', lastUpdateStatus); } catch (e) {}
+    }
+    // Also trigger a fresh check in packaged mode
+    if (app.isPackaged) {
+      autoUpdater.checkForUpdates().catch(() => {});
+    }
+  });
 
   settingsWindow.on('closed', () => { settingsWindow = null; });
   settingsWindow.webContents.on('destroyed', () => { settingsWindow = null; });
@@ -586,7 +579,7 @@ function saveScale(s) {
   fs.writeFileSync(getScalePath(), JSON.stringify({ scale: s }), 'utf8');
 }
 function applyScaleToAll(s) {
-  const wins = [mainWindow, timerWindow, mapsWindow, widgetWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow];
+  const wins = [mainWindow, timerWindow, mapsWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
   for (const w of wins) {
     if (w && !w.isDestroyed()) w.webContents.setZoomFactor(s);
   }
@@ -611,8 +604,30 @@ ipcMain.on('resize-window', (_, preset) => {
   mainWindow.center();
 });
 
+// Quick Lookup
+ipcMain.on('open-quick-lookup', () => createQuickLookupWindow());
+ipcMain.on('quick-lookup-close', () => safeDestroyQuickLookup());
+ipcMain.handle('is-quick-lookup-open', () => isQuickLookupAlive());
+ipcMain.on('quick-lookup-resize', (_, h) => {
+  try {
+    if (isQuickLookupAlive()) {
+      const clampedH = Math.max(58, Math.min(640, Math.round(h)));
+      quickLookupWindow.setSize(520, clampedH);
+    }
+  } catch (e) {}
+});
+
 // Timer
 ipcMain.on('open-timer-overlay', () => createTimerWindow());
+ipcMain.on('timer-auto-resize', (_, h) => {
+  try {
+    if (isTimerAlive()) {
+      const clamped = Math.max(60, Math.min(600, Math.round(h)));
+      const [w] = timerWindow.getSize();
+      timerWindow.setSize(w, clamped);
+    }
+  } catch (e) {}
+});
 ipcMain.on('close-timer-overlay', () => safeDestroyTimer());
 ipcMain.on('timer-close', () => safeDestroyTimer());
 ipcMain.handle('is-timer-open', () => isTimerAlive());
@@ -632,10 +647,14 @@ ipcMain.on('resize-timer', (_, preset) => {
   } catch (e) {}
 });
 
-// Sync data → timer + widget + comparator
+// Sync data → timer
 ipcMain.on('sync-timer-data', (_, data) => {
-  try { if (isTimerAlive()) timerWindow.webContents.send('timer-data-update', data); } catch (e) {}
-  try { if (isWidgetAlive()) widgetWindow.webContents.send('widget-data-update', data); } catch (e) {}
+  if (isTimerAlive()) {
+    try { timerWindow.webContents.send('timer-data-update', data); } catch (e) {}
+    pendingTimerSync = null;
+  } else {
+    pendingTimerSync = data;
+  }
 });
 
 // Maps
@@ -661,20 +680,47 @@ ipcMain.on('maps-toggle-pin', () => {
   }
 });
 
-// Widget
-ipcMain.on('open-widget', () => createWidgetWindow());
-ipcMain.on('close-widget', () => safeDestroyWidget());
-ipcMain.on('widget-close', () => safeDestroyWidget());
-ipcMain.handle('is-widget-open', () => isWidgetAlive());
-ipcMain.on('widget-set-mode', (_, mode, w, h) => {
-  setWidgetMode(mode);
+// Maps markers persistence
+const MAPS_MARKERS_FILE = path.join(app.getPath('userData'), 'maps-markers.json');
+ipcMain.handle('maps-load-markers', () => {
+  try {
+    if (!fs.existsSync(MAPS_MARKERS_FILE)) return { personal: [], tribe: [] };
+    return JSON.parse(fs.readFileSync(MAPS_MARKERS_FILE, 'utf8'));
+  } catch (e) { return { personal: [], tribe: [] }; }
 });
-ipcMain.on('widget-cycle-mode', () => {
-  if (isWidgetAlive()) {
-    cycleWidgetMode();
-  }
+ipcMain.on('maps-save-markers', (_, data) => {
+  try { fs.writeFileSync(MAPS_MARKERS_FILE, JSON.stringify(data, null, 2)); } catch (e) {}
 });
-ipcMain.handle('get-widget-mode', () => widgetMode);
+ipcMain.handle('maps-export-pois', async () => {
+  const parentWin = isMapsAlive() ? mapsWindow : mainWindow;
+  const { filePath } = await dialog.showSaveDialog(parentWin, {
+    title: 'Exporter les marqueurs de tribu',
+    defaultPath: 'overseer-tribe-markers.json',
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+  });
+  if (!filePath) return { ok: false };
+  try {
+    const data = fs.existsSync(MAPS_MARKERS_FILE)
+      ? JSON.parse(fs.readFileSync(MAPS_MARKERS_FILE, 'utf8'))
+      : { personal: [], tribe: [] };
+    fs.writeFileSync(filePath, JSON.stringify({ tribe: data.tribe || [] }, null, 2));
+    return { ok: true };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
+ipcMain.handle('maps-import-pois', async () => {
+  const parentWin = isMapsAlive() ? mapsWindow : mainWindow;
+  const { filePaths } = await dialog.showOpenDialog(parentWin, {
+    title: 'Importer des marqueurs de tribu',
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+    properties: ['openFile'],
+  });
+  if (!filePaths || !filePaths[0]) return { ok: false };
+  try {
+    const imported = JSON.parse(fs.readFileSync(filePaths[0], 'utf8'));
+    const markers = imported.tribe || imported.personal || [];
+    return { ok: true, markers };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
 
 // Settings
 ipcMain.on('open-settings', () => createSettingsWindow());
@@ -1460,3 +1506,4 @@ ipcMain.on('save-fav-servers', (_, data) => {
     fs.writeFileSync(getFavServersPath(), JSON.stringify(data, null, 2), 'utf8');
   } catch(e) {}
 });
+

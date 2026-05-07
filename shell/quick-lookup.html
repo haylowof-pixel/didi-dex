@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quick Lookup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-deep:    #07070f;
+    --bg-panel:   rgba(12, 12, 24, 0.97);
+    --border:     rgba(123, 147, 248, 0.18);
+    --border-hi:  rgba(123, 147, 248, 0.45);
+    --accent:     #7B93F8;
+    --accent-dim: rgba(123, 147, 248, 0.12);
+    --green:      #2dd4a0;
+    --red:        #ef5f5f;
+    --orange:     #f0993e;
+    --text-1:     #f0f0ff;
+    --text-2:     #9090b8;
+    --text-3:     #5a5a80;
+    --radius:     14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: transparent;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-1);
+    overflow: hidden;
+    margin: 0; padding: 0;
+    width: 520px;
+  }
+
+  /* ── Panel fills the window exactly — no padding, no extra space ── */
+  #panel {
+    width: 520px;
+    background: rgba(10, 10, 20, 0.98);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(123,147,248,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Search bar ── */
+  #search-row {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    height: 54px;
+    flex-shrink: 0;
+  }
+  #search-icon {
+    color: var(--text-3);
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+  }
+  #search {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-1);
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 500;
+    caret-color: var(--accent);
+  }
+  #search::placeholder { color: var(--text-3); font-weight: 400; }
+
+  #kbd-hint {
+    font-size: 11px;
+    color: var(--text-3);
+    flex-shrink: 0;
+    display: flex;
+    gap: 4px;
+  }
+  kbd {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-family: inherit;
+  }
+
+  /* ── Results list ── */
+  #results {
+    display: none;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border);
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  #results.visible { display: flex; }
+  #results::-webkit-scrollbar { width: 4px; }
+  #results::-webkit-scrollbar-track { background: transparent; }
+  #results::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .result-item:hover,
+  .result-item.focused {
+    background: var(--accent-dim);
+    border-left-color: var(--accent);
+  }
+  .result-item.history-item {
+    color: var(--text-2);
+  }
+  .result-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: rgba(255,255,255,0.05);
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
+  }
+  .result-icon-fallback {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: rgba(123,147,248,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .result-name { font-size: 14px; font-weight: 600; flex: 1; }
+  .result-sub  { font-size: 11px; color: var(--text-3); }
+  .badge {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .badge-ko  { background: rgba(239,95,95,0.15); color: var(--red); }
+  .badge-pas { background: rgba(45,212,160,0.15); color: var(--green); }
+
+  /* History section header */
+  .section-header {
+    padding: 6px 16px 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(123,147,248,0.07);
+  }
+
+  /* ── Taming panel ── */
+  #taming-panel {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    max-height: 560px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  #taming-panel::-webkit-scrollbar { width: 4px; }
+  #taming-panel::-webkit-scrollbar-track { background: transparent; }
+  #taming-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  #taming-panel.visible { display: flex; }
+
+  /* Dino header */
+  #dino-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  #dino-header-icon {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    object-fit: cover;
+    background: rgba(255,255,255,0.05);
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+  #dino-header-icon-fb {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    background: rgba(123,147,248,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  #dino-title { font-size: 15px; font-weight: 700; }
+  #dino-badge { margin-left: auto; }
+
+  /* Controls */
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .ctrl-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  #food-select {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 8px;
+    outline: none;
+    cursor: pointer;
+    max-width: 160px;
+  }
+  #food-select:focus { border-color: var(--accent); }
+  #food-select option { background: #0e0e20; }
+
+  #level-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #level-input {
+    width: 52px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 7px;
+    outline: none;
+    text-align: center;
+  }
+  #level-input:focus { border-color: var(--accent); }
+
+  /* Speed multiplier buttons */
+  #speed-wrap {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+  .speed-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .speed-btn:hover { border-color: var(--border-hi); color: var(--text-1); }
+  .speed-btn.active {
+    background: rgba(123,147,248,0.18);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Food compare section ── */
+  #food-compare {
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  #food-compare-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #food-compare-header:hover { background: rgba(255,255,255,0.02); }
+  #food-compare-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #food-compare-toggle {
+    font-size: 10px;
+    color: var(--text-3);
+    transition: transform 0.15s;
+  }
+  #food-compare-toggle.collapsed { transform: rotate(-90deg); }
+  #food-compare-cards {
+    display: flex;
+    gap: 6px;
+    padding: 0 16px 8px;
+    overflow-x: auto;
+  }
+  #food-compare-cards::-webkit-scrollbar { height: 3px; }
+  #food-compare-cards::-webkit-scrollbar-track { background: transparent; }
+  #food-compare-cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .food-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: rgba(255,255,255,0.02);
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.12s, background 0.12s;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .food-card:hover { border-color: var(--border-hi); background: rgba(255,255,255,0.04); }
+  .food-card.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .food-card-row1 {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+  }
+  .food-card-icon {
+    width: 20px; height: 20px;
+    object-fit: contain;
+    border-radius: 3px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+  }
+  .food-card-icon-fb {
+    width: 20px; height: 20px;
+    border-radius: 3px;
+    background: rgba(123,147,248,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .food-card-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+  .food-card-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .food-card-time {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 1px;
+  }
+
+  /* Stats grid — 4 columns, 2 rows = 8 cells */
+  #stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-top: none;
+  }
+  .stat-cell {
+    background: var(--bg-panel);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    position: relative;
+  }
+  .stat-cell.tame-time-cell {
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+  .stat-cell.starve-time-cell {
+    border-left: 2px solid var(--orange);
+    padding-left: 12px;
+  }
+  .stat-cell.narco-cell {
+    cursor: pointer;
+    user-select: none;
+  }
+  .stat-cell.narco-cell:hover { background: rgba(255,255,255,0.02); }
+  .narco-toggle-dots {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .narco-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--text-3);
+    transition: background 0.12s;
+  }
+  .narco-dot.active { background: var(--accent); }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-1);
+    line-height: 1.1;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .stat-value.green { color: var(--green); }
+  .stat-value.orange { color: var(--orange); }
+  .stat-value.accent { color: var(--accent); }
+
+  /* Effectiveness cell glow */
+  .stat-cell.eff-low {
+    box-shadow: inset 0 0 0 1px rgba(239,95,95,0.18), inset 0 0 12px rgba(239,95,95,0.07);
+  }
+
+  /* Effectiveness enhanced display */
+  #eff-bar-wrap {
+    margin-top: 3px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  #eff-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.25s, background-color 0.25s;
+    background: var(--green);
+  }
+
+  /* Food icon */
+  #food-icon-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+  #food-icon {
+    width: 20px; height: 20px;
+    object-fit: contain;
+    border-radius: 3px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+  }
+
+  /* Footer */
+  #footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    gap: 8px;
+  }
+  #footer-hint { font-size: 11px; color: var(--text-3); display: flex; gap: 10px; }
+  #footer-hint span { display: flex; align-items: center; gap: 4px; }
+  #starve-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: rgba(240,153,62,0.12);
+    border: 1px solid rgba(240,153,62,0.35);
+    border-radius: 8px;
+    color: var(--orange);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    white-space: nowrap;
+  }
+  #starve-btn:hover {
+    background: rgba(240,153,62,0.22);
+    border-color: rgba(240,153,62,0.6);
+  }
+  #starve-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  /* Effectiveness badge — enhanced */
+  #effectiveness-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    min-width: 70px;
+  }
+  #eff-pct-text {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+  }
+  #eff-footer-bar-wrap {
+    width: 70px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  #eff-footer-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.25s, background-color 0.25s;
+    background: var(--green);
+  }
+  #eff-bonus-text {
+    font-size: 10px;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+
+  /* Empty state */
+  #empty {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--text-3);
+    font-size: 13px;
+    display: none;
+  }
+  #empty.visible { display: block; }
+
+  /* ── Knockout Calculator ── */
+  #ko-section {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  #ko-section.visible { display: block; }
+
+  #ko-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #ko-header:hover { background: rgba(255,255,255,0.02); }
+  #ko-header-title { font-size: 11px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; flex: 1; }
+  #ko-toggle { font-size: 12px; color: var(--text-3); transition: transform 0.15s; }
+  #ko-toggle.collapsed { transform: rotate(-90deg); }
+
+  #ko-body { padding: 0 14px 12px; }
+
+  .ko-quality-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .ko-quality-label { font-size: 10px; color: var(--text-3); font-weight: 600; text-transform: uppercase; flex-shrink: 0; }
+  .ko-quality-input {
+    width: 64px; padding: 3px 6px; font-size: 13px; font-weight: 700;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--accent); font-family: inherit;
+    text-align: right; outline: none;
+  }
+  .ko-quality-input:focus { border-color: var(--border-hi); }
+  .ko-quality-pct { font-size: 12px; font-weight: 700; color: var(--text-3); }
+
+  .ko-presets { display: flex; gap: 4px; margin-bottom: 8px; }
+  .ko-preset-btn {
+    padding: 2px 8px; font-size: 10px; font-weight: 600;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 5px; color: var(--text-3); cursor: pointer; font-family: inherit;
+    transition: all 0.12s;
+  }
+  .ko-preset-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+  .ko-preset-btn.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
+
+  .ko-weapon-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+  .ko-tab {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 7px 8px 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text-3); cursor: pointer; font-family: inherit;
+    transition: all 0.12s; min-width: 64px;
+  }
+  .ko-tab-imgs { display: flex; align-items: center; gap: 3px; }
+  .ko-tab-imgs .weapon-img { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; }
+  .ko-tab-imgs .ammo-img  { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+  .ko-tab-plus { font-size: 10px; opacity: 0.45; line-height: 1; }
+  .ko-tab-name { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ko-tab-ammo-name { font-size: 8px; font-weight: 500; text-transform: none; letter-spacing: 0; opacity: 0.7; white-space: nowrap; }
+  .ko-tab:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+  .ko-tab.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
+  .ko-tab.active .ko-tab-ammo-name { color: var(--accent); }
+
+  .ko-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+  }
+  .ko-cell {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 6px; text-align: center;
+  }
+  .ko-cell-head { border-color: var(--border-hi); }
+  .ko-cell-label { font-size: 9px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .ko-cell-shots { font-size: 20px; font-weight: 900; color: var(--text-1); line-height: 1; }
+  .ko-cell-sub { font-size: 9px; color: var(--text-3); margin: 2px 0; }
+  .ko-cell-dmg { font-size: 10px; color: var(--text-2); font-weight: 600; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="panel">
+
+    <!-- Search -->
+    <div id="search-row">
+      <svg id="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="search" type="text" placeholder="Search a creature..." autocomplete="off" spellcheck="false"/>
+      <div id="kbd-hint"><kbd>↑↓</kbd> navigate &nbsp; <kbd>↵</kbd> select &nbsp; <kbd>Esc</kbd> close</div>
+    </div>
+
+    <!-- Results (also used for history) -->
+    <div id="results"></div>
+
+    <!-- Empty -->
+    <div id="empty">No creature found</div>
+
+    <!-- Taming panel -->
+    <div id="taming-panel">
+      <div id="dino-header">
+        <img id="dino-header-icon" src="" alt="" onerror="this.style.display='none';document.getElementById('dino-header-icon-fb').style.display='flex'"/>
+        <div id="dino-header-icon-fb" style="display:none">🦕</div>
+        <div>
+          <div id="dino-title">—</div>
+          <div id="dino-sub" style="font-size:11px;color:var(--text-3);margin-top:2px"></div>
+        </div>
+        <div id="dino-badge"></div>
+      </div>
+
+      <div id="controls">
+        <div class="ctrl-group">
+          <div class="ctrl-label">Food</div>
+          <div id="food-icon-wrap">
+            <img id="food-icon" src="" alt="" onerror="this.style.display='none'"/>
+            <select id="food-select"></select>
+          </div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Level</div>
+          <div id="level-wrap">
+            <input id="level-input" type="number" min="1" max="450" value="150"/>
+          </div>
+        </div>
+        <div id="speed-wrap">
+          <button class="speed-btn" data-mult="1"  onclick="setMult(1)">1×</button>
+          <button class="speed-btn" data-mult="2"  onclick="setMult(2)">2×</button>
+          <button class="speed-btn" data-mult="3"  onclick="setMult(3)">3×</button>
+          <button class="speed-btn" data-mult="5"  onclick="setMult(5)">5×</button>
+          <button class="speed-btn" data-mult="10" onclick="setMult(10)">10×</button>
+        </div>
+      </div>
+
+      <!-- Food comparison section -->
+      <div id="food-compare">
+        <div id="food-compare-header" onclick="toggleFoodCompare()">
+          <div id="food-compare-title">Food comparison</div>
+          <div id="food-compare-toggle">▾</div>
+        </div>
+        <div id="food-compare-cards"></div>
+      </div>
+
+      <div id="stats-grid">
+        <!-- Row 1 -->
+        <div class="stat-cell">
+          <div class="stat-label">Food needed</div>
+          <div class="stat-value" id="stat-food">—</div>
+          <div class="stat-sub" id="stat-food-name"></div>
+        </div>
+        <div class="stat-cell tame-time-cell">
+          <div class="stat-label">Tame time</div>
+          <div class="stat-value accent" id="stat-time">—</div>
+          <div class="stat-sub" id="stat-per-food"></div>
+        </div>
+        <div class="stat-cell starve-time-cell">
+          <div class="stat-label">Starve timer</div>
+          <div class="stat-value orange" id="stat-starve">—</div>
+          <div class="stat-sub">before 1st food</div>
+        </div>
+        <div class="stat-cell narco-cell" id="narco-cell" onclick="cycleNarcoMode()">
+          <div class="narco-toggle-dots">
+            <div class="narco-dot active" id="narco-dot-0"></div>
+            <div class="narco-dot" id="narco-dot-1"></div>
+            <div class="narco-dot" id="narco-dot-2"></div>
+          </div>
+          <div class="stat-label" id="narco-label">Narcotics 💊</div>
+          <div class="stat-value" id="stat-narco">—</div>
+          <div class="stat-sub" id="stat-narco-sub">narcotics needed</div>
+        </div>
+        <!-- Row 2 -->
+        <div class="stat-cell" id="eff-cell">
+          <div class="stat-label">Effectiveness</div>
+          <div class="stat-value green" id="stat-eff">—</div>
+          <div id="eff-bar-wrap"><div id="eff-bar-fill" style="width:0%"></div></div>
+          <div class="stat-sub" id="stat-bonus"></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Torpor</div>
+          <div class="stat-value" id="stat-torpor">—</div>
+          <div class="stat-sub" id="stat-torpor-sub">drain category</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Max level</div>
+          <div class="stat-value" id="stat-maxlvl">—</div>
+          <div class="stat-sub">after tame</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Bonus levels</div>
+          <div class="stat-value accent" id="stat-bonus-lvl">—</div>
+          <div class="stat-sub">from effectiveness</div>
+        </div>
+      </div>
+
+      <!-- Knockout Calculator (shown for KO dinos only) -->
+      <div id="ko-section">
+        <div id="ko-header" onclick="toggleKO()">
+          <span>☠️</span>
+          <div id="ko-header-title">Knockout Calculator</div>
+          <div id="ko-toggle">▾</div>
+        </div>
+        <div id="ko-body">
+          <div class="ko-quality-row">
+            <span class="ko-quality-label">Dégâts arme</span>
+            <input type="number" id="ko-quality-input" class="ko-quality-input" min="100" max="999" step="10" value="100" oninput="onKoQuality(this.value)"/>
+            <span class="ko-quality-pct">%</span>
+          </div>
+          <div class="ko-presets">
+            <button class="ko-preset-btn active" onclick="setKoQuality(100)">100%</button>
+            <button class="ko-preset-btn" onclick="setKoQuality(200)">200%</button>
+            <button class="ko-preset-btn" onclick="setKoQuality(300)">300%</button>
+            <button class="ko-preset-btn" onclick="setKoQuality(400)">400%</button>
+          </div>
+          <div class="ko-weapon-tabs" id="ko-weapon-tabs"></div>
+          <div class="ko-grid" id="ko-grid"></div>
+        </div>
+      </div>
+
+      <div id="footer">
+        <div id="footer-hint">
+          <span><kbd>Tab</kbd> food</span>
+          <span><kbd>Esc</kbd> close</span>
+        </div>
+        <button id="starve-btn" disabled onclick="sendStarveTimer()">⏱ Starve timer</button>
+        <div id="effectiveness-badge">
+          <div id="eff-pct-text">— %</div>
+          <div id="eff-footer-bar-wrap"><div id="eff-footer-bar-fill" style="width:0%"></div></div>
+          <div id="eff-bonus-text">+0 bonus levels</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="quick-lookup-data.js"></script>
+<script>
+// ── State ──────────────────────────────────────────
+let selectedDino   = null;
+let focusedIndex   = -1;
+let currentMult    = 1;
+let currentResults = [];
+let narcoMode      = 0;  // 0=Narcotics, 1=Narcoberries, 2=Bio Toxin
+let foodCompareVisible = true;
+
+// ── DOM refs ───────────────────────────────────────
+const searchEl    = document.getElementById('search');
+const resultsEl   = document.getElementById('results');
+const emptyEl     = document.getElementById('empty');
+const tamingPanel = document.getElementById('taming-panel');
+
+// ── Helpers ────────────────────────────────────────
+function fmtSec(s) {
+  if (!s && s !== 0) return '—';
+  s = Math.ceil(s);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return h + 'h ' + m + 'm ' + sec + 's';
+  if (m > 0) return m + 'm ' + sec + 's';
+  return sec + 's';
+}
+
+// ── Recent history (localStorage) ─────────────────
+const HISTORY_KEY = 'ql_history';
+const HISTORY_MAX = 5;
+
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function saveToHistory(dinoName) {
+  let hist = loadHistory();
+  // Remove duplicate if exists
+  hist = hist.filter(n => n !== dinoName);
+  // Add to front
+  hist.unshift(dinoName);
+  // Trim to max
+  hist = hist.slice(0, HISTORY_MAX);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+}
+
+function showHistory() {
+  const hist = loadHistory();
+  if (!hist.length) {
+    resultsEl.classList.remove('visible');
+    resultsEl.innerHTML = '';
+    return;
+  }
+
+  // Find dino objects for each history name
+  const histDinos = hist
+    .map(name => dinosaurs.find(d => d.name === name))
+    .filter(Boolean);
+
+  if (!histDinos.length) {
+    resultsEl.classList.remove('visible');
+    resultsEl.innerHTML = '';
+    return;
+  }
+
+  resultsEl.innerHTML = '';
+  resultsEl.classList.add('visible');
+
+  // Section header
+  const hdr = document.createElement('div');
+  hdr.className = 'section-header';
+  hdr.textContent = 'RÉCENTS';
+  resultsEl.appendChild(hdr);
+
+  histDinos.forEach((dino) => {
+    const el = document.createElement('div');
+    el.className = 'result-item history-item';
+
+    const iconUrl = getIconUrl(dino);
+    const iconHtml = iconUrl
+      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
+      : `<div class="result-icon-fallback">🦕</div>`;
+
+    el.innerHTML = `
+      ${iconHtml}
+      <div style="flex:1;min-width:0">
+        <div class="result-name">${dino.name}</div>
+        <div class="result-sub">${dino.category || 'Creature'}</div>
+      </div>
+      <span style="font-size:15px;opacity:0.6">🕐</span>
+    `;
+    el.addEventListener('mousedown', (e) => { e.preventDefault(); selectDino(dino); });
+    resultsEl.appendChild(el);
+  });
+}
+
+// ── Search ─────────────────────────────────────────
+function score(dino, q) {
+  const n = dino.name.toLowerCase();
+  if (n === q)           return 100;
+  if (n.startsWith(q))  return 90;
+  if (n.includes(q))    return 70;
+  // word match
+  const words = q.split(' ').filter(Boolean);
+  if (words.length > 1 && words.every(w => n.includes(w))) return 60;
+  // subsequence
+  let i = 0;
+  for (const c of n) { if (c === q[i]) i++; }
+  if (i === q.length) return Math.round(30 * (q.length / n.length));
+  return 0;
+}
+
+function search(q) {
+  q = q.trim().toLowerCase();
+  if (!q) {
+    hideResults();
+    if (!selectedDino) showHistory();
+    return;
+  }
+
+  const scored = dinosaurs
+    .map(d => ({ d, s: score(d, q) }))
+    .filter(x => x.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, 6)
+    .map(x => x.d);
+
+  currentResults = scored;
+  focusedIndex = scored.length > 0 ? 0 : -1;
+  renderResults(scored);
+}
+
+function renderResults(list) {
+  resultsEl.innerHTML = '';
+  emptyEl.classList.remove('visible');
+
+  if (!list.length) {
+    emptyEl.classList.add('visible');
+    resultsEl.classList.remove('visible');
+    return;
+  }
+
+  resultsEl.classList.add('visible');
+  list.forEach((dino, i) => {
+    const el = document.createElement('div');
+    el.className = 'result-item' + (i === focusedIndex ? ' focused' : '');
+    el.dataset.index = i;
+
+    const isKO = dino.tamingMethod === 'KNOCKOUT' || dino.tamingMethod === 'KNOCKOUT_PASSIVE';
+    const methodLabel = isKO ? 'KO' : 'Passive';
+    const methodClass = isKO ? 'badge-ko' : 'badge-pas';
+
+    const iconUrl = getIconUrl(dino);
+    const iconHtml = iconUrl
+      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
+      : `<div class="result-icon-fallback">🦕</div>`;
+
+    el.innerHTML = `
+      ${iconHtml}
+      <div style="flex:1;min-width:0">
+        <div class="result-name">${dino.name}</div>
+        <div class="result-sub">${dino.category || 'Creature'}</div>
+      </div>
+      <span class="badge ${methodClass}">${methodLabel}</span>
+    `;
+    el.addEventListener('mousedown', (e) => { e.preventDefault(); selectDino(dino); });
+    resultsEl.appendChild(el);
+  });
+}
+
+function hideResults() {
+  resultsEl.classList.remove('visible');
+  resultsEl.innerHTML = '';
+  emptyEl.classList.remove('visible');
+  currentResults = [];
+  focusedIndex = -1;
+}
+
+// ── Creature icon (ported from creatureIcons.js) ────
+var ICON_SPECIAL = {
+  'Therizinosaurus':    'Therizinosaur',
+  'Spinosaurus':        'Spino',
+  'Sarcosuchus':        'Sarco',
+  'Pulmonoscorpius':    'Scorpion',
+  'Castoroides':        'Giant_Beaver',
+  'Araneo':             'Spider',
+  'Compsognathus':      'Compy',
+  'Triceratops':        'Trike',
+  'Pachycephalosaurus': 'Pachy',
+  'Thylacosmilus':      'Thylacoleo',
+  'Sabertooth Salmon':  'Salmon',
+  'Megapiranha':        'Piranha',
+  'DodoRex':            'Dodorex',
+  'Super Turkey':       'Turkey',
+  'Royal Griffin':      'Griffin',
+  'Quetzalcoatlus':     'Quetzal',
+  'Woolly Rhino':       'Woolly_Rhinoceros',
+  'Woolly Mammoth':     'Mammoth',
+  'Tek Quetzal':        'Tek_Quetzal',
+  'X-Woolly Rhino':     'Woolly_Rhinoceros',
+  'X-Woolly Mammoth':   'Mammoth',
+  'Alpha Rex':          'Rex',
+  'Alpha Raptor':       'Raptor',
+  'Alpha Carno':        'Carnotaurus',
+  'Alpha Mosasaur':     'Mosasaurus',
+  'Alpha Tusoteuthis':  'Tusoteuthis',
+  'Alpha Leedsichthys': 'Leedsichthys',
+  'Alpha Megalodon':    'Megalodon',
+  'Zombie Wyvern':      'Wyvern',
+  'Skeletal Rex':       'Rex',
+  'Bunny Dodo':         'Dodo',
+};
+var ICON_BASE = {
+  'Therizinosaurus':   'Therizinosaur',
+  'Spinosaurus':       'Spino',
+  'Sarcosuchus':       'Sarco',
+  'Pulmonoscorpius':   'Scorpion',
+  'Castoroides':       'Giant_Beaver',
+  'Araneo':            'Spider',
+  'Compsognathus':     'Compy',
+  'Triceratops':       'Trike',
+  'Pachycephalosaurus':'Pachy',
+  'Woolly Rhino':      'Woolly_Rhinoceros',
+  'Woolly Mammoth':    'Mammoth',
+  'Quetzalcoatlus':    'Quetzal',
+};
+
+function resolveVariantName(name) {
+  if (name.startsWith('R-')) {
+    var base = name.slice(2);
+    return ICON_BASE[base] || ICON_SPECIAL[base] || base.replace(/ /g, '_');
+  }
+  if (name.startsWith('Aberrant ')) {
+    var base = name.slice(9);
+    return ICON_BASE[base] || ICON_SPECIAL[base] || base.replace(/ /g, '_');
+  }
+  if (name.startsWith('X-')) {
+    if (ICON_SPECIAL[name]) return ICON_SPECIAL[name];
+    var base = name.slice(2);
+    return ICON_BASE[base] || ICON_SPECIAL[base] || base.replace(/ /g, '_');
+  }
+  return null;
+}
+
+function getIconUrl(dino) {
+  var variant = resolveVariantName(dino.name);
+  if (variant) return `https://ark.wiki.gg/images/thumb/${variant}.png/64px-${variant}.png`;
+  var wikiName = ICON_SPECIAL[dino.name] || dino.name.replace(/ /g, '_');
+  return `https://ark.wiki.gg/images/thumb/${wikiName}.png/64px-${wikiName}.png`;
+}
+
+function getFoodIconUrl(foodKey) {
+  var ft = FOOD_TYPES[foodKey];
+  return (ft && ft.icon) ? ft.icon : null;
+}
+
+// ── Narco mode cycling ──────────────────────────────
+const NARCO_MODES = [
+  { label: 'Narcotics 💊',   key: 'narcoticsNeeded',  sub: 'narcotics needed' },
+  { label: 'Narcoberries 🫐', key: 'narcoberriesNeeded', sub: 'narcoberries needed' },
+  { label: 'Bio Toxin ☠️',   key: 'bioToxinNeeded',   sub: 'bio toxin needed' },
+];
+
+function cycleNarcoMode() {
+  narcoMode = (narcoMode + 1) % 3;
+  updateNarcoDots();
+  if (_lastResult) updateNarcoDisplay(_lastResult);
+}
+
+function updateNarcoDots() {
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('narco-dot-' + i).classList.toggle('active', i === narcoMode);
+  }
+}
+
+function updateNarcoDisplay(r) {
+  const mode = NARCO_MODES[narcoMode];
+  document.getElementById('narco-label').textContent = mode.label;
+  document.getElementById('stat-narco').textContent  = r[mode.key] || 0;
+  document.getElementById('stat-narco-sub').textContent = mode.sub;
+}
+
+// ── Food compare section ────────────────────────────
+function toggleFoodCompare() {
+  foodCompareVisible = !foodCompareVisible;
+  const cards = document.getElementById('food-compare-cards');
+  const toggle = document.getElementById('food-compare-toggle');
+  cards.style.display = foodCompareVisible ? '' : 'none';
+  toggle.classList.toggle('collapsed', !foodCompareVisible);
+  syncWindowSize();
+}
+
+function renderFoodCompare() {
+  if (!selectedDino) return;
+  const cardsEl = document.getElementById('food-compare-cards');
+  cardsEl.innerHTML = '';
+
+  const level   = parseInt(document.getElementById('level-input').value) || 150;
+  const curFood = document.getElementById('food-select').value;
+  const foods   = selectedDino.tamingFoods.slice(0, 4);
+
+  foods.forEach(f => {
+    const fk = f.food;
+    const r  = calculateTaming(selectedDino, level, fk, currentMult);
+    if (!r) return;
+
+    const card = document.createElement('div');
+    card.className = 'food-card' + (fk === curFood ? ' active' : '');
+
+    const iconUrl = getFoodIconUrl(fk);
+    const iconHtml = iconUrl
+      ? `<img class="food-card-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
+      : `<div class="food-card-icon-fb">🍖</div>`;
+
+    const foodName = (FOOD_TYPES[fk] && FOOD_TYPES[fk].name) || fk;
+
+    card.innerHTML = `
+      <div class="food-card-row1">
+        ${iconHtml}
+        <span class="food-card-name" title="${foodName}">${foodName}</span>
+        <span class="food-card-count">${r.foodNeeded}×</span>
+      </div>
+      <div class="food-card-time">${r.totalTimeFmt || '—'}</div>
+    `;
+
+    card.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const sel = document.getElementById('food-select');
+      sel.value = fk;
+      recalculate();
+    });
+
+    cardsEl.appendChild(card);
+  });
+}
+
+// ── Select dino ─────────────────────────────────────
+function selectDino(dino) {
+  selectedDino = dino;
+  hideResults();
+  emptyEl.classList.remove('visible');
+
+  // Save to history
+  saveToHistory(dino.name);
+
+  // Reset narco mode
+  narcoMode = 0;
+  updateNarcoDots();
+
+  // Update header
+  const iconUrl = getIconUrl(dino);
+  const imgEl = document.getElementById('dino-header-icon');
+  const fbEl  = document.getElementById('dino-header-icon-fb');
+  if (iconUrl) {
+    imgEl.src = iconUrl;
+    imgEl.style.display = '';
+    fbEl.style.display = 'none';
+  } else {
+    imgEl.style.display = 'none';
+    fbEl.style.display = 'flex';
+  }
+  document.getElementById('dino-title').textContent = dino.name;
+
+  // dino-sub: taming method + torpor drain category placeholder (will be updated after recalc)
+  const isKO = dino.tamingMethod === 'KNOCKOUT' || dino.tamingMethod === 'KNOCKOUT_PASSIVE';
+  const methodStr = isKO ? 'Knockout' : 'Passive';
+  document.getElementById('dino-sub').textContent = methodStr + ' taming';
+
+  document.getElementById('dino-badge').innerHTML =
+    `<span class="badge ${isKO ? 'badge-ko' : 'badge-pas'}">${isKO ? 'KO' : 'Passive'}</span>`;
+
+  // Populate food select
+  const foodSel = document.getElementById('food-select');
+  foodSel.innerHTML = '';
+  dino.tamingFoods.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.food;
+    opt.textContent = (FOOD_TYPES[f.food] && FOOD_TYPES[f.food].name) || f.food;
+    foodSel.appendChild(opt);
+  });
+
+  // Update speed button
+  setMult(currentMult, false);
+
+  tamingPanel.classList.add('visible');
+  document.getElementById('starve-btn').disabled = true;
+  recalculate();
+
+  searchEl.value = dino.name;
+}
+
+// ── Calculations ────────────────────────────────────
+var _lastResult = null;
+function recalculate() {
+  if (!selectedDino) return;
+  const level   = parseInt(document.getElementById('level-input').value) || 150;
+  const foodKey = document.getElementById('food-select').value;
+
+  const r = calculateTaming(selectedDino, level, foodKey, currentMult);
+  if (!r) return;
+  _lastResult = r;
+
+  document.getElementById('stat-food').textContent      = r.foodNeeded;
+  document.getElementById('stat-food-name').textContent = r.foodName;
+  document.getElementById('stat-time').textContent      = r.totalTimeFmt;
+  document.getElementById('stat-per-food').textContent  = r.secondsPerFood + 's / item';
+  document.getElementById('stat-starve').textContent    = r.starveTimeFmt || '—';
+
+  // Narco display (respects current mode)
+  updateNarcoDisplay(r);
+
+  // Effectiveness — enhanced display (stat cell)
+  const eff = r.effectiveness;
+  document.getElementById('stat-eff').textContent = eff + '%';
+  document.getElementById('stat-eff').className   = 'stat-value ' + (eff >= 95 ? 'green' : eff >= 70 ? 'orange' : 'red');
+  document.getElementById('stat-bonus').textContent = '+' + r.bonusLevels + ' bonus lvls';
+
+  // Effectiveness bar in stat cell
+  const effBarFill = document.getElementById('eff-bar-fill');
+  effBarFill.style.width = eff + '%';
+  effBarFill.style.backgroundColor = eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+
+  // Effectiveness cell glow when < 70%
+  const effCell = document.getElementById('eff-cell');
+  effCell.classList.toggle('eff-low', eff < 70);
+
+  // Footer effectiveness badge — enhanced
+  document.getElementById('eff-pct-text').textContent  = eff + '%';
+  document.getElementById('eff-pct-text').style.color  = eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+  document.getElementById('eff-bonus-text').textContent = '+' + r.bonusLevels + ' bonus levels';
+  const footerBarFill = document.getElementById('eff-footer-bar-fill');
+  footerBarFill.style.width = eff + '%';
+  footerBarFill.style.backgroundColor = eff >= 95 ? 'var(--green)' : eff >= 70 ? 'var(--orange)' : 'var(--red)';
+
+  // Max level & bonus levels
+  document.getElementById('stat-maxlvl').textContent  = r.maxLevel;
+  document.getElementById('stat-bonus-lvl').textContent = '+' + r.bonusLevels;
+
+  // Torpor timer
+  const torporSec = r.torporTimerSeconds;
+  document.getElementById('stat-torpor').textContent     = torporSec ? fmtSec(torporSec) : '—';
+  document.getElementById('stat-torpor-sub').textContent = r.torporDrainCategory ? r.torporDrainCategory + ' drain' : 'drain category';
+
+  // Update dino-sub with method + torpor drain
+  const isKO = selectedDino.tamingMethod === 'KNOCKOUT' || selectedDino.tamingMethod === 'KNOCKOUT_PASSIVE';
+  const methodStr = isKO ? 'Knockout' : 'Passive';
+  const drainCat  = r.torporDrainCategory || null;
+  document.getElementById('dino-sub').textContent = drainCat
+    ? methodStr + ' • ' + drainCat + ' torpor drain'
+    : methodStr + ' taming';
+
+  // Update food icon
+  const foodIconEl = document.getElementById('food-icon');
+  const foodIconUrl = getFoodIconUrl(foodKey);
+  if (foodIconUrl) {
+    foodIconEl.src = foodIconUrl;
+    foodIconEl.style.display = '';
+  } else {
+    foodIconEl.style.display = 'none';
+  }
+
+  // Enable starve timer button
+  document.getElementById('starve-btn').disabled = !r.starveTimeFmt;
+
+  // Render food compare cards
+  renderFoodCompare();
+
+  // Render knockout calculator if KO dino
+  renderKO();
+}
+
+// ── Knockout Calculator ──────────────────────────────
+var koQuality = 100;
+var koWeapon  = 'bow';
+var koVisible = false;
+
+function toggleKO() {
+  koVisible = !koVisible;
+  document.getElementById('ko-body').style.display = koVisible ? '' : 'none';
+  document.getElementById('ko-toggle').classList.toggle('collapsed', !koVisible);
+  syncWindowSize();
+}
+
+function onKoQuality(v) {
+  var parsed = parseInt(v);
+  if (isNaN(parsed) || parsed < 100) return;
+  koQuality = parsed;
+  document.querySelectorAll('.ko-preset-btn').forEach(function(b) {
+    b.classList.toggle('active', parseInt(b.textContent) === koQuality);
+  });
+  renderKOStats();
+}
+
+function setKoQuality(v) {
+  koQuality = v;
+  document.getElementById('ko-quality-input').value = v;
+  document.querySelectorAll('.ko-preset-btn').forEach(function(b) {
+    b.classList.toggle('active', parseInt(b.textContent) === v);
+  });
+  renderKOStats();
+}
+
+function renderKO() {
+  if (!selectedDino) return;
+  const isKO = selectedDino.tamingMethod === 'Knockout' || selectedDino.tamingMethod === 'KNOCKOUT';
+  const koSection = document.getElementById('ko-section');
+  koSection.classList.toggle('visible', isKO);
+  if (!isKO) return;
+
+  // Init collapsed state
+  document.getElementById('ko-body').style.display = koVisible ? '' : 'none';
+  document.getElementById('ko-toggle').classList.toggle('collapsed', !koVisible);
+
+  // Build weapon tabs
+  const tabsEl = document.getElementById('ko-weapon-tabs');
+  tabsEl.innerHTML = '';
+  WEAPONS.forEach(w => {
+    const btn = document.createElement('button');
+    btn.className = 'ko-tab' + (w.key === koWeapon ? ' active' : '');
+    btn.innerHTML = '<div class="ko-tab-imgs"><img class="weapon-img" src="' + w.img + '" alt="' + w.name + '" onerror="this.style.display=\'none\'"/><span class="ko-tab-plus">+</span><img class="ammo-img" src="' + w.ammoImg + '" alt="' + w.ammo + '" onerror="this.style.display=\'none\'"/></div><span class="ko-tab-name">' + w.name + '</span><span class="ko-tab-ammo-name">' + w.ammo + '</span>';
+    btn.onclick = function() {
+      koWeapon = w.key;
+      tabsEl.querySelectorAll('.ko-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderKOStats();
+    };
+    tabsEl.appendChild(btn);
+  });
+
+  renderKOStats();
+}
+
+function renderKOStats() {
+  if (!selectedDino) return;
+  const level = parseInt(document.getElementById('level-input').value) || 150;
+  const results = calculateKnockout(selectedDino, level, koQuality);
+  const w = results.find(r => r.key === koWeapon) || results[0];
+  if (!w) return;
+
+
+  const riskColor = w.killRisk === 'high' ? 'var(--red)' : w.killRisk === 'med' ? 'var(--orange)' : 'var(--green)';
+  const riskLabel = w.killRisk === 'high' ? 'Danger' : w.killRisk === 'med' ? 'Risque' : 'Safe';
+
+  document.getElementById('ko-grid').innerHTML = `
+    <div class="ko-cell">
+      <div class="ko-cell-label">Corps</div>
+      <div class="ko-cell-shots">${w.shotsBody}</div>
+      <div class="ko-cell-sub">tirs</div>
+      <div class="ko-cell-dmg">${w.dmgBody} dmg</div>
+    </div>
+    <div class="ko-cell ko-cell-head">
+      <div class="ko-cell-label">Tête 🎯</div>
+      <div class="ko-cell-shots">${w.shotsHead}</div>
+      <div class="ko-cell-sub">tirs</div>
+      <div class="ko-cell-dmg">${w.dmgHead} dmg</div>
+    </div>
+    <div class="ko-cell">
+      <div class="ko-cell-label">Risque de mort</div>
+      <div class="ko-cell-shots" style="color:${riskColor}">${riskLabel}</div>
+      <div class="ko-cell-sub" style="color:${riskColor}">${w.dmgBody} dmg/tir</div>
+    </div>
+  `;
+  syncWindowSize();
+}
+
+// ── Send starve timer to overlay ─────────────────────
+function sendStarveTimer() {
+  if (!selectedDino || !_lastResult || !window.api) return;
+  const data = {
+    dinoName: selectedDino.name,
+    starveTime: _lastResult.starveTimeFmt || '',
+    totalTime: _lastResult.totalTimeFmt || '',
+    foodRequired: String(_lastResult.foodNeeded),
+    foodCurrent: '',
+    foodMax: '',
+    torporTime: '',
+    torporCurrent: '',
+    torporMax: '',
+    breeding: null,
+    baseStats: {}
+  };
+  // syncTimerData first (queues it in main if timer not open yet)
+  // then open — main flushes the queue on did-finish-load
+  window.api.syncTimerData(data);
+  window.api.openTimerOverlay();
+}
+
+function setMult(m, recalc = true) {
+  currentMult = m;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.mult) === m);
+  });
+  if (recalc) recalculate();
+}
+
+// ── Keyboard navigation ─────────────────────────────
+searchEl.addEventListener('input', e => {
+  tamingPanel.classList.remove('visible');
+  selectedDino = null;
+  search(e.target.value);
+});
+
+searchEl.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (tamingPanel.classList.contains('visible') || currentResults.length) {
+      tamingPanel.classList.remove('visible');
+      selectedDino = null;
+      hideResults();
+      searchEl.value = '';
+      // Show history on clear
+      showHistory();
+    } else {
+      close();
+    }
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (!currentResults.length) return;
+    focusedIndex = (focusedIndex + 1) % currentResults.length;
+    updateFocus();
+  }
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (!currentResults.length) return;
+    focusedIndex = (focusedIndex - 1 + currentResults.length) % currentResults.length;
+    updateFocus();
+  }
+  if (e.key === 'Enter') {
+    if (focusedIndex >= 0 && currentResults[focusedIndex]) {
+      selectDino(currentResults[focusedIndex]);
+    }
+  }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    if (!selectedDino) return;
+    const sel = document.getElementById('food-select');
+    const idx = sel.selectedIndex;
+    sel.selectedIndex = (idx + 1) % sel.options.length;
+    recalculate();
+  }
+});
+
+document.getElementById('level-input').addEventListener('input', recalculate);
+document.getElementById('food-select').addEventListener('change', recalculate);
+
+function updateFocus() {
+  document.querySelectorAll('.result-item').forEach((el, i) => {
+    el.classList.toggle('focused', i === focusedIndex);
+  });
+}
+
+// ── IPC ─────────────────────────────────────────────
+function close() {
+  if (window.api && window.api.quickLookupClose) {
+    window.api.quickLookupClose();
+  }
+}
+
+if (window.api && window.api.onQuickLookupToggle) {
+  window.api.onQuickLookupToggle(() => {
+    searchEl.value = '';
+    hideResults();
+    tamingPanel.classList.remove('visible');
+    selectedDino = null;
+    searchEl.focus();
+    // Show recent history when panel opens with empty search
+    showHistory();
+  });
+}
+
+// ── Auto-resize window to panel content ─────────────
+function syncWindowSize() {
+  if (!window.api || !window.api.quickLookupResize) return;
+  const h = document.getElementById('panel').scrollHeight;
+  window.api.quickLookupResize(h);
+}
+
+// Observe panel size changes
+const ro = new ResizeObserver(() => syncWindowSize());
+ro.observe(document.getElementById('panel'));
+
+// Auto-focus on open
+window.addEventListener('DOMContentLoaded', () => {
+  searchEl.focus();
+  syncWindowSize();
+  showHistory();
+});
+setTimeout(() => { searchEl.focus(); syncWindowSize(); }, 50);
+
+</script>
+</body>
+</html>
