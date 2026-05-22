@@ -1,6 +1,6 @@
 {
     "name":  "overseer",
-    "version":  "3.3.1",
+    "version":  "3.3.2",
     "description":  "OVERSEER - ARK companion app with taming calculator, breeding, maps \u0026 more",
     "main":  "electron/main.js",
     "scripts":  {
