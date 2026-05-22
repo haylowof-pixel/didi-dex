@@ -11,7 +11,7 @@ import { ASB_TAMING } from './asbTaming';
  *   All kibble ≈ 1500 affinity per item
  *   Raw Meat ≈ 200, Mutton ≈ 750, Prime ≈ 600
  *
- * Food drain multiplier: ASB fr * 150 = food drain/sec at 1x official taming speed.
+ * Food drain: ASB fr * fm (foodConsumptionMult, per-creature from ASB data) = food drain/sec at 1x taming speed.
  *
  * ASA_MAX_FOOD: verified maxFood values for ASA (differs from ASE for many dinos).
  * Source: ARK wiki ASA creature pages + community testing.
@@ -22,194 +22,196 @@ import { ASB_TAMING } from './asbTaming';
 // These are the base food stat values in ARK: Survival Ascended.
 const ASA_MAX_FOOD = {
   // ── Apex / Large carnivores ──────────────────────────────────────────────
-  'Rex':                3000,
-  'Giganotosaurus':     12000,
-  'Spinosaurus':        3000,
-  'Yutyrannus':         4000,
-  'Carcharodontosaurus':8000,
-  'Allosaurus':         4000,
-  'Megalosaurus':       3500,
-  'Baryonyx':           3000,
-  'Carnotaurus':        3000,
-  'Therizinosaur':      8000,  // herbivore but large
-  'Therizinosaurus':    8000,
+  'Rex':                1350,
+  'Giganotosaurus':     1108,  // Dododex ASA L150 ✓
+  'Spinosaurus':        1449,  // Dododex L150: starve=1h17m56s → 4676s × 0.3099/s = 1449 ✓
+  'Yutyrannus':         1193,  // Dododex ASA L150 ✓
+  'Carcharodontosaurus':3250,
+  'Allosaurus':         682,   // Dododex ASA L150 ✓
+  'Megalosaurus':       1734,  // Dododex ASA L150 ✓
+  'Baryonyx':           681,   // Dododex ASA L150 ✓
+  'Carnotaurus':        681,   // Dododex ASA L150 ✓
+  'Therizinosaur':      1193,  // Dododex ASA L150 ✓
+  'Therizinosaurus':    1193,  // Dododex ASA L150 ✓
 
   // ── Medium carnivores ────────────────────────────────────────────────────
-  'Raptor':             1500,
-  'Dilophosaur':        1200,
-  'Compy':              450,
-  'Kaprosuchus':        2000,
-  'Sarco':              3000,
-  'Sabertooth':         2000,
-  'Terror Bird':        2000,
-  'Deinonychus':        1500,
-  'Thylacoleo':         2500,
-  'Megalania':          3000,
-  'Direwolf':           2000,
-  'Dire Bear':          6000,
-  'Megatherium':        8000,
-  'Purlovia':           2000,
-  'Titanoboa':          2000,
+  'Raptor':             550,
+  'Dilophosaur':        239,   // Dododex L150: starve=2m39s → 159s × 1.5/s = 239 ✓
+  'Compy':              200,
+  'Kaprosuchus':        511,   // Dododex ASA L150 ✓
+  'Sarco':              511,   // Dododex ASA L150 ✓
+  'Sabertooth':         426,
+  'Terror Bird':        597,
+  'Deinonychus':        550,
+  'Thylacoleo':         426,
+  'Megalania':          1100,
+  'Direwolf':           426,   // Dododex ASA L150 ✓
+  'Dire Bear':          852,
+  'Megatherium':        937,
+  'Purlovia':           682,
+  'Titanoboa':          800,
 
   // ── Flying carnivores ────────────────────────────────────────────────────
-  'Argentavis':         3000,
-  'Pteranodon':         1500,
-  'Quetzal':            8000,  // ASA Quetzal significantly higher
-  'Quetzalcoatlus':     8000,
-  'Tapejara':           2000,
-  'Dimorphodon':        1000,
-  'Griffin':            3000,
-  'Royal Griffin':      3000,
-  'Tropeognathus':      3000,
+  'Argentavis':         937,   // Dododex L150: starve=42m11s → 2531s × 0.3703/s = 937 ✓
+  'Pteranodon':         426,   // Dododex ASA L150 ✓
+  'Quetzal':            1961,  // Dododex ASA L150 ✓
+  'Quetzalcoatlus':     1961,  // Dododex ASA L150 ✓
+  'Tapejara':           682,   // Dododex ASA L150 ✓
+  'Dimorphodon':        400,
+  'Griffin':            682,   // Dododex ASA L150 ✓
+  'Royal Griffin':      682,   // Dododex ASA L150 ✓
+  'Tropeognathus':      1100,
 
   // ── Aquatic ─────────────────────────────────────────────────────────────
-  'Megalodon':          3000,
-  'Mosasaurus':         14000,
-  'Plesiosaur':         8000,
-  'Tusoteuthis':        16000,
-  'Anglerfish':         2000,
-  'Beelzebufo':         3000,
-  'Baryonyx':           3000,
-  'Electrophorus':      2000,
-  'Liopleurodon':       3000,
-  'Dunkleosteus':       2500,
-  'Basilosaurus':       10000,
-  'Cnidaria':           1000,
-  'Manta':              2000,
+  'Megalodon':          681,   // Dododex ASA L150 ✓
+  'Mosasaurus':         2813,  // Dododex ASA L150 ✓
+  'Plesiosaur':         1619,  // Dododex ASA L150 ✓
+  'Tusoteuthis':        6500,
+  'Anglerfish':         800,
+  'Beelzebufo':         511,
+  'Electrophorus':      800,
+  'Liopleurodon':       1100,
+  'Dunkleosteus':       599,   // Dododex ASA L150 ✓
+  'Basilosaurus':       3800,
+  'Cnidaria':           400,
+  'Manta':              800,
 
   // ── Large herbivores ─────────────────────────────────────────────────────
-  'Brontosaurus':       8000,
-  'Triceratops':        6000,
-  'Stegosaurus':        6000,
-  'Ankylosaurus':       6000,
-  'Doedicurus':         4000,
-  'Kentrosaurus':       6000,
-  'Mammoth':            6000,
-  'Woolly Mammoth':     6000,
-  'Paraceratherium':    12000,
-  'Woolly Rhino':       6000,
-  'Megachelon':         16000,
-  'Diplodocus':         8000,
-  'Pachyrhinosaurus':   8000,
-  'Chalicotherium':     8000,
-  'Castoroides':        3000,
-  'Megatherium':        8000,
-  'Carbonemys':         6000,
-  'Procoptodon':        4000,
+  'Brontosaurus':       3237,  // Dododex ASA L150 ✓
+  'Triceratops':        2667,  // Dododex L150: starve=40m00s → 2400s × 1.1111/s = 2667 ✓
+  'Stegosaurus':        2728,  // Dododex L150: starve=40m56s → 2456s × 1.1111/s = 2729 ✓
+  'Ankylosaurus':       1364,  // Dododex L150: starve=40m56s → 2456s × 0.5556/s = 1364 ✓
+  'Doedicurus':         1449,  // Dododex L150: starve=43m28s → 2608s × 0.5556/s = 1449 ✓
+  'Kentrosaurus':       1874,  // Dododex ASA L150 ✓
+  'Mammoth':            1619,  // Dododex ASA L150 ✓
+  'Woolly Mammoth':     1619,  // Dododex ASA L150 ✓
+  'Paraceratherium':    3000,  // Dododex ASA L150 ✓
+  'Woolly Rhino':       852,   // Dododex ASA L150 ✓
+  'Megachelon':         6550,
+  'Diplodocus':         3494,  // Dododex ASA L150 ✓
+  'Pachyrhinosaurus':   3250,
+  'Chalicotherium':     3250,
+  'Castoroides':        682,
+  'Carbonemys':         1022,  // Dododex ASA L150 ✓
+  'Procoptodon':        1650,
 
   // ── Medium herbivores ────────────────────────────────────────────────────
-  'Parasaur':           4000,
-  'Iguanodon':          3000,
-  'Trike':              6000,  // alias
-  'Stego':              6000,  // alias
-  'Morellatops':        5000,
-  'Gallimimus':         3000,
-  'Megaloceros':        2000,
-  'Pachycephalosaurus': 1800,
-  'Pachy':              1800,
-  'Moschops':           3000,
-  'Phiomia':            5000,
-  'Ovis':               2500,
-  'Equus':              3500,
-  'Roll Rat':           3500,
-  'Maewing':            3000,
+  'Parasaur':           510,   // Dododex ASA L150 ✓
+  'Iguanodon':          936,   // Dododex ASA L150 ✓
+  'Trike':              2667,
+  'Stego':              2728,
+  'Morellatops':        959,   // Dododex ASA L150 ✓
+  'Gallimimus':         879,   // Dododex L150: starve=17m35s → 1055s × 0.8333/s = 879 ✓
+  'Megaloceros':        426,   // Dododex ASA L150 ✓
+  'Pachycephalosaurus': 700,
+  'Pachy':              700,
+  'Moschops':           1200,
+  'Phiomia':            955,
+  'Ovis':               1000,
+  'Equus':              719,
+  'Roll Rat':           1350,
+  'Maewing':            1200,
 
   // ── Small / passive ──────────────────────────────────────────────────────
-  'Lystrosaurus':       450,
-  'Dodo':               450,
-  'Mesopithecus':       500,
-  'Kairuku':            1500,
-  'Jerboa':             800,
-  'Compsognathus':      450,
-  'Dung Beetle':        1000,
-  'Archaeopteryx':      800,
-  'Achatina':           1000,
-  'Hesperornis':        1500,
-  'Ichthyornis':        1500,
-  'Diplocaulus':        1500,
-  'Vulture':            1000,
-  'Pegomastax':         800,
-  'Sinomacrops':        800,
-  'Microraptor':        800,
-  'Otter':              1200,
-  'Bulbdog':            800,
-  'Featherlight':       800,
-  'Glowtail':           800,
-  'Shinehorn':          800,
+  'Lystrosaurus':       200,
+  'Dodo':               200,
+  'Mesopithecus':       200,
+  'Kairuku':            550,
+  'Jerboa':             350,
+  'Compsognathus':      200,
+  'Dung Beetle':        400,
+  'Archaeopteryx':      350,
+  'Achatina':           400,
+  'Hesperornis':        550,
+  'Ichthyornis':        550,
+  'Diplocaulus':        550,
+  'Vulture':            400,
+  'Pegomastax':         350,
+  'Sinomacrops':        350,
+  'Microraptor':        350,
+  'Otter':              500,
+  'Bulbdog':            350,
+  'Featherlight':       350,
+  'Glowtail':           350,
+  'Shinehorn':          350,
 
   // ── Special / Scorched Earth ─────────────────────────────────────────────
-  'Thorny Dragon':      2000,
-  'Lymantria':          2500,
-  'Mantis':             3000,
-  'Phoenix':            5000,
+  'Thorny Dragon':      800,
+  'Lymantria':          1000,
+  'Mantis':             1200,
+  'Phoenix':            1900,
 
   // ── Aberration ───────────────────────────────────────────────────────────
-  'Rock Drake':         5000,
-  'Ravager':            2500,
-  'Basilisk':           4000,
-  'Reaper King':        12000,
-  'Karkinos':           10000,
-  'Nameless':           4000,
-  'Meganeura':          800,
+  'Rock Drake':         1900,
+  'Ravager':            1000,
+  'Cosmo':              300,
+  'Basilisk':           1650,
+  'Reaper King':        4900,
+  'Karkinos':           3800,
+  'Nameless':           1650,
+  'Meganeura':          350,
 
   // ── Extinction ───────────────────────────────────────────────────────────
-  'Gacha':              8000,
-  'Snow Owl':           3500,
-  'Gasbags':            8000,
-  'Velonasaur':         3000,
-  'Managarmr':          3000,
+  'Gacha':              3250,
+  'Snow Owl':           719,   // Dododex ASA L150 ✓
+  'Gasbags':            3250,
+  'Velonasaur':         1200,
+  'Managarmr':          682,   // Dododex ASA L150 ✓
 
   // ── Genesis / Lost Island / Fjordur ─────────────────────────────────────
-  'Shadowmane':         6000,
-  'Ferox':              2000,
-  'Noglin':             800,
-  'Astrodelphis':       3000,
-  'Bloodstalker':       8000,
-  'Maewing':            3000,
-  'Fjordhawk':          2000,
-  'Desmodus':           3000,
-  'Andrewsarchus':      8000,
-  'Amargasaurus':       12000,
-  'Dinopithecus':       3500,
-  'Rhyniognatha':       8000,
+  'Shadowmane':         2450,
+  'Ferox':              800,
+  'Noglin':             350,
+  'Astrodelphis':       1200,
+  'Bloodstalker':       3250,
+  'Fjordhawk':          800,
+  'Desmodus':           1200,
+  'Andrewsarchus':      3250,
+  'Amargasaurus':       4900,
+  'Dinopithecus':       1350,
+  'Rhyniognatha':       3250,
 
   // ── Misc ────────────────────────────────────────────────────────────────
-  'Pelagornis':         2000,
-  'Daeodon':            4000,
-  'Gigantopithecus':    4000,
-  'Giant Bee':          800,
-  'Ichthyosaurus':      2000,
-  'Sarcosuchus':        3000,
-  'Araneo':             3000,
-  'Arthropluera':       3000,
-  'Piranha':            1000,
-  'Pulmonoscorpius':    1800,
-  'Kaprosuchus':        2000,
-  'Dilophosaur':        1200,
-  'Dimetrodon':         3000,
+  'Pelagornis':         800,
+  'Daeodon':            1619,
+  'Gigantopithecus':    1650,
+  'Giant Bee':          350,
+  'Ichthyosaurus':      800,
+  'Sarcosuchus':        511,   // Dododex ASA L150 ✓
+  'Araneo':             1200,
+  'Arthropluera':       1100,
+  'Piranha':            400,
+  'Pulmonoscorpius':    511,
+  'Kaprosuchus':        511,   // Dododex ASA L150 ✓ (duplicate entry — kept in sync)
+  'Dimetrodon':         1200,
 };
 
 // Estimate max food based on fr tier when no explicit value is available.
 // Thresholds calibrated for ASA food drain rates.
 function estimateMaxFood(fr) {
-  if (fr <= 0.001)     return 600;
-  if (fr <= 0.001302)  return 1200;
-  if (fr <= 0.001543)  return 2000;
-  if (fr <= 0.001929)  return 3500;
-  if (fr <= 0.002314)  return 4000;
-  if (fr <= 0.003156)  return 6000;
-  if (fr <= 0.005)     return 8000;
-  if (fr <= 0.008)     return 10000;
-  return 14000;
+  if (fr <= 0.001)     return 200;
+  if (fr <= 0.001302)  return 450;
+  if (fr <= 0.001543)  return 750;
+  if (fr <= 0.001929)  return 1200;
+  if (fr <= 0.002314)  return 1550;
+  if (fr <= 0.003156)  return 2200;
+  if (fr <= 0.005)     return 3000;
+  if (fr <= 0.008)     return 3800;
+  return 5500;
 }
 
 const FOOD_AFFINITY = {
-  KIBBLE_EXTRAORDINARY: 1500,
-  KIBBLE_EXCEPTIONAL: 1500,
-  KIBBLE_SUPERIOR: 1500,
-  KIBBLE_REGULAR: 1500,
-  KIBBLE_SIMPLE: 1500,
-  KIBBLE_BASIC: 1500,
+  // ASA kibble affinity: calibrated from in-game data
+  //   Rex 150 → 17 Exceptional Kibble  (25950/17 ≈ 1526)
+  //   Griffin 150 → 11 Extraordinary Kibble (17200/11 ≈ 1563)
+  //   Raptor 150 → 7 Simple Kibble    (10200/7  ≈ 1457)
+  //   Valid range: [1564, 1622] — using 1600 as clean midpoint
+  KIBBLE_EXTRAORDINARY: 1600,
+  KIBBLE_EXCEPTIONAL: 1600,
+  KIBBLE_SUPERIOR: 1600,
+  KIBBLE_REGULAR: 1600,
+  KIBBLE_SIMPLE: 1600,
+  KIBBLE_BASIC: 1600,
   RAW_MUTTON: 750,
   COOKED_LAMB: 375,
   RAW_PRIME: 600,
@@ -221,13 +223,13 @@ const FOOD_AFFINITY = {
   COOKED_MEAT: 100,
   RAW_FISH: 160,
   COOKED_FISH: 80,
-  MEJOBERRY: 150,
-  BERRIES: 100,
-  CROPS: 200,
+  MEJOBERRY: 120,  // calibrated: Trike L150 → 213 mejos = ceil(25500/120) ✓ (Dododex confirmed)
+  BERRIES: 80,     // berries = mejoberry / 1.5 (ARK wiki: mejos 50% more effective)
+  CROPS: 160,      // calibrated: Trike L150 → 160 crops = ceil(25500/160) ✓ (Dododex confirmed)
   SEEDS: 100,
   RARE_FLOWER: 600,
-  HONEY: 1500,
-  SWEET_CAKE: 1500,
+  HONEY: 1600,
+  SWEET_CAKE: 1600,
   SPOILED_MEAT: 200,
   BLACK_PEARL: 600,
   ANGLER_GEL: 400,
@@ -236,9 +238,91 @@ const FOOD_AFFINITY = {
   ELEMENT: 3000,
   BLOOD_PACK: 300,
   MUTAGEL: 1200,
-  DEATHWORM_HORN: 1500,
+  DEATHWORM_HORN: 1600,
   PLANT_SPECIES_Y_SEED: 200,
-  CHITIN: 150,
+  SNOW_OWL_PELLET: 1180,
+  TEK_STRUCTURES_10: 2300,
+  GREENHOUSE_STRUCTURES_10: 2050,
+  METAL_STRUCTURES_10: 1125,
+  STONE_STRUCTURES_10: 1032,
+  WOODEN_STRUCTURES_10: 900,
+  THATCH_STRUCTURES_10: 650,
+  METAL: 520,
+  STONE: 400,
+  FLINT: 340,
+  WOOD: 310,
+  THATCH: 250,
+};
+
+const CREATURE_TAMING_AFFINITY_MULT = {
+  Gacha: 0.7,
+  GachaClaus: 0.7,
+};
+
+// Per-creature food affinity overrides (same as tamingCalculator.js)
+const CREATURE_FOOD_AFFINITY = {
+  'Spinosaurus': {
+    RAW_MEAT: 160, COOKED_MEAT: 80,
+    RAW_FISH: 200, COOKED_FISH: 100,
+    RAW_PRIME: 480, COOKED_PRIME: 240,
+    RAW_PRIME_FISH_MEAT: 600, COOKED_PRIME_FISH: 300, COOKED_PRIME_FISH_MEAT: 300,
+    RAW_MUTTON: 600, COOKED_LAMB: 300,
+  },
+  'Spino': {
+    RAW_MEAT: 160, COOKED_MEAT: 80,
+    RAW_FISH: 200, COOKED_FISH: 100,
+    RAW_PRIME: 480, COOKED_PRIME: 240,
+    RAW_PRIME_FISH_MEAT: 600, COOKED_PRIME_FISH: 300, COOKED_PRIME_FISH_MEAT: 300,
+    RAW_MUTTON: 600, COOKED_LAMB: 300,
+  },
+  'Thylacoleo': {
+    RAW_MEAT: 35, COOKED_MEAT: 17,
+    RAW_PRIME: 70, COOKED_PRIME: 35,
+    RAW_MUTTON: 88, COOKED_LAMB: 44,
+  },
+  'Daeodon': {
+    RAW_MEAT: 40, COOKED_MEAT: 20,
+    RAW_PRIME: 140, COOKED_PRIME: 70,
+    RAW_MUTTON: 150, COOKED_LAMB: 75,
+    SWEET_CAKE: 1600,
+  },
+  'Pulmonoscorpius': {
+    SPOILED_MEAT: 400, RAW_MEAT: 62, COOKED_MEAT: 31,
+  },
+  'Equus': {
+    CROPS: 200, MEJOBERRY: 32, BERRIES: 16,
+  },
+  'Kentrosaurus': {
+    MEJOBERRY: 40, BERRIES: 28,
+  },
+  // Griffin/Royal Griffin: reduced per-item affinity vs global table in ASA.
+  // totalAffinity at L150 = 12040. Dododex ASA L150: kibble=8 ✓, mutton=22 → 550/item,
+  // prime=28 → 430/item, meat=121 → 100/item.
+  'Griffin': {
+    RAW_MUTTON: 550, COOKED_LAMB: 275,
+    RAW_PRIME: 430, COOKED_PRIME: 215,
+    RAW_MEAT: 100, COOKED_MEAT: 50,
+  },
+  'Royal Griffin': {
+    RAW_MUTTON: 550, COOKED_LAMB: 275,
+    RAW_PRIME: 430, COOKED_PRIME: 215,
+    RAW_MEAT: 100, COOKED_MEAT: 50,
+  },
+};
+
+// ASA-specific taming affinity overrides (same as tamingCalculator.js)
+const ASA_TAMING_AFFINITY = {
+  'Sabertooth':      { a0: 450,  aL: 45  },
+  'Terror Bird':     { a0: 1200, aL: 60  },
+  'Dire Bear':       { a0: 1000, aL: 100 },
+  'Megatherium':     { a0: 2200, aL: 100 },
+  'Thylacoleo':      { a0: 895,  aL: 40  },
+  'Purlovia':        { a0: 1200, aL: 73  },
+  'Castoroides':     { a0: 1120, aL: 72  },
+  'Phiomia':         { a0: 760,  aL: 114 },
+  'Pulmonoscorpius': { a0: 500,  aL: 58  },
+  'Equus':           { a0: 1400, aL: 80  },
+  'Daeodon':         { a0: 1020, aL: 190 },
 };
 
 // Map dinosaurs.js names to ASB_TAMING keys
@@ -300,46 +384,189 @@ function getMaxFood(dino, foodRate) {
   return estimateMaxFood(foodRate);
 }
 
-export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
+export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sanguineElixir = false) {
   if (!dino || !foodKey) return null;
 
   const foodData = dino.tamingFoods.find(f => f.food === foodKey);
   if (!foodData) return null;
 
-  const affinityPerItem = FOOD_AFFINITY[foodKey] || (foodData.affinityPerItem * 12.5);
+  const creatureOverride = CREATURE_FOOD_AFFINITY[dino.name] || CREATURE_FOOD_AFFINITY[NAME_TO_ASB[dino.name]] || {};
+  const affinityPerItem = creatureOverride[foodKey] !== undefined
+    ? creatureOverride[foodKey]
+    : (FOOD_AFFINITY[foodKey] ?? (foodData.affinityPerItem * 12.5));
 
   const asb = getASBData(dino.name);
+  const asaOverride = ASA_TAMING_AFFINITY[dino.name] || ASA_TAMING_AFFINITY[NAME_TO_ASB[dino.name]];
   let totalAffinity;
-  if (asb && asb.a0 > 0) {
-    totalAffinity = (asb.a0 + asb.aL * level) / tamingMultiplier;
+  if (asaOverride) {
+    totalAffinity = (asaOverride.a0 + asaOverride.aL * level) / tamingMultiplier;
+  } else if (asb && asb.a0 > 0) {
+    const affinityMult = CREATURE_TAMING_AFFINITY_MULT[dino.name] ?? 1;
+    totalAffinity = (asb.a0 + asb.aL * level) * affinityMult / tamingMultiplier;
   } else {
     totalAffinity = (dino.baseTamingAffinity + dino.affinityPerLevel * level) / tamingMultiplier;
   }
 
-  const foodNeeded = Math.max(1, Math.ceil(totalAffinity / affinityPerItem));
+  const effectiveAffinity = sanguineElixir ? affinityPerItem * 1.3 : affinityPerItem;
+  const foodNeeded = Math.max(1, Math.ceil(totalAffinity / effectiveAffinity));
 
   // --- Taming time ---
   const foodRate = (asb && asb.fr > 0) ? asb.fr : dino.foodDrainBase;
-  const foodDrainPerSec = Math.max(foodRate * 150, 0.05);
-  const foodPerItem = foodData.foodPerItem || 50;
-  const secondsPerFood = foodPerItem / foodDrainPerSec;
+  const foodConsumptionMult = (asb && asb.fm > 0) ? asb.fm : 150;
+  const foodDrainPerSec = Math.max(foodRate * foodConsumptionMult, 0.05);
+  const foodPerItem = foodData.foodPerItem ?? 50;
+  const secondsPerFood = foodPerItem > 0
+    ? foodPerItem / foodDrainPerSec
+    : (foodData.timePerItem || 0);
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
 
-  // --- Starve time (ASA corrected maxFood) ---
-  const totalFoodPointsNeeded = foodNeeded * foodPerItem;
+  // --- Starve time: maxFood / (drain × tamingMult) — matches Dododex ---
   const maxFood = getMaxFood(dino, foodRate);
-  const starveTimeSeconds = maxFood > totalFoodPointsNeeded
-    ? Math.ceil((maxFood - totalFoodPointsNeeded) / foodDrainPerSec)
-    : 0;
+  const isPassiveTame = dino.tamingMethod === 'Passive';
+  const starveTimeSeconds = isPassiveTame ? 0 : Math.ceil(maxFood / (foodDrainPerSec * tamingMultiplier));
 
   // --- Torpor ---
-  const maxTorpor = dino.torpor.base + dino.torpor.perLevel * level;
-  const torporDrainPerSec = dino.torpor.depletion;
+  // Per-creature ASA torpor drain values (torpor/sec), calibrated from Dododex at L150 x1.
+  // Confirmed: Rex=2.5/s (timer 1h42m38s), Trike=1.035/s (timer 40m00s), Raptor=1.035/s (timer 28m48s).
+  // All others estimated by size/category; fallback = depletion * 4.5.
+  const ASA_TORPOR_DRAIN = {
+    'Giganotosaurus': 414.05, // Dododex ASA L150 ✓
+    'Carcharodontosaurus': 5.0,
+    'Brontosaurus': 1.0351,  // Dododex ASA L150 ✓
+    'Mosasaurus': 44.165,    // Dododex ASA L150 ✓
+    'Plesiosaur': 7.361,     // Dododex ASA L150 ✓
+    'Quetzalcoatlus': 11.731, 'Quetzal': 11.731,  // Dododex ASA L150 ✓
+    'Paraceratherium': 3.114, // Dododex ASA L150 ✓
+    'Rex': 2.5,
+    'Spinosaurus': 7.36, 'Spino': 7.36,
+    'Therizinosaurus': 9.776, 'Therizinosaur': 9.776,  // Dododex ASA L150 ✓
+    'Yutyrannus': 2.502,     // Dododex ASA L150 ✓
+    'Megatherium': 2.2,
+    'Allosaurus': 2.760,     // Dododex ASA L150 ✓
+    'Megalosaurus': 1.0351,  // Dododex ASA L150 ✓
+    'Diplodocus': 2.5878,    // Dododex ASA L150 ✓
+    'Titanosaur': 10.0,
+    'Ankylosaurus': 1.035,
+    'Doedicurus': 2.59,
+    'Mammoth': 1.0351, 'Woolly Mammoth': 1.0351,  // Dododex ASA L150 ✓
+    'Argentavis': 1.035,
+    'Dire Bear': 3.106,
+    'Daeodon': 6.213,
+    'Kentrosaurus': 1.0351,  // Dododex ASA L150 ✓
+    'Stegosaurus': 1.035, 'Stego': 1.035,
+    'Baryonyx': 1.0351,      // Dododex ASA L150 ✓
+    'Sarcosuchus': 1.0351, 'Sarco': 1.0351,  // Dododex ASA L150 ✓
+    'Kaprosuchus': 1.0351,   // Dododex ASA L150 ✓
+    'Thylacoleo': 6.383, 'Thylacosmilus': 6.383,
+    'Carnotaurus': 1.0351,   // Dododex ASA L150 ✓
+    'Direwolf': 1.7252,      // Dododex ASA L150 ✓
+    'Megalodon': 1.0351,     // Dododex ASA L150 ✓
+    'Woolly Rhino': 3.1054,  // Dododex ASA L150 ✓
+    'Castoroides': 5.666,
+    'Carbonemys': 1.0351,    // Dododex ASA L150 ✓
+    'Triceratops': 1.035,
+    'Raptor': 1.035,
+    'Sabertooth': 1.035, 'Sabertooth Salmon': 1.035,
+    'Terror Bird': 7.766,
+    'Deinonychus': 1.0,
+    'Purlovia': 1.035,
+    'Dimetrodon': 1.1,
+    'Moschops': 1.0,
+    'Procoptodon': 1.0,
+    'Morellatops': 1.0351,   // Dododex ASA L150 ✓
+    'Gallimimus': 4.13,
+    'Megaloceros': 1.0058,   // Dododex ASA L150 ✓
+    'Beelzebufo': 2.301,
+    'Thorny Dragon': 0.9,
+    'Iguanodon': 1.0351,     // Dododex ASA L150 ✓
+    'Pachycephalosaurus': 0.8, 'Pachy': 0.8,
+    'Tapejara': 1.0351,      // Dododex ASA L150 ✓
+    'Maewing': 1.0,
+    'Pulmonoscorpius': 1.035,
+    'Araneo': 0.8,
+    'Arthropluera': 1.0,
+    'Mantis': 1.2,
+    'Parasaur': 1.0351,      // Dododex ASA L150 ✓
+    'Pteranodon': 1.0351,    // Dododex ASA L150 ✓
+    'Dimorphodon': 0.5,
+    'Diplocaulus': 0.6,
+    'Ichthyornis': 0.6,
+    'Pelagornis': 0.7,
+    'Kairuku': 0.6,
+    'Dilophosaur': 1.035,
+    'Phiomia': 1.035,
+    'Lymantria': 0.6,
+    'Ovis': 0.6,
+    'Equus': 1.035,
+    'Vulture': 0.5,
+    'Anglerfish': 1.0,
+    'Dodo': 0.3,
+    'Lystrosaurus': 0.3,
+    'Compy': 0.3, 'Compsognathus': 0.3,
+    'Mesopithecus': 0.4,
+    'Archaeopteryx': 0.4,
+    'Jerboa': 0.3,
+    'Pegomastax': 0.4,
+    'Microraptor': 0.4,
+    'Sinomacrops': 0.4,
+    'Otter': 0.5,
+    'Managarmr': 1.0351,     // Dododex ASA L150 ✓
+    'Snow Owl': 1.0351,      // Dododex ASA L150 ✓
+    'Velonasaur': 1.2,
+    'Gasbags': 1.0,
+    'Gacha': 1.8,
+    'Griffin': 7.361, 'Royal Griffin': 7.361,  // Dododex ASA L150 ✓
+    'Tropeognathus': 1.2,
+    'Shadowmane': 2.0,
+    'Rock Drake': 1.5,
+    'Ravager': 1.0,
+    'Basilisk': 2.0,
+    'Andrewsarchus': 1.8,
+    'Amargasaurus': 3.0,
+    'Dinopithecus': 1.2,
+    'Desmodus': 1.2,
+    'Fjordhawk': 0.7,
+    'Astrodelphis': 1.0,
+    'Bloodstalker': 2.0,
+    'Tek Rex': 2.5,
+    'Tek Raptor': 1.035,
+    'Tek Quetzal': 11.731,   // Dododex ASA L150 ✓
+    'Tek Stego': 1.035,
+    'Tek Parasaur': 1.0351,  // Dododex ASA L150 ✓
+    'Karkinos': 2.0,
+    'Dunkleosteus': 3.450,   // Dododex ASA L150 ✓
+    'Megalania': 1.8,
+    'Ceratosaurus': 1.8,
+    'Shastasaurus': 3.5,
+    'Rock Elemental': 3.0,
+    'Deinosuchus': 2.0,
+    'Fasolasuchus': 2.0,
+    'Yi Ling': 2.0,
+    'Archelon': 1.8,
+    'Gigantoraptor': 1.8,
+    'Pachyrhinosaurus': 1.2,
+    'Hyaenodon': 0.5,
+    'Fenrir': 2.5,
+    // ── DLC / custom creatures (old torpor format, estimated drain) ──────────
+    'Cryolophosaurus': 2.0,
+    'Xiphactinus': 2.5,
+    'Maeguana': 1.5,
+    'Grand Tortugar': 2.0,
+    'Bison': 1.035,
+    'Megaraptor': 1.5,
+  };
+
+  // Support both old format (torpor: number) and new format (torpor: { base, perLevel, depletion })
+  const torporObj = (dino.torpor && typeof dino.torpor === 'object')
+    ? dino.torpor
+    : { base: dino.torpor || 500, perLevel: (dino.torpor || 500) * 0.06, depletion: 0.3 };
+  const maxTorpor = torporObj.base + torporObj.perLevel * Math.max(0, level - 1); // ARK uses (level-1) wild level-ups
+  const torporDrainPerSec = ASA_TORPOR_DRAIN[dino.name] ?? (torporObj.depletion * 4.5);
 
   let torporDrainCategory = 'Low';
-  if (torporDrainPerSec >= 0.8) torporDrainCategory = 'Very High';
-  else if (torporDrainPerSec >= 0.5) torporDrainCategory = 'High';
-  else if (torporDrainPerSec >= 0.35) torporDrainCategory = 'Medium';
+  if (torporDrainPerSec >= 4.0) torporDrainCategory = 'Very High';
+  else if (torporDrainPerSec >= 2.0) torporDrainCategory = 'High';
+  else if (torporDrainPerSec >= 1.2) torporDrainCategory = 'Medium';
 
   const totalTorporDrain = torporDrainPerSec * totalTimeSeconds;
   const torporToReplace = Math.max(0, totalTorporDrain - maxTorpor);
@@ -388,6 +615,7 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1) {
     level,
   };
 }
+
 
 export function formatTime(totalSeconds) {
   if (totalSeconds <= 0) return '0s';

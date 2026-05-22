@@ -53,6 +53,18 @@ var FOOD_TYPES = {
   CHITIN: { name: 'Chitin', icon: W('Chitin'), img: W('Chitin'), color: '#786fa6' },
   PLANT_SPECIES_Z_SEED: { name: 'Plant Species Z Seed', icon: W('Plant_Species_Z_Seed'), img: W('Plant_Species_Z_Seed'), color: '#6c5ce7' },
   ASCERBIC_MUSHROOM: { name: 'Ascerbic Mushroom', icon: W('Ascerbic_Mushroom'), img: W('Ascerbic_Mushroom'), color: '#55efc4' },
+  SNOW_OWL_PELLET: { name: 'Snow Owl Pellet', icon: W('Snow_Owl_Pellet'), img: W('Snow_Owl_Pellet'), color: '#dbeafe' },
+  TEK_STRUCTURES_10: { name: 'Tek Structures (10)', icon: W('Tek_Foundation'), img: W('Tek_Foundation'), color: '#67e8f9' },
+  GREENHOUSE_STRUCTURES_10: { name: 'Greenhouse Structures (10)', icon: W('Greenhouse_Wall'), img: W('Greenhouse_Wall'), color: '#86efac' },
+  METAL_STRUCTURES_10: { name: 'Metal Structures (10)', icon: W('Metal_Foundation'), img: W('Metal_Foundation'), color: '#cbd5e1' },
+  STONE_STRUCTURES_10: { name: 'Stone Structures (10)', icon: W('Stone_Foundation'), img: W('Stone_Foundation'), color: '#a8a29e' },
+  WOODEN_STRUCTURES_10: { name: 'Wooden Structures (10)', icon: W('Wooden_Foundation'), img: W('Wooden_Foundation'), color: '#b45309' },
+  THATCH_STRUCTURES_10: { name: 'Thatch Structures (10)', icon: W('Thatch_Foundation'), img: W('Thatch_Foundation'), color: '#ca8a04' },
+  METAL: { name: 'Metal', icon: W('Metal'), img: W('Metal'), color: '#94a3b8' },
+  STONE: { name: 'Stone', icon: W('Stone'), img: W('Stone'), color: '#78716c' },
+  FLINT: { name: 'Flint', icon: W('Flint'), img: W('Flint'), color: '#71717a' },
+  WOOD: { name: 'Wood', icon: W('Wood'), img: W('Wood'), color: '#92400e' },
+  THATCH: { name: 'Thatch', icon: W('Thatch'), img: W('Thatch'), color: '#d97706' },
 };
 
 var NARCOTICS = {
@@ -2302,8 +2314,12 @@ var dinosaurs = [
     baseHealth: 900,
     torpor: { base: 600, perLevel: 36, depletion: 0 },
     tamingFoods: [
-      { food: 'CROPS', affinityPerItem: 40, foodPerItem: 0, timePerItem: 15 },
-      { food: 'MEJOBERRY', affinityPerItem: 20, foodPerItem: 0, timePerItem: 15 },
+      { food: 'TEK_STRUCTURES_10', affinityPerItem: 96, foodPerItem: 0, timePerItem: 15 },
+      { food: 'GREENHOUSE_STRUCTURES_10', affinityPerItem: 88, foodPerItem: 0, timePerItem: 15 },
+      { food: 'METAL_STRUCTURES_10', affinityPerItem: 78, foodPerItem: 0, timePerItem: 15 },
+      { food: 'STONE_STRUCTURES_10', affinityPerItem: 72, foodPerItem: 0, timePerItem: 15 },
+      { food: 'WOODEN_STRUCTURES_10', affinityPerItem: 58, foodPerItem: 0, timePerItem: 15 },
+      { food: 'THATCH_STRUCTURES_10', affinityPerItem: 45, foodPerItem: 0, timePerItem: 15 },
     ],
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
@@ -3917,6 +3933,23 @@ const FOOD_AFFINITY = {
   MUTAGEL: 1200,
   DEATHWORM_HORN: 1600,
   PLANT_SPECIES_Y_SEED: 200,
+  SNOW_OWL_PELLET: 1180,
+  TEK_STRUCTURES_10: 2300,
+  GREENHOUSE_STRUCTURES_10: 2050,
+  METAL_STRUCTURES_10: 1125,
+  STONE_STRUCTURES_10: 1032,
+  WOODEN_STRUCTURES_10: 900,
+  THATCH_STRUCTURES_10: 650,
+  METAL: 520,
+  STONE: 400,
+  FLINT: 340,
+  WOOD: 310,
+  THATCH: 250,
+};
+
+const CREATURE_TAMING_AFFINITY_MULT = {
+  Gacha: 0.7,
+  GachaClaus: 0.7,
 };
 
 // Per-creature food affinity overrides (same as tamingCalculator.js)
@@ -4057,12 +4090,12 @@ function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sanguineEli
 
   const asb = getASBData(dino.name);
   const asaOverride = ASA_TAMING_AFFINITY[dino.name] || ASA_TAMING_AFFINITY[NAME_TO_ASB[dino.name]];
-  const ASA_AFFINITY_FACTOR = 0.7;
   let totalAffinity;
   if (asaOverride) {
     totalAffinity = (asaOverride.a0 + asaOverride.aL * level) / tamingMultiplier;
   } else if (asb && asb.a0 > 0) {
-    totalAffinity = (asb.a0 + asb.aL * level) * ASA_AFFINITY_FACTOR / tamingMultiplier;
+    const affinityMult = CREATURE_TAMING_AFFINITY_MULT[dino.name] ?? 1;
+    totalAffinity = (asb.a0 + asb.aL * level) * affinityMult / tamingMultiplier;
   } else {
     totalAffinity = (dino.baseTamingAffinity + dino.affinityPerLevel * level) / tamingMultiplier;
   }
@@ -4074,13 +4107,16 @@ function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sanguineEli
   const foodRate = (asb && asb.fr > 0) ? asb.fr : dino.foodDrainBase;
   const foodConsumptionMult = (asb && asb.fm > 0) ? asb.fm : 150;
   const foodDrainPerSec = Math.max(foodRate * foodConsumptionMult, 0.05);
-  const foodPerItem = foodData.foodPerItem || 50;
-  const secondsPerFood = foodPerItem / foodDrainPerSec;
+  const foodPerItem = foodData.foodPerItem ?? 50;
+  const secondsPerFood = foodPerItem > 0
+    ? foodPerItem / foodDrainPerSec
+    : (foodData.timePerItem || 0);
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
 
   // --- Starve time: maxFood / (drain × tamingMult) — matches Dododex ---
   const maxFood = getMaxFood(dino, foodRate);
-  const starveTimeSeconds = Math.ceil(maxFood / (foodDrainPerSec * tamingMultiplier));
+  const isPassiveTame = dino.tamingMethod === 'Passive';
+  const starveTimeSeconds = isPassiveTame ? 0 : Math.ceil(maxFood / (foodDrainPerSec * tamingMultiplier));
 
   // --- Torpor ---
   // Per-creature ASA torpor drain values (torpor/sec), calibrated from Dododex at L150 x1.

@@ -49,6 +49,18 @@ export const FOOD_TYPES = {
   PLANT_SPECIES_Y_SEED: { name: 'Plant Species Y Seed', icon: W('Plant_Species_Y_Seed'), img: W('Plant_Species_Y_Seed'), color: '#00b894' },
   SEEDS: { name: 'Seeds', icon: W('Amarberry_Seed'), img: W('Amarberry_Seed'), color: '#badc58' },
   CHITIN: { name: 'Chitin', icon: W('Chitin'), img: W('Chitin'), color: '#786fa6' },
+  SNOW_OWL_PELLET: { name: 'Snow Owl Pellet', icon: W('Snow_Owl_Pellet'), img: W('Snow_Owl_Pellet'), color: '#dbeafe' },
+  TEK_STRUCTURES_10: { name: 'Tek Structures (10)', icon: W('Tek_Foundation'), img: W('Tek_Foundation'), color: '#67e8f9' },
+  GREENHOUSE_STRUCTURES_10: { name: 'Greenhouse Structures (10)', icon: W('Greenhouse_Wall'), img: W('Greenhouse_Wall'), color: '#86efac' },
+  METAL_STRUCTURES_10: { name: 'Metal Structures (10)', icon: W('Metal_Foundation'), img: W('Metal_Foundation'), color: '#cbd5e1' },
+  STONE_STRUCTURES_10: { name: 'Stone Structures (10)', icon: W('Stone_Foundation'), img: W('Stone_Foundation'), color: '#a8a29e' },
+  WOODEN_STRUCTURES_10: { name: 'Wooden Structures (10)', icon: W('Wooden_Foundation'), img: W('Wooden_Foundation'), color: '#b45309' },
+  THATCH_STRUCTURES_10: { name: 'Thatch Structures (10)', icon: W('Thatch_Foundation'), img: W('Thatch_Foundation'), color: '#ca8a04' },
+  METAL: { name: 'Metal', icon: W('Metal'), img: W('Metal'), color: '#94a3b8' },
+  STONE: { name: 'Stone', icon: W('Stone'), img: W('Stone'), color: '#78716c' },
+  FLINT: { name: 'Flint', icon: W('Flint'), img: W('Flint'), color: '#71717a' },
+  WOOD: { name: 'Wood', icon: W('Wood'), img: W('Wood'), color: '#92400e' },
+  THATCH: { name: 'Thatch', icon: W('Thatch'), img: W('Thatch'), color: '#d97706' },
 };
 
 export const NARCOTICS = {
@@ -2331,8 +2343,12 @@ export const dinosaurs = [
     baseHealth: 900,
     torpor: { base: 600, perLevel: 36, depletion: 0 },
     tamingFoods: [
-      { food: 'CROPS', affinityPerItem: 40, foodPerItem: 0, timePerItem: 15 },
-      { food: 'MEJOBERRY', affinityPerItem: 20, foodPerItem: 0, timePerItem: 15 },
+      { food: 'TEK_STRUCTURES_10', affinityPerItem: 96, foodPerItem: 0, timePerItem: 15 },
+      { food: 'GREENHOUSE_STRUCTURES_10', affinityPerItem: 88, foodPerItem: 0, timePerItem: 15 },
+      { food: 'METAL_STRUCTURES_10', affinityPerItem: 78, foodPerItem: 0, timePerItem: 15 },
+      { food: 'STONE_STRUCTURES_10', affinityPerItem: 72, foodPerItem: 0, timePerItem: 15 },
+      { food: 'WOODEN_STRUCTURES_10', affinityPerItem: 58, foodPerItem: 0, timePerItem: 15 },
+      { food: 'THATCH_STRUCTURES_10', affinityPerItem: 45, foodPerItem: 0, timePerItem: 15 },
     ],
     baseTamingAffinity: 1800,
     affinityPerLevel: 90,
