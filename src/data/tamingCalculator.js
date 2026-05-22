@@ -419,6 +419,7 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
     ? foodPerItem / foodDrainPerSec
     : (foodData.timePerItem || 0);
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
+  const foodPointsConsumed = Math.round(foodNeeded * foodPerItem * 10) / 10;
 
   // --- Starve time: maxFood / (drain × tamingMult) — matches Dododex ---
   const maxFood = getMaxFood(dino, foodRate);
@@ -595,6 +596,12 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
     foodName: FOOD_TYPES[foodKey]?.name || foodKey,
     foodIcon: FOOD_TYPES[foodKey]?.icon || '',
     foodNeeded,
+    foodConsumed: foodNeeded,
+    foodPerItem,
+    foodPointsConsumed,
+    foodDrainPerSec: Math.round(foodDrainPerSec * 10000) / 10000,
+    foodConsumptionMult,
+    sanguineElixir,
     secondsPerFood: Math.round(secondsPerFood),
     totalTimeSeconds,
     totalTimeFmt: formatTime(totalTimeSeconds),

@@ -7,6 +7,7 @@ import { dinosaurs } from './data/dinosaurs';
 // Lazy-loaded components for faster startup
 const DinoDetail = lazy(() => import('./components/DinoDetail'));
 const WelcomeScreen = lazy(() => import('./components/WelcomeScreen'));
+const StatsExtractor = lazy(() => import('./components/StatsExtractor'));
 
 // Pages that embed shell HTML files
 const EMBEDDED_PAGES = {
@@ -18,6 +19,13 @@ const EMBEDDED_PAGES = {
   settings: { src: '../shell/settings-window.html',  label: 'Paramètres' },
   comparator: { src: '../shell/comparator-window.html', label: 'Comparateur' },
 };
+
+const LOCAL_PAGES = new Set(['extractor']);
+
+function getInitialPage() {
+  const page = window.location.hash.replace(/^#/, '').split(':')[0];
+  return EMBEDDED_PAGES[page] || LOCAL_PAGES.has(page) ? page : null;
+}
 
 // CSS injected into each webview to hide its title bar
 const EMBED_CSS = `
@@ -88,7 +96,7 @@ function EmbeddedPage({ pageKey, preloadPath }) {
 
 export default function App() {
   const [selectedDino, setSelectedDino] = useState(null);
-  const [activePage, setActivePage] = useState(null);
+  const [activePage, setActivePage] = useState(getInitialPage);
   const [isOverlay, setIsOverlay] = useState(false);
   const [preloadPath, setPreloadPath] = useState('');
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('overseer-favorites') || '[]'));
@@ -147,24 +155,29 @@ export default function App() {
     if (activePage === page) {
       setActivePage(null);
       setSelectedDino(null);
+      window.location.hash = '';
     } else {
       setActivePage(page);
       setSelectedDino(null);
+      window.location.hash = page;
     }
   }, [activePage]);
 
   const goHome = useCallback(() => {
     setActivePage(null);
     setSelectedDino(null);
+    window.location.hash = '';
   }, []);
 
   const handleSelectDino = useCallback((dino) => {
     setActivePage(null);
     setSelectedDino(dino);
+    window.location.hash = '';
   }, []);
 
   const showSidebar = activePage === null;
   const showEmbedded = activePage && EMBEDDED_PAGES[activePage];
+  const showExtractor = activePage === 'extractor';
 
   return (
     <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${lightTheme ? 'light-theme' : ''}`}>
@@ -200,6 +213,8 @@ export default function App() {
             <AnimatePresence mode="wait">
               {showEmbedded ? (
                 <EmbeddedPage key={activePage} pageKey={activePage} preloadPath={preloadPath} />
+              ) : showExtractor ? (
+                <StatsExtractor key="extractor" />
               ) : selectedDino ? (
                 <DinoDetail key={selectedDino.id} dino={selectedDino} />
               ) : (

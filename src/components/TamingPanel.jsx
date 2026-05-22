@@ -275,6 +275,25 @@ export default function TamingPanel({ result, dino, level }) {
           <span className="tp-food-needed-count">{result.foodNeeded}</span>
           <span className="tp-food-needed-name">{result.foodName}</span>
         </div>
+        <div className="tp-food-consumed-grid">
+          <div>
+            <span>Items consommés</span>
+            <strong>{result.foodConsumed}</strong>
+          </div>
+          <div>
+            <span>Food drain</span>
+            <strong>{result.foodDrainPerSec}/s</strong>
+          </div>
+          <div>
+            <span>Food dépensée</span>
+            <strong>{result.foodPointsConsumed > 0 ? Math.round(result.foodPointsConsumed) : '-'}</strong>
+          </div>
+        </div>
+        {result.sanguineElixir && (
+          <div className="tp-elixir-note">
+            <SparklesIcon size={12} /> Sanguine Elixir appliqué au calcul de nourriture.
+          </div>
+        )}
       </div>
 
       {/* SECTION 2: Starve Timer (Knockout only) */}

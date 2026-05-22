@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon } from './Icons';
+import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon, CalculatorIcon } from './Icons';
 
 /* ── Sun / Moon SVG icons for theme toggle ── */
 const SunIcon = ({ size = 13 }) => (
@@ -28,6 +28,7 @@ const MoonIcon = ({ size = 13 }) => (
 // Tools that navigate within the main window
 const NAV_TOOLS = [
   { key: 'breeding', Icon: DnaIcon,       label: 'Breeding',    shortcut: 'Alt+B' },
+  { key: 'extractor', Icon: CalculatorIcon, label: 'Stats Extractor', shortcut: '' },
   { key: 'tribe',    Icon: ClipboardIcon, label: 'Tribu Tasks', shortcut: '' },
   { key: 'maps',     Icon: MapIcon,       label: 'Cartes',      shortcut: 'Alt+G' },
   { key: 'ocr',      Icon: ScanIcon,      label: 'OCR Scanner', shortcut: 'Alt+S' },

@@ -71,20 +71,21 @@ export default function DinoDetail({ dino }) {
   const [levelInput, setLevelInput] = useState('30');
   const [selectedFood, setSelectedFood] = useState(dino.tamingFoods[0]?.food || null);
   const [tamingMultiplier, setTamingMultiplier] = useState(1);
+  const [sanguineElixir, setSanguineElixir] = useState(false);
 
   const result = useMemo(() => {
-    return calculateTaming(dino, level, selectedFood, tamingMultiplier);
-  }, [dino, level, selectedFood, tamingMultiplier]);
+    return calculateTaming(dino, level, selectedFood, tamingMultiplier, sanguineElixir);
+  }, [dino, level, selectedFood, tamingMultiplier, sanguineElixir]);
 
   // Calculate all food results for the comparison table
   const allFoodResults = useMemo(() => {
     return dino.tamingFoods.map(tf => {
       const foodInfo = FOOD_TYPES[tf.food];
       if (!foodInfo) return null;
-      const res = calculateTaming(dino, level, tf.food, tamingMultiplier);
+      const res = calculateTaming(dino, level, tf.food, tamingMultiplier, sanguineElixir);
       return { ...res, foodKey: tf.food, foodInfo };
     }).filter(Boolean);
-  }, [dino, level, tamingMultiplier]);
+  }, [dino, level, tamingMultiplier, sanguineElixir]);
 
   const handleLevelSlider = useCallback((e) => {
     const v = parseInt(e.target.value);
@@ -195,6 +196,19 @@ export default function DinoDetail({ dino }) {
             </div>
           </div>
         </div>
+        <div className="control-group elixir-group">
+          <label className="control-label">Bonus</label>
+          <button
+            type="button"
+            className={`elixir-toggle ${sanguineElixir ? 'active' : ''}`}
+            onClick={() => setSanguineElixir(v => !v)}
+            title="Applique le bonus de Sanguine Elixir au calcul de nourriture"
+          >
+            <SparklesIcon size={13} />
+            <span>Sanguine Elixir</span>
+            <strong>{sanguineElixir ? '+30%' : 'Off'}</strong>
+          </button>
+        </div>
       </motion.div>
 
       {/* ── FOOD COMPARISON TABLE ── */}
@@ -209,6 +223,7 @@ export default function DinoDetail({ dino }) {
               <tr>
                 <th>Nourriture</th>
                 <th>Quantité</th>
+                <th>Food</th>
                 <th>Durée</th>
                 <th>Niveau</th>
                 <th>Efficacité</th>
@@ -229,6 +244,7 @@ export default function DinoDetail({ dino }) {
                       {i === 0 && <span className="food-table-best-badge">Meilleur</span>}
                     </td>
                     <td className="food-table-qty">{fr.foodNeeded}</td>
+                    <td className="food-table-time">{fr.foodPointsConsumed > 0 ? Math.round(fr.foodPointsConsumed) : '-'}</td>
                     <td className="food-table-time">{fr.totalTimeFmt}</td>
                     <td className="food-table-level">Lvl {fr.maxLevel}</td>
                     <td className="food-table-eff">
