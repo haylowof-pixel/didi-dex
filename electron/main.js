@@ -15,6 +15,7 @@ if (process.platform === 'win32') {
 let mainWindow;
 let splashWindow = null;
 let timerWindow = null;
+let widgetWindow = null;
 let mapsWindow = null;
 
 let settingsWindow = null;
@@ -26,17 +27,25 @@ let quickLookupWindow = null;
 let pendingTimerSync = null;
 let regionSelectorWindow = null;
 let ocrWorker = null; // Persistent Tesseract worker for fast coordinate OCR
+let asbWatchFolder = '';
+let asbWatchHandle = null;
+let asbWatchSeen = new Set();
+let asbExportServer = null;
+let asbExportPort = 0;
 
 // ===== KEYBINDS CONFIG =====
 const DEFAULT_KEYBINDS = {
   toggleOverlay: 'Alt+O',
   toggleWindow:  'Alt+T',
   toggleTimer:   'Alt+M',
+  toggleWidget:  'Alt+W',
+  toggleWidgetMode: 'Alt+Shift+W',
   toggleMaps:    'Alt+G',
   toggleBreeding:'Alt+B',
   toggleOCR:     'Alt+S',
   ocrScan:       'F8',
   toggleQuickLookup: 'Alt+L',
+  toggleComparator: 'Alt+C',
 };
 
 let currentKeybinds = { ...DEFAULT_KEYBINDS };
@@ -89,6 +98,19 @@ function registerAllShortcuts() {
     }
   } catch (e) {}
   try {
+    if (currentKeybinds.toggleWidget) {
+      globalShortcut.register(currentKeybinds.toggleWidget, () => {
+        if (isWidgetAlive()) safeDestroyWidget();
+        else createWidgetWindow();
+      });
+    }
+  } catch (e) {}
+  try {
+    if (currentKeybinds.toggleWidgetMode) {
+      globalShortcut.register(currentKeybinds.toggleWidgetMode, () => cycleWidgetMode());
+    }
+  } catch (e) {}
+  try {
     if (currentKeybinds.toggleMaps) {
       globalShortcut.register(currentKeybinds.toggleMaps, () => {
         if (isMapsAlive()) safeDestroyMaps();
@@ -99,8 +121,7 @@ function registerAllShortcuts() {
   try {
     if (currentKeybinds.toggleBreeding) {
       globalShortcut.register(currentKeybinds.toggleBreeding, () => {
-        if (isBreedingAlive()) safeDestroyBreeding();
-        else createBreedingWindow();
+        openAsbSuite();
       });
     }
   } catch (e) {}
@@ -122,6 +143,16 @@ function registerAllShortcuts() {
     }
   } catch (e) { console.error('[QuickLookup] shortcut error:', e); }
   try {
+    if (currentKeybinds.toggleComparator) {
+      globalShortcut.register(currentKeybinds.toggleComparator, () => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.show();
+          mainWindow.webContents.executeJavaScript("window.location.hash = window.location.hash === '#comparator' ? '' : 'comparator';").catch(() => {});
+        }
+      });
+    }
+  } catch (e) {}
+  try {
     // F8 = instant OCR scan (opens OCR if not open, then triggers scan)
     if (currentKeybinds.ocrScan) {
       globalShortcut.register(currentKeybinds.ocrScan, () => {
@@ -138,6 +169,16 @@ function registerAllShortcuts() {
         }
       });
     }
+  } catch (e) {}
+}
+
+function openAsbSuite(panel = 'planner') {
+  try {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    mainWindow.show();
+    mainWindow.focus();
+    const hash = panel && panel !== 'extract' ? `extractor:${panel}` : 'extractor';
+    mainWindow.webContents.executeJavaScript(`window.location.hash = ${JSON.stringify(hash)};`).catch(() => {});
   } catch (e) {}
 }
 
@@ -282,6 +323,7 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
     safeDestroyTimer();
+    safeDestroyWidget();
     safeDestroyMaps();
     safeDestroySettings();
     safeDestroyBreeding();
@@ -355,6 +397,79 @@ function createTimerWindow() {
 
   timerWindow.on('closed', () => { timerWindow = null; });
   timerWindow.webContents.on('destroyed', () => { timerWindow = null; });
+}
+
+// ===== MINI WIDGET WINDOW =====
+const WIDGET_SIZES = {
+  mini: [220, 70],
+  standard: [280, 140],
+  detailed: [340, 260],
+};
+let currentWidgetMode = 'mini';
+
+function isWidgetAlive() { return widgetWindow && !widgetWindow.isDestroyed(); }
+
+function safeDestroyWidget() {
+  try { if (isWidgetAlive()) widgetWindow.destroy(); } catch (e) {}
+  widgetWindow = null;
+}
+
+function applyWidgetMode(mode, width, height) {
+  if (!WIDGET_SIZES[mode]) return;
+  currentWidgetMode = mode;
+  try {
+    if (isWidgetAlive()) {
+      const [fallbackW, fallbackH] = WIDGET_SIZES[mode];
+      widgetWindow.setSize(
+        Math.max(180, Math.min(420, Math.round(Number(width) || fallbackW))),
+        Math.max(56, Math.min(340, Math.round(Number(height) || fallbackH)))
+      );
+      widgetWindow.webContents.send('widget-mode-changed', mode);
+    }
+  } catch (e) {}
+}
+
+function cycleWidgetMode() {
+  const modes = Object.keys(WIDGET_SIZES);
+  const nextMode = modes[(Math.max(0, modes.indexOf(currentWidgetMode)) + 1) % modes.length];
+  if (!isWidgetAlive()) createWidgetWindow();
+  applyWidgetMode(nextMode);
+}
+
+function createWidgetWindow() {
+  if (isWidgetAlive()) {
+    widgetWindow.focus();
+    return;
+  }
+  const [width, height] = WIDGET_SIZES[currentWidgetMode] || WIDGET_SIZES.mini;
+  const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
+
+  widgetWindow = new BrowserWindow({
+    width, height, x: sw - width - 24, y: 160,
+    minWidth: 180, minHeight: 56,
+    frame: false, transparent: true, alwaysOnTop: true,
+    resizable: false, minimizable: false, maximizable: false,
+    skipTaskbar: true, focusable: true,
+    backgroundColor: '#00000000', hasShadow: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true, nodeIntegration: false,
+    },
+  });
+
+  widgetWindow.loadFile(path.join(__dirname, '..', 'shell', 'widget-mini.html'));
+  widgetWindow.setAlwaysOnTop(true, 'screen-saver');
+
+  widgetWindow.webContents.once('did-finish-load', () => {
+    if (!isWidgetAlive()) return;
+    try {
+      widgetWindow.webContents.send('widget-mode-changed', currentWidgetMode);
+      if (pendingTimerSync) widgetWindow.webContents.send('widget-data-update', pendingTimerSync);
+    } catch (e) {}
+  });
+
+  widgetWindow.on('closed', () => { widgetWindow = null; });
+  widgetWindow.webContents.on('destroyed', () => { widgetWindow = null; });
 }
 
 // ===== QUICK LOOKUP OVERLAY =====
@@ -555,7 +670,13 @@ app.whenReady().then(() => {
   });
 });
 
-app.on('will-quit', () => globalShortcut.unregisterAll());
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+  stopAsbWatch();
+  try { if (asbExportServer) asbExportServer.close(); } catch (e) {}
+  asbExportServer = null;
+  asbExportPort = 0;
+});
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
 // ===== IPC =====
@@ -579,7 +700,7 @@ function saveScale(s) {
   fs.writeFileSync(getScalePath(), JSON.stringify({ scale: s }), 'utf8');
 }
 function applyScaleToAll(s) {
-  const wins = [mainWindow, timerWindow, mapsWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
+  const wins = [mainWindow, timerWindow, widgetWindow, mapsWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
   for (const w of wins) {
     if (w && !w.isDestroyed()) w.webContents.setZoomFactor(s);
   }
@@ -632,6 +753,15 @@ ipcMain.on('close-timer-overlay', () => safeDestroyTimer());
 ipcMain.on('timer-close', () => safeDestroyTimer());
 ipcMain.handle('is-timer-open', () => isTimerAlive());
 
+ipcMain.on('open-widget', () => createWidgetWindow());
+ipcMain.on('close-widget', () => safeDestroyWidget());
+ipcMain.on('widget-close', () => safeDestroyWidget());
+ipcMain.handle('is-widget-open', () => isWidgetAlive());
+ipcMain.handle('get-widget-mode', () => currentWidgetMode);
+ipcMain.on('widget-set-mode', (_, mode, width, height) => {
+  applyWidgetMode(mode, width, height);
+});
+
 ipcMain.on('timer-set-ignore-mouse', (_, ignore, opts) => {
   try { if (isTimerAlive()) timerWindow.setIgnoreMouseEvents(ignore, opts || {}); } catch (e) {}
 });
@@ -654,6 +784,9 @@ ipcMain.on('sync-timer-data', (_, data) => {
     pendingTimerSync = null;
   } else {
     pendingTimerSync = data;
+  }
+  if (isWidgetAlive()) {
+    try { widgetWindow.webContents.send('widget-data-update', data); } catch (e) {}
   }
 });
 
@@ -834,6 +967,166 @@ ipcMain.handle('select-map-image', async (_, slug) => {
   return fileToDataUrl(filePath);
 });
 
+ipcMain.handle('select-asb-import-folder', async () => {
+  const parentWin = mainWindow || BrowserWindow.getFocusedWindow();
+  const result = await dialog.showOpenDialog(parentWin, {
+    title: 'Sélectionner un dossier ASB / DinoExports',
+    properties: ['openDirectory'],
+  });
+  if (result.canceled || !result.filePaths?.[0]) return { canceled: true, files: [] };
+
+  const root = result.filePaths[0];
+  const files = [];
+  const allowed = new Set(['.json', '.txt', '.tsv', '.csv', '.asb']);
+
+  function walk(dir, depth = 0) {
+    if (depth > 3 || files.length >= 1000) return;
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath, depth + 1);
+      } else if (entry.isFile() && allowed.has(path.extname(entry.name).toLowerCase())) {
+        try {
+          files.push({
+            name: entry.name,
+            path: fullPath,
+            text: fs.readFileSync(fullPath, 'utf8'),
+            mtimeMs: fs.statSync(fullPath).mtimeMs,
+          });
+        } catch (e) {}
+      }
+    }
+  }
+
+  walk(root);
+  files.sort((a, b) => b.mtimeMs - a.mtimeMs);
+  return { canceled: false, folder: root, files };
+});
+
+const ASB_IMPORT_EXTS = new Set(['.json', '.txt', '.tsv', '.csv', '.asb']);
+
+function readAsbImportFile(filePath) {
+  if (!ASB_IMPORT_EXTS.has(path.extname(filePath).toLowerCase())) return null;
+  try {
+    const stat = fs.statSync(filePath);
+    if (!stat.isFile() || stat.size > 25 * 1024 * 1024) return null;
+    return {
+      name: path.basename(filePath),
+      path: filePath,
+      text: fs.readFileSync(filePath, 'utf8'),
+      mtimeMs: stat.mtimeMs,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function sendAsbImportFiles(files, source = 'watch') {
+  const payload = { source, files: files.filter(Boolean) };
+  if (!payload.files.length) return;
+  const { webContents } = require('electron');
+  webContents.getAllWebContents().forEach(wc => {
+    try { if (!wc.isDestroyed()) wc.send('asb-import-files', payload); } catch (e) {}
+  });
+}
+
+function stopAsbWatch() {
+  try { if (asbWatchHandle) asbWatchHandle.close(); } catch (e) {}
+  asbWatchHandle = null;
+  asbWatchFolder = '';
+  asbWatchSeen = new Set();
+}
+
+ipcMain.handle('watch-asb-import-folder', async () => {
+  const parentWin = mainWindow || BrowserWindow.getFocusedWindow();
+  const result = await dialog.showOpenDialog(parentWin, {
+    title: 'Surveiller DinoExports',
+    properties: ['openDirectory'],
+  });
+  if (result.canceled || !result.filePaths?.[0]) return { canceled: true };
+  stopAsbWatch();
+  asbWatchFolder = result.filePaths[0];
+
+  const initial = [];
+  try {
+    for (const name of fs.readdirSync(asbWatchFolder)) {
+      const filePath = path.join(asbWatchFolder, name);
+      const file = readAsbImportFile(filePath);
+      if (file) {
+        asbWatchSeen.add(filePath);
+        initial.push(file);
+      }
+    }
+  } catch (e) {}
+  sendAsbImportFiles(initial, 'watch-initial');
+
+  try {
+    asbWatchHandle = fs.watch(asbWatchFolder, { persistent: false }, (_, filename) => {
+      if (!filename) return;
+      const filePath = path.join(asbWatchFolder, filename.toString());
+      setTimeout(() => {
+        const file = readAsbImportFile(filePath);
+        if (!file) return;
+        const seenKey = `${filePath}:${file.mtimeMs}`;
+        if (asbWatchSeen.has(seenKey)) return;
+        asbWatchSeen.add(seenKey);
+        sendAsbImportFiles([file], 'watch');
+      }, 350);
+    });
+  } catch (e) {
+    return { canceled: false, watching: false, folder: asbWatchFolder, error: e.message };
+  }
+  return { canceled: false, watching: true, folder: asbWatchFolder, files: initial.length };
+});
+
+ipcMain.handle('stop-asb-import-watch', () => {
+  stopAsbWatch();
+  return { watching: false };
+});
+
+ipcMain.handle('start-asb-export-server', async (_, preferredPort = 39777) => {
+  if (asbExportServer) return { running: true, port: asbExportPort };
+  const port = Math.max(1024, Math.min(65535, Number(preferredPort) || 39777));
+  asbExportServer = http.createServer((req, res) => {
+    if (req.method !== 'POST') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('OVERSEER ASB receiver');
+      return;
+    }
+    let body = '';
+    req.setEncoding('utf8');
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 25 * 1024 * 1024) req.destroy();
+    });
+    req.on('end', () => {
+      sendAsbImportFiles([{ name: `export-gun-${Date.now()}.json`, path: 'http://127.0.0.1', text: body, mtimeMs: Date.now() }], 'export-gun');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
+    });
+  });
+  return await new Promise(resolve => {
+    asbExportServer.once('error', error => {
+      asbExportServer = null;
+      asbExportPort = 0;
+      resolve({ running: false, error: error.message });
+    });
+    asbExportServer.listen(port, '127.0.0.1', () => {
+      asbExportPort = asbExportServer.address().port;
+      resolve({ running: true, port: asbExportPort });
+    });
+  });
+});
+
+ipcMain.handle('stop-asb-export-server', () => {
+  try { if (asbExportServer) asbExportServer.close(); } catch (e) {}
+  asbExportServer = null;
+  asbExportPort = 0;
+  return { running: false };
+});
+
 ipcMain.handle('load-saved-map-image', (_, slug) => {
   // Check user custom image first
   const paths = loadMapImagePaths();
@@ -1001,10 +1294,10 @@ function createBreedingWindow() {
 }
 
 // Breeding IPC
-ipcMain.on('open-breeding', () => createBreedingWindow());
+ipcMain.on('open-breeding', () => openAsbSuite('planner'));
 ipcMain.on('close-breeding', () => safeDestroyBreeding());
 ipcMain.on('breeding-close', () => safeDestroyBreeding());
-ipcMain.handle('is-breeding-open', () => isBreedingAlive());
+ipcMain.handle('is-breeding-open', () => false);
 
 // Breeding data persistence
 function getBreedingDataPath() {
@@ -1456,12 +1749,7 @@ ipcMain.on('send-ocr-to-breeding', (_, stats) => {
   if (isBreedingAlive()) {
     breedingWindow.webContents.send('ocr-stats-received', stats);
   } else {
-    createBreedingWindow();
-    setTimeout(() => {
-      if (isBreedingAlive()) {
-        breedingWindow.webContents.send('ocr-stats-received', stats);
-      }
-    }, 1500);
+    openAsbSuite('extract');
   }
 });
 
@@ -1506,4 +1794,3 @@ ipcMain.on('save-fav-servers', (_, data) => {
     fs.writeFileSync(getFavServersPath(), JSON.stringify(data, null, 2), 'utf8');
   } catch(e) {}
 });
-

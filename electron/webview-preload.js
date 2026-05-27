@@ -9,6 +9,14 @@
  */
 const { contextBridge, ipcRenderer } = require('electron');
 
+function subscribe(channel, cb) {
+  const listener = (_, ...args) => {
+    if (typeof cb === 'function') cb(...args);
+  };
+  ipcRenderer.on(channel, listener);
+  return () => ipcRenderer.removeListener(channel, listener);
+}
+
 contextBridge.exposeInMainWorld('api', {
   // Window chrome (no-ops in embedded context, but harmless)
   minimize:       () => ipcRenderer.send('win-minimize'),
@@ -17,7 +25,7 @@ contextBridge.exposeInMainWorld('api', {
   toggleOverlay:  () => ipcRenderer.send('toggle-overlay'),
   setOpacity:     (v) => ipcRenderer.send('set-opacity', v),
   getOverlay:     () => ipcRenderer.invoke('get-overlay'),
-  onOverlay:      (cb) => ipcRenderer.on('overlay-changed', (_, v) => cb(v)),
+  onOverlay:      (cb) => subscribe('overlay-changed', cb),
   resizeWindow:   (preset) => ipcRenderer.send('resize-window', preset),
 
   // Timer
@@ -26,12 +34,12 @@ contextBridge.exposeInMainWorld('api', {
   isTimerOpen:       () => ipcRenderer.invoke('is-timer-open'),
   timerClose:        () => ipcRenderer.send('timer-close'),
   syncTimerData:     (data) => ipcRenderer.send('sync-timer-data', data),
-  onTimerDataUpdate: (cb) => ipcRenderer.on('timer-data-update', (_, data) => cb(data)),
+  onTimerDataUpdate: (cb) => subscribe('timer-data-update', cb),
   setIgnoreMouseEvents: (ignore, opts) => ipcRenderer.send('timer-set-ignore-mouse', ignore, opts),
-  onClickThroughChanged: (cb) => ipcRenderer.on('click-through-changed', (_, v) => cb(v)),
+  onClickThroughChanged: (cb) => subscribe('click-through-changed', cb),
   resizeTimer:       (preset) => ipcRenderer.send('resize-timer', preset),
   timerTogglePin:    () => ipcRenderer.send('timer-toggle-pin'),
-  onTimerPinChanged: (cb) => ipcRenderer.on('timer-pin-changed', (_, v) => cb(v)),
+  onTimerPinChanged: (cb) => subscribe('timer-pin-changed', cb),
 
   // Maps
   openMapsWindow:    (slug, name) => ipcRenderer.send('open-maps-window', slug, name),
@@ -39,10 +47,10 @@ contextBridge.exposeInMainWorld('api', {
   mapsClose:         () => ipcRenderer.send('maps-close'),
   isMapsOpen:        () => ipcRenderer.invoke('is-maps-open'),
   changeMap:         (slug, name) => ipcRenderer.send('change-map', slug, name),
-  onMapChange:       (cb) => ipcRenderer.on('map-change', (_, data) => cb(data)),
+  onMapChange:       (cb) => subscribe('map-change', cb),
   mapsSetOpacity:    (v) => ipcRenderer.send('maps-set-opacity', v),
   mapsTogglePin:     () => ipcRenderer.send('maps-toggle-pin'),
-  onPinChanged:      (cb) => ipcRenderer.on('pin-changed', (_, v) => cb(v)),
+  onPinChanged:      (cb) => subscribe('pin-changed', cb),
   selectMapImage:    (slug) => ipcRenderer.invoke('select-map-image', slug),
   loadSavedMapImage: (slug) => ipcRenderer.invoke('load-saved-map-image', slug),
   clearMapImage:     (slug) => ipcRenderer.send('clear-map-image', slug),
@@ -53,10 +61,18 @@ contextBridge.exposeInMainWorld('api', {
   closeWidget:       () => ipcRenderer.send('close-widget'),
   widgetClose:       () => ipcRenderer.send('widget-close'),
   isWidgetOpen:      () => ipcRenderer.invoke('is-widget-open'),
-  onWidgetDataUpdate:(cb) => ipcRenderer.on('widget-data-update', (_, data) => cb(data)),
-  onWidgetClickThroughChanged: (cb) => ipcRenderer.on('widget-click-through-changed', (_, v) => cb(v)),
+  onWidgetDataUpdate:(cb) => subscribe('widget-data-update', cb),
+  onWidgetClickThroughChanged: (cb) => subscribe('widget-click-through-changed', cb),
   widgetSetMode:     (mode, w, h) => ipcRenderer.send('widget-set-mode', mode, w, h),
-  onWidgetCycleMode: (cb) => ipcRenderer.on('widget-cycle-mode', () => cb()),
+  onWidgetCycleMode: (cb) => subscribe('widget-cycle-mode', cb),
+  getWidgetMode:     () => ipcRenderer.invoke('get-widget-mode'),
+  onWidgetModeChanged: (cb) => subscribe('widget-mode-changed', cb),
+
+  // Quick lookup
+  openQuickLookup:   () => ipcRenderer.send('open-quick-lookup'),
+  quickLookupClose:  () => ipcRenderer.send('quick-lookup-close'),
+  isQuickLookupOpen: () => ipcRenderer.invoke('is-quick-lookup-open'),
+  quickLookupResize: (height) => ipcRenderer.send('quick-lookup-resize', height),
 
   // OCR
   openOCR:           () => ipcRenderer.send('open-ocr'),
@@ -65,12 +81,12 @@ contextBridge.exposeInMainWorld('api', {
   captureScreen:     () => ipcRenderer.invoke('capture-screen'),
   takeScreenshot:    () => ipcRenderer.invoke('take-screenshot'),
   runOCR:            (dataUrl) => ipcRenderer.invoke('run-ocr', dataUrl),
-  onOCRProgress:     (cb) => ipcRenderer.on('ocr-progress', (_, pct) => cb(pct)),
+  onOCRProgress:     (cb) => subscribe('ocr-progress', cb),
   sendOCRToBreeding: (stats) => ipcRenderer.send('send-ocr-to-breeding', stats),
   sendToBreeding:    (creatureData) => ipcRenderer.invoke('send-to-breeding', creatureData),
-  onOCRStatsReceived:(cb) => ipcRenderer.on('ocr-stats-received', (_, stats) => cb(stats)),
-  onTriggerScan:     (cb) => ipcRenderer.on('trigger-scan', () => cb()),
-  onBreedingDataUpdated: (cb) => ipcRenderer.on('breeding-data-updated', (_, data) => cb(data)),
+  onOCRStatsReceived:(cb) => subscribe('ocr-stats-received', cb),
+  onTriggerScan:     (cb) => subscribe('trigger-scan', cb),
+  onBreedingDataUpdated: (cb) => subscribe('breeding-data-updated', cb),
 
   // Breeding
   openBreeding:      () => ipcRenderer.send('open-breeding'),
@@ -82,8 +98,8 @@ contextBridge.exposeInMainWorld('api', {
   exportBreedingData:() => ipcRenderer.invoke('export-breeding-data'),
   writeExportFile:   (fp, c) => ipcRenderer.send('write-export-file', fp, c),
   breedingTogglePin: () => ipcRenderer.send('breeding-toggle-pin'),
-  onBreedingPinChanged: (cb) => ipcRenderer.on('breeding-pin-changed', (_, v) => cb(v)),
-  onBreedingWindowClosed: (cb) => ipcRenderer.on('breeding-window-closed', () => cb()),
+  onBreedingPinChanged: (cb) => subscribe('breeding-pin-changed', cb),
+  onBreedingWindowClosed: (cb) => subscribe('breeding-window-closed', cb),
 
   // Settings
   openSettings:      () => ipcRenderer.send('open-settings'),
@@ -91,7 +107,7 @@ contextBridge.exposeInMainWorld('api', {
   settingsClose:     () => ipcRenderer.send('settings-close'),
   isSettingsOpen:    () => ipcRenderer.invoke('is-settings-open'),
   settingsTogglePin:    () => ipcRenderer.send('settings-toggle-pin'),
-  onSettingsPinChanged: (cb) => ipcRenderer.on('settings-pin-changed', (_, v) => cb(v)),
+  onSettingsPinChanged: (cb) => subscribe('settings-pin-changed', cb),
 
   // Scale
   getScale:          () => ipcRenderer.invoke('get-scale'),
@@ -100,7 +116,7 @@ contextBridge.exposeInMainWorld('api', {
   // Keybinds
   getKeybinds:       () => ipcRenderer.invoke('get-keybinds'),
   saveKeybinds:      (bindings) => ipcRenderer.send('save-keybinds', bindings),
-  onKeybindsChanged: (cb) => ipcRenderer.on('keybinds-changed', (_, data) => cb(data)),
+  onKeybindsChanged: (cb) => subscribe('keybinds-changed', cb),
 
   // Notifications
   showNotification:  (data) => ipcRenderer.send('show-notification', data),
@@ -108,17 +124,23 @@ contextBridge.exposeInMainWorld('api', {
   // Export/Import
   exportConfig:      () => ipcRenderer.invoke('export-config'),
   importConfig:      (json) => ipcRenderer.send('import-config', json),
+  selectAsbImportFolder: () => ipcRenderer.invoke('select-asb-import-folder'),
+  watchAsbImportFolder: () => ipcRenderer.invoke('watch-asb-import-folder'),
+  stopAsbImportWatch: () => ipcRenderer.invoke('stop-asb-import-watch'),
+  startAsbExportServer: (port) => ipcRenderer.invoke('start-asb-export-server', port),
+  stopAsbExportServer: () => ipcRenderer.invoke('stop-asb-export-server'),
+  onAsbImportFiles: (cb) => subscribe('asb-import-files', cb),
 
   // Tribe Tasks
   openTribe:         () => ipcRenderer.send('open-tribe'),
   tribeClose:        () => ipcRenderer.send('tribe-close'),
   isTribeOpen:       () => ipcRenderer.invoke('is-tribe-open'),
   tribeTogglePin:    () => ipcRenderer.send('tribe-toggle-pin'),
-  onTribePinChanged: (cb) => ipcRenderer.on('tribe-pin-changed', (_, v) => cb(v)),
+  onTribePinChanged: (cb) => subscribe('tribe-pin-changed', cb),
   loadTribeData:     () => ipcRenderer.invoke('load-tribe-data'),
   saveTribeData:     (data) => ipcRenderer.send('save-tribe-data', data),
   syncBreedingToTribe: (creatures, pseudo) => ipcRenderer.invoke('sync-breeding-to-tribe', creatures, pseudo),
-  onTribeBreedingUpdated: (cb) => ipcRenderer.on('tribe-breeding-updated', (_, data) => cb(data)),
+  onTribeBreedingUpdated: (cb) => subscribe('tribe-breeding-updated', cb),
 
   // Preload path (for nested webviews – unlikely but keeps parity)
   getPreloadPath:    () => ipcRenderer.invoke('get-preload-path'),
@@ -127,14 +149,14 @@ contextBridge.exposeInMainWorld('api', {
   checkForUpdates:   () => ipcRenderer.invoke('check-for-updates'),
   installUpdate:     () => ipcRenderer.send('install-update'),
   getAppVersion:     () => ipcRenderer.invoke('get-app-version'),
-  onUpdateStatus:    (cb) => ipcRenderer.on('update-status', (_, data) => cb(data)),
+  onUpdateStatus:    (cb) => subscribe('update-status', cb),
 
   // Comparator (used by comparator-window.html)
   comparatorClose:       () => ipcRenderer.send('comparator-close'),
   comparatorTogglePin:   () => ipcRenderer.send('comparator-toggle-pin'),
-  onComparatorPinChanged:(cb) => ipcRenderer.on('comparator-pin-changed', (_, v) => cb(v)),
-  onComparatorDataUpdate:(cb) => ipcRenderer.on('comparator-data-update', (_, data) => cb(data)),
-  onDinoPinned:          (cb) => ipcRenderer.on('dino-pinned', (_, data) => cb(data)),
+  onComparatorPinChanged:(cb) => subscribe('comparator-pin-changed', cb),
+  onComparatorDataUpdate:(cb) => subscribe('comparator-data-update', cb),
+  onDinoPinned:          (cb) => subscribe('dino-pinned', cb),
 
   // Server Status
   fetchUrl:          (url) => ipcRenderer.invoke('fetch-url', url),
@@ -150,9 +172,9 @@ contextBridge.exposeInMainWorld('api', {
   openRegionSelector: () => ipcRenderer.send('open-region-selector'),
   regionSelected:     (rect) => ipcRenderer.send('region-selected', rect),
   regionSelectorCancel: () => ipcRenderer.send('region-selector-cancel'),
-  onTrackerRegionSet: (cb) => ipcRenderer.on('tracker-region-set', (_, rect) => cb(rect)),
+  onTrackerRegionSet: (cb) => subscribe('tracker-region-set', cb),
 
   // Shared Markers
   shareMarkerToTribe: (marker) => ipcRenderer.invoke('share-marker-to-tribe', marker),
-  onTribeMarkersUpdated: (cb) => ipcRenderer.on('tribe-markers-updated', (_, data) => cb(data)),
+  onTribeMarkersUpdated: (cb) => subscribe('tribe-markers-updated', cb),
 });

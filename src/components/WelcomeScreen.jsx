@@ -31,7 +31,7 @@ function ArkLogo() {
 
 const getFeatures = (onNavigate) => [
   { Icon: CalculatorIcon, title: 'Taming Calculator', desc: 'Sélectionnez une créature dans la sidebar' },
-  { Icon: DnaIcon,        title: 'ASB Breeding',      desc: 'Stat extractor, library, breeding planner', shortcut: 'Alt+B', action: () => onNavigate?.('breeding') },
+  { Icon: DnaIcon,        title: 'ARK Smart Breeding Suite', desc: 'Extracteur ASB, library, couleurs, pedigree et planner', shortcut: 'Alt+B', action: () => onNavigate?.('extractor:planner') },
   { Icon: TimerIcon,      title: 'Timer Overlay',     desc: 'Timers flottants pendant le jeu',          shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
   { Icon: MapIcon,        title: 'Cartes Interactives', desc: 'Cartes interactives des maps ARK',         shortcut: 'Alt+G', action: () => onNavigate?.('maps') },
   { Icon: ScanIcon,       title: 'OCR Scanner',        desc: 'Capture & extraction automatique des stats', shortcut: 'Alt+S', action: () => onNavigate?.('ocr') },
@@ -502,8 +502,13 @@ function QuickStats() {
 
 export default function WelcomeScreen({ onNavigate }) {
   const FEATURES = getFeatures(onNavigate);
-  // Expose navigate for TribeTasks
-  window.__navigate = onNavigate;
+  useEffect(() => {
+    window.__navigate = onNavigate;
+    return () => {
+      if (window.__navigate === onNavigate) delete window.__navigate;
+    };
+  }, [onNavigate]);
+
   return (
     <motion.div
       className="welcome-state"

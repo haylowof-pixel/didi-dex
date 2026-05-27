@@ -2,6 +2,7 @@ import asbValues from '../../asb-values.json';
 
 export const STORAGE_KEY = 'overseer-stat-extractor-library-v2';
 export const SETTINGS_KEY = 'overseer-stat-extractor-settings';
+export const RAISING_TIMERS_KEY = 'overseer-stat-extractor-raising-timers';
 
 export const STAT_KEYS = [
   { key: 'hp', label: 'Health', short: 'HP', asbIndex: 0, kind: 'flat', breedable: true },
@@ -30,6 +31,10 @@ const DEFAULT_SETTINGS = {
   serverName: '',
   includeSpeed: false,
   libraryLimit: 400,
+  breedingMutationLimit: 40,
+  breedingOnlyClean: false,
+  breedingAllowSameParents: false,
+  breedingWeights: {},
 };
 
 const SPECIES_BY_NAME = new Map();
@@ -104,6 +109,13 @@ export function getColorPalette() {
     rgba,
     hex: rgbaToHex(rgba),
   }));
+}
+
+function getColorById(id) {
+  const index = Number(id);
+  if (!Number.isFinite(index)) return null;
+  const palette = getColorPalette();
+  return palette.find(c => c.id === index)?.name || palette[index]?.name || null;
 }
 
 export function rgbaToHex(rgba = [0, 0, 0]) {
@@ -279,7 +291,7 @@ export function estimateWildPoints(speciesName, statValues, options = {}) {
   };
 }
 
-export function createCreatureEntry({ name, species, sex, mode, values, result, notes, mutations, colors, serverName }) {
+export function createCreatureEntry({ name, species, sex, mode, values, result, notes, mutations, colors, serverName, owner, tribe, arkId, parents, imported }) {
   const statMap = {};
   for (const row of result?.rows || []) {
     statMap[row.key] = {
@@ -313,10 +325,386 @@ export function createCreatureEntry({ name, species, sex, mode, values, result, 
     colors: normalizeCreatureColors(species, colors),
     notes: notes || '',
     serverName: serverName || '',
-    parents: { motherId: '', fatherId: '' },
+    owner: owner || '',
+    tribe: tribe || '',
+    arkId: arkId || '',
+    imported: imported || null,
+    parents: { motherId: '', fatherId: '', motherName: '', fatherName: '', ...parents },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+}
+
+export function updateCreatureEntry(existing, patch = {}) {
+  return {
+    ...existing,
+    ...patch,
+    mutations: { ...(existing.mutations || {}), ...(patch.mutations || {}) },
+    parents: { ...(existing.parents || {}), ...(patch.parents || {}) },
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function speciesFromBlueprint(blueprintPath) {
+  if (!blueprintPath) return '';
+  const normalizedPath = String(blueprintPath).toLowerCase();
+  const match = (asbValues.species || []).find(species =>
+    species?.blueprintPath && normalizedPath.includes(String(species.blueprintPath).toLowerCase().split('.').pop())
+  );
+  return match?.name || '';
+}
+
+function normalizeSex(value, flags = 0) {
+  const raw = String(value ?? '').toLowerCase();
+  if (raw === 'female' || raw === 'f' || raw === 'w' || raw === '♀' || raw === '1') return 'female';
+  if (raw === 'male' || raw === 'm' || raw === '♂' || raw === '2') return 'male';
+  if (raw === 'neutered' || (Number(flags) & 1) !== 0) return 'neutered';
+  return 'unknown';
+}
+
+function resultFromLevels(speciesName, wildLevels = [], domLevels = [], mode = 'tamed', options = {}) {
+  const species = getSpeciesStats(speciesName);
+  if (!species) return null;
+  const rows = STAT_KEYS.map(stat => {
+    const wild = Number(wildLevels[stat.asbIndex] ?? wildLevels[stat.key] ?? 0);
+    const domestic = Number(domLevels[stat.asbIndex] ?? domLevels[stat.key] ?? 0);
+    const raw = species.fullStatsRaw[stat.asbIndex];
+    const expectedRaw = calculateStatValue(raw, stat, wild, domestic, { ...DEFAULT_SETTINGS, ...options, mode });
+    const expected = Number.isFinite(expectedRaw) ? roundDisplayed(expectedRaw, stat.kind) : null;
+    return {
+      ...stat,
+      input: expected ?? '',
+      observed: expected,
+      wild: Number.isFinite(wild) ? wild : 0,
+      domestic: Number.isFinite(domestic) ? domestic : 0,
+      points: Number.isFinite(wild) ? wild : 0,
+      expected,
+      delta: 0,
+      rawDelta: 0,
+      confidence: 100,
+      score: 0,
+      quality: qualityFor(Number.isFinite(wild) ? wild : 0, 0),
+    };
+  });
+  const validRows = rows.filter(r => r.wild !== null);
+  const breedingRows = validRows.filter(r => r.breedable);
+  const topStats = [...breedingRows].sort((a, b) => b.wild - a.wild).slice(0, 4);
+  const totalWild = validRows.reduce((sum, r) => sum + (r.wild || 0), 0);
+  const totalDomestic = validRows.reduce((sum, r) => sum + (r.domestic || 0), 0);
+  return {
+    species,
+    rows,
+    topStats,
+    totalWild,
+    totalDomestic,
+    confidence: 100,
+    levelRead: totalWild + totalDomestic + 1,
+    breedingScore: Math.round(topStats.reduce((sum, r) => sum + r.wild, 0) / Math.max(topStats.length, 1)),
+    settings: { ...DEFAULT_SETTINGS, ...options, mode },
+  };
+}
+
+function valuesFromLevels(speciesName, wildLevels = [], domLevels = [], mode = 'tamed', options = {}) {
+  const result = resultFromLevels(speciesName, wildLevels, domLevels, mode, options);
+  return Object.fromEntries((result?.rows || []).map(row => [row.key, row.expected ?? '']));
+}
+
+function colorsFromIds(species, ids = []) {
+  const colors = {};
+  const regions = getSpeciesColorRegions(species);
+  for (let index = 0; index < 6; index += 1) {
+    const colorName = getColorById(ids[index]);
+    if (regions[index]?.enabled && colorName) colors[index] = colorName;
+  }
+  return normalizeCreatureColors(species, colors);
+}
+
+function exportGunValues(stats = []) {
+  return Object.fromEntries(STAT_KEYS.map(stat => [stat.key, stats[stat.asbIndex]?.Value ?? stats[stat.asbIndex]?.value ?? '']));
+}
+
+function exportGunColors(species, colorSetIndices = []) {
+  return colorsFromIds(species, colorSetIndices);
+}
+
+function entryFromExportGun(data) {
+  const species = data.SpeciesName
+    || data.speciesName
+    || data.species
+    || speciesFromBlueprint(data.BlueprintPath || data.blueprintPath || data.speciesBlueprint || data.dinoClass);
+  if (!species) throw new Error('Import ASB invalide: espece manquante.');
+  const stats = Array.isArray(data.Stats) ? data.Stats : [];
+  const wildLevels = data.levelsWild || data.LevelsWild || data.wildLevels || [];
+  const domLevels = data.levelsDom || data.LevelsDom || data.domLevels || [];
+  const hasLevels = Array.isArray(wildLevels) || Object.keys(wildLevels || {}).length;
+  const mode = (data.BabyAge || data.babyAge || data.isBred) > 0 ? 'bred' : 'tamed';
+  const values = hasLevels
+    ? valuesFromLevels(species, wildLevels, domLevels, mode, DEFAULT_SETTINGS)
+    : exportGunValues(stats);
+  const result = estimateWildPoints(species, values, {
+    ...DEFAULT_SETTINGS,
+    mode,
+    tamingEffectiveness: data.TameEffectiveness != null ? Number(data.TameEffectiveness) * 100 : (data.tameEffectiveness != null ? Number(data.tameEffectiveness) * 100 : 100),
+    imprintBonus: data.DinoImprintingQuality != null ? Number(data.DinoImprintingQuality) * 100 : (data.imprintingBonus != null ? Number(data.imprintingBonus) * 100 : 0),
+    level: data.BaseCharacterLevel || data.level || '',
+  });
+  const sex = data.Neutered || data.neutered ? 'neutered' : (data.sex ? normalizeSex(data.sex) : (data.IsFemale || data.isFemale ? 'female' : 'male'));
+  const colors = exportGunColors(species, data.ColorSetIndices || data.colorSetIndices || data.colors || []);
+  const arkId = data.arkId || [data.DinoID1, data.DinoID2].filter(Boolean).join(':');
+  const ancestry = data.Ancestry || data.ancestry || {};
+
+  return createCreatureEntry({
+    name: data.DinoName || data.name,
+    species,
+    sex,
+    mode,
+    values,
+    result,
+    colors,
+    mutations: {
+      maternal: data.RandomMutationsFemale ?? data.mutationsMaternal,
+      paternal: data.RandomMutationsMale ?? data.mutationsPaternal,
+    },
+    owner: data.OwningPlayerName || data.TamerString || data.owner,
+    tribe: data.TribeName || data.tribe,
+    arkId,
+    parents: {
+      motherName: ancestry.FemaleName || '',
+      fatherName: ancestry.MaleName || '',
+      motherArkId: [ancestry.FemaleDinoId1, ancestry.FemaleDinoId2].filter(Boolean).join(':'),
+      fatherArkId: [ancestry.MaleDinoId1, ancestry.MaleDinoId2].filter(Boolean).join(':'),
+    },
+    imported: {
+      source: 'ASB export gun',
+      importedAt: new Date().toISOString(),
+      babyAge: data.BabyAge || data.babyAge || 0,
+      nextAllowedMatingTimeDuration: data.NextAllowedMatingTimeDuration || data.nextAllowedMatingTimeDuration || 0,
+      mutagenApplied: Boolean(data.MutagenApplied || data.mutagenApplied),
+      traits: data.Traits || data.traits || [],
+    },
+    serverName: data.ServerName || data.serverName || '',
+  });
+}
+
+export function importAsbJson(text, current = []) {
+  const parsed = JSON.parse(text);
+  const payloads = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.creatures) ? parsed.creatures : [parsed]);
+  const imported = payloads.map(entryFromExportGun);
+  const knownArkIds = new Set(current.map(c => c.arkId).filter(Boolean));
+  return [
+    ...imported.filter(c => !c.arkId || !knownArkIds.has(c.arkId)),
+    ...current,
+  ];
+}
+
+function entryFromAsbCreature(creature, collection = {}) {
+  const species = speciesFromBlueprint(creature.speciesBlueprint) || creature.SpeciesName || creature.species || creature.nameSpecies;
+  if (!species) return null;
+  const mode = creature.isBred ? 'bred' : (creature.tamingEff === -3 ? 'wild' : 'tamed');
+  const options = {
+    mode,
+    tamingEffectiveness: creature.tamingEff != null && creature.tamingEff >= 0 ? Number(creature.tamingEff) * 100 : 100,
+    imprintBonus: creature.imprintingBonus != null ? Number(creature.imprintingBonus) * 100 : 0,
+    maxWild: collection.maxWildLevel || DEFAULT_SETTINGS.maxWild,
+    maxDomestic: collection.maxDomLevel || DEFAULT_SETTINGS.maxDomestic,
+  };
+  const result = resultFromLevels(species, creature.levelsWild || [], creature.levelsDom || [], mode, options);
+  if (!result) return null;
+  const values = creature.valuesCurrent
+    ? Object.fromEntries(STAT_KEYS.map(stat => [stat.key, creature.valuesCurrent[stat.asbIndex] ?? '']))
+    : valuesFromLevels(species, creature.levelsWild || [], creature.levelsDom || [], mode, options);
+
+  return createCreatureEntry({
+    name: creature.name,
+    species,
+    sex: normalizeSex(creature.sex, creature.flags),
+    mode,
+    values,
+    result,
+    notes: creature.note,
+    colors: colorsFromIds(species, creature.colors || []),
+    mutations: {
+      maternal: creature.mutationsMaternal,
+      paternal: creature.mutationsPaternal,
+    },
+    owner: creature.owner,
+    tribe: creature.tribe,
+    arkId: creature.ArkId ? String(creature.ArkId) : '',
+    serverName: creature.server,
+    parents: {
+      motherGuid: creature.motherGuid || '',
+      fatherGuid: creature.fatherGuid || '',
+      motherName: creature.motherName || '',
+      fatherName: creature.fatherName || '',
+    },
+    imported: {
+      source: 'ASB library',
+      asbGuid: creature.guid || '',
+      status: creature.status,
+      tags: creature.tags || [],
+      traits: creature.traits || [],
+      cooldownUntil: creature.cooldownUntil || null,
+      growingUntil: creature.growingUntil || null,
+      importedAt: new Date().toISOString(),
+    },
+  });
+}
+
+function linkImportedParents(entries) {
+  const byGuid = new Map(entries.map(entry => [entry.imported?.asbGuid, entry]).filter(([guid]) => guid));
+  return entries.map(entry => ({
+    ...entry,
+    parents: {
+      ...(entry.parents || {}),
+      motherId: byGuid.get(entry.parents?.motherGuid)?.id || entry.parents?.motherId || '',
+      fatherId: byGuid.get(entry.parents?.fatherGuid)?.id || entry.parents?.fatherId || '',
+    },
+  }));
+}
+
+function importAsbLibraryObject(parsed, current = []) {
+  const creatures = Array.isArray(parsed?.creatures) ? parsed.creatures : [];
+  const entries = linkImportedParents(creatures.map(c => entryFromAsbCreature(c, parsed)).filter(Boolean));
+  const known = new Set(current.map(c => c.imported?.asbGuid || c.arkId || c.id).filter(Boolean));
+  const incoming = entries.filter(c => {
+    const key = c.imported?.asbGuid || c.arkId || c.id;
+    return !key || !known.has(key);
+  });
+  return [...incoming, ...current];
+}
+
+function importAsbTable(text, current = []) {
+  const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const entries = [];
+  for (const line of lines) {
+    const cols = line.split('\t');
+    if (cols.length < 51) continue;
+    const species = speciesFromBlueprint(cols[1]) || cols[0];
+    if (!getSpeciesStats(species)) continue;
+    const mode = /^true|1|yes$/i.test(cols[10]) ? 'bred' : 'tamed';
+    const wildStart = 17;
+    const domStart = wildStart + 12;
+    const colorStart = domStart + 12;
+    const wildLevels = cols.slice(wildStart, wildStart + 12).map(v => Number(v) || 0);
+    const domLevels = cols.slice(domStart, domStart + 12).map(v => Number(v) || 0);
+    const options = {
+      mode,
+      tamingEffectiveness: Number(String(cols[13]).replace('%', '').replace(',', '.')) || 100,
+      imprintBonus: Number(String(cols[14]).replace('%', '').replace(',', '.')) || 0,
+    };
+    const result = resultFromLevels(species, wildLevels, domLevels, mode, options);
+    if (!result) continue;
+    entries.push(createCreatureEntry({
+      name: cols[2],
+      species,
+      sex: normalizeSex(cols[8]),
+      mode,
+      values: valuesFromLevels(species, wildLevels, domLevels, mode, options),
+      result,
+      owner: cols[3],
+      tribe: cols[5],
+      serverName: cols[6],
+      notes: cols[7],
+      mutations: { maternal: cols[15], paternal: cols[16] },
+      colors: colorsFromIds(species, cols.slice(colorStart, colorStart + 6).map(v => Number(v) || 0)),
+      imported: { source: 'ASB tab export', importedAt: new Date().toISOString() },
+    }));
+  }
+  if (!entries.length) throw new Error('Aucune creature reconnue dans le tableau ASB.');
+  return [...entries, ...current];
+}
+
+export function importAnyAsb(text, current = []) {
+  const trimmed = String(text || '').trim();
+  if (!trimmed) throw new Error('Import vide.');
+
+  if (trimmed.includes('\t') && !trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+    return importAsbTable(trimmed, current);
+  }
+
+  const parsed = JSON.parse(trimmed);
+  if (parsed?.app === 'OVERSEER' || parsed?.type === 'stat-extractor-library') {
+    return importLibraryJson(trimmed, current);
+  }
+  if (parsed?.FormatVersion && Array.isArray(parsed.creatures)) {
+    return importAsbLibraryObject(parsed, current);
+  }
+  if (Array.isArray(parsed) && parsed.some(c => c?.levelsWild || c?.speciesBlueprint)) {
+    return importAsbLibraryObject({ creatures: parsed }, current);
+  }
+  if (Array.isArray(parsed?.creatures) && parsed.creatures.some(c => c?.levelsWild || c?.speciesBlueprint)) {
+    return importAsbLibraryObject(parsed, current);
+  }
+  if (parsed?.levelsWild || parsed?.speciesBlueprint) {
+    return importAsbLibraryObject({ creatures: [parsed] }, current);
+  }
+  return importAsbJson(trimmed, current);
+}
+
+export function extractAsbRaisingTimers(text, library = []) {
+  let parsed;
+  try {
+    parsed = JSON.parse(String(text || '').trim());
+  } catch {
+    return [];
+  }
+  const incubation = Array.isArray(parsed?.incubationListEntries) ? parsed.incubationListEntries : [];
+  const growth = Array.isArray(parsed?.timerListEntries) ? parsed.timerListEntries : [];
+  const byGuid = new Map(library.map(c => [c.imported?.asbGuid, c]).filter(([guid]) => guid));
+
+  const incubationTimers = incubation.map(timer => {
+    const mother = byGuid.get(timer.motherGuid);
+    const father = byGuid.get(timer.fatherGuid);
+    return {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      species: mother?.species || father?.species || 'Unknown',
+      kind: timer.kind || 'Egg',
+      motherId: mother?.id || '',
+      fatherId: father?.id || '',
+      motherName: mother?.name || 'Mother',
+      fatherName: father?.name || 'Father',
+      duration: 0,
+      endAt: timer.incubationEnd ? new Date(timer.incubationEnd).getTime() : Date.now(),
+      running: Boolean(timer.timerIsRunning),
+      imported: { source: 'ASB incubation timer' },
+      createdAt: new Date().toISOString(),
+    };
+  });
+
+  const growthTimers = growth.map(timer => {
+    const creature = byGuid.get(timer.CreatureGuid || timer.creatureGuid || timer.guid);
+    return {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      species: creature?.species || timer.species || 'Unknown',
+      kind: 'Growing',
+      motherId: '',
+      fatherId: '',
+      motherName: creature?.name || timer.name || 'Baby',
+      fatherName: '',
+      duration: 0,
+      endAt: timer.growingUntil ? new Date(timer.growingUntil).getTime() : Date.now(),
+      running: !timer.growingPaused,
+      imported: { source: 'ASB growth timer' },
+      createdAt: new Date().toISOString(),
+    };
+  });
+
+  return [...incubationTimers, ...growthTimers].filter(timer => Number.isFinite(timer.endAt));
+}
+
+export function resolveParents(creature, library) {
+  const parents = creature?.parents || {};
+  const mother = library.find(c =>
+    c.id === parents.motherId
+    || (parents.motherArkId && c.arkId === parents.motherArkId)
+    || (parents.motherName && c.name === parents.motherName && c.sex === 'female')
+  ) || null;
+  const father = library.find(c =>
+    c.id === parents.fatherId
+    || (parents.fatherArkId && c.arkId === parents.fatherArkId)
+    || (parents.fatherName && c.name === parents.fatherName && c.sex === 'male')
+  ) || null;
+  return { mother, father };
 }
 
 export function rankCreatures(library, species, statKey = 'breedingScore') {
@@ -329,14 +717,94 @@ export function rankCreatures(library, species, statKey = 'breedingScore') {
     });
 }
 
-export function buildBreedingPlan(library, species) {
+export function filterLibrary(library, filters = {}) {
+  const q = String(filters.search || '').trim().toLowerCase();
+  return [...library].filter(creature => {
+    if (filters.species && creature.species !== filters.species) return false;
+    if (filters.sex && creature.sex !== filters.sex) return false;
+    if (filters.owner && creature.owner !== filters.owner) return false;
+    if (filters.tribe && creature.tribe !== filters.tribe) return false;
+    if (filters.serverName && creature.serverName !== filters.serverName) return false;
+    if (filters.status && creature.imported?.status !== filters.status) return false;
+    if (filters.tag && !(creature.imported?.tags || []).includes(filters.tag)) return false;
+    if (filters.duplicatesOnly && !creature.duplicateKey) return false;
+    if (q) {
+      const haystack = [
+        creature.name, creature.species, creature.owner, creature.tribe, creature.serverName,
+        creature.arkId, creature.notes, ...(creature.imported?.tags || []),
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+export function annotateDuplicates(library) {
+  const counts = new Map();
+  for (const creature of library) {
+    const key = creature.arkId || creature.imported?.asbGuid || `${creature.species}:${creature.name}`;
+    if (!key) continue;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return library.map(creature => {
+    const key = creature.arkId || creature.imported?.asbGuid || `${creature.species}:${creature.name}`;
+    return counts.get(key) > 1 ? { ...creature, duplicateKey: key } : { ...creature, duplicateKey: '' };
+  });
+}
+
+export function mergeDuplicateCreatures(library) {
+  const byKey = new Map();
+  const merged = [];
+  for (const creature of library) {
+    const key = creature.arkId || creature.imported?.asbGuid || '';
+    if (!key) {
+      merged.push(creature);
+      continue;
+    }
+    const existing = byKey.get(key);
+    if (!existing) {
+      byKey.set(key, creature);
+      merged.push(creature);
+      continue;
+    }
+    const richer = new Date(creature.updatedAt || creature.createdAt || 0) > new Date(existing.updatedAt || existing.createdAt || 0)
+      ? creature
+      : existing;
+    Object.assign(existing, {
+      ...existing,
+      ...richer,
+      notes: [existing.notes, creature.notes].filter(Boolean).join('\n'),
+      imported: { ...(existing.imported || {}), ...(creature.imported || {}) },
+      updatedAt: new Date().toISOString(),
+    });
+  }
+  return annotateDuplicates(merged);
+}
+
+export function buildPedigreeTree(creature, library, depth = 3, seen = new Set()) {
+  if (!creature || depth < 0 || seen.has(creature.id)) return null;
+  seen.add(creature.id);
+  const { mother, father } = resolveParents(creature, library);
+  return {
+    creature,
+    mother: mother ? buildPedigreeTree(mother, library, depth - 1, new Set(seen)) : null,
+    father: father ? buildPedigreeTree(father, library, depth - 1, new Set(seen)) : null,
+  };
+}
+
+export function buildBreedingPlan(library, species, options = {}) {
   const candidates = library.filter(c => c.species === species);
   const males = candidates.filter(c => c.sex === 'male');
   const females = candidates.filter(c => c.sex === 'female');
   const pairs = [];
+  const weights = { hp: 1, stam: 1, oxygen: 0.35, food: 0.4, weight: 1, melee: 1.2, ...(options.weights || {}) };
+  const mutationLimit = Number(options.mutationLimit ?? DEFAULT_SETTINGS.breedingMutationLimit);
 
   for (const male of males) {
     for (const female of females) {
+      if (!options.allowSameParents && male.id === female.id) continue;
+      const mutationLoad = (male.mutations?.maternal || 0) + (male.mutations?.paternal || 0) + (female.mutations?.maternal || 0) + (female.mutations?.paternal || 0);
+      if (options.onlyClean && mutationLoad >= mutationLimit) continue;
       const inheritedStats = STAT_KEYS.filter(s => s.breedable).map(stat => {
         const malePoints = male.stats?.[stat.key]?.wild ?? 0;
         const femalePoints = female.stats?.[stat.key]?.wild ?? 0;
@@ -345,10 +813,10 @@ export function buildBreedingPlan(library, species) {
         return { ...stat, malePoints, femalePoints, best, source };
       });
 
-      const bestTotal = inheritedStats.reduce((sum, stat) => sum + stat.best, 0);
-      const mutationLoad = (male.mutations?.maternal || 0) + (male.mutations?.paternal || 0) + (female.mutations?.maternal || 0) + (female.mutations?.paternal || 0);
+      const bestTotal = inheritedStats.reduce((sum, stat) => sum + stat.best * (weights[stat.key] ?? 1), 0);
       const cleanBonus = Math.max(0, 40 - mutationLoad) * 0.4;
-      const score = Math.round(bestTotal + cleanBonus + ((male.confidence || 0) + (female.confidence || 0)) / 20);
+      const mutationPenalty = Math.max(0, mutationLoad - mutationLimit) * 1.5;
+      const score = Math.round(bestTotal + cleanBonus + ((male.confidence || 0) + (female.confidence || 0)) / 20 - mutationPenalty);
       const highStatChance = inheritedStats.reduce((chance, stat) => chance * (stat.source === 'both' ? 1 : 0.55), 1);
 
       pairs.push({
@@ -365,6 +833,41 @@ export function buildBreedingPlan(library, species) {
   }
 
   return pairs.sort((a, b) => b.score - a.score).slice(0, 24);
+}
+
+export function createRaisingTimer(pair, speciesName) {
+  const info = getSpeciesBreedingInfo(speciesName);
+  if (!info || !pair) return null;
+  const duration = info.incubationTime || info.gestationTime || 0;
+  const kind = info.incubationTime ? 'Egg' : 'Gestation';
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    species: speciesName,
+    kind,
+    motherId: pair.female.id,
+    fatherId: pair.male.id,
+    motherName: pair.female.name,
+    fatherName: pair.male.name,
+    duration,
+    endAt: Date.now() + duration * 1000,
+    running: true,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+export function loadRaisingTimers() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RAISING_TIMERS_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveRaisingTimers(timers) {
+  const next = Array.isArray(timers) ? timers : [];
+  localStorage.setItem(RAISING_TIMERS_KEY, JSON.stringify(next));
+  return next;
 }
 
 export function exportLibrary(library) {

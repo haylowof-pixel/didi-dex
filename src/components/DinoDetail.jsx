@@ -83,9 +83,19 @@ export default function DinoDetail({ dino }) {
       const foodInfo = FOOD_TYPES[tf.food];
       if (!foodInfo) return null;
       const res = calculateTaming(dino, level, tf.food, tamingMultiplier, sanguineElixir);
+      if (!res) return null;
       return { ...res, foodKey: tf.food, foodInfo };
-    }).filter(Boolean);
+    }).filter(Boolean).sort((a, b) =>
+      b.effectiveness - a.effectiveness
+      || a.totalTimeSeconds - b.totalTimeSeconds
+      || a.foodNeeded - b.foodNeeded
+    );
   }, [dino, level, tamingMultiplier, sanguineElixir]);
+
+  React.useEffect(() => {
+    const bestFood = allFoodResults[0]?.foodKey || dino.tamingFoods[0]?.food || null;
+    if (bestFood) setSelectedFood(bestFood);
+  }, [dino.name]);
 
   const handleLevelSlider = useCallback((e) => {
     const v = parseInt(e.target.value);

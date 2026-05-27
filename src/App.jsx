@@ -11,7 +11,6 @@ const StatsExtractor = lazy(() => import('./components/StatsExtractor'));
 
 // Pages that embed shell HTML files
 const EMBEDDED_PAGES = {
-  breeding: { src: '../shell/breeding-window.html', label: 'Breeding' },
   tribe:    { src: '../shell/tribe-tasks.html',     label: 'Tribu' },
   maps:     { src: '../shell/maps-window.html',     label: 'Cartes' },
   ocr:      { src: '../shell/ocr-window.html',      label: 'OCR Scanner' },
@@ -21,10 +20,31 @@ const EMBEDDED_PAGES = {
 };
 
 const LOCAL_PAGES = new Set(['extractor']);
+const PAGE_ALIASES = {
+  breeding: 'extractor',
+};
+
+function parseStoredArray(key) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 function getInitialPage() {
-  const page = window.location.hash.replace(/^#/, '').split(':')[0];
+  const rawPage = window.location.hash.replace(/^#/, '').split(':')[0];
+  const page = PAGE_ALIASES[rawPage] || rawPage;
   return EMBEDDED_PAGES[page] || LOCAL_PAGES.has(page) ? page : null;
+}
+
+function canonicalizeLegacyHash() {
+  if (window.location.hash === '#breeding') {
+    window.location.hash = 'extractor:planner';
+    return true;
+  }
+  return false;
 }
 
 // CSS injected into each webview to hide its title bar
@@ -45,40 +65,53 @@ const EMBED_CSS = `
 
 function EmbeddedPage({ pageKey, preloadPath }) {
   const page = EMBEDDED_PAGES[pageKey];
-  const webviewRef = React.useRef(null);
+  const embedRef = React.useRef(null);
+  const useWebview = Boolean(preloadPath && window.api?.getPreloadPath);
 
   React.useEffect(() => {
-    const wv = webviewRef.current;
-    if (!wv) return;
+    const embed = embedRef.current;
+    if (!embed) return;
     const handleReady = () => {
-      wv.insertCSS(EMBED_CSS);
+      if (useWebview && embed.insertCSS) {
+        embed.insertCSS(EMBED_CSS);
+        return;
+      }
+      try {
+        const doc = embed.contentDocument || embed.contentWindow?.document;
+        if (!doc || doc.getElementById('overseer-embed-css')) return;
+        const style = doc.createElement('style');
+        style.id = 'overseer-embed-css';
+        style.textContent = EMBED_CSS;
+        doc.head.appendChild(style);
+      } catch {
+        // Cross-origin iframe fallback is intentionally best-effort.
+      }
     };
-    // Relay IPC messages from webview to main process
     const handleIpcMessage = (e) => {
+      if (!useWebview) return;
       if (e.channel === 'save-fav-servers' && e.args?.[0]) {
         window.api?.saveFavServers?.(e.args[0]);
       }
     };
-    wv.addEventListener('dom-ready', handleReady);
-    wv.addEventListener('ipc-message', handleIpcMessage);
+    embed.addEventListener(useWebview ? 'dom-ready' : 'load', handleReady);
+    if (useWebview) embed.addEventListener('ipc-message', handleIpcMessage);
     return () => {
-      wv.removeEventListener('dom-ready', handleReady);
-      wv.removeEventListener('ipc-message', handleIpcMessage);
+      embed.removeEventListener(useWebview ? 'dom-ready' : 'load', handleReady);
+      if (useWebview) embed.removeEventListener('ipc-message', handleIpcMessage);
     };
-  }, [pageKey]);
+  }, [pageKey, useWebview]);
 
   if (!page) return null;
 
-  const webviewProps = {
-    ref: webviewRef,
-    key: pageKey,
+  const embedProps = {
+    ref: embedRef,
     src: page.src,
     className: 'embedded-iframe',
-    nodeintegration: 'false',
   };
-  if (preloadPath) {
+  if (useWebview) {
+    embedProps.nodeintegration = 'false';
     // preloadPath is already a full file:/// URL from main process
-    webviewProps.preload = preloadPath;
+    embedProps.preload = preloadPath;
   }
 
   return (
@@ -89,7 +122,11 @@ function EmbeddedPage({ pageKey, preloadPath }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
     >
-      <webview {...webviewProps} />
+      {useWebview ? (
+        <webview key={pageKey} {...embedProps} />
+      ) : (
+        <iframe key={pageKey} title={page.label} {...embedProps} />
+      )}
     </motion.div>
   );
 }
@@ -99,7 +136,7 @@ export default function App() {
   const [activePage, setActivePage] = useState(getInitialPage);
   const [isOverlay, setIsOverlay] = useState(false);
   const [preloadPath, setPreloadPath] = useState('');
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('overseer-favorites') || '[]'));
+  const [favorites, setFavorites] = useState(() => parseStoredArray('overseer-favorites'));
   const [showSearch, setShowSearch] = useState(false);
   const [globalQuery, setGlobalQuery] = useState('');
   const [lightTheme, setLightTheme] = useState(() => localStorage.getItem('overseer-theme') === 'light');
@@ -123,11 +160,36 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let unsubscribeOverlay;
+    let alive = true;
     if (window.api) {
-      window.api.onOverlay((value) => setIsOverlay(value));
-      window.api.getOverlay().then(setIsOverlay);
-      window.api.getPreloadPath().then((p) => setPreloadPath(p));
+      unsubscribeOverlay = window.api.onOverlay?.((value) => setIsOverlay(value));
+      window.api.getOverlay().then(value => { if (alive) setIsOverlay(value); });
+      window.api.getPreloadPath().then((p) => { if (alive) setPreloadPath(p); });
     }
+    return () => {
+      alive = false;
+      if (typeof unsubscribeOverlay === 'function') unsubscribeOverlay();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (canonicalizeLegacyHash()) {
+      setActivePage('extractor');
+      setSelectedDino(null);
+    }
+    const syncHash = () => {
+      if (canonicalizeLegacyHash()) {
+        setActivePage('extractor');
+        setSelectedDino(null);
+        return;
+      }
+      const nextPage = getInitialPage();
+      setActivePage(nextPage);
+      if (nextPage) setSelectedDino(null);
+    };
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
   }, []);
 
   // Ctrl+K global search shortcut
@@ -152,12 +214,13 @@ export default function App() {
   }, []);
 
   const navigateTo = useCallback((page) => {
-    if (activePage === page) {
+    const pageKey = String(page || '').split(':')[0];
+    if (activePage === pageKey) {
       setActivePage(null);
       setSelectedDino(null);
       window.location.hash = '';
     } else {
-      setActivePage(page);
+      setActivePage(pageKey);
       setSelectedDino(null);
       window.location.hash = page;
     }

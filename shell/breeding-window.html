@@ -2044,6 +2044,31 @@ function switchPanel(name, btn) {
   if (name === 'config') loadConfigUI();
 }
 
+function getInitialPanel() {
+  var valid = { extractor:1, library:1, bestof:1, breed:1, pedigree:1, mutations:1, advisor:1, config:1 };
+  var panel = 'breed';
+  try {
+    var params = new URLSearchParams(window.location.search || '');
+    panel = params.get('panel') || (window.location.hash || '').replace(/^#/, '') || panel;
+  } catch(e) {}
+  return valid[panel] ? panel : 'breed';
+}
+
+function activateInitialPanel() {
+  var panel = getInitialPanel();
+  var navByPanel = {
+    extractor: 'Extracteur',
+    library: 'Bibliothèque',
+    bestof: 'Top Stats',
+    breed: 'Breeding',
+    pedigree: 'Pedigree',
+    mutations: 'Mutation Tracker',
+    advisor: 'Conseiller',
+    config: 'Config'
+  };
+  switchPanel(panel, document.querySelector('.nav-btn[title="' + navByPanel[panel] + '"]'));
+}
+
 // ===================================================================
 //  GENERIC SEARCHABLE SPECIES SELECTOR (SS)
 // ===================================================================
@@ -2132,7 +2157,15 @@ function populateSpeciesSelects() {
     ['bestSpecies','pairSpecies','mcSpecies'].forEach(function(id) {
       pickSS(id, first, first, first);
     });
+    return;
   }
+  var empty = '<div class="empty"><div class="empty-title">Aucune créature dans la bibliothèque</div><div style="font-size:10px;color:var(--text-3);margin-top:6px">Ajoute/import au moins un mâle et une femelle dans l’extracteur ou la bibliothèque pour générer un plan de breeding.</div></div>';
+  var pairResults = document.getElementById('pairResults');
+  var bestResults = document.getElementById('bestResults');
+  var mcResults = document.getElementById('mcResults');
+  if (pairResults) pairResults.innerHTML = empty;
+  if (bestResults) bestResults.innerHTML = empty;
+  if (mcResults) mcResults.innerHTML = empty;
 }
 
 function populateBreedSelects() {
@@ -2969,6 +3002,7 @@ initSpeciesSearch();
 loadDB();
 renderAll();
 onExtractChange();
+activateInitialPanel();
 
 // ===== OCR STATS INTEGRATION =====
 if (window.api && window.api.onOCRStatsReceived) {

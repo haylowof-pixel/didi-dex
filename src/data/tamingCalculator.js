@@ -1,5 +1,6 @@
 import { FOOD_TYPES, NARCOTICS } from './dinosaurs';
 import { ASB_TAMING } from './asbTaming';
+import asbValues from '../../asb-values.json';
 
 /**
  * ARK: Survival Ascended - Taming Calculator
@@ -365,11 +366,48 @@ function getASBData(dinoName) {
   return null;
 }
 
+const ASB_SPECIES_BY_NAME = (asbValues.species || []).reduce((map, species) => {
+  if (!species?.name) return map;
+  if (!map.has(species.name)) map.set(species.name, []);
+  map.get(species.name).push(species);
+  return map;
+}, new Map());
+
+function getASBSpecies(dinoName) {
+  const names = [dinoName, NAME_TO_ASB[dinoName]].filter(Boolean);
+  const prefixes = ['Aberrant ', 'X-', 'R-', 'Tek ', 'Corrupted ', 'Skeletal '];
+  for (const p of prefixes) {
+    if (dinoName.startsWith(p)) {
+      const base = dinoName.slice(p.length);
+      names.push(base, NAME_TO_ASB[base]);
+    }
+  }
+
+  const candidates = names.flatMap(name => ASB_SPECIES_BY_NAME.get(name) || []);
+
+  return candidates.find(species => species?.taming?.violent && species?.blueprintPath?.includes('/PrimalEarth/'))
+    || candidates.find(species => species?.taming?.violent)
+    || candidates.find(species => species?.taming)
+    || candidates[0]
+    || null;
+}
+
+function getTamingData(dino) {
+  const species = getASBSpecies(dino.name);
+  return {
+    species,
+    taming: species?.taming || null,
+    legacy: getASBData(dino.name),
+  };
+}
+
 /**
  * Returns the ASA maxFood for a given dino.
- * Priority: ASA_MAX_FOOD table → dino.maxFood (fallback, likely ASE) → estimateMaxFood()
+ * Priority: ASB raw food stat → ASA_MAX_FOOD table → estimateMaxFood()
  */
 function getMaxFood(dino, foodRate) {
+  const asbFoodBase = getASBSpecies(dino.name)?.fullStatsRaw?.[4]?.[0];
+  if (asbFoodBase > 0) return asbFoodBase;
   // 1. Try exact match in ASA table
   if (ASA_MAX_FOOD[dino.name] !== undefined) return ASA_MAX_FOOD[dino.name];
   // 2. Try stripping variant prefix (Aberrant X, Tek X, etc.)
@@ -395,11 +433,14 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
     ? creatureOverride[foodKey]
     : (FOOD_AFFINITY[foodKey] ?? (foodData.affinityPerItem * 12.5));
 
-  const asb = getASBData(dino.name);
+  const { species: asbSpecies, taming: asbTaming, legacy: asb } = getTamingData(dino);
   const asaOverride = ASA_TAMING_AFFINITY[dino.name] || ASA_TAMING_AFFINITY[NAME_TO_ASB[dino.name]];
   let totalAffinity;
   if (asaOverride) {
     totalAffinity = (asaOverride.a0 + asaOverride.aL * level) / tamingMultiplier;
+  } else if (asbTaming?.affinityNeeded0 > 0) {
+    const affinityMult = CREATURE_TAMING_AFFINITY_MULT[dino.name] ?? 1;
+    totalAffinity = (asbTaming.affinityNeeded0 + (asbTaming.affinityIncreasePL || 0) * level) * affinityMult / tamingMultiplier;
   } else if (asb && asb.a0 > 0) {
     const affinityMult = CREATURE_TAMING_AFFINITY_MULT[dino.name] ?? 1;
     totalAffinity = (asb.a0 + asb.aL * level) * affinityMult / tamingMultiplier;
@@ -411,8 +452,12 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
   const foodNeeded = Math.max(1, Math.ceil(totalAffinity / effectiveAffinity));
 
   // --- Taming time ---
-  const foodRate = (asb && asb.fr > 0) ? asb.fr : dino.foodDrainBase;
-  const foodConsumptionMult = (asb && asb.fm > 0) ? asb.fm : 150;
+  const foodRate = (asbTaming?.foodConsumptionBase > 0)
+    ? asbTaming.foodConsumptionBase
+    : ((asb && asb.fr > 0) ? asb.fr : dino.foodDrainBase);
+  const foodConsumptionMult = (asbTaming?.foodConsumptionMult > 0)
+    ? asbTaming.foodConsumptionMult
+    : ((asb && asb.fm > 0) ? asb.fm : 150);
   const foodDrainPerSec = Math.max(foodRate * foodConsumptionMult, 0.05);
   const foodPerItem = foodData.foodPerItem ?? 50;
   const secondsPerFood = foodPerItem > 0
@@ -421,16 +466,16 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
   const totalTimeSeconds = Math.ceil(foodNeeded * secondsPerFood);
   const foodPointsConsumed = Math.round(foodNeeded * foodPerItem * 10) / 10;
 
-  // --- Starve time: maxFood / (drain × tamingMult) — matches Dododex ---
+  // --- Starve time: hunger needed to eat the selected food stack ---
   const maxFood = getMaxFood(dino, foodRate);
   const isPassiveTame = dino.tamingMethod === 'Passive';
-  const starveTimeSeconds = isPassiveTame ? 0 : Math.ceil(maxFood / (foodDrainPerSec * tamingMultiplier));
+  const starveTimeSeconds = isPassiveTame ? 0 : Math.ceil(foodPointsConsumed / foodDrainPerSec);
 
   // --- Torpor ---
   // Per-creature ASA torpor drain values (torpor/sec), calibrated from Dododex at L150 x1.
   // Confirmed: Rex=2.5/s (timer 1h42m38s), Trike=1.035/s (timer 40m00s), Raptor=1.035/s (timer 28m48s).
   // All others estimated by size/category; fallback = depletion * 4.5.
-  const ASA_TORPOR_DRAIN = {
+  const LEGACY_TORPOR_DRAIN_L150 = {
     'Giganotosaurus': 414.05, // Dododex ASA L150 ✓
     'Carcharodontosaurus': 5.0,
     'Brontosaurus': 1.0351,  // Dododex ASA L150 ✓
@@ -561,8 +606,17 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
   const torporObj = (dino.torpor && typeof dino.torpor === 'object')
     ? dino.torpor
     : { base: dino.torpor || 500, perLevel: (dino.torpor || 500) * 0.06, depletion: 0.3 };
-  const maxTorpor = torporObj.base + torporObj.perLevel * Math.max(0, level - 1); // ARK uses (level-1) wild level-ups
-  const torporDrainPerSec = ASA_TORPOR_DRAIN[dino.name] ?? (torporObj.depletion * 4.5);
+  const asbTorporStat = asbSpecies?.fullStatsRaw?.[2];
+  const torporBase = asbTorporStat?.[0] > 0 ? asbTorporStat[0] : torporObj.base;
+  const torporPerLevel = asbTorporStat?.[1] > 0 ? torporBase * asbTorporStat[1] : torporObj.perLevel;
+  const maxTorpor = torporBase + torporPerLevel * Math.max(0, level - 1); // ARK uses (level-1) wild level-ups
+  const torporLevelMultiplier = 1 + Math.max(0, level - 1) * (2.45017 / 149);
+  const legacyDrainL150 = LEGACY_TORPOR_DRAIN_L150[dino.name] ?? LEGACY_TORPOR_DRAIN_L150[NAME_TO_ASB[dino.name]];
+  const level150Multiplier = 1 + 149 * (2.45017 / 149);
+  const torporDepletionBase = (asbTaming?.torporDepletionPS0 > 0)
+    ? asbTaming.torporDepletionPS0
+    : (legacyDrainL150 ? legacyDrainL150 / level150Multiplier : Math.max(torporObj.depletion || 0.3, 0.01));
+  const torporDrainPerSec = torporDepletionBase * torporLevelMultiplier;
 
   let torporDrainCategory = 'Low';
   if (torporDrainPerSec >= 4.0) torporDrainCategory = 'Very High';
