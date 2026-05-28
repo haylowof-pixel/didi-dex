@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import TitleBar from './components/TitleBar';
 import Sidebar from './components/Sidebar';
+import PublicWebsite from './components/PublicWebsite';
 import { dinosaurs } from './data/dinosaurs';
 
 // Lazy-loaded components for faster startup
@@ -142,6 +143,7 @@ function EmbeddedPage({ pageKey, preloadPath }) {
 }
 
 export default function App() {
+  const isPublicWeb = !window.api;
   const [selectedDino, setSelectedDino] = useState(null);
   const [activePage, setActivePage] = useState(getInitialPage);
   const [isOverlay, setIsOverlay] = useState(false);
@@ -253,6 +255,8 @@ export default function App() {
   const showExtractor = activePage === 'extractor';
   const showAccount = activePage === 'account';
   const showTribeModule = activePage === 'tribute';
+
+  if (isPublicWeb) return <PublicWebsite />;
 
   return (
     <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${lightTheme ? 'light-theme' : ''} ${showTribeModule ? 'tribute-shell' : ''} module-shell`}>

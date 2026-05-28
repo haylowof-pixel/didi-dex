@@ -17,10 +17,10 @@ import {
 } from '../data/tribeCloud';
 
 const RUN_VISUALS = {
-  'island-broodmother': { image: './tribute/broodmother.png', accent: '#b45cff', tag: 'Gamma' },
-  'island-megapithecus': { image: './tribute/megapithecus.png', accent: '#38bdf8', tag: 'Beta' },
-  'island-dragon': { image: './tribute/dragon.png', accent: '#ff5f56', tag: 'Alpha' },
-  overseer: { image: './tribute/overseer.png', accent: '#97adff', tag: 'Gamma' },
+  'island-broodmother': { image: './tribute/official-broodmother.png', accent: '#b45cff', tag: 'Gamma' },
+  'island-megapithecus': { image: './tribute/official-megapithecus.png', accent: '#38bdf8', tag: 'Beta' },
+  'island-dragon': { image: './tribute/official-dragon.png', accent: '#ff5f56', tag: 'Alpha' },
+  overseer: { image: './tribute/official-overseer.png', accent: '#97adff', tag: 'Gamma' },
 };
 
 const TASK_CATEGORIES = {
