@@ -33,7 +33,6 @@ import {
   saveRaisingTimers,
   saveSettings,
 } from '../data/statExtractor';
-import CreatureModelViewer from './CreatureModelViewer';
 import CreatureColorImageViewer from './CreatureColorImageViewer';
 import {
   AlertIcon,
@@ -44,6 +43,7 @@ import {
   InfoIcon,
   PlusIcon,
   ResetIcon,
+  ScanIcon,
   ShieldIcon,
   SparklesIcon,
   TimerIcon,
@@ -52,7 +52,7 @@ import {
 
 const TABS = [
   { key: 'extract', label: 'Extract', Icon: CalculatorIcon },
-  { key: 'appearance', label: '3D / Colors', Icon: SparklesIcon },
+  { key: 'appearance', label: 'Colors', Icon: SparklesIcon },
   { key: 'library', label: 'Library', Icon: ClipboardIcon },
   { key: 'planner', label: 'Breeding', Icon: DnaIcon },
   { key: 'pedigree', label: 'Pedigree', Icon: ShieldIcon },
@@ -72,12 +72,18 @@ const DEMO_PRESETS = {
   Maewing: { hp: 4900, stam: 1575, oxygen: 250, food: 6200, weight: 760, melee: 302, speed: 100, torpor: 5200 },
 };
 
-function slugSpecies(name) {
-  return String(name || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
+const OCR_STAT_MAP = {
+  Health: 'hp',
+  HP: 'hp',
+  Stamina: 'stam',
+  Oxygen: 'oxygen',
+  Food: 'food',
+  Weight: 'weight',
+  Melee: 'melee',
+  Damage: 'melee',
+  Speed: 'speed',
+  Torpor: 'torpor',
+};
 
 function Field({ label, children, compact }) {
   return (
@@ -159,35 +165,76 @@ function LibraryRow({ creature, active, onSelect, onRemove, onEdit }) {
 }
 
 function PlannerPair({ pair, onTimer }) {
+  const sourceLabel = { male: 'Male', female: 'Femelle', both: 'Les deux' };
+  const highlightedStats = pair.inheritedStats
+    .filter(stat => stat.source !== 'both')
+    .sort((a, b) => b.best - a.best)
+    .slice(0, 4);
+  const securedStats = pair.inheritedStats.filter(stat => stat.source === 'both').slice(0, 3);
+  const keepStats = highlightedStats.length ? highlightedStats : pair.inheritedStats.slice(0, 4);
+  const mutationTone = pair.mutationLoad > 20 ? 'danger' : pair.mutationLoad > 0 ? 'warn' : 'clean';
+
   return (
-    <div className="ase-pair-card">
+    <div className="ase-pair-card explained">
       <div className="ase-pair-head">
         <div>
-          <span>Score pair</span>
+          <span>Priorite</span>
           <strong>{pair.score}</strong>
         </div>
         <div>
-          <span>Best stat chance</span>
+          <span>Chance combo</span>
           <strong>{pair.highStatChance}%</strong>
         </div>
         <div>
-          <span>Mut load</span>
+          <span>Mutations parents</span>
           <strong>{pair.mutationLoad}</strong>
         </div>
       </div>
-      <div className="ase-pair-parents">
-        <span>M {pair.male.name}</span>
-        <span>F {pair.female.name}</span>
+
+      <div className="ase-pair-summary">
+        <div>
+          <span>Couple conseille</span>
+          <strong>{pair.male.name} x {pair.female.name}</strong>
+        </div>
+        <em className={mutationTone}>
+          {pair.mutationLoad === 0 ? 'ligne propre' : pair.mutationLoad > 20 ? 'risque mutation cap' : 'mutations a surveiller'}
+        </em>
       </div>
+
+      <div className="ase-pair-reason">
+        <strong>Pourquoi ce couple ?</strong>
+        <span>
+          Il rassemble les meilleurs points sauvages disponibles dans ta library. Les cases colorees indiquent
+          quel parent peut transmettre le meilleur stat.
+        </span>
+      </div>
+
+      <div className="ase-pair-parents">
+        <span><b>M</b> {pair.male.name}</span>
+        <span><b>F</b> {pair.female.name}</span>
+      </div>
+
       <div className="ase-inherit-grid">
         {pair.inheritedStats.map(stat => (
           <div key={stat.key} className={stat.source}>
             <span>{stat.short}</span>
             <strong>{stat.best}</strong>
-            <em>{stat.source}</em>
+            <em>{sourceLabel[stat.source] || stat.source}</em>
           </div>
         ))}
       </div>
+
+      <div className="ase-keep-panel">
+        <div>
+          <strong>Garde le bebe si il prend</strong>
+          <span>{keepStats.map(stat => `${stat.short} ${stat.best}`).join(' + ')}</span>
+        </div>
+        <div>
+          <strong>Deja securise</strong>
+          <span>{securedStats.length ? securedStats.map(stat => `${stat.short} ${stat.best}`).join(' + ') : 'Aucun stat identique chez les deux parents'}</span>
+        </div>
+      </div>
+
       <button className="ase-pair-action" onClick={() => onTimer(pair)}>Create baby timer</button>
     </div>
   );
@@ -323,14 +370,13 @@ export default function StatsExtractor() {
   const [libraryFilters, setLibraryFilters] = useState({ sex: '', owner: '', tribe: '', status: '', duplicatesOnly: false });
   const [notes, setNotes] = useState('');
   const [colors, setColors] = useState(() => normalizeCreatureColors('Rex'));
-  const [modelUrl, setModelUrl] = useState('');
-  const [modelManifest, setModelManifest] = useState({});
   const [mutations, setMutations] = useState({ maternal: 0, paternal: 0 });
   const [parentIds, setParentIds] = useState({ motherId: '', fatherId: '' });
   const [raisingTimers, setRaisingTimers] = useState(loadRaisingTimers);
   const [importText, setImportText] = useState('');
   const [importError, setImportError] = useState('');
   const [importStatus, setImportStatus] = useState('');
+  const [ocrStatus, setOcrStatus] = useState('');
   const [watchStatus, setWatchStatus] = useState({ active: false, folder: '' });
   const [receiverStatus, setReceiverStatus] = useState({ running: false, port: 39777 });
   const [breedingOptions, setBreedingOptions] = useState({
@@ -348,10 +394,6 @@ export default function StatsExtractor() {
   }, [appSpecies]);
 
   const result = useMemo(() => estimateWildPoints(species, values, settings), [species, values, settings]);
-  const colorHexes = useMemo(() => {
-    const normalized = normalizeCreatureColors(species, colors);
-    return Object.fromEntries(Object.entries(normalized).map(([region, colorName]) => [region, getColorByName(colorName)?.hex || '']));
-  }, [species, colors]);
   const annotatedLibrary = useMemo(() => annotateDuplicates(library), [library]);
   const owners = useMemo(() => Array.from(new Set(library.map(c => c.owner).filter(Boolean))).sort(), [library]);
   const tribes = useMemo(() => Array.from(new Set(library.map(c => c.tribe).filter(Boolean))).sort(), [library]);
@@ -365,23 +407,6 @@ export default function StatsExtractor() {
   const sameSpeciesParents = useMemo(() => annotatedLibrary.filter(c => c.species === species), [annotatedLibrary, species]);
   const resolvedParents = selectedCreature ? resolveParents(selectedCreature, annotatedLibrary) : { mother: null, father: null };
   const pedigreeTree = useMemo(() => selectedCreature ? buildPedigreeTree(selectedCreature, annotatedLibrary, 3) : null, [selectedCreature, annotatedLibrary]);
-  const installedModel = modelManifest[species] || modelManifest[slugSpecies(species)] || null;
-  const resolvedModelUrl = modelUrl || installedModel?.url || '';
-
-  useEffect(() => {
-    let alive = true;
-    fetch('/models/creatures/manifest.json')
-      .then(res => res.ok ? res.json() : {})
-      .then(data => {
-        if (!alive) return;
-        setModelManifest(data?.species || {});
-      })
-      .catch(() => {
-        if (alive) setModelManifest({});
-      });
-    return () => { alive = false; };
-  }, []);
-
   useEffect(() => {
     const syncTabFromHash = () => setTab(getTabFromHash());
     window.addEventListener('hashchange', syncTabFromHash);
@@ -425,6 +450,32 @@ export default function StatsExtractor() {
     });
   }, [library, raisingTimers, settings.libraryLimit]);
 
+  useEffect(() => {
+    if (!window.api?.onOCRStatsReceived) return undefined;
+    return window.api.onOCRStatsReceived(stats => {
+      const source = stats?._wildLevels || stats || {};
+      const nextValues = {};
+      Object.entries(source).forEach(([key, value]) => {
+        const mapped = OCR_STAT_MAP[key] || OCR_STAT_MAP[String(key).replace(/\s+/g, '')];
+        if (mapped && value !== '' && value != null) nextValues[mapped] = value;
+      });
+      if (!Object.keys(nextValues).length) {
+        setOcrStatus('OCR reçu, mais aucune stat reconnue. Re-scanner avec le panneau stats bien visible.');
+        return;
+      }
+      setValues(prev => ({ ...prev, ...nextValues }));
+      if (stats?.Level) setSettings({ level: stats.Level });
+      if (stats?._mutaPat != null || stats?._mutaMat != null) {
+        setMutations({
+          paternal: Number(stats._mutaPat || 0),
+          maternal: Number(stats._mutaMat || 0),
+        });
+      }
+      setTab('extract');
+      setOcrStatus(`OCR importé: ${Object.keys(nextValues).length} stats remplies dans Extract.`);
+    });
+  }, []);
+
   const setSettings = (patch) => {
     setSettingsState(prev => {
       const next = { ...prev, ...patch };
@@ -436,13 +487,21 @@ export default function StatsExtractor() {
   const changeSpecies = (nextSpecies) => {
     setSpecies(nextSpecies);
     setColors(prev => normalizeCreatureColors(nextSpecies, prev));
-    setModelUrl('');
   };
 
   const updateValue = (key, value) => setValues(prev => ({ ...prev, [key]: value }));
   const updateColor = (regionIndex, colorName) => setColors(prev => ({ ...normalizeCreatureColors(species, prev), [regionIndex]: colorName }));
   const clearValues = () => setValues({});
   const loadDemo = () => setValues(DEMO_PRESETS[species] || DEMO_PRESETS.Rex);
+
+  const openOcrScanner = () => {
+    if (!window.api?.openOCR) {
+      setOcrStatus('OCR disponible dans l’app Electron, pas dans le navigateur dev.');
+      return;
+    }
+    window.api.openOCR();
+    setOcrStatus('Scanner OCR ouvert: capture les stats ARK, puis elles reviendront ici dans Extract.');
+  };
 
   const saveCreature = () => {
     if (!result) return;
@@ -707,6 +766,21 @@ export default function StatsExtractor() {
 
           {tab === 'extract' && (
             <>
+              <div className="ase-panel ase-ocr-import">
+                <div className="ase-ocr-copy">
+                  <div className="ase-ocr-icon"><ScanIcon size={18} /></div>
+                  <div>
+                    <strong>Import OCR des stats</strong>
+                    <span>Ouvre le scanner flottant, capture le panneau de stats ARK, puis remplit automatiquement les champs ci-dessous.</span>
+                  </div>
+                </div>
+                <div className="ase-ocr-actions">
+                  <button onClick={openOcrScanner}><ScanIcon size={14} /> Scanner les stats</button>
+                  <span><InfoIcon size={13} /> F8 lance aussi un scan rapide en jeu.</span>
+                </div>
+                {ocrStatus && <div className="ase-ocr-status">{ocrStatus}</div>}
+              </div>
+
               <div className="ase-panel">
                 <div className="ase-panel-title">
                   <div><CalculatorIcon size={15} /> Visible stats</div>
@@ -757,31 +831,6 @@ export default function StatsExtractor() {
               <div className="ase-appearance-layout asb-image-first">
                 <CreatureColorImageViewer species={species} colors={colors} />
                 <ColorRegionEditor species={species} colors={colors} onChange={updateColor} />
-              </div>
-              <div className="ase-panel-title ase-subpanel-title">
-                <div><SparklesIcon size={15} /> Optional GLB/GLTF viewer</div>
-                <span>only if you provide real model files</span>
-              </div>
-              <div className="ase-appearance-layout ase-model-secondary">
-                <CreatureModelViewer
-                  species={species}
-                  colorHexes={colorHexes}
-                  modelUrl={resolvedModelUrl}
-                  modelSource={modelUrl ? 'manual model' : installedModel?.name}
-                  materialRegions={installedModel?.materialRegions || []}
-                  onModelUrl={setModelUrl}
-                />
-                <div className="ase-model-help">
-                  <strong>Why this is optional</strong>
-                  <p>ASB's default creature preview is image-mask based. Real 3D meshes are not shipped in this repo; add legal `.glb`/`.gltf` files only if you want a separate 3D viewer.</p>
-                </div>
-              </div>
-              <div className="ase-model-source">
-                {installedModel ? (
-                  <span>Installed game model: <strong>{installedModel.name || installedModel.url}</strong></span>
-                ) : (
-                  <span>No installed game model for <strong>{species}</strong>. Add a legal `.glb`/`.gltf` and register it in `public/models/creatures/manifest.json`.</span>
-                )}
               </div>
             </div>
           )}
@@ -840,8 +889,22 @@ export default function StatsExtractor() {
           {tab === 'planner' && (
             <div className="ase-panel">
               <div className="ase-panel-title">
-                <div><DnaIcon size={15} /> Best pairs</div>
+                <div><DnaIcon size={15} /> Breeding planner</div>
                 <span>{breedingPairs.length} pairs</span>
+              </div>
+              <div className="ase-planner-help">
+                <div>
+                  <strong>1. Sauvegarde tes dinos</strong>
+                  <span>Importe ou ajoute au moins un male et une femelle dans la Library.</span>
+                </div>
+                <div>
+                  <strong>2. Choisis le meilleur couple</strong>
+                  <span>Le score favorise les meilleurs stats sauvages et penalise les mutations chargees.</span>
+                </div>
+                <div>
+                  <strong>3. Garde les bons bebes</strong>
+                  <span>Conserve seulement les bebes qui heritent des stats indiques dans "Garde le bebe".</span>
+                </div>
               </div>
               <div className="ase-library-tools">
                 <label className="ase-inline-check">
@@ -850,9 +913,9 @@ export default function StatsExtractor() {
                     checked={breedingOptions.onlyClean}
                     onChange={e => setBreedingOptions(o => ({ ...o, onlyClean: e.target.checked }))}
                   />
-                  Clean mutations
+                  Eviter les mutations chargees
                 </label>
-                <Field label="Mutation cap" compact>
+                <Field label="Limite mutations" compact>
                   <input
                     type="number"
                     min="0"
@@ -866,12 +929,16 @@ export default function StatsExtractor() {
                     checked={breedingOptions.allowSameParents}
                     onChange={e => setBreedingOptions(o => ({ ...o, allowSameParents: e.target.checked }))}
                   />
-                  Include risky pairs
+                  Afficher les couples risqués
                 </label>
               </div>
               <div className="ase-pair-list">
                 {breedingPairs.length ? breedingPairs.map(pair => <PlannerPair key={pair.id} pair={pair} onTimer={addRaisingTimer} />) : (
-                  <div className="ase-empty">Sauvegarde au moins un male et une femelle de cette espece.</div>
+                  <div className="ase-empty ase-planner-empty">
+                    <strong>Aucun couple trouvable pour {species}</strong>
+                    <span>Il faut au minimum 1 male et 1 femelle sauvegardes dans la Library pour cette espece.</span>
+                    <span>Ensuite le planner compare leurs points sauvages, propose les meilleurs couples, puis te dit quels bebes garder.</span>
+                  </div>
                 )}
               </div>
             </div>

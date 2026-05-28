@@ -34,7 +34,6 @@ const getFeatures = (onNavigate) => [
   { Icon: DnaIcon,        title: 'ARK Smart Breeding Suite', desc: 'Extracteur ASB, library, couleurs, pedigree et planner', shortcut: 'Alt+B', action: () => onNavigate?.('extractor:planner') },
   { Icon: TimerIcon,      title: 'Timer Overlay',     desc: 'Timers flottants pendant le jeu',          shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
   { Icon: MapIcon,        title: 'Cartes Interactives', desc: 'Cartes interactives des maps ARK',         shortcut: 'Alt+G', action: () => onNavigate?.('maps') },
-  { Icon: ScanIcon,       title: 'OCR Scanner',        desc: 'Capture & extraction automatique des stats', shortcut: 'Alt+S', action: () => onNavigate?.('ocr') },
   { Icon: ServerIcon,     title: 'Server Status',      desc: 'Status des serveurs ARK en temps réel',                       action: () => onNavigate?.('servers') },
   { Icon: WidgetIcon,     title: 'Widget Mini',        desc: 'Widget compact toujours visible',          shortcut: 'Alt+W', action: () => window.api?.openWidget() },
 ];
@@ -208,7 +207,7 @@ function TribeTasks() {
           <ClipboardIcon size={16} />
           <span>Tâches de Tribu</span>
         </div>
-        <div className="tribe-home-empty" onClick={() => window.__navigate?.('tribe')}>
+        <div className="tribe-home-empty" onClick={() => window.__navigate?.('tribute:tasks')}>
           <TaskClipboardIcon size={24} />
           <span>Rejoins ou crée une tribu pour voir les tâches ici</span>
           <span className="tribe-home-cta">Ouvrir le planificateur →</span>
@@ -238,7 +237,7 @@ function TribeTasks() {
         {doneTasks.length > 0 && (
           <span className="tribe-home-done">{doneTasks.length} terminée{doneTasks.length > 1 ? 's' : ''}</span>
         )}
-        <button className="tribe-home-open" onClick={() => window.__navigate?.('tribe')}>
+        <button className="tribe-home-open" onClick={() => window.__navigate?.('tribute:tasks')}>
           Ouvrir ↗
         </button>
       </div>
@@ -308,7 +307,7 @@ function TribeTasks() {
                       />
                     ))}
                     {task.items.length > 4 && (
-                      <div className="tribe-task-items-more" onClick={() => window.__navigate?.('tribe')}>
+                      <div className="tribe-task-items-more" onClick={() => window.__navigate?.('tribute:tasks')}>
                         +{task.items.length - 4} items →
                       </div>
                     )}
@@ -318,7 +317,7 @@ function TribeTasks() {
             );
           })}
           {pendingTasks.length > 6 && (
-            <div className="tribe-tasks-more" onClick={() => window.__navigate?.('tribe')}>
+            <div className="tribe-tasks-more" onClick={() => window.__navigate?.('tribute:tasks')}>
               +{pendingTasks.length - 6} autres tâches →
             </div>
           )}
@@ -489,12 +488,12 @@ function QuickStats() {
         <div className="quick-stat-val">🗺️</div>
         <div className="quick-stat-label">Cartes</div>
       </div>
-      <div className="quick-stat" onClick={() => window.__navigate?.('ocr')}>
+      <div className="quick-stat" onClick={() => window.__navigate?.('extractor')}>
         <div className="quick-stat-icon" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }}>
           <ScanIcon size={16} />
         </div>
         <div className="quick-stat-val">F8</div>
-        <div className="quick-stat-label">Scanner</div>
+        <div className="quick-stat-label">Scan stats</div>
       </div>
     </motion.div>
   );

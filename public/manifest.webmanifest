@@ -1,0 +1,43 @@
+{
+  "name": "OVERSEER ARK Companion",
+  "short_name": "OVERSEER",
+  "description": "ARK breeding, extraction, timers, tribe library and server tools.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05050c",
+  "theme_color": "#0f1224",
+  "categories": ["games", "productivity", "utilities"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Extractor",
+      "short_name": "Extract",
+      "description": "Open stat extraction and breeding tools",
+      "url": "./#extractor",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Account & Billing",
+      "short_name": "Account",
+      "description": "Open cloud and subscription settings",
+      "url": "./#account",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

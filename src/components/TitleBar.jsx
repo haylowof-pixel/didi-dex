@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, SettingsIcon, LayersIcon, ClipboardIcon, ServerIcon, CalculatorIcon } from './Icons';
+import { LogoIcon, DnaIcon, TimerIcon, MapIcon, WidgetIcon, SettingsIcon, LayersIcon, ServerIcon, ShieldIcon, SkullIcon } from './Icons';
 
 /* ── Sun / Moon SVG icons for theme toggle ── */
 const SunIcon = ({ size = 13 }) => (
@@ -28,9 +28,8 @@ const MoonIcon = ({ size = 13 }) => (
 // Tools that navigate within the main window
 const NAV_TOOLS = [
   { key: 'extractor', Icon: DnaIcon, label: 'ARK Smart Breeding Suite', shortcut: 'Alt+B' },
-  { key: 'tribe',    Icon: ClipboardIcon, label: 'Tribu Tasks', shortcut: '' },
+  { key: 'tribute',  Icon: SkullIcon, label: 'Tribut', shortcut: '' },
   { key: 'maps',     Icon: MapIcon,       label: 'Cartes',      shortcut: 'Alt+G' },
-  { key: 'ocr',      Icon: ScanIcon,      label: 'OCR Scanner', shortcut: 'Alt+S' },
   { key: 'servers',  Icon: ServerIcon,    label: 'Serveurs',    shortcut: '' },
 ];
 
@@ -84,6 +83,14 @@ export default function TitleBar({ isOverlay, onToggleOverlay, onGoHome, activeP
         ))}
 
         <div className="tb-sep" />
+
+        <button
+          className={`tb-tool ${activePage === 'account' ? 'active' : ''}`}
+          onClick={() => onNavigate('account')}
+          title="Account & Billing"
+        >
+          <ShieldIcon size={13} />
+        </button>
 
         <button
           className={`tb-tool ${activePage === 'settings' ? 'active' : ''}`}

@@ -8,20 +8,22 @@ import { dinosaurs } from './data/dinosaurs';
 const DinoDetail = lazy(() => import('./components/DinoDetail'));
 const WelcomeScreen = lazy(() => import('./components/WelcomeScreen'));
 const StatsExtractor = lazy(() => import('./components/StatsExtractor'));
+const AccountBilling = lazy(() => import('./components/AccountBilling'));
+const TributePlanner = lazy(() => import('./components/TributePlanner'));
 
 // Pages that embed shell HTML files
 const EMBEDDED_PAGES = {
-  tribe:    { src: '../shell/tribe-tasks.html',     label: 'Tribu' },
   maps:     { src: '../shell/maps-window.html',     label: 'Cartes' },
-  ocr:      { src: '../shell/ocr-window.html',      label: 'OCR Scanner' },
   servers:  { src: '../shell/server-status.html',     label: 'Serveurs' },
   settings: { src: '../shell/settings-window.html',  label: 'Paramètres' },
   comparator: { src: '../shell/comparator-window.html', label: 'Comparateur' },
 };
 
-const LOCAL_PAGES = new Set(['extractor']);
+const LOCAL_PAGES = new Set(['extractor', 'account', 'tribute']);
 const PAGE_ALIASES = {
   breeding: 'extractor',
+  ocr: 'extractor',
+  tribe: 'tribute',
 };
 
 function parseStoredArray(key) {
@@ -42,6 +44,14 @@ function getInitialPage() {
 function canonicalizeLegacyHash() {
   if (window.location.hash === '#breeding') {
     window.location.hash = 'extractor:planner';
+    return true;
+  }
+  if (window.location.hash === '#ocr') {
+    window.location.hash = 'extractor';
+    return true;
+  }
+  if (window.location.hash === '#tribe') {
+    window.location.hash = 'tribute:tasks';
     return true;
   }
   return false;
@@ -241,9 +251,11 @@ export default function App() {
   const showSidebar = activePage === null;
   const showEmbedded = activePage && EMBEDDED_PAGES[activePage];
   const showExtractor = activePage === 'extractor';
+  const showAccount = activePage === 'account';
+  const showTribeModule = activePage === 'tribute';
 
   return (
-    <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${lightTheme ? 'light-theme' : ''}`}>
+    <div className={`app-shell ${isOverlay ? 'overlay-mode' : ''} ${lightTheme ? 'light-theme' : ''} ${showTribeModule ? 'tribute-shell' : ''} module-shell`}>
       {/* Global video background */}
       <video
         className="app-video-bg"
@@ -278,6 +290,10 @@ export default function App() {
                 <EmbeddedPage key={activePage} pageKey={activePage} preloadPath={preloadPath} />
               ) : showExtractor ? (
                 <StatsExtractor key="extractor" />
+              ) : showAccount ? (
+                <AccountBilling key="account" />
+              ) : showTribeModule ? (
+                <TributePlanner key="tribute-module" />
               ) : selectedDino ? (
                 <DinoDetail key={selectedDino.id} dino={selectedDino} />
               ) : (

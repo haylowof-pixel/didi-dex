@@ -1744,12 +1744,14 @@ ipcMain.handle('send-to-breeding', async (event, creatureData) => {
   return { success: true, id: creatureData.id };
 });
 
-// Legacy: Send OCR stats to breeding window (kept for backward compat)
+// Send OCR stats to the unified extractor; legacy breeding window still receives it if open.
 ipcMain.on('send-ocr-to-breeding', (_, stats) => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    openAsbSuite('extract');
+    mainWindow.webContents.send('ocr-stats-received', stats);
+  }
   if (isBreedingAlive()) {
     breedingWindow.webContents.send('ocr-stats-received', stats);
-  } else {
-    openAsbSuite('extract');
   }
 });
 

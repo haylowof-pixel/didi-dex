@@ -1,6 +1,6 @@
 {
     "name": "overseer",
-    "version": "3.3.4",
+    "version": "3.3.5",
     "description": "OVERSEER - ARK companion app with taming calculator, breeding, maps & more",
     "main": "electron/main.js",
     "scripts": {
@@ -66,11 +66,13 @@
         "electron": "^40.6.1",
         "electron-builder": "^26.8.1",
         "ffmpeg-static": "^5.3.0",
+        "playwright": "^1.60.0",
         "rcedit": "^5.0.2",
         "sharp": "^0.34.5",
         "to-ico": "^1.1.5"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.106.2",
         "@vitejs/plugin-react": "^6.0.1",
         "electron-updater": "^6.8.3",
         "framer-motion": "^12.38.0",
