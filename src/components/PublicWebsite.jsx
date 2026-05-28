@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ClipboardIcon, DnaIcon, LogoIcon, MapIcon, ScanIcon, ServerIcon, ShieldIcon, SkullIcon, TamingLassoIcon, TimerIcon, WidgetIcon, ZapIcon } from './Icons';
+import { ClipboardIcon, DnaIcon, MapIcon, ScanIcon, ServerIcon, ShieldIcon, SkullIcon, TamingLassoIcon, TimerIcon, WidgetIcon, ZapIcon } from './Icons';
 
 const releaseUrl = 'https://github.com/haylowof-pixel/overseer-companion/releases/latest';
 
@@ -174,7 +174,7 @@ export default function PublicWebsite() {
 
       <header className="public-nav">
         <a className="public-brand" href="#">
-          <LogoIcon size={34} />
+          <img src="./icon-128.png" alt="" />
           <span>OVERSEER</span>
         </a>
         <nav>

@@ -89,8 +89,10 @@ body.public-web-body {
   letter-spacing: 0.08em;
 }
 
-.public-brand svg {
-  color: #73f1ff;
+.public-brand img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
   filter: drop-shadow(0 0 14px rgba(87, 224, 255, 0.35));
 }
 
