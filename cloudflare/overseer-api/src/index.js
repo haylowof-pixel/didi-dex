@@ -52,7 +52,7 @@ async function sha256(value) {
 }
 
 async function hashPassword(password, encodedSalt = '') {
-  const iterations = 160000;
+  const iterations = 100000;
   const salt = encodedSalt || randomToken(18);
   const keyMaterial = await crypto.subtle.importKey(
     'raw',

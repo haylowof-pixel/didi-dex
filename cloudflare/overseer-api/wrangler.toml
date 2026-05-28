@@ -9,4 +9,4 @@ SESSION_DAYS = "30"
 [[d1_databases]]
 binding = "DB"
 database_name = "overseer_api"
-database_id = "replace-with-cloudflare-d1-id"
+database_id = "a32b7516-9ef5-4a41-a635-4d9f954a263d"
