@@ -17,7 +17,7 @@ const featureStories = [
     title: 'Smart Breeding',
     text: 'Comprends les points sauvages, les mutations, les lignées et les candidats de reproduction sans ouvrir trois tableurs.',
     stats: ['HP 48', 'Melee 52', 'Mutations 3/20'],
-    visual: 'gene',
+    image: './site/screens/smart-breeding.png',
   },
   {
     key: 'taming',
@@ -25,7 +25,7 @@ const featureStories = [
     title: 'Taming Calculator',
     text: 'Nourriture, narcotiques, torpeur, starving timer et préparation de tame dans une lecture claire pour chaque créature.',
     stats: ['Kibble 17', 'Torpor 42m', 'Effectiveness 98.6%'],
-    visual: 'taming',
+    image: './site/screens/taming-calculator.png',
   },
   {
     key: 'tribute',
@@ -33,7 +33,7 @@ const featureStories = [
     title: 'Boss Tribute Planner',
     text: 'Boss, artefacts, tributes, armée conseillée, assignations de tribu et readiness avant de lancer l’arène.',
     stats: ['Broodmother 72%', 'Artifacts 8/10', 'Raid prep 8/12'],
-    visual: 'boss',
+    image: './site/screens/tribute-planner.png',
   },
   {
     key: 'tribe',
@@ -41,7 +41,7 @@ const featureStories = [
     title: 'Tribe Cloud Tasks',
     text: 'Une base commune pour les tâches de tribu, les runs, les priorités et les responsabilités de chaque joueur.',
     stats: ['Cloud sync', 'Invite code', 'Activity log'],
-    visual: 'tasks',
+    image: './site/screens/tribe-tasks.png',
   },
   {
     key: 'ocr',
@@ -49,7 +49,15 @@ const featureStories = [
     title: 'OCR Stat Scanner',
     text: 'Capture les stats affichées en jeu et prépare l’import vers l’extractor pour éviter la saisie manuelle.',
     stats: ['HP detected', 'Stamina parsed', 'Import ready'],
-    visual: 'scan',
+    image: './site/screens/ocr-scanner.png',
+  },
+  {
+    key: 'quick-lookup',
+    Icon: ScanIcon,
+    title: 'Quick Lookup',
+    text: 'Une mini barre flottante au-dessus du jeu pour chercher une créature et accéder vite aux infos de tame, food, narcotiques et torpeur.',
+    stats: ['Floating search', 'Tame info', 'Alt + Q'],
+    image: './site/screens/quick-lookup.png',
   },
   {
     key: 'servers',
@@ -57,7 +65,7 @@ const featureStories = [
     title: 'Server Monitor',
     text: 'Garde tes serveurs favoris sous les yeux avec statut, joueurs, map, ping et accès rapide.',
     stats: ['Online', '64/70', '38 ms'],
-    visual: 'server',
+    image: './site/screens/servers.png',
   },
   {
     key: 'maps',
@@ -65,7 +73,7 @@ const featureStories = [
     title: 'Maps & Locations',
     text: 'Prépare tes trajets, repères, caves, ressources et routes de farm avec une vue dédiée plutôt qu’un navigateur séparé.',
     stats: ['Caves', 'Resources', 'Pins'],
-    visual: 'map',
+    image: './site/screens/maps.png',
   },
   {
     key: 'library',
@@ -73,15 +81,15 @@ const featureStories = [
     title: 'Creature Library',
     text: 'Une bibliothèque de créatures avec stats, favoris, notes, couleurs, timers et accès rapide aux espèces importantes.',
     stats: ['Favorites', 'Color regions', 'Creature notes'],
-    visual: 'library',
+    image: './site/screens/taming-calculator.png',
   },
   {
-    key: 'overlay',
+    key: 'timer-widgets',
     Icon: WidgetIcon,
-    title: 'Floating Timer Overlay',
-    text: 'Timers de maturation, imprint, tame et actions rapides par-dessus le jeu, sans casser ton rythme.',
-    stats: ['Imprint 08:12', 'Raise 63%', 'Always on top'],
-    visual: 'overlay',
+    title: 'Timer & Torpor Widgets',
+    text: 'Widgets flottants pour suivre starve timer, torpor timer, narcotiques, bio toxin, maturation et imprint sans quitter ARK.',
+    stats: ['Starve timer', 'Torpor widget', 'Always on top'],
+    image: './site/screens/timer-widget.png',
   },
   {
     key: 'account',
@@ -89,11 +97,19 @@ const featureStories = [
     title: 'Account & Cloud Sync',
     text: 'Connexion, profil, avatar, backup et données hébergées pour préparer la version web/mobile sans perdre le local.',
     stats: ['Login', 'Avatar', 'Backup sync'],
-    visual: 'account',
+    image: './site/screens/account-cloud.png',
   },
 ];
 
 function FeatureVisual({ story }) {
+  if (story.image) {
+    return (
+      <figure className={`public-app-shot ${story.key}`}>
+        <img src={story.image} alt={`Capture app ${story.title}`} />
+      </figure>
+    );
+  }
+
   if (story.visual === 'boss') {
     return (
       <div className="public-boss-stack">
