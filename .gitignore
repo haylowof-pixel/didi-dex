@@ -10,3 +10,4 @@ public/models/creatures/local-manifest.json
 .local-export-test/
 $out/
 $direct/
+cloudflare/**/.wrangler/

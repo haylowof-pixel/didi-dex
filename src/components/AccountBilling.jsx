@@ -1,7 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { buildLocalSyncSnapshot, calculateUsage, loadAccount, PLAN_CATALOG, saveAccount } from '../data/account';
-import { createCheckoutSession, createCustomerPortal, getBackendConfig, syncSnapshot } from '../data/cloudApi';
+import {
+  getCloudAccount,
+  loginCloudAccount,
+  logoutCloudAccount,
+  registerCloudAccount,
+  createCheckoutSession,
+  createCustomerPortal,
+  getBackendConfig,
+  syncSnapshot,
+  updateCloudProfile,
+} from '../data/cloudApi';
 import {
   getCurrentSession,
   isSupabaseConfigured,
@@ -67,7 +77,7 @@ const PREMIUM_MODULES = [
 ];
 
 const LAUNCH_CHECKLIST = [
-  ['Supabase auth', 'Email/password accounts and persisted sessions'],
+  ['Cloud auth', 'Email/password accounts and persisted sessions'],
   ['Hosted tribe data', 'Shared tasks, boss prep and breeding snapshots'],
   ['Stripe webhooks', 'Required before taking real subscription money'],
   ['Cloud backup restore', 'Critical trust feature for paid users'],
@@ -154,6 +164,7 @@ export default function AccountBilling() {
   const [busy, setBusy] = useState('');
   const usage = useMemo(() => calculateUsage(account), [account]);
   const backend = useMemo(() => getBackendConfig(), []);
+  const useCloudflareAuth = backend.configured && backend.authProvider !== 'supabase';
   const selectedPlan = PLAN_CATALOG[account.planId] || PLAN_CATALOG.free;
   const paidReadyScore = [
     Boolean(account.userId || account.email),
@@ -165,6 +176,29 @@ export default function AccountBilling() {
 
   useEffect(() => {
     let alive = true;
+    if (useCloudflareAuth) {
+      getCloudAccount()
+        .then(({ account: cloudAccount }) => {
+          if (!alive || !cloudAccount) return;
+          const next = saveAccount({
+            ...loadAccount(),
+            userId: cloudAccount.id,
+            email: cloudAccount.email || '',
+            displayName: cloudAccount.displayName || loadAccount().displayName,
+            avatarUrl: cloudAccount.avatarUrl || loadAccount().avatarUrl,
+            planId: cloudAccount.planId || loadAccount().planId,
+            authProvider: 'cloudflare',
+            billingStatus: cloudAccount.billingStatus || 'signed-in',
+          });
+          setSessionUser(cloudAccount);
+          setAccount(next);
+        })
+        .catch(() => {});
+      return () => {
+        alive = false;
+      };
+    }
+
     getCurrentSession()
       .then(({ user }) => {
         if (!alive || !user) return;
@@ -203,7 +237,7 @@ export default function AccountBilling() {
       alive = false;
       unsubscribe();
     };
-  }, []);
+  }, [useCloudflareAuth]);
 
   const updateAccount = (patch) => {
     const next = saveAccount({ ...account, ...patch });
@@ -216,6 +250,33 @@ export default function AccountBilling() {
     setNotice('');
     try {
       if (!isSupabaseConfigured) {
+        if (useCloudflareAuth) {
+          const payload = {
+            email: account.email.trim(),
+            password,
+            displayName: account.displayName.trim(),
+            avatarUrl: account.avatarUrl,
+          };
+          const result = authMode === 'signup'
+            ? await registerCloudAccount(payload)
+            : await loginCloudAccount(payload);
+          const cloudAccount = result.account;
+          const next = saveAccount({
+            ...account,
+            userId: cloudAccount.id,
+            email: cloudAccount.email,
+            displayName: cloudAccount.displayName || account.displayName,
+            avatarUrl: cloudAccount.avatarUrl || account.avatarUrl,
+            planId: cloudAccount.planId || account.planId,
+            authProvider: 'cloudflare',
+            billingStatus: cloudAccount.billingStatus || 'signed-in',
+          });
+          setSessionUser(cloudAccount);
+          setAccount(next);
+          setNotice(authMode === 'signup' ? 'Compte Cloudflare cree et connecte.' : 'Connecte au cloud OVERSEER.');
+          return;
+        }
+
         const localUserId = `local-${crypto.randomUUID?.() || Date.now()}`;
         const next = saveAccount({
           ...account,
@@ -266,7 +327,8 @@ export default function AccountBilling() {
   const logout = async () => {
     setBusy('logout');
     try {
-      await signOut();
+      if (useCloudflareAuth) await logoutCloudAccount();
+      else await signOut();
       const next = saveAccount({ ...account, userId: '', authProvider: 'local', billingStatus: 'signed-out' });
       setSessionUser(null);
       setAccount(next);
@@ -285,7 +347,16 @@ export default function AccountBilling() {
     setNotice('');
     try {
       let avatarUrl = '';
-      if (isSupabaseConfigured && account.userId) {
+      if (useCloudflareAuth && account.userId) {
+        avatarUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        await updateCloudProfile({ displayName: account.displayName, avatarUrl });
+        setNotice('Avatar sauvegarde sur le profil cloud.');
+      } else if (isSupabaseConfigured && account.userId) {
         avatarUrl = await uploadProfileAvatar({ userId: account.userId, file });
         await upsertUserProfile({
           userId: account.userId,
@@ -302,7 +373,7 @@ export default function AccountBilling() {
           reader.onerror = reject;
           reader.readAsDataURL(file);
         });
-        setNotice('Avatar gardé en local. Il sera uploadé quand Supabase sera configuré.');
+        setNotice('Avatar gardé en local. Il sera uploadé quand le cloud sera configuré.');
       }
       updateAccount({ avatarUrl });
     } catch (error) {
@@ -314,7 +385,7 @@ export default function AccountBilling() {
   };
 
   const createTribe = async () => {
-    if (isSupabaseConfigured && !account.userId) {
+    if ((isSupabaseConfigured || useCloudflareAuth) && !account.userId) {
       setNotice('Connecte-toi avant de creer une tribu cloud.');
       return;
     }
@@ -334,9 +405,9 @@ export default function AccountBilling() {
         tribeName: tribe.name || tribe.tribeName || account.tribeName,
         tribeCode: tribe.invite_code || tribe.tribeCode || account.tribeCode,
         hostedTribeId: tribe.id || account.hostedTribeId,
-        billingStatus: isSupabaseConfigured ? 'tribe-hosted' : 'local-tribe-ready',
+        billingStatus: (isSupabaseConfigured || useCloudflareAuth) ? 'tribe-hosted' : 'local-tribe-ready',
       });
-      setNotice(isSupabaseConfigured ? 'Tribu cloud creee.' : 'Tribu creee en mode local. Elle sera hostee quand Supabase sera configure.');
+      setNotice((isSupabaseConfigured || useCloudflareAuth) ? 'Tribu cloud creee.' : 'Tribu creee en mode local. Elle sera hostee quand le cloud sera configure.');
     } catch (error) {
       setNotice(error.message || 'Impossible de creer la tribu.');
     } finally {
@@ -346,7 +417,7 @@ export default function AccountBilling() {
 
   const joinTribe = async () => {
     if (!inviteCode.trim()) return;
-    if (isSupabaseConfigured && !account.userId) {
+    if ((isSupabaseConfigured || useCloudflareAuth) && !account.userId) {
       setNotice('Connecte-toi avant de rejoindre une tribu cloud.');
       return;
     }
@@ -362,7 +433,7 @@ export default function AccountBilling() {
         tribeName: tribe.name || account.tribeName,
         tribeCode: tribe.invite_code || tribe.tribeCode || inviteCode.toUpperCase(),
         hostedTribeId: tribe.id || account.hostedTribeId,
-        billingStatus: isSupabaseConfigured ? 'tribe-joined' : 'local-join-ready',
+        billingStatus: (isSupabaseConfigured || useCloudflareAuth) ? 'tribe-joined' : 'local-join-ready',
       });
       setNotice('Tribu liee au compte.');
       setInviteCode('');
@@ -478,7 +549,7 @@ export default function AccountBilling() {
         <div className="account-panel">
           <div className="account-panel-title">
             <div><ShieldIcon size={15} /> Account Login</div>
-            <span>{sessionUser || account.userId ? 'signed in' : isSupabaseConfigured ? 'cloud auth' : 'local fallback'}</span>
+            <span>{sessionUser || account.userId ? 'signed in' : useCloudflareAuth ? 'cloudflare auth' : isSupabaseConfigured ? 'cloud auth' : 'local fallback'}</span>
           </div>
           <div className="account-profile-strip">
             <div className="account-avatar">
@@ -505,7 +576,7 @@ export default function AccountBilling() {
               <input value={account.displayName} onChange={event => updateAccount({ displayName: event.target.value })} placeholder="Breeder name" />
             </Field>
             <Field label="Password">
-              <input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder={isSupabaseConfigured ? '8+ characters' : 'local mode ignores password'} />
+              <input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder={(isSupabaseConfigured || useCloudflareAuth) ? '8+ characters' : 'local mode ignores password'} />
             </Field>
             <div className="account-inline-actions">
               <button className="account-primary" type="submit" disabled={busy === 'auth'}><ShieldIcon size={14} /> {busy === 'auth' ? 'Working...' : authMode === 'signup' ? 'Create account' : 'Login'}</button>
@@ -540,7 +611,7 @@ export default function AccountBilling() {
       <section className="account-panel">
         <div className="account-panel-title">
           <div><ServerIcon size={15} /> Data & Backup</div>
-          <span>{isSupabaseConfigured ? 'cloud available' : 'local mode'}</span>
+          <span>{useCloudflareAuth ? 'cloudflare ready' : isSupabaseConfigured ? 'cloud available' : 'local mode'}</span>
         </div>
         <div className="account-usage">
           <div>

@@ -1,4 +1,16 @@
 import { loadAccount, saveAccount } from './account';
+import {
+  createCloudTribe,
+  createCloudTribeTask,
+  deleteCloudTribeTask,
+  hasCloudSession,
+  joinCloudTribe,
+  loadCloudTribeActivity,
+  loadCloudTribeRole,
+  loadCloudTribeTasks,
+  recordCloudTribeActivity,
+  updateCloudTribeTask,
+} from './cloudApi';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const LOCAL_TRIBE_KEY = 'overseer-tribe';
@@ -97,6 +109,13 @@ export function getLocalTribeRole() {
 }
 
 export async function createHostedTribe({ name, ownerId, ownerName }) {
+  if (hasCloudSession()) {
+    const result = await createCloudTribe({ name });
+    const tribe = result.tribe || result;
+    saveAccount({ ...loadAccount(), tribeName: tribe.name, tribeCode: tribe.invite_code, hostedTribeId: tribe.id, authProvider: 'cloudflare' });
+    return tribe;
+  }
+
   if (!isSupabaseConfigured || !supabase) {
     const code = `LOCAL-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     const local = saveLocalTribeState({
@@ -136,6 +155,13 @@ export async function createHostedTribe({ name, ownerId, ownerName }) {
 }
 
 export async function joinHostedTribe({ inviteCode, userId, displayName }) {
+  if (hasCloudSession()) {
+    const result = await joinCloudTribe({ inviteCode, displayName });
+    const tribe = result.tribe || result;
+    saveAccount({ ...loadAccount(), tribeName: tribe.name, tribeCode: tribe.invite_code, hostedTribeId: tribe.id, authProvider: 'cloudflare' });
+    return tribe;
+  }
+
   if (!isSupabaseConfigured || !supabase) {
     const account = saveAccount({ ...loadAccount(), tribeCode: inviteCode.toUpperCase() });
     return { tribeCode: account.tribeCode, cloudMode: 'local' };
@@ -169,6 +195,10 @@ export async function saveHostedTribeTasks({ tribeId, tasks }) {
 }
 
 export async function loadHostedTribeTasks({ tribeId }) {
+  if (hasCloudSession() && tribeId) {
+    return loadCloudTribeTasks({ tribeId });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId) {
     return loadLocalTribeState().tasks || [];
   }
@@ -184,6 +214,10 @@ export async function loadHostedTribeTasks({ tribeId }) {
 
 export async function createTribeTask({ tribeId, task }) {
   const normalized = normalizeTask(task);
+  if (hasCloudSession() && tribeId) {
+    return createCloudTribeTask({ tribeId, task: normalized });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId) {
     const state = loadLocalTribeState();
     const tasks = [normalized, ...(state.tasks || [])];
@@ -205,6 +239,10 @@ export async function createTribeTask({ tribeId, task }) {
 
 export async function updateTribeTask({ tribeId, task }) {
   const normalized = normalizeTask(task);
+  if (hasCloudSession() && tribeId) {
+    return updateCloudTribeTask({ tribeId, task: normalized });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId) {
     const state = loadLocalTribeState();
     const tasks = (state.tasks || []).map(existing => existing.id === normalized.id ? normalized : existing);
@@ -233,6 +271,10 @@ export async function updateTribeTask({ tribeId, task }) {
 }
 
 export async function deleteTribeTask({ tribeId, taskId }) {
+  if (hasCloudSession() && tribeId) {
+    return deleteCloudTribeTask({ tribeId, taskId });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId) {
     const state = loadLocalTribeState();
     const tasks = (state.tasks || []).filter(task => task.id !== taskId);
@@ -250,6 +292,10 @@ export async function deleteTribeTask({ tribeId, taskId }) {
 }
 
 export async function loadTribeActivity({ tribeId, limit = 24 } = {}) {
+  if (hasCloudSession() && tribeId) {
+    return loadCloudTribeActivity({ tribeId, limit });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId) {
     return (loadLocalTribeState().activityLog || []).slice(0, limit);
   }
@@ -266,6 +312,10 @@ export async function loadTribeActivity({ tribeId, limit = 24 } = {}) {
 
 export async function recordTribeActivity({ tribeId, type, message, taskTitle }) {
   const entry = normalizeActivity({ type, message, taskTitle });
+  if (hasCloudSession() && tribeId) {
+    return recordCloudTribeActivity({ tribeId, type: entry.type, message: entry.message, taskTitle: entry.taskTitle });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId) {
     const state = loadLocalTribeState();
     const activityLog = [entry, ...(state.activityLog || [])].slice(0, 48);
@@ -291,6 +341,7 @@ export async function recordTribeActivity({ tribeId, type, message, taskTitle })
 }
 
 export function subscribeToTribeActivity({ tribeId, onChange }) {
+  if (hasCloudSession()) return () => {};
   if (!isSupabaseConfigured || !supabase || !tribeId) return () => {};
   const channel = supabase
     .channel(`tribe-activity:${tribeId}`)
@@ -309,6 +360,10 @@ export function subscribeToTribeActivity({ tribeId, onChange }) {
 
 export async function loadCurrentTribeRole({ tribeId }) {
   const account = loadAccount();
+  if (hasCloudSession() && tribeId) {
+    return loadCloudTribeRole({ tribeId });
+  }
+
   if (!isSupabaseConfigured || !supabase || !tribeId || !account.userId) {
     return getLocalTribeRole();
   }
@@ -324,6 +379,7 @@ export async function loadCurrentTribeRole({ tribeId }) {
 }
 
 export function subscribeToTribeTasks({ tribeId, onChange }) {
+  if (hasCloudSession()) return () => {};
   if (!isSupabaseConfigured || !supabase || !tribeId) return () => {};
   const channel = supabase
     .channel(`tribe-tasks:${tribeId}`)

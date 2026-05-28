@@ -7,7 +7,11 @@
         "start": "vite build && electron .",
         "dev": "vite build && electron .",
         "vite:build": "vite build",
-        "build": "vite build && electron-builder"
+        "build": "vite build && electron-builder",
+        "cloudflare:dev": "npx wrangler dev --config cloudflare/overseer-api/wrangler.toml",
+        "cloudflare:migrate:local": "npx wrangler d1 migrations apply overseer_api --local --config cloudflare/overseer-api/wrangler.toml",
+        "cloudflare:migrate": "npx wrangler d1 migrations apply overseer_api --remote --config cloudflare/overseer-api/wrangler.toml",
+        "cloudflare:deploy": "npx wrangler deploy --config cloudflare/overseer-api/wrangler.toml"
     },
     "keywords": [
         "ark",

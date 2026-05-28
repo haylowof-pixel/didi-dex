@@ -1,0 +1,12 @@
+name = "overseer-api"
+main = "src/index.js"
+compatibility_date = "2026-05-28"
+
+[vars]
+ALLOWED_ORIGIN = "*"
+SESSION_DAYS = "30"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "overseer_api"
+database_id = "replace-with-cloudflare-d1-id"
