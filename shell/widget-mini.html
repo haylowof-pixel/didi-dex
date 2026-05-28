@@ -38,9 +38,10 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
   transition: opacity .2s, border-color .2s;
 }
 #widget.clickthrough {
-  opacity: 0.65;
-  border-color: rgba(255,255,255,0.03);
-  cursor: default;
+  opacity: 0.88;
+  border-color: rgba(255,255,255,0.06);
+  cursor: move;
+  -webkit-app-region: drag;
 }
 #widget.interactive {
   opacity: 1;
@@ -166,7 +167,7 @@ html, body { background: transparent; overflow: hidden; height: 100%; }
 </style>
 </head>
 <body>
-<div id="widget" class="clickthrough" data-mode="mini">
+<div id="widget" class="interactive" data-mode="mini">
 
   <!-- Top row: dino name + badges + close -->
   <div class="w-top">

@@ -332,9 +332,6 @@ function createWindow() {
   mainWindow.on('focus', () => {
     setTimerClickThrough(false);
   });
-  mainWindow.on('blur', () => {
-    setTimerClickThrough(true);
-  });
 
   // Ad blocker
   const adFilter = { urls: [

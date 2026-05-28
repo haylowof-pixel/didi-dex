@@ -182,7 +182,7 @@ body {
   border-bottom: 1px solid rgba(123,147,248,0.08);
 }
 
-.title-bar-left { display: flex; align-items: center; -webkit-app-region: no-drag; }
+.title-bar-left { display: flex; align-items: center; -webkit-app-region: drag; }
 
 .tb-home {
   display: flex; align-items: center; gap: 7px;
@@ -191,6 +191,7 @@ body {
   cursor: pointer; font-family: inherit;
   color: var(--accent-l);
   transition: background var(--dur-fast) var(--ease);
+  -webkit-app-region: no-drag;
 }
 .tb-home:hover { background: var(--accent-bg); }
 .tb-home:active { background: var(--accent-glow); }
@@ -205,7 +206,7 @@ body {
 /* ── Center toolbar ── */
 .tb-tools {
   display: flex; align-items: center; gap: 1px;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: drag;
 }
 
 .tb-tool {
@@ -216,6 +217,7 @@ body {
   border-radius: var(--r-sm);
   cursor: pointer;
   transition: all var(--dur-norm) var(--ease);
+  -webkit-app-region: no-drag;
 }
 .tb-tool:hover {
   background: rgba(123,147,248,0.08);
@@ -4583,6 +4585,181 @@ body {
   font-size: 12px;
   font-weight: 850;
   text-transform: uppercase;
+  cursor: pointer;
+}
+
+.tribute-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.56);
+  backdrop-filter: blur(12px);
+}
+
+.tribute-modal {
+  width: min(460px, calc(100vw - 40px));
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(125,151,143,0.30);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(183,99,255,0.13), transparent 44%),
+    rgba(2,12,11,0.94);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.025);
+}
+
+.tribute-modal-title,
+.tribute-modal-actions,
+.tribute-guide-army div {
+  display: flex;
+  align-items: center;
+}
+
+.tribute-modal-title {
+  gap: 8px;
+  color: var(--tribute-text);
+}
+
+.tribute-modal-title svg {
+  color: var(--tribute-violet);
+}
+
+.tribute-modal-title strong {
+  flex: 1;
+  font-size: 15px;
+}
+
+.tribute-modal-title button,
+.tribute-modal-actions button {
+  border: 1px solid var(--tribute-line-soft);
+  border-radius: 7px;
+  background: rgba(0,0,0,0.28);
+  color: var(--tribute-muted);
+  cursor: pointer;
+}
+
+.tribute-modal-title button {
+  width: 28px;
+  height: 28px;
+}
+
+.tribute-modal label {
+  display: grid;
+  gap: 5px;
+}
+
+.tribute-modal label span,
+.tribute-guide-grid span {
+  color: var(--tribute-muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.tribute-modal input,
+.tribute-modal select {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--tribute-line-soft);
+  border-radius: 7px;
+  background: rgba(0,0,0,0.38);
+  color: var(--tribute-text);
+  font-weight: 800;
+}
+
+.tribute-modal-help {
+  padding: 10px;
+  border: 1px solid rgba(183,99,255,0.22);
+  border-radius: 8px;
+  background: rgba(183,99,255,0.08);
+}
+
+.tribute-modal-help strong,
+.tribute-guide-army > strong {
+  display: block;
+  color: var(--tribute-text);
+  font-size: 12px;
+}
+
+.tribute-modal-help span {
+  display: block;
+  margin-top: 4px;
+  color: var(--tribute-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tribute-modal-actions {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tribute-modal-actions button {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.tribute-modal-actions button.primary {
+  border-color: rgba(183,99,255,0.42);
+  background: rgba(183,99,255,0.18);
+  color: #e4c4ff;
+}
+
+.tribute-guide-modal {
+  width: min(560px, calc(100vw - 40px));
+}
+
+.tribute-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tribute-guide-grid div {
+  padding: 9px;
+  border: 1px solid var(--tribute-line-soft);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.22);
+}
+
+.tribute-guide-grid strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--tribute-text);
+  font-size: 13px;
+}
+
+.tribute-guide-army {
+  display: grid;
+  gap: 7px;
+}
+
+.tribute-guide-army div {
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--tribute-line-soft);
+  border-radius: 7px;
+  background: rgba(0,0,0,0.20);
+}
+
+.tribute-guide-army span {
+  color: var(--tribute-text);
+  font-weight: 850;
+}
+
+.tribute-guide-army em {
+  color: var(--tribute-muted);
+  font-style: normal;
 }
 
 .tribute-inspector textarea {

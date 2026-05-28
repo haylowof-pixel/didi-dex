@@ -527,6 +527,8 @@ function getTributeViewFromHash() {
 export default function TributePlanner() {
   const [moduleView, setModuleView] = useState(getTributeViewFromHash);
   const [customRuns, setCustomRuns] = useState(loadCustomRuns);
+  const [customRunDraft, setCustomRunDraft] = useState({ open: false, templateId: TRIBUTE_RUNS[0].id, name: '', difficulty: 'Gamma' });
+  const [guideOpen, setGuideOpen] = useState(false);
   const allRuns = useMemo(() => [...customRuns, ...TRIBUTE_RUNS], [customRuns]);
   const [selectedRunId, setSelectedRunId] = useState(TRIBUTE_RUNS[0].id);
   const [difficulty, setDifficulty] = useState('Gamma');
@@ -587,16 +589,23 @@ export default function TributePlanner() {
     updateRunState({ checked: {}, owners: {}, notes: '' });
   };
 
+  const openCustomRunCreator = () => {
+    const template = TRIBUTE_RUNS.find(run => run.id === selectedRun.id) || TRIBUTE_RUNS[0];
+    setCustomRunDraft({ open: true, templateId: template.id, name: `${template.boss} run`, difficulty });
+  };
+
   const createCustomRun = () => {
-    const template = selectedRun;
+    const template = TRIBUTE_RUNS.find(run => run.id === customRunDraft.templateId) || selectedRun;
+    const customName = customRunDraft.name.trim() || `${template.boss} run`;
     const customRun = {
       ...template,
       id: `custom-${Date.now()}`,
-      boss: `${template.boss} Custom`,
+      boss: customName,
       role: 'Custom run',
+      army: template.army.map(unit => ({ ...unit })),
       categories: template.categories.map(category => ({
         ...category,
-        items: category.items.map(item => ({ ...item })),
+        items: category.items.map(item => ({ ...item, owner: '' })),
       })),
     };
     setCustomRuns(prev => {
@@ -607,6 +616,8 @@ export default function TributePlanner() {
     setStateByRun(prev => ({ ...prev, [customRun.id]: { checked: {}, owners: {}, notes: 'Custom run draft' } }));
     saveRunState(customRun.id, { checked: {}, owners: {}, notes: 'Custom run draft' });
     setSelectedRunId(customRun.id);
+    setDifficulty(customRunDraft.difficulty || 'Gamma');
+    setCustomRunDraft({ open: false, templateId: template.id, name: '', difficulty: 'Gamma' });
   };
 
   const copyRun = async () => {
@@ -683,7 +694,7 @@ export default function TributePlanner() {
             className="tribute-new-run"
             onClick={() => {
               if (moduleView === 'tasks') document.querySelector('.tribe-task-create input')?.focus();
-              else createCustomRun();
+              else openCustomRunCreator();
             }}
           >
             <PlusIcon size={17} /> {moduleView === 'tribute' ? 'New Custom Run' : 'New Tribe Task'}
@@ -767,7 +778,7 @@ export default function TributePlanner() {
                 </div>
               ))}
             </div>
-            <button className="tribute-guide-button"><MapIcon size={15} /> View Detailed Guide</button>
+            <button className="tribute-guide-button" onClick={() => setGuideOpen(true)}><MapIcon size={15} /> View Detailed Guide</button>
           </section>
           <section className="tribute-inspector-panel">
             <div className="tribute-inspector-title"><ClipboardIcon size={14} /> Notes <button>Edit</button></div>
@@ -823,6 +834,102 @@ export default function TributePlanner() {
         </div>
         )}
       </div>
+      {customRunDraft.open && (
+        <div className="tribute-modal-backdrop" onClick={() => setCustomRunDraft(draft => ({ ...draft, open: false }))}>
+          <div className="tribute-modal" onClick={event => event.stopPropagation()}>
+            <div className="tribute-modal-title">
+              <SkullIcon size={16} />
+              <strong>New Custom Run</strong>
+              <button onClick={() => setCustomRunDraft(draft => ({ ...draft, open: false }))}>x</button>
+            </div>
+            <label>
+              <span>Boss template</span>
+              <select
+                value={customRunDraft.templateId}
+                onChange={event => {
+                  const template = TRIBUTE_RUNS.find(run => run.id === event.target.value);
+                  setCustomRunDraft(draft => ({ ...draft, templateId: event.target.value, name: draft.name || `${template?.boss || 'Boss'} run` }));
+                }}
+              >
+                {TRIBUTE_RUNS.map(run => (
+                  <option key={run.id} value={run.id}>{run.map} - {run.boss}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Run name</span>
+              <input
+                value={customRunDraft.name}
+                onChange={event => setCustomRunDraft(draft => ({ ...draft, name: event.target.value }))}
+                placeholder="Alpha Dragon Friday"
+              />
+            </label>
+            <label>
+              <span>Starting difficulty</span>
+              <select
+                value={customRunDraft.difficulty}
+                onChange={event => setCustomRunDraft(draft => ({ ...draft, difficulty: event.target.value }))}
+              >
+                {TRIBUTE_DIFFICULTIES.map(level => <option key={level} value={level}>{level}</option>)}
+              </select>
+            </label>
+            <div className="tribute-modal-help">
+              <strong>Clean custom run</strong>
+              <span>Les items du boss choisi sont copiés, mais les assignations membres sont vidées pour ta vraie tribu.</span>
+            </div>
+            <div className="tribute-modal-actions">
+              <button onClick={() => setCustomRunDraft(draft => ({ ...draft, open: false }))}>Cancel</button>
+              <button className="primary" onClick={createCustomRun}><PlusIcon size={14} /> Create run</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {guideOpen && (
+        <div className="tribute-modal-backdrop" onClick={() => setGuideOpen(false)}>
+          <div className="tribute-modal tribute-guide-modal" onClick={event => event.stopPropagation()}>
+            <div className="tribute-modal-title">
+              <MapIcon size={16} />
+              <strong>{selectedRun.boss} guide</strong>
+              <button onClick={() => setGuideOpen(false)}>x</button>
+            </div>
+            <div className="tribute-guide-grid">
+              <div>
+                <span>Map</span>
+                <strong>{selectedRun.map}</strong>
+              </div>
+              <div>
+                <span>Difficulty</span>
+                <strong>{difficulty}</strong>
+              </div>
+              <div>
+                <span>Timer</span>
+                <strong>{selectedRun.timebox}</strong>
+              </div>
+              <div>
+                <span>Element</span>
+                <strong>{selectedRun.element[difficulty]}</strong>
+              </div>
+            </div>
+            <div className="tribute-modal-help">
+              <strong>Run focus</strong>
+              <span>{selectedRun.focus}</span>
+            </div>
+            <div className="tribute-guide-army">
+              <strong>Suggested army</strong>
+              {selectedRun.army.map(unit => (
+                <div key={unit.name}>
+                  <span>{unit.count}x {unit.name}</span>
+                  <em>{unit.stat}</em>
+                </div>
+              ))}
+            </div>
+            <div className="tribute-modal-actions">
+              <button onClick={copyRun}><ClipboardIcon size={14} /> Copy checklist</button>
+              <button className="primary" onClick={() => setGuideOpen(false)}>Done</button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
