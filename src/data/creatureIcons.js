@@ -74,6 +74,40 @@ const BASE_SPECIAL = {
   'Bronto':            'Brontosaurus',
 };
 
+const LOCAL_ICON_URLS = {
+  Ankylosaurus: './creatures/wiki/ankylosaurus.png',
+  Argentavis: './creatures/wiki/argentavis.png',
+  Baryonyx: './creatures/wiki/baryonyx.png',
+  Carnotaurus: './creatures/wiki/carnotaurus.png',
+  Carno: './creatures/wiki/carnotaurus.png',
+  Doedicurus: './creatures/wiki/doedicurus.png',
+  Giganotosaurus: './creatures/wiki/giganotosaurus.png',
+  Parasaur: './creatures/wiki/parasaur.png',
+  Pteranodon: './creatures/wiki/pteranodon.png',
+  Quetzalcoatlus: './creatures/wiki/quetzalcoatlus.png',
+  Quetzal: './creatures/wiki/quetzalcoatlus.png',
+  Raptor: './creatures/wiki/raptor.png',
+  'Alpha Raptor': './creatures/wiki/raptor.png',
+  Rex: './creatures/wiki/rex.png',
+  'Alpha Rex': './creatures/wiki/rex.png',
+  'Alpha T-Rex': './creatures/wiki/rex.png',
+  'Tek Rex': './creatures/wiki/rex.png',
+  'X-Rex': './creatures/wiki/rex.png',
+  Spinosaurus: './creatures/wiki/spinosaurus.png',
+  Spino: './creatures/wiki/spinosaurus.png',
+  'Aberrant Spino': './creatures/wiki/spinosaurus.png',
+  Stegosaurus: './creatures/wiki/stegosaurus.png',
+  Stego: './creatures/wiki/stegosaurus.png',
+  'Aberrant Stegosaurus': './creatures/wiki/stegosaurus.png',
+  Therizinosaurus: './creatures/wiki/therizinosaurus.png',
+  Therizinosaur: './creatures/wiki/therizinosaurus.png',
+  Triceratops: './creatures/wiki/triceratops.png',
+  Trike: './creatures/wiki/triceratops.png',
+  'X-Triceratops': './creatures/wiki/triceratops.png',
+  'Aberrant Triceratops': './creatures/wiki/triceratops.png',
+  Yutyrannus: './creatures/wiki/yutyrannus.png',
+};
+
 /**
  * For R- and Aberrant variants, strip the prefix to use the base creature icon.
  */
@@ -104,11 +138,23 @@ function resolveVariantName(name) {
  * Returns the ARK wiki icon URL for a given creature name.
  */
 export function getCreatureIconUrl(name) {
+  if (LOCAL_ICON_URLS[name]) {
+    return LOCAL_ICON_URLS[name];
+  }
+
   const variant = resolveVariantName(name);
   if (variant) {
+    if (LOCAL_ICON_URLS[variant]) {
+      return LOCAL_ICON_URLS[variant];
+    }
     return `https://ark.wiki.gg/images/thumb/${variant}.png/64px-${variant}.png`;
   }
+
   const wikiName = SPECIAL_NAMES[name] || name.replace(/ /g, '_');
+  if (LOCAL_ICON_URLS[wikiName]) {
+    return LOCAL_ICON_URLS[wikiName];
+  }
+
   return `https://ark.wiki.gg/images/thumb/${wikiName}.png/64px-${wikiName}.png`;
 }
 

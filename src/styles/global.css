@@ -6857,13 +6857,12 @@ body {
   border-radius: var(--r-sm);
   flex-shrink: 0;
 }
-.dino-icon img,
-.detail-hero-icon img {
-  filter: invert(1) brightness(1.8);
+.dino-icon img {
+  filter: none;
 }
 
-.dino-icon img.fallback-app-icon {
-  filter: none;
+.detail-hero-icon img {
+  filter: invert(1) brightness(1.8);
 }
 .dino-list-item.active .dino-icon { background: rgba(123,147,248,0.12); }
 
@@ -8349,7 +8348,6 @@ textarea,
 .app-shell.light-theme .dino-icon {
   background: rgba(245,245,248,0.9);
 }
-.app-shell.light-theme .dino-icon img,
 .app-shell.light-theme .detail-hero-icon img {
   filter: brightness(0.3);
 }

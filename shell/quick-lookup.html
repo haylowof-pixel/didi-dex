@@ -126,8 +126,12 @@
     object-fit: cover;
     background: rgba(255,255,255,0.05);
     flex-shrink: 0;
-    filter: brightness(0) invert(1);
     opacity: 0.85;
+  }
+  .result-icon.fallback-app-icon,
+  #dino-header-icon.fallback-app-icon {
+    object-fit: contain;
+    filter: none;
   }
   .result-icon-fallback {
     width: 28px; height: 28px;
@@ -186,7 +190,6 @@
     border-radius: 9px;
     object-fit: cover;
     background: rgba(255,255,255,0.05);
-    filter: brightness(0) invert(1);
     opacity: 0.9;
   }
   #dino-header-icon-fb {
@@ -877,8 +880,8 @@ function showHistory() {
 
     const iconUrl = getIconUrl(dino);
     const iconHtml = iconUrl
-      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
-      : `<div class="result-icon-fallback">🦕</div>`;
+      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.onerror=null;this.src='../public/icon-128.png';this.classList.add('fallback-app-icon')">`
+      : `<img class="result-icon fallback-app-icon" src="../public/icon-128.png" alt="">`;
 
     el.innerHTML = `
       ${iconHtml}
@@ -951,8 +954,8 @@ function renderResults(list) {
 
     const iconUrl = getIconUrl(dino);
     const iconHtml = iconUrl
-      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
-      : `<div class="result-icon-fallback">🦕</div>`;
+      ? `<img class="result-icon" src="${iconUrl}" alt="" onerror="this.onerror=null;this.src='../public/icon-128.png';this.classList.add('fallback-app-icon')">`
+      : `<img class="result-icon fallback-app-icon" src="../public/icon-128.png" alt="">`;
 
     el.innerHTML = `
       ${iconHtml}
@@ -1023,6 +1026,39 @@ var ICON_BASE = {
   'Woolly Mammoth':    'Mammoth',
   'Quetzalcoatlus':    'Quetzal',
 };
+var LOCAL_ICON_URLS = {
+  'Ankylosaurus': '../public/creatures/wiki/ankylosaurus.png',
+  'Argentavis': '../public/creatures/wiki/argentavis.png',
+  'Baryonyx': '../public/creatures/wiki/baryonyx.png',
+  'Carnotaurus': '../public/creatures/wiki/carnotaurus.png',
+  'Carno': '../public/creatures/wiki/carnotaurus.png',
+  'Doedicurus': '../public/creatures/wiki/doedicurus.png',
+  'Giganotosaurus': '../public/creatures/wiki/giganotosaurus.png',
+  'Parasaur': '../public/creatures/wiki/parasaur.png',
+  'Pteranodon': '../public/creatures/wiki/pteranodon.png',
+  'Quetzalcoatlus': '../public/creatures/wiki/quetzalcoatlus.png',
+  'Quetzal': '../public/creatures/wiki/quetzalcoatlus.png',
+  'Raptor': '../public/creatures/wiki/raptor.png',
+  'Alpha Raptor': '../public/creatures/wiki/raptor.png',
+  'Rex': '../public/creatures/wiki/rex.png',
+  'Alpha Rex': '../public/creatures/wiki/rex.png',
+  'Alpha T-Rex': '../public/creatures/wiki/rex.png',
+  'Tek Rex': '../public/creatures/wiki/rex.png',
+  'X-Rex': '../public/creatures/wiki/rex.png',
+  'Spinosaurus': '../public/creatures/wiki/spinosaurus.png',
+  'Spino': '../public/creatures/wiki/spinosaurus.png',
+  'Aberrant Spino': '../public/creatures/wiki/spinosaurus.png',
+  'Stegosaurus': '../public/creatures/wiki/stegosaurus.png',
+  'Stego': '../public/creatures/wiki/stegosaurus.png',
+  'Aberrant Stegosaurus': '../public/creatures/wiki/stegosaurus.png',
+  'Therizinosaurus': '../public/creatures/wiki/therizinosaurus.png',
+  'Therizinosaur': '../public/creatures/wiki/therizinosaurus.png',
+  'Triceratops': '../public/creatures/wiki/triceratops.png',
+  'Trike': '../public/creatures/wiki/triceratops.png',
+  'X-Triceratops': '../public/creatures/wiki/triceratops.png',
+  'Aberrant Triceratops': '../public/creatures/wiki/triceratops.png',
+  'Yutyrannus': '../public/creatures/wiki/yutyrannus.png',
+};
 
 function resolveVariantName(name) {
   if (name.startsWith('R-')) {
@@ -1042,9 +1078,14 @@ function resolveVariantName(name) {
 }
 
 function getIconUrl(dino) {
+  if (LOCAL_ICON_URLS[dino.name]) return LOCAL_ICON_URLS[dino.name];
   var variant = resolveVariantName(dino.name);
-  if (variant) return `https://ark.wiki.gg/images/thumb/${variant}.png/64px-${variant}.png`;
+  if (variant) {
+    if (LOCAL_ICON_URLS[variant]) return LOCAL_ICON_URLS[variant];
+    return `https://ark.wiki.gg/images/thumb/${variant}.png/64px-${variant}.png`;
+  }
   var wikiName = ICON_SPECIAL[dino.name] || dino.name.replace(/ /g, '_');
+  if (LOCAL_ICON_URLS[wikiName]) return LOCAL_ICON_URLS[wikiName];
   return `https://ark.wiki.gg/images/thumb/${wikiName}.png/64px-${wikiName}.png`;
 }
 
@@ -1151,12 +1192,22 @@ function selectDino(dino) {
   const imgEl = document.getElementById('dino-header-icon');
   const fbEl  = document.getElementById('dino-header-icon-fb');
   if (iconUrl) {
+    imgEl.onerror = function() {
+      this.onerror = null;
+      this.src = '../public/icon-128.png';
+      this.classList.add('fallback-app-icon');
+      this.style.display = '';
+      fbEl.style.display = 'none';
+    };
+    imgEl.classList.remove('fallback-app-icon');
     imgEl.src = iconUrl;
     imgEl.style.display = '';
     fbEl.style.display = 'none';
   } else {
-    imgEl.style.display = 'none';
-    fbEl.style.display = 'flex';
+    imgEl.src = '../public/icon-128.png';
+    imgEl.classList.add('fallback-app-icon');
+    imgEl.style.display = '';
+    fbEl.style.display = 'none';
   }
   document.getElementById('dino-title').textContent = dino.name;
 
