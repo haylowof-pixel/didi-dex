@@ -6861,6 +6861,10 @@ body {
 .detail-hero-icon img {
   filter: invert(1) brightness(1.8);
 }
+
+.dino-icon img.fallback-app-icon {
+  filter: none;
+}
 .dino-list-item.active .dino-icon { background: rgba(123,147,248,0.12); }
 
 .dino-info { flex: 1; min-width: 0; }

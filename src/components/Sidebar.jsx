@@ -94,9 +94,8 @@ export default function Sidebar({ dinosaurs, selectedDino, onSelectDino, favorit
                   width={28}
                   height={28}
                   style={{ objectFit: 'contain' }}
-                  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'inline'; }}
+                  onError={(e) => { e.currentTarget.src = './icon-128.png'; e.currentTarget.classList.add('fallback-app-icon'); }}
                 />
-                <span style={{ display: 'none' }}>{dino.icon}</span>
               </div>
               <div className="dino-info">
                 <div className="dino-name">{dino.name}</div>

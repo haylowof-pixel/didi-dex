@@ -32,11 +32,17 @@ const MULTIPLIER_PRESETS = [
 
 function DossierImage({ name }) {
   const urls = getCreatureImageFallbacks(name);
-  const [src, setSrc] = useState(urls[0]);
+  const localSrc = name === 'Rex' ? './creatures/wiki/rex-dossier.png' : '';
+  const [src, setSrc] = useState(localSrc || urls[0]);
   const [isIcon, setIsIcon] = useState(false);
   const triedRef = React.useRef(0);
 
   React.useEffect(() => {
+    if (localSrc) {
+      setSrc(localSrc);
+      setIsIcon(false);
+      return;
+    }
     triedRef.current = 0;
     setIsIcon(false);
     function tryLoad(i) {
@@ -47,7 +53,7 @@ function DossierImage({ name }) {
       img.src = urls[i];
     }
     tryLoad(0);
-  }, [name]);
+  }, [name, localSrc]);
 
   return (
     <div className="detail-hero-dossier">
