@@ -27518,6 +27518,97 @@ html body .app-shell.module-shell .content-area {
   padding-top: 12px;
 }
 
+.ow-detail-hero {
+  display: grid;
+  grid-template-columns: minmax(320px, .55fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 22px;
+  padding: 18px;
+  overflow: hidden;
+}
+
+.ow-detail-hero > img {
+  width: 100%;
+  min-height: 360px;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.ow-detail-hero > div {
+  display: grid;
+  align-content: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ow-detail-hero button {
+  width: max-content;
+  max-width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255, 216, 117, .22);
+  border-radius: 999px;
+  color: var(--ow-text);
+  background: rgba(255, 255, 255, .045);
+  padding: 0 14px;
+  font-weight: 900;
+}
+
+.ow-detail-hero span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ow-gold);
+  font-size: .75rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ow-detail-hero h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: clamp(3.2rem, 6vw, 7rem);
+  line-height: .86;
+}
+
+.ow-detail-hero p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--ow-muted);
+  line-height: 1.6;
+}
+
+.ow-detail-hero dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.ow-detail-hero dl > div {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .035);
+}
+
+.ow-detail-hero dt {
+  color: rgba(255, 247, 232, .55);
+  font-size: .7rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ow-detail-hero dd {
+  margin: 7px 0 0;
+  color: var(--ow-gold);
+  font-weight: 950;
+}
+
 .ow-taming-section .ow-section-head h2 {
   max-width: 780px;
   font-size: clamp(2rem, 3.2vw, 3.6rem);
@@ -27891,11 +27982,22 @@ html body .app-shell.module-shell .content-area {
   align-items: start;
 }
 
+.ow-browser-workspace {
+  display: grid;
+  gap: 18px;
+}
+
 .ow-browser-panel {
   position: sticky;
   top: 106px;
   display: grid;
   gap: 18px;
+}
+
+.ow-browser-workspace .ow-browser-panel {
+  position: static;
+  grid-template-columns: minmax(280px, 1fr) auto auto auto;
+  align-items: end;
 }
 
 .ow-browser-search {
@@ -28051,9 +28153,16 @@ html body .app-shell.module-shell .content-area {
 .ow-browser-results b {
   position: relative;
   z-index: 1;
-  grid-column: 1 / -1;
   color: var(--ow-gold);
   font-size: .76rem;
+}
+
+.ow-browser-results small {
+  position: relative;
+  z-index: 1;
+  color: var(--ow-muted);
+  font-size: .76rem;
+  font-weight: 850;
 }
 
 .ow-load-more {
@@ -28750,6 +28859,10 @@ html body .app-shell.module-shell .content-area {
   gap: 22px;
 }
 
+.ow-browser-workspace .ow-browser-panel {
+  grid-template-columns: minmax(320px, 1.25fr) minmax(180px, .75fr) minmax(180px, .75fr) 150px;
+}
+
 .ow-browser-panel,
 .ow-browser-focus {
   top: 112px;
@@ -28761,7 +28874,7 @@ html body .app-shell.module-shell .content-area {
 }
 
 .ow-browser-results {
-  grid-template-columns: repeat(3, minmax(170px, 1fr));
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
   max-height: 820px;
   gap: 14px;
   padding: 2px 8px 2px 2px;
@@ -28840,6 +28953,14 @@ html body .app-shell.module-shell .content-area {
     grid-template-columns: 300px minmax(0, 1fr);
   }
 
+  .ow-browser-workspace .ow-browser-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ow-browser-results {
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+  }
+
   .ow-browser-focus {
     grid-column: 1 / -1;
     position: relative;
@@ -28878,12 +28999,45 @@ html body .app-shell.module-shell .content-area {
   .ow-browser-focus button {
     grid-column: auto;
   }
+
+  .ow-browser-workspace .ow-browser-panel,
+  .ow-detail-hero,
+  .ow-detail-hero dl {
+    grid-template-columns: 1fr;
+  }
+
+  .ow-detail-hero > img {
+    min-height: 260px;
+  }
 }
 
 @media (max-width: 640px) {
   .ow-feature-grid,
   .ow-browser-results {
     grid-template-columns: 1fr;
+  }
+
+  .ow-browser-workspace .ow-browser-panel {
+    padding: 14px;
+  }
+
+  .ow-browser-results button {
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    min-height: 86px;
+  }
+
+  .ow-browser-results img {
+    width: 54px;
+    height: 54px;
+  }
+
+  .ow-detail-hero {
+    padding: 12px;
+    border-radius: 24px;
+  }
+
+  .ow-detail-hero h2 {
+    font-size: clamp(2.5rem, 13vw, 4.6rem);
   }
 
   .ow-hero {

@@ -404,10 +404,28 @@ function TamingCalculator({
 
   return (
     <section className="ow-section ow-taming-section" id="taming">
-      <div className="ow-section-head">
-        <span><TamingLassoIcon size={18} /> Calculateur tame</span>
-        <h2>Calculer le tame du {creature.name}.</h2>
-        <p>Choisis le niveau, la nourriture, le type de narcotique et la qualité d’arme. Les quantités se mettent à jour directement.</p>
+      <div className="ow-detail-hero ow-card-energy">
+        <img src={creature.dossier} alt="" onError={event => assetFallback(event, creature.icon)} />
+        <div>
+          <button type="button" onClick={() => navigateToPage('library')}>Changer de créature</button>
+          <span><TamingLassoIcon size={18} /> Calculateur tame</span>
+          <h2>{creature.name}</h2>
+          <p>{creature.warning}</p>
+          <dl>
+            <div>
+              <dt>Régime</dt>
+              <dd>{creature.diet}</dd>
+            </div>
+            <div>
+              <dt>Méthode</dt>
+              <dd>{creature.tame}</dd>
+            </div>
+            <div>
+              <dt>Efficacité</dt>
+              <dd>{formatPercent(food[6])}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
       <div className="ow-calculator">
@@ -585,8 +603,6 @@ function CreatureExplorer({
   setSelectedCreature,
 }) {
   const [visibleCount, setVisibleCount] = useState(24);
-  const active = creatures.find(item => item.id === selectedCreature) || filteredCreatures[0] || creatures[0];
-  const bestFood = active.foods[0]?.[1] || 'Non tame';
   const visibleCreatures = filteredCreatures.slice(0, visibleCount);
 
   useEffect(() => {
@@ -596,12 +612,12 @@ function CreatureExplorer({
   return (
     <section className="ow-section ow-creature-browser" id="library">
       <div className="ow-section-head">
-        <span><SkullIcon size={18} /> Explorateur créatures</span>
-        <h2>Trouve une créature et lance le calcul.</h2>
-        <p>{filteredCreatures.length} créatures tamables disponibles avec nourriture, torpeur, narcotiques et armes.</p>
+        <span><SkullIcon size={18} /> Bestiaire</span>
+        <h2>Choisis une créature.</h2>
+        <p>Recherche une créature, filtre la liste, puis ouvre directement son calculateur.</p>
       </div>
-      <div className="ow-browser-layout">
-        <aside className="ow-browser-panel ow-panel">
+      <div className="ow-browser-workspace">
+        <div className="ow-browser-panel ow-panel">
           <div className="ow-browser-search">
             <ScanIcon size={18} />
             <input
@@ -650,7 +666,7 @@ function CreatureExplorer({
             <strong>{filteredCreatures.length}</strong>
             <span>résultats</span>
           </div>
-        </aside>
+        </div>
 
         <div className="ow-browser-results">
           {visibleCreatures.map(creature => (
@@ -658,7 +674,10 @@ function CreatureExplorer({
               type="button"
               key={creature.id}
               className={selectedCreature === creature.id ? 'active' : ''}
-              onClick={() => setSelectedCreature(creature.id)}
+              onClick={() => {
+                setSelectedCreature(creature.id);
+                navigateToPage('taming');
+              }}
             >
               <img src={creature.icon} alt="" onError={assetFallback} />
               <span>
@@ -666,6 +685,7 @@ function CreatureExplorer({
                 <em>{creature.species}</em>
               </span>
               <b>{creature.diet}</b>
+              <small>{creature.tame}</small>
             </button>
           ))}
           {!visibleCreatures.length && (
@@ -685,30 +705,6 @@ function CreatureExplorer({
             </button>
           )}
         </div>
-
-        <article className="ow-browser-focus ow-card-energy">
-          <img src={active.dossier} alt="" onError={event => assetFallback(event, active.icon)} />
-          <div>
-            <span>Dossier sélectionné</span>
-            <h3>{active.name}</h3>
-            <p>{active.warning}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>Régime</dt>
-              <dd>{active.diet}</dd>
-            </div>
-            <div>
-              <dt>Tame</dt>
-              <dd>{active.tame}</dd>
-            </div>
-            <div>
-              <dt>Food</dt>
-              <dd>{bestFood}</dd>
-            </div>
-          </dl>
-          <button type="button" onClick={() => navigateToPage('taming')}>Calculer ce tame</button>
-        </article>
       </div>
     </section>
   );
