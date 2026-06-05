@@ -239,6 +239,19 @@ const navItems = [
   ['account', 'Compte'],
 ];
 
+const mobilePrimaryItems = [
+  ['home', 'Accueil'],
+  ['library', 'Dinos'],
+  ['taming', 'Tame'],
+  ['tribe', 'Tribu'],
+];
+
+const mobileSecondaryItems = [
+  ['maps', 'Cartes'],
+  ['servers', 'Serveurs'],
+  ['account', 'Compte'],
+];
+
 const pageMeta = {
   home: {
     title: 'OVERSEER - ARK taming calculator, dinos, maps and tribe planner',
@@ -370,6 +383,65 @@ function SiteNav({ page, className = '' }) {
   );
 }
 
+function MobileNav({ page }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const secondaryIsActive = mobileSecondaryItems.some(item => item[0] === page);
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [page]);
+
+  const goTo = id => {
+    setIsOpen(false);
+    navigateToPage(id);
+  };
+
+  return (
+    <>
+      {isOpen && (
+        <button
+          type="button"
+          className="ow-mobile-scrim"
+          aria-label="Fermer le menu mobile"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <div className={`ow-mobile-more ${isOpen ? 'open' : ''}`} aria-hidden={!isOpen}>
+        {mobileSecondaryItems.map(item => (
+          <button
+            type="button"
+            key={item[0]}
+            className={page === item[0] ? 'active' : ''}
+            onClick={() => goTo(item[0])}
+          >
+            {item[1]}
+          </button>
+        ))}
+        <a href={releaseUrl}>Télécharger</a>
+      </div>
+      <nav className="ow-mobile-dock" aria-label="Navigation mobile">
+        {mobilePrimaryItems.map(item => (
+          <button
+            type="button"
+            key={item[0]}
+            className={page === item[0] ? 'active' : ''}
+            onClick={() => goTo(item[0])}
+          >
+            {item[1]}
+          </button>
+        ))}
+        <button
+          type="button"
+          className={secondaryIsActive || isOpen ? 'active' : ''}
+          onClick={() => setIsOpen(prev => !prev)}
+        >
+          Plus
+        </button>
+      </nav>
+    </>
+  );
+}
+
 function Header({ account, page, setSelectedCreature }) {
   const [searchValue, setSearchValue] = useState('');
   const searchQuery = normalizeSearch(searchValue);
@@ -435,7 +507,7 @@ function Header({ account, page, setSelectedCreature }) {
         <span>{account.userId ? account.displayName || 'Profil' : 'Compte'}</span>
       </div>
     </header>
-    <SiteNav page={page} className="ow-mobile-nav" />
+    <MobileNav page={page} />
     </>
   );
 }
