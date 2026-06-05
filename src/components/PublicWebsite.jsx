@@ -230,7 +230,7 @@ const servers = [
 ];
 
 const navItems = [
-  ['creatures', 'Accueil'],
+  ['home', 'Accueil'],
   ['library', 'Dinos'],
   ['taming', 'Taming'],
   ['tribe', 'Tribu'],
@@ -243,9 +243,14 @@ function assetFallback(event, fallback = './icon-128.png') {
   event.currentTarget.src = fallback;
 }
 
-function scrollToSection(id) {
-  const section = document.getElementById(id);
-  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function navigateToPage(id) {
+  window.location.hash = id === 'home' ? '' : id;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getInitialPage() {
+  const hash = window.location.hash.replace('#', '');
+  return navItems.some(item => item[0] === hash) ? hash : 'home';
 }
 
 function formatPercent(value) {
@@ -277,10 +282,10 @@ function sortedUnique(values) {
 
 function FeatureDeck() {
   const webFeatures = [
-    ['Bestiaire', 'Recherche et filtres sur les créatures tamables.', SkullIcon, 'Dinos'],
-    ['Taming', 'Nourriture, torpeur, narcotiques et tirs nécessaires.', TamingLassoIcon, 'Calculateur'],
-    ['Boss planner', 'Checklist de préparation pour les runs tribu.', ClipboardIcon, 'Tribu'],
-    ['Cartes', 'Cartes ARK et repères de progression.', MapIcon, 'Maps'],
+    ['Bestiaire', 'Recherche et filtres sur les créatures tamables.', SkullIcon, 'Dinos', 'library'],
+    ['Taming', 'Nourriture, torpeur, narcotiques et tirs nécessaires.', TamingLassoIcon, 'Calculateur', 'taming'],
+    ['Boss planner', 'Checklist de préparation pour les runs tribu.', ClipboardIcon, 'Tribu', 'tribe'],
+    ['Cartes', 'Cartes ARK et repères de progression.', MapIcon, 'Maps', 'maps'],
   ];
 
   return (
@@ -293,32 +298,39 @@ function FeatureDeck() {
         <p>Tout ce qui est utile dans un navigateur est accessible directement ici. Les outils overlay restent dans l’application Windows.</p>
       </div>
       <div className="ow-feature-grid">
-        {webFeatures.map(([title, text, Icon, action]) => (
-          <article key={title} className="ow-feature-card ow-card-energy">
+        {webFeatures.map(([title, text, Icon, action, page]) => (
+          <button type="button" key={title} className="ow-feature-card ow-card-energy" onClick={() => navigateToPage(page)}>
             <Icon size={22} />
             <strong>{title}</strong>
             <p>{text}</p>
             <span>{action}</span>
-          </article>
+          </button>
         ))}
       </div>
     </section>
   );
 }
 
-function Header({ account }) {
+function Header({ account, page }) {
   return (
     <header className="ow-header">
-      <a className="ow-logo" href="#">
+      <button className="ow-logo" type="button" onClick={() => navigateToPage('home')}>
         <img src="./icon-128.png" alt="" />
         <span>
           <strong>OVERSEER</strong>
           <em>Survival Companion</em>
         </span>
-      </a>
+      </button>
       <nav>
         {navItems.map(item => (
-          <button type="button" key={item[0]} onClick={() => scrollToSection(item[0])}>{item[1]}</button>
+          <button
+            type="button"
+            key={item[0]}
+            className={page === item[0] ? 'active' : ''}
+            onClick={() => navigateToPage(item[0])}
+          >
+            {item[1]}
+          </button>
         ))}
       </nav>
       <div className="ow-header-actions">
@@ -345,9 +357,9 @@ function Hero({ creature }) {
           <span><strong>Boss</strong> planner</span>
         </div>
         <div className="ow-hero-actions">
-          <button type="button" onClick={() => scrollToSection('library')}>Chercher une créature</button>
-          <button type="button" onClick={() => scrollToSection('taming')}>Ouvrir le calculateur</button>
-          <button type="button" onClick={() => scrollToSection('tribe')}>Préparer un boss</button>
+          <button type="button" onClick={() => navigateToPage('library')}>Chercher une créature</button>
+          <button type="button" onClick={() => navigateToPage('taming')}>Ouvrir le calculateur</button>
+          <button type="button" onClick={() => navigateToPage('tribe')}>Préparer un boss</button>
         </div>
       </div>
       <article className="ow-hero-dossier ow-card-energy">
@@ -572,9 +584,14 @@ function CreatureExplorer({
   selectedCreature,
   setSelectedCreature,
 }) {
+  const [visibleCount, setVisibleCount] = useState(24);
   const active = creatures.find(item => item.id === selectedCreature) || filteredCreatures[0] || creatures[0];
   const bestFood = active.foods[0]?.[1] || 'Non tame';
-  const visibleCreatures = filteredCreatures.slice(0, 90);
+  const visibleCreatures = filteredCreatures.slice(0, visibleCount);
+
+  useEffect(() => {
+    setVisibleCount(24);
+  }, [query, categoryFilter, tameFilter]);
 
   return (
     <section className="ow-section ow-creature-browser" id="library">
@@ -657,6 +674,16 @@ function CreatureExplorer({
               <span>Change la recherche ou enlève un filtre.</span>
             </div>
           )}
+          {filteredCreatures.length > visibleCreatures.length && (
+            <button
+              type="button"
+              className="ow-load-more"
+              onClick={() => setVisibleCount(count => count + 24)}
+            >
+              Afficher plus de créatures
+              <span>{visibleCreatures.length}/{filteredCreatures.length}</span>
+            </button>
+          )}
         </div>
 
         <article className="ow-browser-focus ow-card-energy">
@@ -680,7 +707,7 @@ function CreatureExplorer({
               <dd>{bestFood}</dd>
             </div>
           </dl>
-          <button type="button" onClick={() => scrollToSection('taming')}>Calculer ce tame</button>
+          <button type="button" onClick={() => navigateToPage('taming')}>Calculer ce tame</button>
         </article>
       </div>
     </section>
@@ -997,6 +1024,7 @@ function AccountSection({ account, setAccount }) {
 }
 
 export default function PublicWebsite() {
+  const [page, setPage] = useState(getInitialPage);
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [tameFilter, setTameFilter] = useState('all');
@@ -1028,22 +1056,23 @@ export default function PublicWebsite() {
   useEffect(() => {
     document.documentElement.classList.add('public-web-root');
     document.body.classList.add('public-web-body');
+    const syncPage = () => setPage(getInitialPage());
+    window.addEventListener('hashchange', syncPage);
     return () => {
+      window.removeEventListener('hashchange', syncPage);
       document.documentElement.classList.remove('public-web-root');
       document.body.classList.remove('public-web-body');
     };
   }, []);
 
-  return (
-    <main className="ow-site">
-      <video className="ow-video" autoPlay muted loop playsInline>
-        <source src="./splash-video.mp4" type="video/mp4" />
-      </video>
-      <div className="ow-backdrop" />
-      <Header account={account} />
-      <Hero
-        creature={creature}
-      />
+  const pageContent = {
+    home: (
+      <>
+        <Hero creature={creature} />
+        <FeatureDeck />
+      </>
+    ),
+    library: (
       <CreatureExplorer
         query={query}
         setQuery={setQuery}
@@ -1057,6 +1086,8 @@ export default function PublicWebsite() {
         selectedCreature={selectedCreature}
         setSelectedCreature={setSelectedCreature}
       />
+    ),
+    taming: (
       <TamingCalculator
         creature={creature}
         selectedFood={selectedFood}
@@ -1068,11 +1099,23 @@ export default function PublicWebsite() {
         narcoticId={narcoticId}
         setNarcoticId={setNarcoticId}
       />
-      <FeatureDeck />
-      <TribeSection checks={tribeChecks} setChecks={setTribeChecks} />
-      <MapSection />
-      <ServerSection />
-      <AccountSection account={account} setAccount={setAccount} />
+    ),
+    tribe: <TribeSection checks={tribeChecks} setChecks={setTribeChecks} />,
+    maps: <MapSection />,
+    servers: <ServerSection />,
+    account: <AccountSection account={account} setAccount={setAccount} />,
+  };
+
+  return (
+    <main className="ow-site">
+      <video className="ow-video" autoPlay muted loop playsInline>
+        <source src="./splash-video.mp4" type="video/mp4" />
+      </video>
+      <div className="ow-backdrop" />
+      <Header account={account} page={page} />
+      <div className="ow-page">
+        {pageContent[page] || pageContent.home}
+      </div>
     </main>
   );
 }
