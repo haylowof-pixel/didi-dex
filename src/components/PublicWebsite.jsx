@@ -311,7 +311,26 @@ function FeatureDeck() {
   );
 }
 
-function Header({ account, page }) {
+function Header({ account, page, setSelectedCreature }) {
+  const [searchValue, setSearchValue] = useState('');
+  const searchQuery = normalizeSearch(searchValue);
+  const searchMatches = useMemo(() => (
+    searchQuery
+      ? creatures.filter(creature => creatureMatchesQuery(creature, searchQuery)).slice(0, 7)
+      : []
+  ), [searchQuery]);
+
+  const openCreature = creatureId => {
+    setSelectedCreature(creatureId);
+    setSearchValue('');
+    navigateToPage('taming');
+  };
+
+  const submitSearch = event => {
+    event.preventDefault();
+    if (searchMatches[0]) openCreature(searchMatches[0].id);
+  };
+
   return (
     <header className="ow-header">
       <button className="ow-logo" type="button" onClick={() => navigateToPage('home')}>
@@ -333,6 +352,34 @@ function Header({ account, page }) {
           </button>
         ))}
       </nav>
+      <form className="ow-top-search" onSubmit={submitSearch}>
+        <ScanIcon size={18} />
+        <input
+          type="search"
+          value={searchValue}
+          onChange={event => setSearchValue(event.target.value)}
+          placeholder="Chercher un dino..."
+          aria-label="Chercher une créature"
+        />
+        {searchMatches.length > 0 && (
+          <div className="ow-top-search-results">
+            {searchMatches.map(match => (
+              <button type="button" key={match.id} onClick={() => openCreature(match.id)}>
+                <img src={match.icon} alt="" onError={assetFallback} />
+                <span>
+                  <strong>{match.name}</strong>
+                  <em>{match.diet} · {match.tame}</em>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+        {searchQuery && searchMatches.length === 0 && (
+          <div className="ow-top-search-results empty">
+            <span>Aucun dino trouvé</span>
+          </div>
+        )}
+      </form>
       <div className="ow-header-actions">
         <a href="?app=1">App Windows</a>
         <a href={releaseUrl}>Télécharger</a>
@@ -1108,7 +1155,7 @@ export default function PublicWebsite() {
         <source src="./splash-video.mp4" type="video/mp4" />
       </video>
       <div className="ow-backdrop" />
-      <Header account={account} page={page} />
+      <Header account={account} page={page} setSelectedCreature={setSelectedCreature} />
       <div className="ow-page">
         {pageContent[page] || pageContent.home}
       </div>

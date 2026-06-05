@@ -27024,8 +27024,8 @@ html body .app-shell.module-shell .content-area {
   margin: 0 auto 54px;
   min-height: 72px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 22px;
+  grid-template-columns: auto minmax(410px, 1fr) minmax(260px, 340px) auto;
+  gap: 14px;
   align-items: center;
   padding: 12px 14px;
   border: 1px solid rgba(255, 216, 117, .18);
@@ -27100,6 +27100,7 @@ html body .app-shell.module-shell .content-area {
 .ow-header nav {
   justify-content: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .ow-header nav button,
@@ -27121,6 +27122,121 @@ html body .app-shell.module-shell .content-area {
 .ow-header nav button {
   padding: 11px 14px;
   color: rgba(255, 247, 232, .76);
+}
+
+.ow-top-search {
+  position: relative;
+  min-width: 0;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 216, 117, .20);
+  border-radius: 999px;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025)),
+    rgba(8, 6, 12, .46);
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, .24), 0 0 22px rgba(166, 108, 255, .08);
+}
+
+.ow-top-search:focus-within {
+  border-color: rgba(255, 216, 117, .52);
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, .22), 0 0 30px rgba(166, 108, 255, .18);
+}
+
+.ow-top-search svg {
+  flex: 0 0 auto;
+  color: var(--ow-gold);
+}
+
+.ow-top-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ow-text);
+  font: inherit;
+  font-weight: 800;
+}
+
+.ow-top-search input::placeholder {
+  color: rgba(255, 247, 232, .48);
+}
+
+.ow-top-search-results {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(255, 216, 117, .22);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(166, 108, 255, .20), transparent 46%),
+    linear-gradient(140deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025)),
+    rgba(8, 6, 12, .92);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .54), 0 0 40px rgba(255, 183, 83, .10);
+  backdrop-filter: blur(22px);
+}
+
+.ow-top-search-results button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 13px;
+  color: var(--ow-text);
+  text-align: left;
+  background: rgba(255, 255, 255, .045);
+  cursor: pointer;
+}
+
+.ow-top-search-results button:hover {
+  border-color: rgba(255, 216, 117, .42);
+  background:
+    linear-gradient(105deg, rgba(166, 108, 255, .18), rgba(255, 155, 73, .16)),
+    rgba(255, 255, 255, .06);
+}
+
+.ow-top-search-results img {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, .06);
+}
+
+.ow-top-search-results span,
+.ow-top-search-results button span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.ow-top-search-results strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ow-top-search-results em,
+.ow-top-search-results.empty span {
+  color: var(--ow-muted);
+  font-size: .78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.ow-top-search-results.empty {
+  padding: 14px;
 }
 
 .ow-header nav button:hover,
@@ -28945,6 +29061,17 @@ html body .app-shell.module-shell .content-area {
 }
 
 @media (max-width: 1280px) {
+  .ow-header {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .ow-top-search {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    width: 100%;
+    justify-self: center;
+  }
+
   .ow-feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -29094,6 +29221,23 @@ html body .app-shell.module-shell .content-area {
     margin-bottom: 14px;
     padding: 8px;
     border-radius: 18px;
+  }
+
+  .ow-top-search {
+    grid-column: 1 / -1;
+    order: 3;
+    max-width: none;
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .ow-top-search-results {
+    position: fixed;
+    top: 74px;
+    left: 12px;
+    right: 12px;
+    max-height: min(420px, calc(100vh - 168px));
+    overflow-y: auto;
   }
 
   .ow-logo img {
