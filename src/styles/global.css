@@ -27103,7 +27103,12 @@ html body .app-shell.module-shell .content-area {
   min-width: 0;
 }
 
+.ow-mobile-nav {
+  display: none;
+}
+
 .ow-header nav button,
+.ow-mobile-nav button,
 .ow-header-actions a,
 .ow-header-actions span,
 .ow-search-results button,
@@ -27121,6 +27126,10 @@ html body .app-shell.module-shell .content-area {
 
 .ow-header nav button {
   padding: 11px 14px;
+  color: rgba(255, 247, 232, .76);
+}
+
+.ow-mobile-nav button {
   color: rgba(255, 247, 232, .76);
 }
 
@@ -27241,6 +27250,8 @@ html body .app-shell.module-shell .content-area {
 
 .ow-header nav button:hover,
 .ow-header nav button.active,
+.ow-mobile-nav button:hover,
+.ow-mobile-nav button.active,
 .ow-header-actions a:hover,
 .ow-map-tabs button.active,
 .ow-narco-list button.active {
@@ -29211,9 +29222,9 @@ html body .app-shell.module-shell .content-area {
 }
 
 /* Mobile web app ergonomics */
-@media (max-width: 640px) {
+@media (max-width: 780px) {
   .ow-site {
-    padding: 10px 12px 96px;
+    padding: 10px 12px calc(104px + env(safe-area-inset-bottom));
   }
 
   .ow-header {
@@ -29278,9 +29289,10 @@ html body .app-shell.module-shell .content-area {
 
   .ow-header nav {
     position: fixed;
+    top: auto !important;
     left: 10px;
     right: 10px;
-    bottom: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
     z-index: 50;
     display: grid;
     grid-auto-flow: column;
@@ -29296,6 +29308,12 @@ html body .app-shell.module-shell .content-area {
       rgba(5, 4, 9, .82);
     box-shadow: 0 18px 60px rgba(0, 0, 0, .52), inset 0 1px 0 rgba(255, 255, 255, .1);
     backdrop-filter: blur(24px) saturate(1.35);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .ow-header nav::-webkit-scrollbar {
+    display: none;
   }
 
   .ow-header nav button {
@@ -29432,5 +29450,207 @@ html body .app-shell.module-shell .content-area {
     min-height: 150px;
     border-radius: 20px;
     padding: 16px;
+  }
+}
+
+/* Public website mobile release pass: iPhone 15-first layout */
+@media (max-width: 780px) {
+  .ow-site {
+    width: 100%;
+    min-width: 0;
+    padding-bottom: calc(142px + env(safe-area-inset-bottom));
+    overflow-x: clip;
+  }
+
+  .ow-header {
+    width: calc(100vw - 24px);
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    margin: 0 auto 18px;
+  }
+
+  .ow-logo {
+    min-width: 0;
+  }
+
+  .ow-logo strong,
+  .ow-logo em {
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ow-header-nav {
+    display: none !important;
+  }
+
+  .ow-mobile-nav {
+    position: fixed;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 10px;
+    right: 10px;
+    z-index: 80;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: row;
+    align-items: center;
+    justify-content: start;
+    gap: 7px;
+    padding: 8px;
+    border: 1px solid rgba(255, 216, 117, .2);
+    border-radius: 22px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .025)),
+      rgba(5, 4, 9, .82);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .56), inset 0 1px 0 rgba(255, 255, 255, .12);
+    backdrop-filter: blur(24px) saturate(1.35);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .ow-mobile-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ow-mobile-nav button {
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    justify-content: center;
+    padding: 0 10px;
+    text-align: center;
+    white-space: nowrap;
+    font-size: .72rem;
+  }
+
+  .ow-page,
+  .ow-section {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .ow-section {
+    padding-top: 18px;
+  }
+
+  .ow-section-head {
+    padding: 0 2px;
+  }
+
+  .ow-section-head h2 {
+    max-width: 11ch;
+    line-height: .96;
+  }
+
+  .ow-section-head p {
+    max-width: 32rem;
+  }
+
+  .ow-tribe-layout {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .ow-bosses {
+    padding: 12px;
+    border-radius: 22px;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .018)),
+      rgba(5, 4, 9, .58);
+  }
+
+  .ow-bosses button {
+    grid-template-columns: 68px minmax(0, 1fr) !important;
+    gap: 12px;
+    min-height: 92px;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .ow-bosses img {
+    width: 68px;
+    height: 68px;
+    padding: 5px;
+    border: 1px solid rgba(255, 216, 117, .22);
+    border-radius: 18px;
+    object-fit: contain;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255, 216, 117, .2), rgba(166, 108, 255, .14) 42%, rgba(0, 0, 0, .35) 74%),
+      rgba(255, 255, 255, .045);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .13), 0 12px 30px rgba(0, 0, 0, .32);
+    filter: brightness(1.25) contrast(1.08);
+  }
+
+  .ow-bosses span {
+    gap: 5px;
+  }
+
+  .ow-bosses strong {
+    font-size: 1rem;
+    line-height: 1.05;
+  }
+
+  .ow-bosses em {
+    font-size: .78rem;
+  }
+
+  .ow-bosses b {
+    grid-column: 2;
+    max-width: none;
+    color: rgba(255, 247, 232, .68);
+    font-size: .78rem;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .ow-planner {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .ow-planner > div:first-child {
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .ow-planner > div:first-child strong {
+    font-size: clamp(2.3rem, 16vw, 4.2rem);
+  }
+
+  .ow-checklist {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .ow-checklist label {
+    min-height: 52px;
+    padding: 12px;
+  }
+
+  .ow-map-web,
+  .ow-account-grid,
+  .ow-server-grid,
+  .ow-feature-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ow-map-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ow-map-tabs button {
+    justify-content: center;
+  }
+
+  .ow-map-frame img {
+    min-height: 240px;
+    object-fit: cover;
   }
 }

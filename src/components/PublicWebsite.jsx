@@ -288,6 +288,10 @@ function normalizePageHash(hashValue) {
 
 function getInitialPage() {
   const hash = normalizePageHash(window.location.hash);
+  const currentHash = String(window.location.hash || '').replace('#', '');
+  if (hash !== 'home' && currentHash !== hash) {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`);
+  }
   return navItems.some(item => item[0] === hash) ? hash : 'home';
 }
 
@@ -349,6 +353,23 @@ function FeatureDeck() {
   );
 }
 
+function SiteNav({ page, className = '' }) {
+  return (
+    <nav className={className}>
+      {navItems.map(item => (
+        <button
+          type="button"
+          key={item[0]}
+          className={page === item[0] ? 'active' : ''}
+          onClick={() => navigateToPage(item[0])}
+        >
+          {item[1]}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
 function Header({ account, page, setSelectedCreature }) {
   const [searchValue, setSearchValue] = useState('');
   const searchQuery = normalizeSearch(searchValue);
@@ -370,6 +391,7 @@ function Header({ account, page, setSelectedCreature }) {
   };
 
   return (
+    <>
     <header className="ow-header">
       <button className="ow-logo" type="button" onClick={() => navigateToPage('home')}>
         <img src="./icon-128.png" alt="" />
@@ -378,18 +400,7 @@ function Header({ account, page, setSelectedCreature }) {
           <em>Survival Companion</em>
         </span>
       </button>
-      <nav>
-        {navItems.map(item => (
-          <button
-            type="button"
-            key={item[0]}
-            className={page === item[0] ? 'active' : ''}
-            onClick={() => navigateToPage(item[0])}
-          >
-            {item[1]}
-          </button>
-        ))}
-      </nav>
+      <SiteNav page={page} className="ow-header-nav" />
       <form className="ow-top-search" onSubmit={submitSearch}>
         <ScanIcon size={18} />
         <input
@@ -424,6 +435,8 @@ function Header({ account, page, setSelectedCreature }) {
         <span>{account.userId ? account.displayName || 'Profil' : 'Compte'}</span>
       </div>
     </header>
+    <SiteNav page={page} className="ow-mobile-nav" />
+    </>
   );
 }
 
