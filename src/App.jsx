@@ -186,6 +186,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (isPublicWeb) return undefined;
     if (canonicalizeLegacyHash()) {
       setActivePage('extractor');
       setSelectedDino(null);
@@ -202,7 +203,7 @@ export default function App() {
     };
     window.addEventListener('hashchange', syncHash);
     return () => window.removeEventListener('hashchange', syncHash);
-  }, []);
+  }, [isPublicWeb]);
 
   // Ctrl+K global search shortcut
   useEffect(() => {

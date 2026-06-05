@@ -1,15 +1,15 @@
 {
   "name": "OVERSEER ARK Companion",
   "short_name": "OVERSEER",
-  "description": "ARK breeding, extraction, timers, tribe library and server tools.",
+  "description": "ARK creature search, taming calculator, narcotics, maps, server tools and tribe planning.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#05050c",
-  "theme_color": "#0f1224",
+  "theme_color": "#09070e",
   "categories": ["games", "productivity", "utilities"],
-  "lang": "en",
+  "lang": "fr",
   "icons": [
     {
       "src": "./icon-192.png",
@@ -26,17 +26,24 @@
   ],
   "shortcuts": [
     {
-      "name": "Extractor",
-      "short_name": "Extract",
-      "description": "Open stat extraction and breeding tools",
-      "url": "./#extractor",
+      "name": "Calculateur de tame",
+      "short_name": "Taming",
+      "description": "Open the ARK taming calculator",
+      "url": "./#taming",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Account & Billing",
-      "short_name": "Account",
-      "description": "Open cloud and subscription settings",
-      "url": "./#account",
+      "name": "Bestiaire",
+      "short_name": "Dinos",
+      "description": "Search ARK creatures",
+      "url": "./#library",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tribu",
+      "short_name": "Tribu",
+      "description": "Open tribe and boss planning",
+      "url": "./#tribe",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ]

@@ -239,6 +239,37 @@ const navItems = [
   ['account', 'Compte'],
 ];
 
+const pageMeta = {
+  home: {
+    title: 'OVERSEER - ARK taming calculator, dinos, maps and tribe planner',
+    description: 'OVERSEER is a web companion for ARK with creature search, taming calculator, narcotics, knockout weapons, maps, servers, tribe planning and account sync.',
+  },
+  library: {
+    title: 'Dinos - OVERSEER ARK companion',
+    description: 'Search ARK creatures by name, food, tame method and diet, then open a live taming calculator.',
+  },
+  taming: {
+    title: 'Taming calculator - OVERSEER ARK companion',
+    description: 'Calculate ARK tame food, effectiveness, duration, narcotics and knockout weapon shots.',
+  },
+  tribe: {
+    title: 'Tribe boss planner - OVERSEER ARK companion',
+    description: 'Prepare ARK boss runs with tribe checklists, artifacts, trophies and raid prep readiness.',
+  },
+  maps: {
+    title: 'Maps - OVERSEER ARK companion',
+    description: 'Browse ARK maps and progression references from the OVERSEER web companion.',
+  },
+  servers: {
+    title: 'Servers - OVERSEER ARK companion',
+    description: 'Track favorite ARK server status from the OVERSEER web companion.',
+  },
+  account: {
+    title: 'Account - OVERSEER ARK companion',
+    description: 'Create or manage your OVERSEER web account and support the project.',
+  },
+};
+
 function assetFallback(event, fallback = './icon-128.png') {
   event.currentTarget.src = fallback;
 }
@@ -248,8 +279,15 @@ function navigateToPage(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function normalizePageHash(hashValue) {
+  const hash = String(hashValue || '').replace('#', '');
+  if (!hash) return 'home';
+  if (hash === 'tribute' || hash.startsWith('tribute:')) return 'tribe';
+  return hash;
+}
+
 function getInitialPage() {
-  const hash = window.location.hash.replace('#', '');
+  const hash = normalizePageHash(window.location.hash);
   return navItems.some(item => item[0] === hash) ? hash : 'home';
 }
 
@@ -1107,6 +1145,18 @@ export default function PublicWebsite() {
       document.body.classList.remove('public-web-body');
     };
   }, []);
+
+  useEffect(() => {
+    const meta = pageMeta[page] || pageMeta.home;
+    document.title = meta.title;
+    let description = document.querySelector('meta[name="description"]');
+    if (!description) {
+      description = document.createElement('meta');
+      description.setAttribute('name', 'description');
+      document.head.appendChild(description);
+    }
+    description.setAttribute('content', meta.description);
+  }, [page]);
 
   const pageContent = {
     home: (

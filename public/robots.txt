@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://haylowof-pixel.github.io/overseer-companion/sitemap.xml
