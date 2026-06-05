@@ -27233,6 +27233,30 @@ html body .app-shell.module-shell .content-area {
   gap: 10px;
 }
 
+.ow-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ow-hero-actions button {
+  min-height: 50px;
+  border: 1px solid rgba(255, 216, 117, .2);
+  border-radius: 999px;
+  color: var(--ow-text);
+  background: rgba(255, 255, 255, .045);
+  padding: 0 18px;
+  font-weight: 900;
+}
+
+.ow-hero-actions button:first-child {
+  border-color: rgba(255, 216, 117, .52);
+  background:
+    linear-gradient(100deg, rgba(166, 108, 255, .38), rgba(255, 155, 73, .32)),
+    rgba(255, 255, 255, .065);
+  box-shadow: 0 0 32px rgba(255, 216, 117, .12);
+}
+
 .ow-search-results button {
   gap: 9px;
   padding: 9px 12px 9px 9px;
@@ -28645,6 +28669,21 @@ html body .app-shell.module-shell .content-area {
   margin: 0;
   color: var(--ow-muted);
   line-height: 1.55;
+}
+
+.ow-feature-card > span {
+  align-self: end;
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid rgba(255, 216, 117, .2);
+  border-radius: 999px;
+  color: var(--ow-gold);
+  background: rgba(255, 255, 255, .045);
+  padding: 8px 11px;
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
 .ow-creature-browser {

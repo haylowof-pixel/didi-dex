@@ -231,7 +231,6 @@ const servers = [
 
 const navItems = [
   ['creatures', 'Accueil'],
-  ['features', 'Fonctions'],
   ['library', 'Dinos'],
   ['taming', 'Taming'],
   ['tribe', 'Tribu'],
@@ -278,29 +277,28 @@ function sortedUnique(values) {
 
 function FeatureDeck() {
   const webFeatures = [
-    ['Bestiaire complet', 'Recherche, filtres, fiches et données de tame pour toutes les créatures utilisables côté web.', SkullIcon],
-    ['Calculateur tame', 'Nourriture, durée, efficacité, narcotiques, torpeur et armes recalculées depuis les données de l’app.', TamingLassoIcon],
-    ['Tribu et boss', 'Préparation de runs, checklist boss et suivi de readiness sans faux membres préremplis.', ClipboardIcon],
-    ['Cartes et serveurs', 'Cartes web, favoris serveur et statut lisible. Les overlays restent réservés à Windows.', MapIcon],
+    ['Bestiaire', 'Recherche et filtres sur les créatures tamables.', SkullIcon, 'Dinos'],
+    ['Taming', 'Nourriture, torpeur, narcotiques et tirs nécessaires.', TamingLassoIcon, 'Calculateur'],
+    ['Boss planner', 'Checklist de préparation pour les runs tribu.', ClipboardIcon, 'Tribu'],
+    ['Cartes', 'Cartes ARK et repères de progression.', MapIcon, 'Maps'],
   ];
 
   return (
-    <section className="ow-section ow-feature-deck" id="features">
+    <section className="ow-section ow-feature-deck" id="tools">
       <div className="ow-section-head ow-section-head-row">
         <div>
-          <span><SparklesIcon size={18} /> Version web</span>
-          <h2>Un site autonome, pas une app collée dans une page.</h2>
+          <span><SparklesIcon size={18} /> Outils disponibles</span>
+          <h2>Accès rapide aux modules web.</h2>
         </div>
-        <p>
-          Le web sert à chercher, comparer, calculer et préparer. La version Windows garde les overlays, widgets flottants et outils in-game.
-        </p>
+        <p>Tout ce qui est utile dans un navigateur est accessible directement ici. Les outils overlay restent dans l’application Windows.</p>
       </div>
       <div className="ow-feature-grid">
-        {webFeatures.map(([title, text, Icon]) => (
+        {webFeatures.map(([title, text, Icon, action]) => (
           <article key={title} className="ow-feature-card ow-card-energy">
             <Icon size={22} />
             <strong>{title}</strong>
             <p>{text}</p>
+            <span>{action}</span>
           </article>
         ))}
       </div>
@@ -324,9 +322,9 @@ function Header({ account }) {
         ))}
       </nav>
       <div className="ow-header-actions">
-        <a href="?app=1">Ouvrir l’app</a>
+        <a href="?app=1">App Windows</a>
         <a href={releaseUrl}>Télécharger</a>
-        <span>{account.userId ? account.displayName || 'Profil' : 'Free web'}</span>
+        <span>{account.userId ? account.displayName || 'Profil' : 'Compte'}</span>
       </div>
     </header>
   );
@@ -336,10 +334,10 @@ function Hero({ creature, query, setQuery, filteredCreatures, setSelectedCreatur
   return (
     <section className="ow-hero" id="creatures">
       <div className="ow-hero-copy">
-        <div className="ow-kicker"><SparklesIcon size={16} /> OVERSEER Web</div>
-        <h1>La base ARK moderne pour tame, cartes, boss et serveurs.</h1>
+        <div className="ow-kicker"><SparklesIcon size={16} /> ARK tools</div>
+        <h1>Cherche, calcule et prépare tes tames ARK.</h1>
         <p>
-          Une vraie version navigateur pensée pour chercher vite, calculer proprement et préparer ta tribu sans ouvrir l’overlay desktop.
+          Bestiaire, tame calculator, narcotiques, armes, boss planner, cartes et compte web dans une interface claire.
         </p>
         <div className="ow-search">
           <ScanIcon size={20} />
@@ -354,6 +352,11 @@ function Hero({ creature, query, setQuery, filteredCreatures, setSelectedCreatur
             </button>
           ))}
         </div>
+        <div className="ow-hero-actions">
+          <button type="button" onClick={() => scrollToSection('library')}>Chercher une créature</button>
+          <button type="button" onClick={() => scrollToSection('taming')}>Ouvrir le calculateur</button>
+          <button type="button" onClick={() => scrollToSection('tribe')}>Préparer un boss</button>
+        </div>
       </div>
       <article className="ow-hero-dossier ow-card-energy">
         <img src={creature.dossier} alt="" onError={event => assetFallback(event, creature.icon)} />
@@ -361,7 +364,7 @@ function Hero({ creature, query, setQuery, filteredCreatures, setSelectedCreatur
           <span>Dossier actif</span>
           <h2>{creature.name}</h2>
           <p>{creature.species}</p>
-          <strong>{creature.torporDrop} torpor</strong>
+          <strong>Calcul tame disponible</strong>
         </div>
       </article>
     </section>
@@ -585,8 +588,8 @@ function CreatureExplorer({
     <section className="ow-section ow-creature-browser" id="library">
       <div className="ow-section-head">
         <span><SkullIcon size={18} /> Explorateur créatures</span>
-        <h2>Recherche web complète, pas une vitrine statique.</h2>
-        <p>{filteredCreatures.length} créatures tamables importées depuis la base de l’app, avec nourriture, torpeur et armes recalculées.</p>
+        <h2>Trouve une créature et lance le calcul.</h2>
+        <p>{filteredCreatures.length} créatures tamables disponibles avec nourriture, torpeur, narcotiques et armes.</p>
       </div>
       <div className="ow-browser-layout">
         <aside className="ow-browser-panel ow-panel">
@@ -700,8 +703,8 @@ function TribeSection({ checks, setChecks }) {
     <section className="ow-section" id="tribe">
       <div className="ow-section-head">
         <span><ClipboardIcon size={18} /> Tribus et boss</span>
-        <h2>Préparer les runs sans faux membres préremplis.</h2>
-        <p>Le site expose une version web claire: checklist boss, choix du boss et préparation partagée. Les overlays restent réservés à l’app.</p>
+        <h2>Préparer un run boss.</h2>
+        <p>Choisis un boss, coche les préparatifs et garde une readiness lisible avant de lancer l’arène.</p>
       </div>
       <div className="ow-tribe-layout">
         <article className="ow-bosses ow-panel">
@@ -775,7 +778,7 @@ function ServerSection() {
     <section className="ow-section" id="servers">
       <div className="ow-section-head">
         <span><ServerIcon size={18} /> Serveurs</span>
-        <h2>Favoris serveur et statut live côté web.</h2>
+        <h2>Serveurs favoris.</h2>
       </div>
       <div className="ow-server-grid">
         {servers.map(server => (
@@ -957,7 +960,7 @@ function AccountSection({ account, setAccount }) {
                 <span>Session active</span>
                 <strong>{account.authProvider === 'local-dev' || account.authProvider === 'web-local' ? 'Mode local' : 'Compte cloud'}</strong>
                 <p>{account.authProvider === 'local-dev' || account.authProvider === 'web-local'
-                  ? 'Profil enregistré dans ce navigateur. Le backend cloud doit être déployé pour synchroniser entre appareils.'
+                  ? 'Profil enregistré dans ce navigateur.'
                   : 'Profil prêt pour synchronisation web et tribu.'}</p>
               </div>
               <label>Nom affiché<input value={account.displayName || ''} onChange={event => update('displayName', event.target.value)} placeholder="Pseudo survivant" /></label>
@@ -987,7 +990,7 @@ function AccountSection({ account, setAccount }) {
           {notice && <p className="ow-auth-notice">{notice}</p>}
         </article>
         <article className="ow-panel ow-support">
-          <span>Freemium launch</span>
+          <span>Support Overseer</span>
           <h3>Garder Overseer rapide, gratuit et maintenu.</h3>
           <p>Le support volontaire finance hosting, données, imports d’assets et polish long terme.</p>
           <div>
@@ -1053,7 +1056,6 @@ export default function PublicWebsite() {
         filteredCreatures={filteredCreatures}
         setSelectedCreature={setSelectedCreature}
       />
-      <FeatureDeck />
       <CreatureExplorer
         query={query}
         setQuery={setQuery}
@@ -1067,13 +1069,6 @@ export default function PublicWebsite() {
         selectedCreature={selectedCreature}
         setSelectedCreature={setSelectedCreature}
       />
-      <CreatureOverview
-        creature={creature}
-        selectedFood={selectedFood}
-        selectedCreature={selectedCreature}
-        setSelectedCreature={setSelectedCreature}
-        wildLevel={wildLevel}
-      />
       <TamingCalculator
         creature={creature}
         selectedFood={selectedFood}
@@ -1085,6 +1080,7 @@ export default function PublicWebsite() {
         narcoticId={narcoticId}
         setNarcoticId={setNarcoticId}
       />
+      <FeatureDeck />
       <TribeSection checks={tribeChecks} setChecks={setTribeChecks} />
       <MapSection />
       <ServerSection />
