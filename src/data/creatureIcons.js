@@ -108,6 +108,25 @@ const LOCAL_ICON_URLS = {
   Yutyrannus: './creatures/wiki/yutyrannus.png',
 };
 
+const LOCAL_DOSSIER_URLS = {
+  Ankylosaurus: './creatures/dossiers/ankylosaurus.png',
+  Argentavis: './creatures/dossiers/argentavis.png',
+  Baryonyx: './creatures/dossiers/baryonyx.png',
+  Doedicurus: './creatures/dossiers/doedicurus.png',
+  Giganotosaurus: './creatures/dossiers/giganotosaurus.png',
+  Pteranodon: './creatures/dossiers/pteranodon.png',
+  Quetzalcoatlus: './creatures/dossiers/quetzalcoatlus.png',
+  Quetzal: './creatures/dossiers/quetzalcoatlus.png',
+  Raptor: './creatures/dossiers/raptor.png',
+  Rex: './creatures/dossiers/rex.png',
+  Spinosaurus: './creatures/dossiers/spinosaurus.png',
+  Spino: './creatures/dossiers/spinosaurus.png',
+  Therizinosaurus: './creatures/dossiers/therizinosaurus.png',
+  Therizinosaur: './creatures/dossiers/therizinosaurus.png',
+};
+
+import { LOCAL_CREATURE_ICON_URLS } from './localCreatureIcons.generated';
+
 /**
  * For R- and Aberrant variants, strip the prefix to use the base creature icon.
  */
@@ -138,6 +157,10 @@ function resolveVariantName(name) {
  * Returns the ARK wiki icon URL for a given creature name.
  */
 export function getCreatureIconUrl(name) {
+  if (LOCAL_CREATURE_ICON_URLS[name]) {
+    return LOCAL_CREATURE_ICON_URLS[name];
+  }
+
   if (LOCAL_ICON_URLS[name]) {
     return LOCAL_ICON_URLS[name];
   }
@@ -151,6 +174,9 @@ export function getCreatureIconUrl(name) {
   }
 
   const wikiName = SPECIAL_NAMES[name] || name.replace(/ /g, '_');
+  if (LOCAL_CREATURE_ICON_URLS[wikiName]) {
+    return LOCAL_CREATURE_ICON_URLS[wikiName];
+  }
   if (LOCAL_ICON_URLS[wikiName]) {
     return LOCAL_ICON_URLS[wikiName];
   }
@@ -162,21 +188,30 @@ export function getCreatureIconUrl(name) {
  * Returns the ARK wiki dossier image URL (full creature artwork).
  */
 export function getCreatureDossierUrl(name) {
-  const variant = resolveVariantName(name);
-  const wikiName = variant || SPECIAL_NAMES[name] || name.replace(/ /g, '_');
+  if (LOCAL_DOSSIER_URLS[name]) return LOCAL_DOSSIER_URLS[name];
+  const wikiName = name.replace(/ /g, '_');
   return `https://ark.wiki.gg/images/thumb/Dossier_${wikiName}.png/400px-Dossier_${wikiName}.png`;
 }
 
 /**
- * Returns fallback image URLs to try for a creature (dossier, PaintRegion0_ASA, PaintRegion0, icon).
+ * Returns fallback image URLs to try for a creature.
+ * Dossier images use full creature names more often than icon aliases (e.g. Spinosaurus, not Spino).
  */
 export function getCreatureImageFallbacks(name) {
   const variant = resolveVariantName(name);
-  const wikiName = variant || SPECIAL_NAMES[name] || name.replace(/ /g, '_');
+  const fullName = name.replace(/ /g, '_');
+  const aliasName = SPECIAL_NAMES[name] || variant || fullName;
+  const candidates = [fullName, aliasName].filter(Boolean);
+  const unique = Array.from(new Set(candidates));
+  const localCandidates = [name, aliasName, variant].filter(Boolean)
+    .map(candidate => LOCAL_DOSSIER_URLS[candidate])
+    .filter(Boolean);
   return [
+    ...Array.from(new Set(localCandidates)),
+    ...unique.flatMap(wikiName => [
     `https://ark.wiki.gg/images/thumb/Dossier_${wikiName}.png/400px-Dossier_${wikiName}.png`,
     `https://ark.wiki.gg/images/thumb/${wikiName}_PaintRegion0_ASA.png/400px-${wikiName}_PaintRegion0_ASA.png`,
     `https://ark.wiki.gg/images/thumb/${wikiName}_PaintRegion0.png/400px-${wikiName}_PaintRegion0.png`,
-    `https://ark.wiki.gg/images/thumb/${wikiName}.png/128px-${wikiName}.png`,
+    ]),
   ];
 }

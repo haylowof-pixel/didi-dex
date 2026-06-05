@@ -629,7 +629,37 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
   const narcoticsNeeded = Math.ceil(torporToReplace / NARCOTICS.NARCOTIC.torpor);
   const narcoberriesNeeded = Math.ceil(torporToReplace / NARCOTICS.NARCOBERRY.torpor);
   const bioToxinNeeded = Math.ceil(torporToReplace / NARCOTICS.BIO_TOXIN.torpor);
-  const ascerbicMushroomNeeded = Math.ceil(torporToReplace / 25);
+  const ascerbicMushroomNeeded = Math.ceil(torporToReplace / NARCOTICS.ASCERBIC_MUSHROOM.torpor);
+  const narcoticOptions = [
+    { key: 'narcotic', ...NARCOTICS.NARCOTIC, needed: narcoticsNeeded },
+    { key: 'narcoberry', ...NARCOTICS.NARCOBERRY, needed: narcoberriesNeeded },
+    { key: 'biotoxin', ...NARCOTICS.BIO_TOXIN, needed: bioToxinNeeded },
+    { key: 'ascerbic', ...NARCOTICS.ASCERBIC_MUSHROOM, needed: ascerbicMushroomNeeded },
+  ];
+  const knockoutBuffer = 1.08;
+  const knockoutWeapons = [
+    { key: 'slingshotStone', weapon: NARCOTICS.SLINGSHOT, ammo: NARCOTICS.STONE_AMMO, torpor: NARCOTICS.STONE_AMMO.torpor },
+    { key: 'woodenClub', weapon: NARCOTICS.WOODEN_CLUB, ammo: NARCOTICS.WOODEN_CLUB, torpor: NARCOTICS.WOODEN_CLUB.torpor, solo: true },
+    { key: 'boomerang', weapon: NARCOTICS.BOOMERANG, ammo: NARCOTICS.BOOMERANG, torpor: NARCOTICS.BOOMERANG.torpor, solo: true },
+    { key: 'bowTranqArrow', weapon: NARCOTICS.BOW, ammo: NARCOTICS.TRANQ_ARROW, torpor: 90 },
+    { key: 'crossbowTranqArrow', weapon: NARCOTICS.CROSSBOW, ammo: NARCOTICS.TRANQ_ARROW, torpor: 157.5 },
+    { key: 'compoundToxicantArrow', weapon: NARCOTICS.COMPOUND_BOW, ammo: NARCOTICS.TOXICANT_ARROW, torpor: NARCOTICS.TOXICANT_ARROW.torpor },
+    { key: 'longneckTranqDart', weapon: NARCOTICS.LONGNECK, ammo: NARCOTICS.TRANQ_DART, torpor: NARCOTICS.TRANQ_DART.torpor },
+    { key: 'longneckShockingDart', weapon: NARCOTICS.LONGNECK, ammo: NARCOTICS.SHOCKING_DART, torpor: NARCOTICS.SHOCKING_DART.torpor },
+    { key: 'harpoonTranqSpearBolt', weapon: NARCOTICS.HARPOON, ammo: NARCOTICS.TRANQ_SPEAR_BOLT, torpor: NARCOTICS.TRANQ_SPEAR_BOLT.torpor },
+    { key: 'electricProd', weapon: NARCOTICS.ELECTRIC_PROD, ammo: NARCOTICS.ELECTRIC_PROD, torpor: NARCOTICS.ELECTRIC_PROD.torpor, solo: true },
+  ].map(option => ({
+    key: option.key,
+    weaponName: option.weapon.name,
+    weaponIcon: option.weapon.icon,
+    weaponImg: option.weapon.img,
+    ammoName: option.ammo.name,
+    ammoIcon: option.ammo.icon,
+    ammoImg: option.ammo.img,
+    solo: !!option.solo,
+    torporPerShot: option.torpor,
+    needed: Math.max(1, Math.ceil((maxTorpor * knockoutBuffer) / Math.max(option.torpor, 1))),
+  }));
 
   // --- Effectiveness ---
   const maxEff = 100;
@@ -649,6 +679,7 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
     foodKey,
     foodName: FOOD_TYPES[foodKey]?.name || foodKey,
     foodIcon: FOOD_TYPES[foodKey]?.icon || '',
+    foodImg: FOOD_TYPES[foodKey]?.img || FOOD_TYPES[foodKey]?.icon || '',
     foodNeeded,
     foodConsumed: foodNeeded,
     foodPerItem,
@@ -669,6 +700,9 @@ export function calculateTaming(dino, level, foodKey, tamingMultiplier = 1, sang
     narcoberriesNeeded,
     bioToxinNeeded,
     ascerbicMushroomNeeded,
+    torporToReplace: Math.round(torporToReplace),
+    narcoticOptions,
+    knockoutWeapons,
     effectiveness,
     bonusLevels,
     maxLevel,
