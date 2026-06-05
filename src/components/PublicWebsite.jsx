@@ -330,7 +330,7 @@ function Header({ account }) {
   );
 }
 
-function Hero({ creature, query, setQuery, filteredCreatures, setSelectedCreature }) {
+function Hero({ creature }) {
   return (
     <section className="ow-hero" id="creatures">
       <div className="ow-hero-copy">
@@ -339,18 +339,10 @@ function Hero({ creature, query, setQuery, filteredCreatures, setSelectedCreatur
         <p>
           Bestiaire, tame calculator, narcotiques, armes, boss planner, cartes et compte web dans une interface claire.
         </p>
-        <div className="ow-search">
-          <ScanIcon size={20} />
-          <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Rechercher Rex, Spino, kibble, carnivore..." />
-        </div>
-        <div className="ow-search-results">
-          {filteredCreatures.slice(0, 5).map(item => (
-            <button key={item.id} type="button" onClick={() => setSelectedCreature(item.id)}>
-              <img src={item.icon} alt="" onError={assetFallback} />
-              <span>{item.name}</span>
-              <em>{item.diet}</em>
-            </button>
-          ))}
+        <div className="ow-hero-metrics">
+          <span><strong>{creatures.length}</strong> créatures</span>
+          <span><strong>Tame</strong> calculator</span>
+          <span><strong>Boss</strong> planner</span>
         </div>
         <div className="ow-hero-actions">
           <button type="button" onClick={() => scrollToSection('library')}>Chercher une créature</button>
@@ -1051,10 +1043,6 @@ export default function PublicWebsite() {
       <Header account={account} />
       <Hero
         creature={creature}
-        query={query}
-        setQuery={setQuery}
-        filteredCreatures={filteredCreatures}
-        setSelectedCreature={setSelectedCreature}
       />
       <CreatureExplorer
         query={query}

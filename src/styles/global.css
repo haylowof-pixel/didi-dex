@@ -27233,6 +27233,30 @@ html body .app-shell.module-shell .content-area {
   gap: 10px;
 }
 
+.ow-hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: min(760px, 100%);
+}
+
+.ow-hero-metrics span {
+  display: grid;
+  gap: 4px;
+  min-height: 78px;
+  padding: 14px;
+  border: 1px solid rgba(255, 216, 117, .16);
+  border-radius: 18px;
+  color: var(--ow-muted);
+  background: rgba(255, 255, 255, .04);
+  backdrop-filter: blur(16px);
+}
+
+.ow-hero-metrics strong {
+  color: var(--ow-gold);
+  font-size: 1.25rem;
+}
+
 .ow-hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -28833,5 +28857,38 @@ html body .app-shell.module-shell .content-area {
 
   .ow-hero {
     grid-template-columns: 1fr;
+    min-height: auto;
+    padding-top: 16px;
+    padding-bottom: 34px;
+  }
+
+  .ow-hero h1 {
+    font-size: clamp(2.65rem, 13vw, 4.6rem);
+  }
+
+  .ow-hero-copy {
+    gap: 18px;
+  }
+
+  .ow-hero-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .ow-hero-metrics span {
+    min-height: 58px;
+  }
+
+  .ow-hero-dossier {
+    min-height: 340px;
+    border-radius: 26px;
+  }
+
+  .ow-browser-results {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .ow-browser-focus > img {
+    height: 230px;
   }
 }
