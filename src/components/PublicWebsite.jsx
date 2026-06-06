@@ -312,6 +312,16 @@ function formatPercent(value) {
   return `${Number(value).toFixed(1)}%`;
 }
 
+function formatDuration(seconds) {
+  const total = Math.max(0, Math.round(Number(seconds) || 0));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, '0')}m`;
+  if (minutes > 0) return `${minutes}m ${String(secs).padStart(2, '0')}s`;
+  return `${secs}s`;
+}
+
 function energyStyle(value) {
   return { '--ow-value': `${Math.max(0, Math.min(100, value))}%` };
 }
@@ -571,6 +581,11 @@ function TamingCalculator({
     needed: 0,
   }));
   const selectedNarcotic = narcoticOptions.find(item => item.key === narcoticId) || narcoticOptions[0];
+  const starveSeconds = result?.starveTimeSeconds || 0;
+  const torporSeconds = result?.torporTimerSeconds || 0;
+  const totalSeconds = result?.totalTimeSeconds || 0;
+  const torporCoveragePercent = totalSeconds > 0 ? Math.min(100, (torporSeconds / totalSeconds) * 100) : 0;
+  const starvePercent = totalSeconds > 0 ? Math.min(100, (starveSeconds / totalSeconds) * 100) : 0;
 
   return (
     <section className="ow-section ow-taming-section" id="taming">
@@ -624,6 +639,58 @@ function TamingCalculator({
               <b>{weaponQuality}%</b>
             </div>
           </label>
+        </div>
+
+        <div className="ow-timer-grid">
+          <article className="ow-timer-card ow-card-energy">
+            <div className="ow-panel-title">
+              <TimerIcon size={18} />
+              <span>Starve timer</span>
+              <strong>{result?.starveTimeFmt || formatDuration(starveSeconds)}</strong>
+            </div>
+            <div className="ow-timer-meter" style={energyStyle(starvePercent)}>
+              <span />
+            </div>
+            <dl>
+              <div>
+                <dt>Food à perdre</dt>
+                <dd>{Math.round(result?.foodPointsConsumed || 0)}</dd>
+              </div>
+              <div>
+                <dt>Drain food</dt>
+                <dd>{result?.foodDrainPerSec || 0}/s</dd>
+              </div>
+              <div>
+                <dt>Tame complet</dt>
+                <dd>{result?.totalTimeFmt || '-'}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article className="ow-timer-card ow-card-energy">
+            <div className="ow-panel-title">
+              <ZapIcon size={18} />
+              <span>Torpor timer</span>
+              <strong>{formatDuration(torporSeconds)}</strong>
+            </div>
+            <div className="ow-timer-meter danger" style={energyStyle(torporCoveragePercent)}>
+              <span />
+            </div>
+            <dl>
+              <div>
+                <dt>Torpor max</dt>
+                <dd>{result?.maxTorpor || 0}</dd>
+              </div>
+              <div>
+                <dt>Drain torpeur</dt>
+                <dd>{result?.torporDrainPerSec || 0}/s</dd>
+              </div>
+              <div>
+                <dt>{selectedNarcotic?.name || 'Narcotic'}</dt>
+                <dd>{selectedNarcotic?.needed || 0}</dd>
+              </div>
+            </dl>
+          </article>
         </div>
 
         <div className="ow-food-panel">
