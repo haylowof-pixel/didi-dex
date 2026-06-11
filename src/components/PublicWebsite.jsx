@@ -29,6 +29,12 @@ import {
   signUpWithEmail,
   upsertUserProfile,
 } from '../data/supabaseClient';
+import {
+  createHostedTribe,
+  joinHostedTribe,
+  loadHostedTribeTasks,
+  saveHostedTribeTasks,
+} from '../data/tribeCloud';
 import { calculateTaming } from '../data/tamingCalculator';
 
 const releaseUrl = 'https://github.com/haylowof-pixel/overseer-companion/releases/latest';
@@ -222,11 +228,25 @@ const maps = [
   ['Lost Island', './maps/images/lost-island.jpg', 'Spawn zones, ressources, artefacts'],
 ];
 
-const servers = [
-  ['ASA Official 101', 'The Island', '64/70', '38 ms', 'Online'],
-  ['SmallTribes EU', 'Scorched Earth', '48/70', '42 ms', 'Online'],
-  ['Community PvE', 'Lost Island', '21/100', '24 ms', 'Online'],
-  ['Overseer Test Cluster', 'Aberration', '0/70', '12 ms', 'Idle'],
+const serverCatalog = [
+  ['ASA Official EU-PVE-TheIsland5101', 'Official PvE', 'The Island', 'EU', 64, 70, 38, 'Online', 'Beginner friendly official progression'],
+  ['ASA Official EU-PVP-TheIsland201', 'Official PvP', 'The Island', 'EU', 58, 70, 42, 'Online', 'Official PvP cluster'],
+  ['ASA Official NA-PVE-ScorchedEarth5122', 'Official PvE', 'Scorched Earth', 'NA', 51, 70, 74, 'Online', 'Official scorched progression'],
+  ['ASA SmallTribes EU-PVP-36', 'SmallTribes', 'The Island', 'EU', 47, 70, 46, 'Online', 'SmallTribes rates and rules'],
+  ['ASA SmallTribes NA-PVP-84', 'SmallTribes', 'Scorched Earth', 'NA', 42, 70, 88, 'Online', 'NA SmallTribes cluster'],
+  ['ARKpocalypse EU-PVP-07', 'ARKpocalypse', 'The Island', 'EU', 39, 70, 44, 'Online', 'Seasonal wipe progression'],
+  ['ARKpocalypse NA-PVP-11', 'ARKpocalypse', 'Aberration', 'NA', 34, 70, 93, 'Online', 'Fast seasonal PvP'],
+  ['Conquest EU-ASA-04', 'Conquest', 'The Center', 'EU', 61, 70, 41, 'Online', 'Conquest style PvP'],
+  ['MTS Arena Cluster', 'Community PvP', 'Ragnarok', 'EU', 128, 150, 28, 'Online', 'High activity community cluster'],
+  ['Astraeos Roleplay Hub', 'Community RP', 'Astraeos', 'EU', 74, 100, 33, 'Online', 'RP and PvE events'],
+  ['Lost Island Breeders', 'Community PvE', 'Lost Island', 'EU', 22, 100, 24, 'Online', 'Breeding and boss progression'],
+  ['Fjordur Weekend Boost', 'Community PvE', 'Fjordur', 'NA', 18, 80, 81, 'Online', 'Boosted weekend rates'],
+  ['Aberration Hardcore EU', 'Community PvP', 'Aberration', 'EU', 16, 70, 39, 'Online', 'Hardcore survival'],
+  ['Crystal Isles Trade Hub', 'Community PvE', 'Crystal Isles', 'EU', 30, 100, 31, 'Online', 'Trading and boss carries'],
+  ['Extinction OSD Farm', 'Community PvE', 'Extinction', 'NA', 12, 80, 92, 'Online', 'OSD and element routes'],
+  ['Genesis Missions France', 'Community PvE', 'Genesis', 'EU', 9, 70, 26, 'Online', 'Mission progression'],
+  ['Valguero Starter Cluster', 'Community PvE', 'Valguero', 'EU', 5, 60, 21, 'Idle', 'Starter tames and relaxed rates'],
+  ['Overseer Test Cluster', 'Development', 'Aberration', 'EU', 0, 70, 12, 'Idle', 'Internal validation cluster'],
 ];
 
 const navItems = [
@@ -236,8 +256,9 @@ const navItems = [
   ['tribe', 'Tribu'],
   ['maps', 'Cartes'],
   ['servers', 'Serveurs'],
-  ['account', 'Compte'],
 ];
+
+const validPageIds = ['home', 'library', 'taming', 'tribe', 'maps', 'servers', 'account'];
 
 const mobilePrimaryItems = [
   ['home', 'Accueil'],
@@ -305,7 +326,7 @@ function getInitialPage() {
   if (hash !== 'home' && currentHash !== hash) {
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`);
   }
-  return navItems.some(item => item[0] === hash) ? hash : 'home';
+  return validPageIds.includes(hash) ? hash : 'home';
 }
 
 function formatPercent(value) {
@@ -324,6 +345,19 @@ function formatDuration(seconds) {
 
 function energyStyle(value) {
   return { '--ow-value': `${Math.max(0, Math.min(100, value))}%` };
+}
+
+function loadStoredJson(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || '') || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveStoredJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+  return value;
 }
 
 function normalizeSearch(value) {
@@ -514,7 +548,9 @@ function Header({ account, page, setSelectedCreature }) {
       <div className="ow-header-actions">
         <a href="?app=1">App Windows</a>
         <a href={releaseUrl}>Télécharger</a>
-        <span>{account.userId ? account.displayName || 'Profil' : 'Compte'}</span>
+        <button type="button" onClick={() => navigateToPage('account')}>
+          {account.userId ? account.displayName || 'Profil' : 'Compte'}
+        </button>
       </div>
     </header>
     <MobileNav page={page} />
@@ -947,49 +983,275 @@ function CreatureExplorer({
   );
 }
 
-function TribeSection({ checks, setChecks }) {
-  const items = ['Artefacts', 'Trophées', 'Brews', 'Ammo', 'Cryopods', 'Selles', 'Armée', 'Rôles'];
-  const ready = items.filter(item => checks[item]).length;
+const bossPlannerItems = [
+  ['Artefacts', ['Artifact of the Hunter', 'Artifact of the Massive', 'Artifact of the Clever', 'Artifact of the Pack']],
+  ['Trophées', ['Broodmother Trophy', 'Megapithecus Trophy', 'Dragon Trophy', 'DodoRex Trophy']],
+  ['Raid prep', ['Medical Brews', 'Canteens', 'Ammo', 'Cryopods', 'Selles vérifiées', 'Armée réparée']],
+];
+
+const taskCategories = ['Boss', 'Farm', 'Breed', 'Build', 'Serveur'];
+
+function createWebTask(title, category = 'Boss') {
+  return {
+    id: `web-task-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    title,
+    category,
+    priority: 'normal',
+    assignedTo: '',
+    due: 'Prochain run',
+    done: false,
+    items: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function TribeSection({ account, setAccount }) {
+  const [view, setView] = useState('tasks');
+  const [selectedBoss, setSelectedBoss] = useState(bosses[0][0]);
+  const [difficulty, setDifficulty] = useState('Gamma');
+  const [checks, setChecks] = useState(() => loadStoredJson('overseer-web-boss-checks-v1', {}));
+  const [tasks, setTasks] = useState(() => loadStoredJson('overseer-web-tribe-tasks-v1', []));
+  const [taskDraft, setTaskDraft] = useState('');
+  const [taskCategory, setTaskCategory] = useState(taskCategories[0]);
+  const [workspaceDraft, setWorkspaceDraft] = useState({ name: account.tribeName || '', invite: '' });
+  const [notice, setNotice] = useState('');
+  const [busy, setBusy] = useState('');
+  const selectedBossData = bosses.find(boss => boss[0] === selectedBoss) || bosses[0];
+  const plannerKey = `${selectedBoss}:${difficulty}`;
+  const currentChecks = checks[plannerKey] || {};
+  const flatPlannerItems = bossPlannerItems.flatMap(group => group[1]);
+  const ready = flatPlannerItems.filter(item => currentChecks[item]).length;
+  const readiness = Math.round((ready / Math.max(flatPlannerItems.length, 1)) * 100);
+  const taskDone = tasks.filter(task => task.done).length;
+
+  useEffect(() => {
+    let alive = true;
+    loadHostedTribeTasks({ tribeId: account.hostedTribeId || '' })
+      .then(remoteTasks => {
+        if (!alive || !Array.isArray(remoteTasks) || remoteTasks.length === 0) return;
+        setTasks(remoteTasks);
+        saveStoredJson('overseer-web-tribe-tasks-v1', remoteTasks);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [account.hostedTribeId]);
+
+  useEffect(() => {
+    setWorkspaceDraft(current => ({ ...current, name: account.tribeName || current.name }));
+  }, [account.tribeName]);
+
+  const persistTasks = next => {
+    setTasks(next);
+    saveStoredJson('overseer-web-tribe-tasks-v1', next);
+    saveHostedTribeTasks({ tribeId: account.hostedTribeId || '', tasks: next }).catch(() => {});
+  };
+
+  const toggleCheck = item => {
+    setChecks(prev => saveStoredJson('overseer-web-boss-checks-v1', {
+      ...prev,
+      [plannerKey]: {
+        ...(prev[plannerKey] || {}),
+        [item]: !(prev[plannerKey] || {})[item],
+      },
+    }));
+  };
+
+  const addTask = event => {
+    event.preventDefault();
+    const title = taskDraft.trim();
+    if (!title) return;
+    persistTasks([createWebTask(title, taskCategory), ...tasks]);
+    setTaskDraft('');
+  };
+
+  const toggleTask = id => {
+    persistTasks(tasks.map(task => (
+      task.id === id ? { ...task, done: !task.done, updatedAt: new Date().toISOString() } : task
+    )));
+  };
+
+  const deleteTask = id => {
+    persistTasks(tasks.filter(task => task.id !== id));
+  };
+
+  const createTribe = async event => {
+    event.preventDefault();
+    const name = workspaceDraft.name.trim();
+    if (!name) return;
+    setBusy('create');
+    setNotice('');
+    try {
+      await createHostedTribe({
+        name,
+        ownerId: account.userId || `web-${Date.now()}`,
+        ownerName: account.displayName || account.email || 'Survivor',
+      });
+      const next = loadAccount();
+      setAccount(next);
+      setNotice('Tribu créée. Le code invitation est prêt à partager.');
+    } catch (error) {
+      setNotice(error.message || 'Impossible de créer la tribu.');
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const joinTribe = async event => {
+    event.preventDefault();
+    const invite = workspaceDraft.invite.trim();
+    if (!invite) return;
+    setBusy('join');
+    setNotice('');
+    try {
+      await joinHostedTribe({
+        inviteCode: invite,
+        userId: account.userId || `web-${Date.now()}`,
+        displayName: account.displayName || account.email || 'Survivor',
+      });
+      const next = loadAccount();
+      setAccount(next);
+      setNotice('Tribu liée au profil web.');
+    } catch (error) {
+      setNotice(error.message || 'Impossible de rejoindre cette tribu.');
+    } finally {
+      setBusy('');
+    }
+  };
 
   return (
     <section className="ow-section" id="tribe">
       <div className="ow-section-head">
         <span><ClipboardIcon size={18} /> Tribus et boss</span>
-        <h2>Préparer un run boss.</h2>
-        <p>Choisis un boss, coche les préparatifs et garde une readiness lisible avant de lancer l’arène.</p>
+        <h2>Un vrai espace tribu web.</h2>
+        <p>Crée ou rejoins une tribu, prépare les runs boss et suis les tâches sans passer par l’overlay Windows.</p>
       </div>
-      <div className="ow-tribe-layout">
-        <article className="ow-bosses ow-panel">
-          {bosses.map(boss => (
-            <button type="button" key={boss[0]}>
-              <img src={boss[1]} alt="" onError={assetFallback} />
-              <span>
-                <strong>{boss[0]}</strong>
-                <em>{boss[2]} · {boss[3]}</em>
-              </span>
-              <b>{boss[4]}</b>
-            </button>
-          ))}
-        </article>
-        <article className="ow-planner ow-card-energy">
-          <div>
-            <span>Préparation</span>
-            <strong>{ready}/{items.length}</strong>
-          </div>
-          <div className="ow-checklist">
-            {items.map(item => (
-              <label key={item}>
-                <input
-                  type="checkbox"
-                  checked={Boolean(checks[item])}
-                  onChange={event => setChecks(prev => ({ ...prev, [item]: event.target.checked }))}
-                />
-                <span>{item}</span>
-              </label>
+      <div className="ow-module-tabs">
+        {[
+          ['tasks', 'Tâches'],
+          ['planner', 'Boss planner'],
+          ['workspace', 'Workspace'],
+        ].map(item => (
+          <button key={item[0]} type="button" className={view === item[0] ? 'active' : ''} onClick={() => setView(item[0])}>
+            {item[1]}
+          </button>
+        ))}
+      </div>
+
+      {view === 'tasks' && (
+        <div className="ow-tribe-workbench">
+          <article className="ow-panel ow-card-energy">
+            <div className="ow-panel-title">
+              <span><ClipboardIcon size={16} /> Tâches de tribu</span>
+              <strong>{taskDone}/{tasks.length || 0}</strong>
+            </div>
+            <form className="ow-task-compose" onSubmit={addTask}>
+              <input value={taskDraft} onChange={event => setTaskDraft(event.target.value)} placeholder="Ex: Farmer les artéfacts du Dragon" />
+              <select value={taskCategory} onChange={event => setTaskCategory(event.target.value)}>
+                {taskCategories.map(category => <option key={category}>{category}</option>)}
+              </select>
+              <button type="submit">Ajouter</button>
+            </form>
+            <div className="ow-task-list">
+              {tasks.length === 0 ? (
+                <div className="ow-empty-state">
+                  <strong>Aucune tâche</strong>
+                  <span>Crée une tâche pour ton serveur, ton boss run ou ton élevage.</span>
+                </div>
+              ) : tasks.map(task => (
+                <article key={task.id} className={`ow-task-row ${task.done ? 'done' : ''}`}>
+                  <button type="button" onClick={() => toggleTask(task.id)}>{task.done ? '✓' : ''}</button>
+                  <span>
+                    <strong>{task.title}</strong>
+                    <em>{task.category} · {task.due || 'Prochain run'}</em>
+                  </span>
+                  <button type="button" onClick={() => deleteTask(task.id)}>Supprimer</button>
+                </article>
+              ))}
+            </div>
+          </article>
+          <aside className="ow-panel ow-tribe-status">
+            <span>Tribu active</span>
+            <strong>{account.tribeName || 'Aucune tribu'}</strong>
+            <p>{account.tribeCode ? `Code invitation : ${account.tribeCode}` : 'Crée ou rejoins une tribu pour synchroniser les tâches entre joueurs.'}</p>
+            <button type="button" onClick={() => setView('workspace')}>Gérer la tribu</button>
+          </aside>
+        </div>
+      )}
+
+      {view === 'planner' && (
+        <div className="ow-tribe-layout">
+          <article className="ow-bosses ow-panel">
+            {bosses.map(boss => (
+              <button type="button" key={boss[0]} className={selectedBoss === boss[0] ? 'active' : ''} onClick={() => setSelectedBoss(boss[0])}>
+                <img src={boss[1]} alt="" onError={assetFallback} />
+                <span>
+                  <strong>{boss[0]}</strong>
+                  <em>{boss[2]} · {boss[3]}</em>
+                </span>
+                <b>{boss[4]}</b>
+              </button>
             ))}
-          </div>
-        </article>
-      </div>
+          </article>
+          <article className="ow-planner ow-card-energy">
+            <div className="ow-boss-command">
+              <img src={selectedBossData[1]} alt="" onError={assetFallback} />
+              <span>
+                <small>Boss sélectionné</small>
+                <strong>{selectedBoss}</strong>
+                <em>{selectedBossData[2]}</em>
+              </span>
+              <div className="ow-difficulty">
+                {['Gamma', 'Beta', 'Alpha'].map(level => (
+                  <button key={level} type="button" className={difficulty === level ? 'active' : ''} onClick={() => setDifficulty(level)}>{level}</button>
+                ))}
+              </div>
+            </div>
+            <div className="ow-readiness-card">
+              <span>Readiness</span>
+              <strong>{readiness}%</strong>
+              <em>{ready}/{flatPlannerItems.length} éléments prêts</em>
+            </div>
+            <div className="ow-checklist ow-checklist-groups">
+              {bossPlannerItems.map(group => (
+                <div key={group[0]}>
+                  <strong>{group[0]}</strong>
+                  {group[1].map(item => (
+                    <label key={item}>
+                      <input type="checkbox" checked={Boolean(currentChecks[item])} onChange={() => toggleCheck(item)} />
+                      <span>{item}</span>
+                    </label>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      )}
+
+      {view === 'workspace' && (
+        <div className="ow-workspace-grid">
+          <article className="ow-panel ow-card-energy">
+            <span>Créer une tribu</span>
+            <h3>{account.tribeName || 'Nouvelle tribu web'}</h3>
+            <p>Crée un workspace pour partager les tâches et les préparations boss.</p>
+            <form className="ow-workspace-form" onSubmit={createTribe}>
+              <input value={workspaceDraft.name} onChange={event => setWorkspaceDraft(prev => ({ ...prev, name: event.target.value }))} placeholder="Nom de tribu" />
+              <button type="submit" disabled={busy === 'create'}>{busy === 'create' ? 'Création...' : 'Créer'}</button>
+            </form>
+          </article>
+          <article className="ow-panel">
+            <span>Rejoindre</span>
+            <h3>Code invitation</h3>
+            <p>Entre le code donné par le propriétaire de la tribu.</p>
+            <form className="ow-workspace-form" onSubmit={joinTribe}>
+              <input value={workspaceDraft.invite} onChange={event => setWorkspaceDraft(prev => ({ ...prev, invite: event.target.value.toUpperCase() }))} placeholder="CODE-TRIBU" />
+              <button type="submit" disabled={busy === 'join'}>{busy === 'join' ? 'Connexion...' : 'Rejoindre'}</button>
+            </form>
+          </article>
+          {notice && <p className="ow-auth-notice">{notice}</p>}
+        </div>
+      )}
     </section>
   );
 }
@@ -1025,23 +1287,153 @@ function MapSection() {
   );
 }
 
+function toServerObject(server) {
+  if (Array.isArray(server)) {
+    return {
+      id: server[0],
+      name: server[0],
+      mode: server[1],
+      map: server[2],
+      region: server[3],
+      players: server[4],
+      maxPlayers: server[5],
+      ping: server[6],
+      status: server[7],
+      note: server[8],
+      source: 'catalogue',
+    };
+  }
+
+  const attributes = server.attributes || {};
+  const details = attributes.details || {};
+  return {
+    id: server.id || attributes.id || attributes.name,
+    name: attributes.name || server.name || 'ARK server',
+    mode: details.official ? 'Official' : details.pve ? 'PvE' : 'Community',
+    map: details.map || attributes.map || 'ARK',
+    region: details.region || details.country || 'Live',
+    players: attributes.players ?? 0,
+    maxPlayers: attributes.maxPlayers ?? details.maxPlayers ?? 70,
+    ping: details.ping ?? '-',
+    status: attributes.status === 'online' ? 'Online' : attributes.status || 'Unknown',
+    note: 'Résultat live BattleMetrics',
+    source: 'live',
+  };
+}
+
 function ServerSection() {
+  const [query, setQuery] = useState('');
+  const [mode, setMode] = useState('all');
+  const [region, setRegion] = useState('all');
+  const [favorites, setFavorites] = useState(() => loadStoredJson('overseer-web-server-favorites-v1', []));
+  const [liveServers, setLiveServers] = useState([]);
+  const [liveState, setLiveState] = useState('');
+  const serverQuery = normalizeSearch(query);
+  const catalogServers = serverCatalog.map(toServerObject);
+  const mergedServers = [
+    ...liveServers,
+    ...catalogServers.filter(server => !liveServers.some(live => live.name === server.name)),
+  ];
+  const modes = ['all', ...Array.from(new Set(catalogServers.map(server => server.mode)))];
+  const regions = ['all', ...Array.from(new Set(catalogServers.map(server => server.region)))];
+  const filteredServers = mergedServers
+    .filter(server => mode === 'all' || server.mode === mode)
+    .filter(server => region === 'all' || server.region === region)
+    .filter(server => !serverQuery || [server.name, server.mode, server.map, server.region, server.note].some(value => normalizeSearch(value).includes(serverQuery)))
+    .sort((a, b) => (favorites.includes(b.id) ? 1 : 0) - (favorites.includes(a.id) ? 1 : 0) || (b.players || 0) - (a.players || 0));
+
+  useEffect(() => {
+    if (serverQuery.length < 3) {
+      setLiveServers([]);
+      setLiveState('');
+      return;
+    }
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+      setLiveState('Catalogue local affiché');
+    }, 4500);
+    setLiveState('Recherche live...');
+    const params = new URLSearchParams({
+      'filter[game]': 'arksa',
+      'filter[search]': query,
+      'page[size]': '12',
+    });
+    fetch(`https://api.battlemetrics.com/servers?${params.toString()}`, { signal: controller.signal })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('BattleMetrics unavailable')))
+      .then(payload => {
+        window.clearTimeout(timeoutId);
+        setLiveServers((payload.data || []).map(toServerObject));
+        setLiveState((payload.data || []).length ? 'Résultats live BattleMetrics' : 'Aucun résultat live, catalogue local affiché');
+      })
+      .catch(error => {
+        window.clearTimeout(timeoutId);
+        if (error.name !== 'AbortError') setLiveState('Catalogue local affiché');
+      });
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [serverQuery, query]);
+
+  const toggleFavorite = server => {
+    setFavorites(prev => {
+      const next = prev.includes(server.id) ? prev.filter(id => id !== server.id) : [...prev, server.id];
+      return saveStoredJson('overseer-web-server-favorites-v1', next);
+    });
+  };
+
   return (
     <section className="ow-section" id="servers">
       <div className="ow-section-head">
         <span><ServerIcon size={18} /> Serveurs</span>
-        <h2>Serveurs favoris.</h2>
+        <h2>Explorer les serveurs ARK.</h2>
+        <p>Recherche live quand disponible, catalogue web utilisable et favoris stockés dans ton navigateur.</p>
       </div>
-      <div className="ow-server-grid">
-        {servers.map(server => (
-          <article key={server[0]} className="ow-panel">
-            <span className={server[4] === 'Online' ? 'online' : ''} />
-            <strong>{server[0]}</strong>
-            <em>{server[1]}</em>
-            <b>{server[2]}</b>
-            <small>{server[3]}</small>
-          </article>
-        ))}
+      <div className="ow-server-browser">
+        <article className="ow-panel ow-server-controls">
+          <label>
+            Recherche serveur
+            <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Nom, map, mode, région..." />
+          </label>
+          <label>
+            Mode
+            <select value={mode} onChange={event => setMode(event.target.value)}>
+              {modes.map(item => <option key={item} value={item}>{item === 'all' ? 'Tous' : item}</option>)}
+            </select>
+          </label>
+          <label>
+            Région
+            <select value={region} onChange={event => setRegion(event.target.value)}>
+              {regions.map(item => <option key={item} value={item}>{item === 'all' ? 'Toutes' : item}</option>)}
+            </select>
+          </label>
+          <span>{liveState || `${filteredServers.length} serveurs affichés`}</span>
+        </article>
+        <div className="ow-server-grid">
+          {filteredServers.map(server => (
+            <article key={server.id} className={`ow-panel ow-server-card ${favorites.includes(server.id) ? 'favorite' : ''}`}>
+              <div>
+                <span className={server.status === 'Online' ? 'online' : ''} />
+                <button type="button" onClick={() => toggleFavorite(server)}>{favorites.includes(server.id) ? 'Favori' : 'Suivre'}</button>
+              </div>
+              <strong>{server.name}</strong>
+              <em>{server.mode} · {server.map}</em>
+              <dl>
+                <div><dt>Joueurs</dt><dd>{server.players}/{server.maxPlayers}</dd></div>
+                <div><dt>Ping</dt><dd>{server.ping} ms</dd></div>
+                <div><dt>Région</dt><dd>{server.region}</dd></div>
+              </dl>
+              <small>{server.note}</small>
+            </article>
+          ))}
+          {filteredServers.length === 0 && (
+            <div className="ow-empty-state">
+              <strong>Aucun serveur</strong>
+              <span>Change la recherche ou les filtres.</span>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -1266,7 +1658,6 @@ export default function PublicWebsite() {
   const [wildLevel, setWildLevel] = useState(150);
   const [weaponQuality, setWeaponQuality] = useState(100);
   const [narcoticId, setNarcoticId] = useState('narcotic');
-  const [tribeChecks, setTribeChecks] = useState({});
   const [account, setAccount] = useState(() => loadAccount());
   const categoryOptions = useMemo(() => sortedUnique(creatures.map(creature => creature.diet)), []);
   const tameOptions = useMemo(() => sortedUnique(creatures.map(creature => creature.tame)), []);
@@ -1345,7 +1736,7 @@ export default function PublicWebsite() {
         setNarcoticId={setNarcoticId}
       />
     ),
-    tribe: <TribeSection checks={tribeChecks} setChecks={setTribeChecks} />,
+    tribe: <TribeSection account={account} setAccount={setAccount} />,
     maps: <MapSection />,
     servers: <ServerSection />,
     account: <AccountSection account={account} setAccount={setAccount} />,

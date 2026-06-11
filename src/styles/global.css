@@ -27114,6 +27114,7 @@ html body .app-shell.module-shell .content-area {
 .ow-mobile-more button,
 .ow-mobile-more a,
 .ow-header-actions a,
+.ow-header-actions button,
 .ow-header-actions span,
 .ow-search-results button,
 .ow-map-tabs button,
@@ -27276,6 +27277,7 @@ html body .app-shell.module-shell .content-area {
 }
 
 .ow-header-actions a,
+.ow-header-actions button,
 .ow-header-actions span {
   padding: 11px 14px;
   font-weight: 850;
@@ -28923,6 +28925,7 @@ html body .app-shell.module-shell .content-area {
 
   .ow-header nav button,
   .ow-header-actions a,
+  .ow-header-actions button,
   .ow-header-actions span {
     padding: 10px 12px;
   }
@@ -29379,6 +29382,7 @@ html body .app-shell.module-shell .content-area {
     display: none;
   }
 
+  .ow-header-actions button,
   .ow-header-actions span {
     min-height: 40px;
     display: inline-flex;
@@ -29925,6 +29929,7 @@ html body .app-shell.module-shell .content-area {
 .ow-mobile-more button,
 .ow-mobile-more a,
 .ow-header-actions a,
+.ow-header-actions button,
 .ow-header-actions span,
 .ow-search-results button,
 .ow-map-tabs button,
@@ -29947,6 +29952,7 @@ html body .app-shell.module-shell .content-area {
 .ow-mobile-more button.active,
 .ow-mobile-more a:hover,
 .ow-header-actions a:hover,
+.ow-header-actions button:hover,
 .ow-map-tabs button.active,
 .ow-narco-list button.active {
   border-color: rgba(255, 216, 117, .42);
@@ -30077,6 +30083,314 @@ html body .app-shell.module-shell .content-area {
     rgba(2, 2, 6, .58) !important;
 }
 
+.ow-module-tabs {
+  width: min(100%, var(--ow-max));
+  margin: 0 auto 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ow-module-tabs button,
+.ow-task-compose button,
+.ow-task-row button,
+.ow-tribe-status button,
+.ow-difficulty button,
+.ow-workspace-form button,
+.ow-server-controls button,
+.ow-server-card button {
+  min-height: 42px;
+  border: 1px solid rgba(255, 216, 117, .14);
+  border-radius: 999px;
+  color: var(--ow-text);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .016)),
+    rgba(4, 4, 9, .28);
+  font-weight: 950;
+}
+
+.ow-module-tabs button {
+  padding: 0 18px;
+}
+
+.ow-module-tabs button.active,
+.ow-difficulty button.active,
+.ow-server-card.favorite button {
+  border-color: rgba(255, 216, 117, .46);
+  color: var(--ow-gold);
+  background:
+    linear-gradient(100deg, rgba(166, 108, 255, .34), rgba(255, 216, 117, .20), rgba(123, 220, 255, .14), rgba(166, 108, 255, .26)),
+    rgba(5, 4, 10, .30);
+  background-size: 240% 100%, 100% 100%;
+  box-shadow: 0 0 24px rgba(166, 108, 255, .16), inset 0 1px 0 rgba(255, 255, 255, .12);
+  animation: owSoftFlow 10s linear infinite;
+}
+
+.ow-tribe-workbench,
+.ow-workspace-grid,
+.ow-server-browser {
+  width: min(100%, var(--ow-max));
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.ow-tribe-workbench {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .34fr);
+  align-items: start;
+}
+
+.ow-task-compose,
+.ow-workspace-form,
+.ow-server-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.ow-task-compose {
+  grid-template-columns: minmax(0, 1fr) 170px auto;
+  margin-bottom: 16px;
+}
+
+.ow-task-compose input,
+.ow-task-compose select,
+.ow-workspace-form input,
+.ow-server-controls input,
+.ow-server-controls select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(255, 216, 117, .13);
+  border-radius: 16px;
+  color: var(--ow-text);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .012)),
+    rgba(3, 3, 8, .24) !important;
+  padding: 0 14px;
+  outline: 0;
+}
+
+.ow-task-compose select,
+.ow-server-controls select {
+  color: var(--ow-text);
+}
+
+.ow-task-list {
+  display: grid;
+  gap: 10px;
+}
+
+.ow-task-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 70px;
+  padding: 10px;
+  border: 1px solid rgba(255, 216, 117, .10);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .012)),
+    rgba(4, 4, 9, .22);
+}
+
+.ow-task-row.done {
+  opacity: .72;
+}
+
+.ow-task-row > button:first-child {
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.ow-task-row > button:last-child {
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.ow-task-row span,
+.ow-tribe-status,
+.ow-workspace-grid article,
+.ow-server-card {
+  display: grid;
+  gap: 8px;
+}
+
+.ow-task-row em,
+.ow-tribe-status p,
+.ow-workspace-grid p,
+.ow-server-card em,
+.ow-server-card small,
+.ow-server-controls span {
+  color: var(--ow-muted);
+  font-style: normal;
+}
+
+.ow-bosses button.active {
+  border-color: rgba(255, 216, 117, .42);
+  background:
+    linear-gradient(100deg, rgba(166, 108, 255, .20), rgba(255, 216, 117, .12), rgba(123, 220, 255, .08)),
+    rgba(4, 4, 9, .30);
+}
+
+.ow-boss-command {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.ow-boss-command img {
+  width: 86px;
+  height: 74px;
+  border-radius: 18px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, .05);
+}
+
+.ow-boss-command span,
+.ow-readiness-card {
+  display: grid;
+  gap: 4px;
+}
+
+.ow-boss-command small,
+.ow-readiness-card span,
+.ow-workspace-grid > article > span {
+  color: var(--ow-gold);
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.ow-difficulty {
+  display: flex;
+  gap: 8px;
+}
+
+.ow-difficulty button {
+  min-width: 78px;
+  padding: 0 12px;
+}
+
+.ow-readiness-card {
+  padding: 16px;
+  border: 1px solid rgba(255, 216, 117, .15);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .035);
+}
+
+.ow-readiness-card strong {
+  color: var(--ow-green);
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 1;
+}
+
+.ow-checklist-groups {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ow-checklist-groups > div {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
+.ow-checklist-groups > div > strong {
+  color: var(--ow-gold);
+}
+
+.ow-workspace-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ow-workspace-grid .ow-auth-notice {
+  grid-column: 1 / -1;
+}
+
+.ow-server-controls {
+  grid-template-columns: minmax(260px, 1fr) 180px 150px auto;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.ow-server-controls label {
+  display: grid;
+  gap: 7px;
+  color: rgba(255, 248, 234, .58);
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ow-server-card {
+  min-height: 210px;
+  padding: 18px;
+}
+
+.ow-server-card > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.ow-server-card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.ow-server-card dl > div {
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .026);
+}
+
+.ow-server-card dt {
+  color: rgba(255, 248, 234, .50);
+  font-size: .68rem;
+  font-weight: 900;
+}
+
+.ow-server-card dd {
+  margin: 5px 0 0;
+  color: var(--ow-gold);
+  font-weight: 950;
+}
+
+.ow-server-card button {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+@media (max-width: 980px) {
+  .ow-tribe-workbench,
+  .ow-workspace-grid,
+  .ow-checklist-groups,
+  .ow-server-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .ow-task-compose {
+    grid-template-columns: 1fr;
+  }
+
+  .ow-boss-command {
+    grid-template-columns: 74px minmax(0, 1fr);
+  }
+
+  .ow-difficulty {
+    grid-column: 1 / -1;
+    overflow-x: auto;
+  }
+}
+
 @keyframes owWebAtmosphere {
   0% { filter: hue-rotate(0deg) brightness(1); }
   100% { filter: hue-rotate(-10deg) brightness(1.10); }
@@ -30114,5 +30428,15 @@ html body .app-shell.module-shell .content-area {
   .ow-mobile-more {
     backdrop-filter: blur(22px) saturate(1.28);
     -webkit-backdrop-filter: blur(22px) saturate(1.28);
+  }
+
+  .ow-empty-state {
+    min-height: 170px;
+    padding: 22px 16px;
+  }
+
+  .ow-task-list,
+  .ow-server-grid {
+    padding-bottom: 36px;
   }
 }
