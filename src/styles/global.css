@@ -29822,3 +29822,297 @@ html body .app-shell.module-shell .content-area {
     object-fit: cover;
   }
 }
+
+/* Public website glass parity pass: closer to the desktop app theme */
+.ow-site {
+  --ow-bg: #020105;
+  --ow-panel: rgba(4, 4, 8, .28);
+  --ow-panel-strong: rgba(5, 5, 10, .42);
+  --ow-line: rgba(255, 216, 117, .20);
+  --ow-line-cool: rgba(166, 108, 255, .18);
+  --ow-text: #fff8ea;
+  --ow-muted: rgba(255, 248, 234, .64);
+  --ow-gold: #ffd872;
+  --ow-orange: #ff9c46;
+  --ow-violet: #a66cff;
+  --ow-blue: #7bdcff;
+  background:
+    radial-gradient(circle at 12% 4%, rgba(166, 108, 255, .12), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(255, 216, 117, .10), transparent 32%),
+    linear-gradient(180deg, rgba(2, 1, 5, .82), rgba(2, 1, 5, .94));
+}
+
+.ow-video {
+  opacity: .72;
+  filter: saturate(.98) brightness(.72) contrast(1.14);
+}
+
+.ow-backdrop {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(166, 108, 255, .17), transparent 34%),
+    radial-gradient(circle at 82% 8%, rgba(255, 216, 117, .13), transparent 31%),
+    radial-gradient(circle at 54% 76%, rgba(123, 220, 255, .10), transparent 38%),
+    linear-gradient(180deg, rgba(2, 1, 5, .50), rgba(2, 1, 5, .72) 64%, rgba(2, 1, 5, .82));
+  animation: owWebAtmosphere 28s ease-in-out infinite alternate;
+}
+
+.ow-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  opacity: .30;
+  background:
+    conic-gradient(from 40deg at 50% 45%, transparent 0 18%, rgba(255, 216, 117, .16), transparent 34% 54%, rgba(166, 108, 255, .14), transparent 70% 100%);
+  filter: blur(42px);
+  transform-origin: 50% 50%;
+  animation: owWebHalo 34s linear infinite;
+}
+
+.ow-backdrop::after {
+  opacity: .24;
+  background-image:
+    linear-gradient(rgba(255, 216, 117, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123, 220, 255, .035) 1px, transparent 1px);
+  background-size: 86px 86px;
+  animation: owWebGrid 22s linear infinite;
+}
+
+.ow-header,
+.ow-top-search,
+.ow-top-search-results,
+.ow-mobile-dock,
+.ow-mobile-more,
+.ow-hero-dossier,
+.ow-feature-card,
+.ow-browser-panel,
+.ow-browser-focus,
+.ow-detail-hero,
+.ow-tame-summary,
+.ow-slider-card,
+.ow-food-panel,
+.ow-timer-card,
+.ow-panel,
+.ow-bosses,
+.ow-planner,
+.ow-map-frame,
+.ow-account-card,
+.ow-support,
+.ow-card-energy {
+  border-color: rgba(255, 216, 117, .16);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .018) 46%, rgba(255, 216, 117, .024)),
+    rgba(3, 3, 7, .34) !important;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, .46),
+    inset 0 1px 0 rgba(255, 255, 255, .11),
+    inset 0 -1px 0 rgba(255, 216, 117, .05);
+  backdrop-filter: blur(26px) saturate(1.34);
+  -webkit-backdrop-filter: blur(26px) saturate(1.34);
+}
+
+.ow-header,
+.ow-mobile-dock,
+.ow-mobile-more {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(166, 108, 255, .12), transparent 34%),
+    radial-gradient(circle at 86% 18%, rgba(255, 216, 117, .10), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .018)),
+    rgba(2, 2, 6, .46) !important;
+}
+
+.ow-header nav button,
+.ow-mobile-dock button,
+.ow-mobile-more button,
+.ow-mobile-more a,
+.ow-header-actions a,
+.ow-header-actions span,
+.ow-search-results button,
+.ow-map-tabs button,
+.ow-narco-list button,
+.ow-account-card button,
+.ow-support a,
+.ow-detail-hero button {
+  border-color: rgba(255, 216, 117, .14);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .018)),
+    rgba(3, 3, 8, .28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10);
+}
+
+.ow-header nav button:hover,
+.ow-header nav button.active,
+.ow-mobile-dock button:hover,
+.ow-mobile-dock button.active,
+.ow-mobile-more button:hover,
+.ow-mobile-more button.active,
+.ow-mobile-more a:hover,
+.ow-header-actions a:hover,
+.ow-map-tabs button.active,
+.ow-narco-list button.active {
+  border-color: rgba(255, 216, 117, .42);
+  background:
+    linear-gradient(100deg, rgba(166, 108, 255, .34), rgba(255, 216, 117, .22), rgba(123, 220, 255, .18), rgba(166, 108, 255, .28)),
+    rgba(5, 4, 10, .34);
+  background-size: 240% 100%, 100% 100%;
+  box-shadow:
+    0 0 24px rgba(166, 108, 255, .18),
+    0 0 18px rgba(255, 216, 117, .10),
+    inset 0 1px 0 rgba(255, 255, 255, .16);
+  animation: owSoftFlow 10s linear infinite;
+}
+
+.ow-top-search-results,
+.ow-search-results button,
+.ow-browser-results button,
+.ow-food-row,
+.ow-checklist label,
+.ow-weapon-list > div,
+.ow-narco-list button,
+.ow-timer-card dl > div,
+.ow-detail-hero dl > div,
+.ow-hero-metrics span,
+.ow-overview-stats span,
+.ow-server-grid article {
+  border-color: rgba(255, 216, 117, .10);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .012)),
+    rgba(4, 4, 9, .22);
+  backdrop-filter: blur(18px) saturate(1.22);
+  -webkit-backdrop-filter: blur(18px) saturate(1.22);
+}
+
+.ow-browser-results button:hover,
+.ow-browser-results button.active,
+.ow-food-row.active,
+.ow-checklist label:hover,
+.ow-weapon-list > div:hover {
+  border-color: rgba(255, 216, 117, .30);
+  background:
+    linear-gradient(100deg, rgba(166, 108, 255, .18), rgba(255, 216, 117, .12), rgba(123, 220, 255, .08), rgba(166, 108, 255, .14)),
+    rgba(5, 4, 10, .26);
+  background-size: 260% 100%, 100% 100%;
+  box-shadow:
+    0 0 28px rgba(166, 108, 255, .13),
+    inset 0 1px 0 rgba(255, 255, 255, .13);
+  animation: owSoftFlow 12s linear infinite;
+}
+
+.ow-site input,
+.ow-site textarea,
+.ow-site select,
+.ow-top-search input,
+.ow-search input,
+.ow-browser-search input,
+.ow-account-card input {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.ow-site input:-webkit-autofill,
+.ow-site input:-webkit-autofill:hover,
+.ow-site input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ow-text);
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+}
+
+.ow-site input::selection {
+  background: rgba(255, 216, 117, .24);
+  color: var(--ow-text);
+}
+
+.ow-card-energy {
+  overflow: hidden;
+}
+
+.ow-card-energy::before {
+  opacity: .88;
+  background: linear-gradient(120deg, rgba(255, 216, 117, .46), rgba(166, 108, 255, .28), rgba(123, 220, 255, .26), rgba(255, 156, 70, .38));
+  background-size: 320% 320%;
+  animation-duration: 13s;
+}
+
+.ow-card-energy::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: .10;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 216, 117, .55), transparent 28%),
+    linear-gradient(110deg, transparent 0 28%, rgba(255, 255, 255, .20) 42%, transparent 58% 100%);
+  background-size: 100% 100%, 260% 100%;
+  animation: owWebSheen 16s linear infinite;
+}
+
+.ow-card-energy > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ow-food-panel,
+.ow-map-frame,
+.ow-planner,
+.ow-browser-panel,
+.ow-browser-focus {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(166, 108, 255, .08), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .012)),
+    rgba(2, 2, 6, .26) !important;
+}
+
+.ow-food-row.active {
+  color: var(--ow-text);
+}
+
+.ow-mobile-more {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(255, 216, 117, .10), transparent 42%),
+    linear-gradient(135deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .018)),
+    rgba(2, 2, 6, .58) !important;
+}
+
+@keyframes owWebAtmosphere {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(-10deg) brightness(1.10); }
+}
+
+@keyframes owWebHalo {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1.03); }
+}
+
+@keyframes owWebGrid {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 86px 86px, 86px 86px; }
+}
+
+@keyframes owWebSheen {
+  from { background-position: 0 0, 180% 0; }
+  to { background-position: 0 0, -180% 0; }
+}
+
+@media (max-width: 780px) {
+  .ow-video {
+    opacity: .64;
+  }
+
+  .ow-backdrop {
+    background:
+      radial-gradient(circle at 10% 8%, rgba(166, 108, 255, .18), transparent 38%),
+      radial-gradient(circle at 82% 0%, rgba(255, 216, 117, .12), transparent 34%),
+      linear-gradient(180deg, rgba(2, 1, 5, .58), rgba(2, 1, 5, .78));
+  }
+
+  .ow-header,
+  .ow-mobile-dock,
+  .ow-mobile-more {
+    backdrop-filter: blur(22px) saturate(1.28);
+    -webkit-backdrop-filter: blur(22px) saturate(1.28);
+  }
+}
