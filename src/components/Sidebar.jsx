@@ -110,15 +110,9 @@ export default function Sidebar({ dinosaurs, selectedDino, onSelectDino, favorit
               </div>
               {toggleFavorite && (
                 <button
-                  className="fav-btn"
+                  className={`fav-btn ${favorites.includes(dino.id) ? 'favorited' : ''}`}
                   onClick={(e) => { e.stopPropagation(); toggleFavorite(dino.id); }}
                   title={favorites.includes(dino.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: '16px', padding: '4px', marginLeft: 'auto', flexShrink: 0,
-                    color: favorites.includes(dino.id) ? 'gold' : 'rgba(255,255,255,0.2)',
-                    transition: 'color 0.15s',
-                  }}
                 >
                   ★
                 </button>

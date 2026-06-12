@@ -8,13 +8,13 @@
 :root {
   --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent:#5fe4ff;--accent-l:#c7f6ff;--accent-d:#2fb7d4;
+  --accent-bg:rgba(95,228,255,0.08);--accent-border:rgba(95,228,255,0.22);--accent-glow:rgba(95,228,255,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --blue:#5fe4ff;--blue-bg:rgba(95,228,255,0.08);--blue-border:rgba(95,228,255,0.22);
+  --pink:#5fe4ff;--pink-bg:rgba(95,228,255,0.08);--pink-border:rgba(95,228,255,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
@@ -34,7 +34,7 @@ html, body {
 /* ===== TITLE BAR ===== */
 #titlebar {
   display: flex; align-items: center; height: var(--bar-h); padding: 0 8px 0 14px;
-  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(123,147,248,0.08);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(95,228,255,0.08);
   -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
 }
 .tb-title {
@@ -81,7 +81,7 @@ html, body {
   border-radius: var(--r-lg); margin-bottom: 6px;
   transition: all .2s ease;
 }
-.kb-row:hover { border-color: var(--border-1); transform: translateX(2px); box-shadow: 0 0 16px rgba(123,147,248,0.08); }
+.kb-row:hover { border-color: var(--border-1); transform: translateX(2px); box-shadow: 0 0 16px rgba(95,228,255,0.08); }
 .kb-row.recording { border-color: var(--accent); background: var(--accent-bg); }
 
 .kb-info { flex: 1; }
@@ -115,7 +115,7 @@ html, body {
 
 @keyframes rec-pulse {
   0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-  50% { box-shadow: 0 0 0 4px rgba(123,147,248,0.10); }
+  50% { box-shadow: 0 0 0 4px rgba(95,228,255,0.10); }
 }
 
 .kb-reset-btn {
@@ -155,19 +155,19 @@ html, body {
   font-family: 'Consolas', 'SF Mono', monospace; font-size: 10px;
   resize: vertical; outline: none; transition: border-color .2s, box-shadow .2s;
 }
-.import-textarea:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(123,147,248,0.15); }
+.import-textarea:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(95,228,255,0.15); }
 .import-confirm {
   margin-top: 6px; padding: 6px 16px; border-radius: var(--r-sm);
   font-size: 10px; font-weight: 700; font-family: inherit;
   border: none; cursor: pointer; background: var(--accent-bg); color: var(--accent-l);
   transition: all .15s; text-transform: uppercase;
 }
-.import-confirm:hover { background: rgba(123,147,248,0.15); color: var(--accent-l); }
+.import-confirm:hover { background: rgba(95,228,255,0.15); color: var(--accent-l); }
 
 /* ===== BOTTOM BAR ===== */
 #bottombar {
   display: flex; align-items: center; padding: 12px 24px;
-  border-top: 1px solid rgba(123,147,248,0.08);
+  border-top: 1px solid rgba(95,228,255,0.08);
   background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); flex-shrink: 0; gap: 8px;
 }
 
@@ -176,9 +176,9 @@ html, body {
   font-family: inherit; border: none; cursor: pointer;
   background: var(--accent-bg); color: var(--accent-l); transition: all .2s ease;
   text-transform: uppercase; letter-spacing: 0.5px;
-  box-shadow: 0 4px 16px rgba(123,147,248,0.2);
+  box-shadow: 0 4px 16px rgba(95,228,255,0.2);
 }
-.save-btn:hover { background: rgba(123,147,248,0.15); color: var(--accent-l); transform: translateY(-1px); }
+.save-btn:hover { background: rgba(95,228,255,0.15); color: var(--accent-l); transform: translateY(-1px); }
 .save-btn:active { transform: translateY(0) scale(0.97); }
 .save-btn.saved { background: rgba(45,212,160,0.08); color: var(--green); }
 
@@ -203,7 +203,7 @@ html, body {
   padding: 8px 12px; background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border-radius: var(--r-lg);
   border: 1px solid var(--border-0); transition: border-color .2s, box-shadow .2s;
 }
-.about-row:hover { border-color: var(--border-1); box-shadow: 0 0 16px rgba(123,147,248,0.08); }
+.about-row:hover { border-color: var(--border-1); box-shadow: 0 0 16px rgba(95,228,255,0.08); }
 .about-label { font-size: 11px; color: var(--text-3); }
 .about-val { font-size: 11px; color: var(--text-2); font-weight: 700; }
 
@@ -233,7 +233,7 @@ html, body {
   -webkit-appearance: none; appearance: none;
   width: 18px; height: 18px; border-radius: 50%;
   background: var(--accent); border: 2px solid var(--accent-l);
-  cursor: pointer; box-shadow: 0 0 8px rgba(123,147,248,0.4);
+  cursor: pointer; box-shadow: 0 0 8px rgba(95,228,255,0.4);
   transition: transform .15s;
 }
 .scale-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
@@ -286,22 +286,103 @@ html, body {
 
 #content::-webkit-scrollbar { width: 4px; }
 #content::-webkit-scrollbar-track { background: transparent; }
-#content::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.15); border-radius: 2px; }
-#content::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
+#content::-webkit-scrollbar-thumb { background: rgba(95,228,255,0.15); border-radius: 2px; }
+#content::-webkit-scrollbar-thumb:hover { background: rgba(95,228,255,0.3); }
+.section {
+  border: 1px solid rgba(95,228,255,0.10);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(95,228,255,0.055), transparent 42%),
+    rgba(1,8,12,0.28);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+.section-title {
+  height: 32px;
+  padding: 0 12px;
+  margin-bottom: 0;
+  border-bottom-color: rgba(95,228,255,0.16);
+  background: linear-gradient(90deg, rgba(95,228,255,0.12), rgba(95,228,255,0.025));
+  color: rgba(199,246,255,0.68);
+}
+.section > :not(.section-title) {
+  margin: 12px;
+}
+.s-ico,
+.c-ico {
+  width: 16px;
+  height: 16px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(95,228,255,0.26);
+  border-radius: 5px;
+  background: radial-gradient(circle at 50% 30%, rgba(199,246,255,0.32), rgba(95,228,255,0.07));
+  box-shadow: 0 0 14px rgba(95,228,255,0.12);
+  color: var(--accent-l);
+  font-size: 10px;
+  line-height: 1;
+}
+.tek-glyph::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1px solid currentColor; display: block; }
+.glyph-scale::before { box-shadow: 5px 5px 0 -3px currentColor; }
+.glyph-config::before { width: 8px; height: 8px; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(95,228,255,0.32); }
+.glyph-update::before { border-radius: 50%; border-style: dashed; }
+.glyph-export::before { content: "\2191"; }
+.glyph-import::before { content: "\2193"; }
+.scale-row,
+.kb-row,
+.update-row,
+.about-row,
+.config-btn,
+.save-btn,
+.reset-all-btn {
+  background:
+    linear-gradient(90deg, rgba(95,228,255,0.075), rgba(255,255,255,0.014)),
+    rgba(1,9,13,0.58);
+  border-color: rgba(95,228,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+.kb-row:hover,
+.about-row:hover,
+.config-btn:hover,
+.reset-all-btn:hover {
+  border-color: rgba(95,228,255,0.34);
+  background:
+    linear-gradient(90deg, rgba(95,228,255,0.12), rgba(255,255,255,0.018)),
+    rgba(1,12,18,0.72);
+}
+.kb-key-btn,
+.kb-reset-btn,
+.update-btn,
+.scale-preset {
+  background: rgba(0,12,18,0.62);
+  border-color: rgba(95,228,255,0.18);
+  color: rgba(237,238,243,0.82);
+}
+.kb-key-btn:hover,
+.kb-reset-btn:hover,
+.update-btn:hover,
+.scale-preset:hover,
+.scale-preset.active {
+  border-color: rgba(95,228,255,0.38);
+  color: var(--accent-l);
+  background: rgba(95,228,255,0.09);
+}
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
-<video id="bgVideo" autoplay muted loop playsinline style="position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;object-fit:cover;opacity:0.18;filter:brightness(0.7) saturate(1.2)">
+<video id="bgVideo" autoplay muted loop playsinline style="position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;object-fit:cover;opacity:0.34;filter:brightness(0.8) saturate(1.15)">
   <source src="../public/splash-video.mp4" type="video/mp4">
 </video>
-<div style="position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(2,2,8,0.3) 0%,rgba(2,2,8,0.15) 50%,rgba(2,2,8,0.4) 100%)"></div>
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(2,2,8,0.2) 0%,rgba(2,2,8,0.08) 50%,rgba(2,2,8,0.32) 100%)"></div>
 <div id="app">
   <!-- Title bar -->
   <div id="titlebar">
-    <span class="tb-title"><span class="ico">⚙️</span>Paramètres</span>
+    <span class="tb-title"><span class="ico"><img src="../public/maps/icons/gps.png" alt="" style="width:15px;height:15px;object-fit:contain"></span>Paramètres</span>
     <div class="tb-spacer"></div>
-    <button class="tb-close" id="settingsPinBtn" onclick="toggleSettingsPin()" title="Épingler" style="color:#97ADFF;font-size:11px;background:transparent;border:1px solid rgba(123,147,248,0.22);border-radius:4px;width:28px;">📌</button>
+    <button class="tb-close" id="settingsPinBtn" onclick="toggleSettingsPin()" title="Épingler" style="color:#c7f6ff;font-size:11px;background:transparent;border:1px solid rgba(95,228,255,0.22);border-radius:4px;width:28px;"><img src="../public/maps/icons/gps.png" alt="" style="width:13px;height:13px;object-fit:contain"></button>
     <button class="tb-close" onclick="window.api.settingsClose()">✕</button>
   </div>
 
@@ -310,7 +391,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
     <!-- Scale -->
     <div class="section">
-      <div class="section-title"><span class="s-ico">🔍</span>Échelle de l'interface</div>
+      <div class="section-title"><span class="s-ico tek-glyph glyph-scale"></span>Échelle de l'interface</div>
       <div class="scale-row">
         <div class="scale-labels">
           <span class="scale-val-label">Zoom</span>
@@ -332,18 +413,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
     <!-- Keybinds -->
     <div class="section">
-      <div class="section-title"><span class="s-ico">⌨️</span>Raccourcis Clavier</div>
-
-      <div class="kb-row" id="row-toggleOverlay">
-        <div class="kb-info">
-          <div class="kb-label">Overlay Mode</div>
-          <div class="kb-desc">Fenêtre toujours visible par-dessus le jeu</div>
-        </div>
-        <div class="kb-key-wrap">
-          <button class="kb-key-btn" id="key-toggleOverlay" onclick="startRecording('toggleOverlay')">Alt+O</button>
-          <button class="kb-reset-btn" id="reset-toggleOverlay" onclick="resetKey('toggleOverlay')" title="Reset">↺</button>
-        </div>
-      </div>
+      <div class="section-title"><span class="s-ico"><img src="../public/maps/icons/compass.png" alt="" style="width:15px;height:15px;object-fit:contain"></span>Raccourcis Clavier</div>
 
       <div class="kb-row" id="row-toggleWindow">
         <div class="kb-info">
@@ -375,6 +445,17 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
         <div class="kb-key-wrap">
           <button class="kb-key-btn" id="key-toggleWidget" onclick="startRecording('toggleWidget')">Alt+W</button>
           <button class="kb-reset-btn" id="reset-toggleWidget" onclick="resetKey('toggleWidget')" title="Reset">↺</button>
+        </div>
+      </div>
+
+      <div class="kb-row" id="row-toggleQuickLookup">
+        <div class="kb-info">
+          <div class="kb-label">Quick Lookup</div>
+          <div class="kb-desc">Ouvrir la barre flottante de recherche tame/infos</div>
+        </div>
+        <div class="kb-key-wrap">
+          <button class="kb-key-btn" id="key-toggleQuickLookup" onclick="startRecording('toggleQuickLookup')">Alt+L</button>
+          <button class="kb-reset-btn" id="reset-toggleQuickLookup" onclick="resetKey('toggleQuickLookup')" title="Reset">↺</button>
         </div>
       </div>
 
@@ -425,13 +506,13 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
     <!-- Export / Import -->
     <div class="section">
-      <div class="section-title"><span class="s-ico">💾</span>Configuration</div>
+      <div class="section-title"><span class="s-ico tek-glyph glyph-config"></span>Configuration</div>
       <div class="config-actions">
         <button class="config-btn" id="exportBtn" onclick="exportConfig()">
-          <span class="c-ico">📤</span>Exporter
+          <span class="c-ico glyph-export"></span>Exporter
         </button>
         <button class="config-btn" id="importBtn" onclick="toggleImport()">
-          <span class="c-ico">📥</span>Importer
+          <span class="c-ico glyph-import"></span>Importer
         </button>
       </div>
       <div class="import-area" id="importArea">
@@ -442,7 +523,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
     <!-- Mise à jour -->
     <div class="section">
-      <div class="section-title"><span class="s-ico">🔄</span>Mise à jour</div>
+      <div class="section-title"><span class="s-ico tek-glyph glyph-update"></span>Mise à jour</div>
       <div class="update-row">
         <div class="update-status-dot" id="updateDot"></div>
         <div class="update-info">
@@ -456,7 +537,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 
     <!-- About -->
     <div class="section">
-      <div class="section-title"><span class="s-ico">ℹ️</span>À propos</div>
+      <div class="section-title"><span class="s-ico"><img src="../public/icon-128.png" alt="" style="width:15px;height:15px;object-fit:contain"></span>À propos</div>
       <div class="about-row">
         <span class="about-label">Application</span>
         <span class="about-val">OVERSEER</span>
@@ -479,7 +560,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 </div>
 
 <script>
-var ACTIONS = ['toggleOverlay', 'toggleWindow', 'toggleTimer', 'toggleWidget', 'toggleWidgetMode', 'toggleMaps', 'toggleOCR', 'toggleComparator'];
+var ACTIONS = ['toggleWindow', 'toggleTimer', 'toggleWidget', 'toggleQuickLookup', 'toggleWidgetMode', 'toggleMaps', 'toggleOCR', 'toggleComparator'];
 var currentBindings = {};
 var defaultBindings = {};
 var pendingChanges = {};
@@ -661,7 +742,7 @@ function exportConfig() {
         btn.innerHTML = '<span class="c-ico">✓</span>Copié !';
         setTimeout(function() {
           btn.classList.remove('success');
-          btn.innerHTML = '<span class="c-ico">📤</span>Exporter';
+          btn.innerHTML = '<span class="c-ico glyph-export"></span>Exporter';
         }, 2000);
       });
     });
@@ -750,8 +831,8 @@ if (window.api && window.api.onSettingsPinChanged) {
   window.api.onSettingsPinChanged(function(val) {
     settingsPinned = val;
     var btn = document.getElementById('settingsPinBtn');
-    btn.style.color = val ? '#97ADFF' : '#444';
-    btn.style.borderColor = val ? 'rgba(123,147,248,0.22)' : '#222';
+    btn.style.color = val ? '#c7f6ff' : '#444';
+    btn.style.borderColor = val ? 'rgba(95,228,255,0.22)' : '#222';
   });
 }
 

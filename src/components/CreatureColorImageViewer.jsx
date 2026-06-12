@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getColorByName, getSpeciesColorRegions, normalizeCreatureColors } from '../data/statExtractor';
+import { getCreatureImageFallbacks, getCreatureIconUrl } from '../data/creatureIcons';
 
 const IMAGE_PACK_BASE = 'https://raw.githubusercontent.com/arkutils/species-images/main/images/';
 const MANIFEST_URL = `${IMAGE_PACK_BASE}_manifest.json`;
@@ -148,6 +149,72 @@ function pieChart(species, colors) {
   return canvas.toDataURL('image/png');
 }
 
+async function fallbackCreaturePreview(species, colors) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  const normalized = normalizeCreatureColors(species, colors);
+  const regions = getSpeciesColorRegions(species).filter(r => r.enabled);
+  const swatches = regions.map(region => getColorByName(normalized[region.index])?.hex).filter(Boolean);
+
+  const bg = ctx.createRadialGradient(256, 220, 40, 256, 256, 280);
+  bg.addColorStop(0, 'rgba(166,108,255,0.32)');
+  bg.addColorStop(0.44, 'rgba(255,217,133,0.10)');
+  bg.addColorStop(1, 'rgba(4,5,16,0)');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, 512, 512);
+
+  swatches.forEach((hex, index) => {
+    ctx.beginPath();
+    ctx.arc(256, 256, 198 - index * 18, 0, Math.PI * 2);
+    ctx.strokeStyle = `${hex}aa`;
+    ctx.lineWidth = 10;
+    ctx.setLineDash([44, 22]);
+    ctx.lineDashOffset = index * -18;
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  const fallbacks = [...getCreatureImageFallbacks(species), getCreatureIconUrl(species)];
+  let image = null;
+  for (const url of fallbacks) {
+    try {
+      image = await loadImage(url);
+      break;
+    } catch {
+      // Try the next official/local image candidate.
+    }
+  }
+
+  if (image) {
+    const ratio = Math.min(360 / image.width, 360 / image.height);
+    const width = image.width * ratio;
+    const height = image.height * ratio;
+    ctx.shadowColor = 'rgba(166,108,255,0.55)';
+    ctx.shadowBlur = 28;
+    ctx.drawImage(image, 256 - width / 2, 232 - height / 2, width, height);
+    ctx.shadowBlur = 0;
+  }
+
+  const startX = 106;
+  swatches.slice(0, 6).forEach((hex, index) => {
+    ctx.fillStyle = hex;
+    ctx.beginPath();
+    ctx.roundRect(startX + index * 52, 414, 34, 34, 9);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.32)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = 'rgba(255,247,223,0.88)';
+  ctx.font = '800 22px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(species, 256, 474);
+  return canvas.toDataURL('image/png');
+}
+
 export default function CreatureColorImageViewer({ species, colors }) {
   const [preview, setPreview] = useState('');
   const [status, setStatus] = useState('Loading ASB image pack...');
@@ -168,9 +235,9 @@ export default function CreatureColorImageViewer({ species, colors }) {
         const baseName = candidateNames(species).find(name => manifest.has(`${name}.png`));
         if (!baseName) {
           if (!active || requestId.current !== id) return;
-          setPreview(pieChart(species, normalized));
+          setPreview(await fallbackCreaturePreview(species, normalized));
           setSource('');
-          setStatus('No ASB creature image found - color pie preview');
+          setStatus('Official fallback image + color regions');
           return;
         }
 
@@ -185,9 +252,9 @@ export default function CreatureColorImageViewer({ species, colors }) {
         setStatus(maskImage ? 'ASB color-region image loaded' : 'ASB image loaded without mask');
       } catch {
         if (!active || requestId.current !== id) return;
-        setPreview(pieChart(species, normalized));
+        setPreview(await fallbackCreaturePreview(species, normalized).catch(() => pieChart(species, normalized)));
         setSource('');
-        setStatus('ASB image pack unavailable - color pie preview');
+        setStatus('ASB image pack unavailable - official fallback preview');
       }
     }
 

@@ -10,13 +10,13 @@
 :root {
   --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent:#5fe4ff;--accent-l:#c7f6ff;--accent-d:#2fb7d4;
+  --accent-bg:rgba(95,228,255,0.08);--accent-border:rgba(95,228,255,0.22);--accent-glow:rgba(95,228,255,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --blue:#5fe4ff;--blue-bg:rgba(95,228,255,0.08);--blue-border:rgba(95,228,255,0.22);
+  --pink:#5fe4ff;--pink-bg:rgba(95,228,255,0.08);--pink-border:rgba(95,228,255,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
@@ -58,20 +58,27 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 }
 .bar-btn:hover { background:rgba(255,255,255,0.05); color:var(--text-1); }
 .bar-btn:active { transform:scale(0.97); }
-.bar-btn .ico { font-size:13px; line-height:1; }
+.bar-btn .ico { width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; line-height:1; }
+.bar-btn .ico img,
+.resize-opt img {
+  width:15px;
+  height:15px;
+  object-fit:contain;
+  filter:saturate(1.12) contrast(1.06) drop-shadow(0 0 7px rgba(95,228,255,0.22));
+}
 .bar-btn .lbl { font-size:10px; font-weight:600; letter-spacing:0.2px; }
 
 .bar-sep { width:1px; height:16px; background:var(--border-0); flex-shrink:0; margin:0 2px; }
 
 .bar-btn.on { background:var(--accent-bg); color:var(--accent-l); }
-.bar-btn.on:hover { background:rgba(123,147,248,0.16); }
+.bar-btn.on:hover { background:rgba(95,228,255,0.16); }
 
 .bar-btn.timer { color:var(--orange); }
 .bar-btn.timer:hover { background:rgba(240,153,62,0.08); color:#f5b06a; }
 .bar-btn.timer.on { background:rgba(240,153,62,0.10); color:#f5b06a; }
 
 .bar-btn.widget,.bar-btn.breeding { color:var(--accent); }
-.bar-btn.widget:hover,.bar-btn.breeding:hover { background:rgba(123,147,248,0.08); color:var(--accent-l); }
+.bar-btn.widget:hover,.bar-btn.breeding:hover { background:rgba(95,228,255,0.08); color:var(--accent-l); }
 .bar-btn.widget.on,.bar-btn.breeding.on { background:var(--accent-bg); color:var(--accent-l); }
 
 .nav-cluster { display:flex; align-items:center; gap:0; -webkit-app-region:no-drag; }
@@ -121,7 +128,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 .overlay-pill {
   padding:2px 7px; border-radius:var(--r-sm); font-size:8px; font-weight:700;
   letter-spacing:1px; text-transform:uppercase;
-  background:var(--accent-bg); border:1px solid rgba(123,147,248,0.20);
+  background:var(--accent-bg); border:1px solid rgba(95,228,255,0.20);
   color:var(--accent-l); display:none; flex-shrink:0;
 }
 .overlay-pill.show { display:inline-block; animation:badgePop .2s ease; }
@@ -186,6 +193,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 .resize-menu::-webkit-scrollbar-track{background:transparent}
 .resize-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:4px}
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 <div id="app">
@@ -219,79 +228,60 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 
     <div class="bar-sep"></div>
 
-    <!-- Overlay -->
-    <button class="bar-btn" id="overlayBtn" onclick="toggleOverlay()" title="Overlay mode (Alt+O)">
-      <span class="ico">📌</span><span class="lbl">Overlay</span>
-    </button>
-
-    <!-- Opacity -->
-    <div class="opacity-area">
-      <input type="range" class="tool-slider" id="opacitySlider" min="30" max="100" value="92"
-        oninput="setOpacity(this.value)">
-      <span class="opacity-label" id="opacityVal">92%</span>
-    </div>
-
-    <div class="bar-sep"></div>
-
     <!-- Timers -->
     <button class="bar-btn timer" id="timerBtn" onclick="toggleTimerOverlay()" title="Toggle mini timer overlay (Alt+M)">
-      <span class="ico">⏱</span><span class="lbl">Timers</span><span class="sync-dot" id="syncDot"></span>
+      <span class="ico"><img src="../public/maps/icons/compass.png" alt=""></span><span class="lbl">Timers</span><span class="sync-dot" id="syncDot"></span>
     </button>
 
     <!-- Maps -->
     <div class="resize-wrap">
       <button class="bar-btn" id="mapsBtn" onclick="toggleMapsMenu()" title="Interactive Maps">
-        <span class="ico">🗺️</span><span class="lbl">Cartes</span>
+        <span class="ico"><img src="../public/maps/icons/obelisk.png" alt=""></span><span class="lbl">Cartes</span>
       </button>
       <div class="resize-menu maps-dropdown" id="mapsMenu">
-        <button class="resize-opt" onclick="openMap('the-island','The Island')">🏝️ The Island</button>
-        <button class="resize-opt" onclick="openMap('scorched-earth','Scorched Earth')">🏜️ Scorched Earth</button>
-        <button class="resize-opt" onclick="openMap('aberration','Aberration')">🌑 Aberration</button>
-        <button class="resize-opt" onclick="openMap('extinction','Extinction')">🌆 Extinction</button>
-        <button class="resize-opt" onclick="openMap('ragnarok','Ragnarok')">⛰️ Ragnarok</button>
-        <button class="resize-opt" onclick="openMap('valguero','Valguero')">🌲 Valguero</button>
-        <button class="resize-opt" onclick="openMap('genesis','Genesis')">🧬 Genesis</button>
-        <button class="resize-opt" onclick="openMap('genesis-2','Genesis 2')">🚀 Genesis 2</button>
-        <button class="resize-opt" onclick="openMap('crystal-isles','Crystal Isles')">💎 Crystal Isles</button>
-        <button class="resize-opt" onclick="openMap('lost-island','Lost Island')">🌴 Lost Island</button>
-        <button class="resize-opt" onclick="openMap('fjordur','Fjordur')">❄️ Fjordur</button>
-        <button class="resize-opt" onclick="openMap('the-center','The Center')">🌊 The Center</button>
-        <button class="resize-opt" onclick="openMap('astraeos','Astraeos')">🌌 Astraeos</button>
+        <button class="resize-opt" onclick="openMap('the-island','The Island')"><img src="../public/maps/icons/obelisk.png" alt="">The Island</button>
+        <button class="resize-opt" onclick="openMap('scorched-earth','Scorched Earth')"><img src="../public/maps/icons/metal.png" alt="">Scorched Earth</button>
+        <button class="resize-opt" onclick="openMap('aberration','Aberration')"><img src="../public/maps/icons/black-pearl.png" alt="">Aberration</button>
+        <button class="resize-opt" onclick="openMap('extinction','Extinction')"><img src="../public/maps/icons/obsidian.png" alt="">Extinction</button>
+        <button class="resize-opt" onclick="openMap('ragnarok','Ragnarok')"><img src="../public/maps/icons/crystal.png" alt="">Ragnarok</button>
+        <button class="resize-opt" onclick="openMap('valguero','Valguero')"><img src="../public/maps/icons/sap.png" alt="">Valguero</button>
+        <button class="resize-opt" onclick="openMap('genesis','Genesis')"><img src="../public/maps/icons/organic-polymer.png" alt="">Genesis</button>
+        <button class="resize-opt" onclick="openMap('genesis-2','Genesis 2')"><img src="../public/maps/icons/gps.png" alt="">Genesis 2</button>
+        <button class="resize-opt" onclick="openMap('crystal-isles','Crystal Isles')"><img src="../public/maps/icons/crystal.png" alt="">Crystal Isles</button>
+        <button class="resize-opt" onclick="openMap('lost-island','Lost Island')"><img src="../public/maps/icons/fungal-wood.png" alt="">Lost Island</button>
+        <button class="resize-opt" onclick="openMap('fjordur','Fjordur')"><img src="../public/maps/icons/snow-owl.png" alt="">Fjordur</button>
+        <button class="resize-opt" onclick="openMap('the-center','The Center')"><img src="../public/maps/icons/silica-pearls.png" alt="">The Center</button>
+        <button class="resize-opt" onclick="openMap('astraeos','Astraeos')"><img src="../public/maps/icons/compass.png" alt="">Astraeos</button>
       </div>
     </div>
 
     <!-- Widget -->
     <button class="bar-btn widget" id="widgetBtn" onclick="toggleWidget()" title="Mini HUD Widget (Alt+W)">
-      <span class="ico">📊</span><span class="lbl">HUD</span>
+      <span class="ico"><img src="../public/maps/icons/spyglass.png" alt=""></span><span class="lbl">HUD</span>
     </button>
 
     <!-- Breeding -->
     <button class="bar-btn breeding" id="breedingBtn" onclick="toggleBreeding()" title="Breeding Manager (Alt+B)">
-      <span class="ico">🧬</span><span class="lbl">Breeding</span>
+      <span class="ico"><img src="../public/icon-128.png" alt=""></span><span class="lbl">Breeding</span>
     </button>
 
     <!-- OCR -->
     <button class="bar-btn" id="ocrBtn" onclick="toggleOCR()" title="OCR Stats (Alt+S)">
-      <span class="ico">📸</span><span class="lbl">OCR</span>
+      <span class="ico"><img src="../public/maps/icons/spyglass.png" alt=""></span><span class="lbl">OCR</span>
     </button>
 
     <div class="bar-sep"></div>
 
-    <!-- Theme -->
-    <button class="bar-btn" id="themeBtn" onclick="toggleTheme()" title="Thème sombre/clair">
-      <span class="ico">🌙</span><span class="lbl">Sombre</span>
-    </button>
-
     <!-- Taille -->
     <div class="resize-wrap">
       <button class="bar-btn" id="resizeBtn" onclick="toggleResizeMenu()" title="Taille de la fenêtre">
-        <span class="ico">📐</span><span class="lbl">Taille</span>
+        <span class="ico"><img src="../public/maps/icons/compass.png" alt=""></span><span class="lbl">Taille</span>
       </button>
       <div class="resize-menu" id="resizeMenu">
-        <button class="resize-opt" onclick="doResize('compact')">📱 Compact <span class="dim">480x700</span></button>
-        <button class="resize-opt" onclick="doResize('normal')">🖥️ Normal <span class="dim">1000x800</span></button>
-        <button class="resize-opt" onclick="doResize('wide')">🖼️ Wide <span class="dim">1400x900</span></button>
-        <button class="resize-opt" onclick="doResize('tall')">📄 Tall <span class="dim">550x950</span></button>
+        <button class="resize-opt" onclick="doResize('compact')"><img src="../public/maps/icons/gps.png" alt="">Compact <span class="dim">480x700</span></button>
+        <button class="resize-opt" onclick="doResize('normal')"><img src="../public/maps/icons/compass.png" alt="">Normal <span class="dim">1000x800</span></button>
+        <button class="resize-opt" onclick="doResize('wide')"><img src="../public/maps/icons/obelisk.png" alt="">Wide <span class="dim">1400x900</span></button>
+        <button class="resize-opt" onclick="doResize('tall')"><img src="../public/maps/icons/spyglass.png" alt="">Tall <span class="dim">550x950</span></button>
       </div>
     </div>
 
@@ -299,17 +289,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 
     <!-- Settings -->
     <button class="bar-btn" id="settingsBtn" onclick="toggleSettings()" title="Paramètres">
-      <span class="ico">⚙️</span><span class="lbl">Paramètres</span>
+      <span class="ico"><img src="../public/maps/icons/gps.png" alt=""></span><span class="lbl">Paramètres</span>
     </button>
-
-    <!-- Overlay badge -->
-    <div class="overlay-pill" id="overlayBadge">OVERLAY</div>
 
     <div class="spacer"></div>
 
     <!-- Keyboard shortcut hints -->
     <div class="hints" id="hintsArea">
-      <kbd>Alt+O</kbd><kbd>Alt+T</kbd><kbd>Alt+M</kbd><kbd>Alt+W</kbd><kbd>Alt+G</kbd><kbd>Alt+C</kbd>
+      <kbd>Alt+T</kbd><kbd>Alt+M</kbd><kbd>Alt+W</kbd><kbd>Alt+G</kbd><kbd>Alt+C</kbd>
     </div>
 
     <!-- Window controls -->
@@ -341,9 +328,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 <script>
 var wv = document.getElementById('dododex-view');
 var loading = document.getElementById('loading');
-var overlayBtn = document.getElementById('overlayBtn');
-var overlayBadge = document.getElementById('overlayBadge');
-var opacityVal = document.getElementById('opacityVal');
 var themeBtn = document.getElementById('themeBtn');
 var syncDot = document.getElementById('syncDot');
 
@@ -373,29 +357,6 @@ wv.addEventListener('new-window', function(e) {
   e.preventDefault();
   if (e.url.indexOf('dododex.com') !== -1) wv.src = e.url;
 });
-
-// ===== OVERLAY =====
-var isOverlay = false;
-function toggleOverlay() { window.api.toggleOverlay(); }
-var opacityArea = document.querySelector('.opacity-area');
-window.api.onOverlay(function(val) {
-  isOverlay = val;
-  overlayBtn.classList.toggle('on', val);
-  overlayBadge.classList.toggle('show', val);
-  if (opacityArea) opacityArea.classList.toggle('show', val);
-});
-window.api.getOverlay().then(function(val) {
-  isOverlay = val;
-  overlayBtn.classList.toggle('on', val);
-  overlayBadge.classList.toggle('show', val);
-  if (opacityArea) opacityArea.classList.toggle('show', val);
-});
-
-// ===== OPACITY =====
-function setOpacity(val) {
-  window.api.setOpacity(parseInt(val) / 100);
-  opacityVal.textContent = val + '%';
-}
 
 // ===== EXTENDED DODODEX DATA SCRAPER =====
 function startScraper() {
@@ -568,12 +529,8 @@ function scrapeDododexData() {
 
 // ===== DARK THEME INJECTION =====
 function toggleTheme() {
-  darkMode = !darkMode;
-  themeBtn.innerHTML = darkMode
-    ? '<span class="ico">🌙</span><span class="lbl">Sombre</span>'
-    : '<span class="ico">☀️</span><span class="lbl">Clair</span>';
-  themeBtn.classList.toggle('on', darkMode);
-  if (darkMode) injectDarkTheme(); else removeDarkTheme();
+  darkMode = true;
+  injectDarkTheme();
 }
 
 function injectDarkTheme() {
@@ -798,7 +755,6 @@ function updateHints(bindings) {
   var area = document.getElementById('hintsArea');
   if (!area || !bindings) return;
   var keys = [];
-  if (bindings.toggleOverlay) keys.push(bindings.toggleOverlay);
   if (bindings.toggleWindow) keys.push(bindings.toggleWindow);
   if (bindings.toggleTimer) keys.push(bindings.toggleTimer);
   if (bindings.toggleWidget) keys.push(bindings.toggleWidget);

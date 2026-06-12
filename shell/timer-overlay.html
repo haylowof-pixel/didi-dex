@@ -10,13 +10,13 @@
 :root {
   --bg-0:#000000;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent:#5fe4ff;--accent-l:#c7f6ff;--accent-d:#2fb7d4;
+  --accent-bg:rgba(95,228,255,0.08);--accent-border:rgba(95,228,255,0.22);--accent-glow:rgba(95,228,255,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --blue:#5fe4ff;--blue-bg:rgba(95,228,255,0.08);--blue-border:rgba(95,228,255,0.22);
+  --pink:#5fe4ff;--pink-bg:rgba(95,228,255,0.08);--pink-border:rgba(95,228,255,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
@@ -114,7 +114,23 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
   font-size: 12px; font-weight: 700; color: var(--text-1);
   flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.card-dino .dino-ico { margin-right: 3px; font-size: 11px; }
+.card-dino .dino-ico { margin-right: 5px; }
+.dino-ico img,
+.t-ico img,
+.timer-title-icon,
+.empty-ico img,
+.breed-head img,
+.breed-row-label img,
+.settings-header img,
+.narco-btn img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  vertical-align: -3px;
+  filter: saturate(1.12) drop-shadow(0 0 8px rgba(95,228,255,0.22));
+}
+.timer-title-icon { margin-right: 6px; }
+.empty-ico img { width: 30px; height: 30px; opacity: 0.8; }
 .card-status {
   font-size: 7px; font-weight: 700; padding: 2px 5px; border-radius: var(--r-sm);
   text-transform: uppercase; letter-spacing: 0.5px;
@@ -150,7 +166,7 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
 .t-row.starve { background: rgba(74,237,196,0.03); }
 .t-row.torpor { background: rgba(176,136,221,0.03); }
 
-.t-ico { font-size: 11px; flex-shrink: 0; }
+.t-ico { flex-shrink: 0; width: 16px; display: inline-flex; align-items: center; justify-content: center; }
 .t-label {
   font-size: 8px; font-weight: 600; color: var(--text-3);
   text-transform: uppercase; width: 36px; flex-shrink: 0;
@@ -343,18 +359,20 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 <div id="shell">
   <div id="mini-bar">
-    <span class="title">⏱ Timers</span>
+    <span class="title"><img class="timer-title-icon" src="../public/maps/icons/compass.png" alt="">Timers</span>
     <span class="timer-count" id="timerCount">0</span>
     <div class="size-presets">
       <button class="size-btn" onclick="resizePreset('small', this)" title="Small 280x400">S</button>
       <button class="size-btn active" onclick="resizePreset('medium', this)" title="Medium 380x540">M</button>
       <button class="size-btn" onclick="resizePreset('large', this)" title="Large 480x700">L</button>
     </div>
-    <button class="pin-btn active" id="timerPinBtn" onclick="toggleTimerPin()" title="Pin on top">📌</button>
+    <button class="pin-btn active" id="timerPinBtn" onclick="toggleTimerPin()" title="Pin on top"><img class="timer-title-icon" src="../public/maps/icons/gps.png" alt=""></button>
     <button class="close-btn" onclick="window.api.timerClose()">✕</button>
   </div>
 
@@ -364,7 +382,7 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
 
     <!-- Empty state -->
     <div class="empty-state" id="emptyState">
-      <div class="empty-ico">⏱</div>
+      <div class="empty-ico"><img src="../public/maps/icons/compass.png" alt=""></div>
       <div class="empty-title">Aucun timer actif</div>
       <div class="empty-sub">Navigue vers un dino sur Dododex<br>ou clique + pour ajouter manuellement</div>
     </div>
@@ -377,14 +395,14 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
     <!-- Breeding (shared) -->
     <div class="breed-section" id="breedingBlock">
       <div class="breed-head">
-        <span>🥚</span>
+        <img src="../public/icon-128.png" alt="">
         <span class="breed-label">Breeding</span>
       </div>
       <div class="breed-rows">
-        <div class="breed-row"><span class="breed-row-label">🥚 Incubation</span><span class="breed-row-time" id="breedInc">--:--:--</span></div>
-        <div class="breed-row"><span class="breed-row-label">🍼 Maturation</span><span class="breed-row-time" id="breedMat">--:--:--</span></div>
-        <div class="breed-row"><span class="breed-row-label">❤️ Imprinting</span><span class="breed-row-time" id="breedImp">--:--:--</span></div>
-        <div class="breed-row"><span class="breed-row-label">⏳ Interval</span><span class="breed-row-time" id="breedInt">--:--:--</span></div>
+        <div class="breed-row"><span class="breed-row-label"><img src="../public/icon-128.png" alt="">Incubation</span><span class="breed-row-time" id="breedInc">--:--:--</span></div>
+        <div class="breed-row"><span class="breed-row-label"><img src="../public/maps/icons/compass.png" alt="">Maturation</span><span class="breed-row-time" id="breedMat">--:--:--</span></div>
+        <div class="breed-row"><span class="breed-row-label"><img src="../public/maps/icons/gps.png" alt="">Imprinting</span><span class="breed-row-time" id="breedImp">--:--:--</span></div>
+        <div class="breed-row"><span class="breed-row-label"><img src="../public/maps/icons/compass.png" alt="">Interval</span><span class="breed-row-time" id="breedInt">--:--:--</span></div>
       </div>
       <div class="breed-bar"><div class="breed-bar-fill" id="breedBar" style="width:0%"></div></div>
       <div class="breed-bottom">
@@ -395,7 +413,7 @@ html, body { background: transparent; font-family: var(--font); color: var(--tex
     <!-- Sound Settings -->
     <div class="settings-block">
       <div class="settings-header" onclick="toggleSoundSettings()">
-        <span>🔔</span>
+        <img src="../public/maps/icons/gps.png" alt="">
         <span class="settings-label">Paramètres sonores</span>
         <span class="settings-arrow" id="settingsArrow">▶</span>
       </div>
@@ -543,20 +561,20 @@ function buildCard(t) {
   card.id = 'card-' + t.id;
   card.innerHTML =
     '<div class="card-head">' +
-      '<span class="card-dino"><span class="dino-ico">🦖</span> ' + escHtml(t.dinoName) + '</span>' +
+      '<span class="card-dino"><span class="dino-ico"><img src="../public/icon-128.png" alt=""></span> ' + escHtml(t.dinoName) + '</span>' +
       '<span class="card-status ready" id="st-' + t.id + '">READY</span>' +
       '<button class="card-remove" onclick="removeTimer(\'' + t.id + '\')" title="Supprimer">✕</button>' +
     '</div>' +
     '<div class="timer-rows">' +
       '<div class="t-row starve">' +
-        '<span class="t-ico">🍖</span>' +
+        '<span class="t-ico"><img src="../public/creatures/wiki/raw-meat.png" alt=""></span>' +
         '<span class="t-label">Starve</span>' +
         '<span class="t-time starve-c" id="sv-' + t.id + '">' + fmtTime(t.starveLeft) + '</span>' +
         '<div class="t-bar"><div class="t-bar-fill starve-fill" id="svb-' + t.id + '" style="width:100%"></div></div>' +
         '<button class="t-btn" id="svt-' + t.id + '" onclick="toggleStarve(\'' + t.id + '\')">▶</button>' +
       '</div>' +
       '<div class="t-row torpor">' +
-        '<span class="t-ico">💜</span>' +
+        '<span class="t-ico"><img src="../public/maps/icons/compass.png" alt=""></span>' +
         '<span class="t-label">Torpor</span>' +
         '<span class="t-time torpor-c" id="tp-' + t.id + '">' + fmtTime(t.torporLeft) + '</span>' +
         '<div class="t-bar"><div class="t-bar-fill torpor-fill" id="tpb-' + t.id + '" style="width:100%"></div></div>' +
@@ -564,8 +582,8 @@ function buildCard(t) {
       '</div>' +
     '</div>' +
     '<div class="narco-row">' +
-      '<button class="narco-btn" onclick="addNarco(\'' + t.id + '\')">💊 +40 <span class="narco-count" id="nc-' + t.id + '">0</span></button>' +
-      '<button class="narco-btn" onclick="addBio(\'' + t.id + '\')">☠️ +80 <span class="narco-count" id="bc-' + t.id + '">0</span></button>' +
+      '<button class="narco-btn" onclick="addNarco(\'' + t.id + '\')"><img src="../public/maps/icons/organic-polymer.png" alt=""> +40 <span class="narco-count" id="nc-' + t.id + '">0</span></button>' +
+      '<button class="narco-btn" onclick="addBio(\'' + t.id + '\')"><img src="../public/maps/icons/black-pearl.png" alt=""> +80 <span class="narco-count" id="bc-' + t.id + '">0</span></button>' +
       '<button class="narco-reset-btn" onclick="resetNarco(\'' + t.id + '\')" title="Reset">↺</button>' +
     '</div>' +
     '<div class="food-info">' +
@@ -957,7 +975,7 @@ function playAlarm(ttsMsg) {
   }
 
   if (window.api && window.api.showNotification && ttsMsg) {
-    window.api.showNotification({ title: '🦖 ARK Timer', body: ttsMsg });
+    window.api.showNotification({ title: 'ARK Timer', body: ttsMsg });
   }
 }
 

@@ -1,0 +1,1247 @@
+@property --tek-flow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes tekFlowBorder {
+  to { --tek-flow-angle: 360deg; }
+}
+
+@keyframes tekSoftSweep {
+  0% { transform: translateX(-130%); opacity: 0; }
+  18% { opacity: .42; }
+  58% { opacity: .14; }
+  100% { transform: translateX(130%); opacity: 0; }
+}
+
+:root {
+  --accent: #9d70ff !important;
+  --accent-l: #fff0b8 !important;
+  --accent-d: #6f54ff !important;
+  --accent-bg: rgba(157,112,255,.13) !important;
+  --accent-border: rgba(232,190,92,.22) !important;
+  --accent-glow: rgba(157,112,255,.20) !important;
+  --blue: #68b8ff !important;
+  --pink: #9d70ff !important;
+  --purple: #9d70ff !important;
+  --gold: #e8be5c !important;
+  --text-0: #f4f7ff !important;
+  --text-1: #d9def0 !important;
+  --text-2: #a8b0ca !important;
+  --text-3: #68708d !important;
+  --border-0: rgba(157,112,255,.14) !important;
+  --border-1: rgba(232,190,92,.15) !important;
+  --border-2: rgba(157,112,255,.22) !important;
+  --glass-bg: rgba(255,255,255,.045) !important;
+  --glass-border: rgba(157,112,255,.16) !important;
+}
+
+html,
+body {
+  color: #f4f7ff !important;
+}
+
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(157,112,255,.20), transparent 28rem),
+    radial-gradient(circle at 82% 8%, rgba(232,190,92,.08), transparent 24rem),
+    linear-gradient(rgba(104,184,255,.030) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,190,92,.018) 1px, transparent 1px),
+    rgba(2,3,10,.16) !important;
+  background-size: auto, auto, 64px 64px, 64px 64px, auto !important;
+  opacity: .72 !important;
+}
+
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(110deg, transparent 0 42%, rgba(232,190,92,.040) 48%, transparent 56%),
+    radial-gradient(circle at 50% 0%, rgba(157,112,255,.06), transparent 24rem) !important;
+  mix-blend-mode: screen !important;
+  animation: tekSoftSweep 8s ease-in-out infinite !important;
+}
+
+#app,
+#shell,
+#widget,
+#panel,
+.main,
+.content,
+#content,
+.srv-content,
+.maps-content {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#app,
+#shell,
+#widget,
+#panel,
+.main,
+.setup,
+.tribe-header,
+.tribe-members-bar,
+.card,
+.panel,
+.section,
+.content,
+.srv-card,
+.srv-fav-card,
+.map-item,
+.map-card,
+.settings-card,
+.kb-row,
+.about-row,
+.setting-row,
+.species-header,
+.stat-row,
+.timer-card,
+.task-card,
+.template-card,
+.paste-zone,
+.scan-placeholder,
+.shared-marker-card,
+.marker-modal,
+.modal-box,
+[class*="card"],
+[class*="panel"],
+[class*="section"],
+[class*="row"] {
+  border-color: rgba(157,112,255,.16) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.058), rgba(255,255,255,.016) 42%, rgba(0,0,0,.26)),
+    radial-gradient(circle at 8% 0%, rgba(157,112,255,.115), transparent 22rem),
+    radial-gradient(circle at 96% 2%, rgba(232,190,92,.052), transparent 18rem),
+    rgba(5,6,17,.66) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(232,190,92,.018),
+    0 18px 48px rgba(0,0,0,.30) !important;
+}
+
+#panel,
+#shell,
+#widget {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.012) 42%, rgba(0,0,0,.30)),
+    radial-gradient(circle at 14% 0%, rgba(157,112,255,.16), transparent 18rem),
+    radial-gradient(circle at 92% 0%, rgba(232,190,92,.055), transparent 14rem),
+    rgba(4,5,15,.88) !important;
+  border-color: rgba(157,112,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.060),
+    inset 0 -1px 0 rgba(232,190,92,.022),
+    0 22px 58px rgba(0,0,0,.46),
+    0 0 30px rgba(157,112,255,.10) !important;
+}
+
+#panel {
+  isolation: isolate;
+}
+
+#shell .empty-state,
+#widget .empty-state,
+#panel #empty {
+  background: transparent !important;
+  color: rgba(226,232,250,.68) !important;
+}
+
+button,
+input,
+select,
+textarea,
+.bar-btn,
+.scan-btn,
+.filter-btn,
+.tab-btn,
+.task-opt-btn,
+.srv-tab,
+.srv-filter-btn,
+.sb-tab,
+.scale-preset,
+.sound-preset,
+.size-btn,
+.tts-toggle {
+  border-color: rgba(157,112,255,.18) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.060), rgba(255,255,255,.016)),
+    radial-gradient(circle at 20% 0%, rgba(157,112,255,.10), transparent 12rem),
+    rgba(6,7,20,.60) !important;
+  color: #eef2ff !important;
+}
+
+button:hover,
+.bar-btn:hover,
+.scan-btn:hover,
+.filter-btn:hover,
+.tab-btn:hover,
+.task-opt-btn:hover,
+.srv-tab:hover,
+.srv-filter-btn:hover,
+.sb-tab:hover,
+.scale-preset:hover,
+.sound-preset:hover,
+.size-btn:hover,
+.tts-toggle:hover {
+  border-color: rgba(232,190,92,.28) !important;
+  color: #fff8db !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.075),
+    0 0 22px rgba(157,112,255,.13),
+    0 12px 28px rgba(0,0,0,.24) !important;
+}
+
+.active,
+.selected,
+.srv-tab.active,
+.srv-filter-btn.active,
+.sb-tab.active,
+.scale-preset.active,
+.sound-preset.active,
+.size-btn.active,
+.tts-toggle.active,
+.filter-btn.active,
+.tab-btn.active,
+.task-opt-btn.active,
+.sex-btn.active-male,
+.sex-btn.active-female {
+  --tek-flow-angle: 0deg;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(180deg, rgba(8,9,24,.98), rgba(4,5,15,.98)) padding-box,
+    conic-gradient(from var(--tek-flow-angle), rgba(232,190,92,.98), rgba(157,112,255,.92), rgba(104,184,255,.34), rgba(157,112,255,.92), rgba(232,190,92,.98)) border-box !important;
+  color: #fff4c8 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 22px rgba(157,112,255,.18),
+    0 0 12px rgba(232,190,92,.10),
+    0 12px 28px rgba(0,0,0,.22) !important;
+  animation: tekFlowBorder 3.2s linear infinite !important;
+}
+
+.srv-players-bar-fill,
+.update-progress-fill,
+.task-item-bar-fill,
+.progress-fill,
+.timer-progress-bar,
+[class*="progress"][class*="fill"],
+[class*="bar-fill"] {
+  background: linear-gradient(90deg, #9d70ff, #e8be5c 52%, #68b8ff) !important;
+  box-shadow: 0 0 18px rgba(157,112,255,.20), 0 0 12px rgba(232,190,92,.12) !important;
+}
+
+a,
+.accent,
+[class*="accent"],
+.species-name,
+.stat-value,
+.timer-display,
+.w-val,
+.n-val {
+  color: #fff0b8 !important;
+  text-shadow: 0 0 14px rgba(232,190,92,.12);
+}
+
+img {
+  image-rendering: auto;
+}
+
+@keyframes tekAmbientDrift {
+  0% { background-position: 0% 0%, 100% 0%, 0 0, 0 0; }
+  50% { background-position: 8% 4%, 92% 8%, 24px 34px, -18px 22px; }
+  100% { background-position: 0% 0%, 100% 0%, 0 0, 0 0; }
+}
+
+@keyframes tekIdleAura {
+  0%, 100% { opacity: .22; transform: scale(.96); }
+  50% { opacity: .46; transform: scale(1.08); }
+}
+
+@keyframes tekProgressFlow {
+  from { background-position: 0% 50%; }
+  to { background-position: 200% 50%; }
+}
+
+body::before {
+  animation: tekAmbientDrift 28s ease-in-out infinite !important;
+}
+
+#panel::before,
+#shell::before,
+#widget::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -1px !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(157,112,255,.18), transparent 14rem),
+    radial-gradient(circle at 84% 0%, rgba(232,190,92,.08), transparent 12rem) !important;
+  opacity: .50 !important;
+  mix-blend-mode: screen !important;
+}
+
+.w-mini-icon,
+.species-icon,
+.timer-icon,
+.scan-icon,
+.bar-btn,
+.tab-btn,
+.filter-btn,
+.task-opt-btn,
+.srv-tab,
+.srv-filter-btn {
+  position: relative !important;
+  isolation: isolate !important;
+}
+
+.w-mini-icon::before,
+.species-icon::before,
+.timer-icon::before,
+.scan-icon::before,
+.bar-btn::before,
+.tab-btn::before,
+.filter-btn::before,
+.task-opt-btn::before,
+.srv-tab::before,
+.srv-filter-btn::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -5px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle, rgba(232,190,92,.12), transparent 54%),
+    radial-gradient(circle, rgba(157,112,255,.18), transparent 70%) !important;
+  animation: tekIdleAura 4.8s ease-in-out infinite !important;
+}
+
+.srv-players-bar-fill,
+.update-progress-fill,
+.task-item-bar-fill,
+.progress-fill,
+.timer-progress-bar,
+[class*="progress"][class*="fill"],
+[class*="bar-fill"] {
+  background: linear-gradient(90deg, #7e3dff, #9d70ff, #e8be5c, #ff9b45, #68b8ff, #7e3dff) !important;
+  background-size: 220% 100% !important;
+  animation: tekProgressFlow 4.8s linear infinite !important;
+}
+
+/* Overlay widgets final skin: transparent black iOS glass, energy only on important controls. */
+:root {
+  --overlay-glass: rgba(3, 3, 10, .62) !important;
+  --overlay-glass-soft: rgba(5, 4, 14, .46) !important;
+  --overlay-line: rgba(255, 224, 146, .16) !important;
+  --overlay-violet: #9d70ff !important;
+  --overlay-gold: #e8be5c !important;
+  --overlay-blue: #68b8ff !important;
+}
+
+html,
+body {
+  background: transparent !important;
+}
+
+body::before,
+body::after {
+  opacity: .34 !important;
+}
+
+#widget,
+#shell,
+#panel {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.060), rgba(255,255,255,.014) 38%, rgba(0,0,0,.30)),
+    radial-gradient(circle at 16% 0%, rgba(157,112,255,.14), transparent 16rem),
+    radial-gradient(circle at 96% 0%, rgba(232,190,92,.070), transparent 13rem),
+    var(--overlay-glass) !important;
+  border: 1px solid var(--overlay-line) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.070),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 18px 50px rgba(0,0,0,.34),
+    0 0 26px rgba(157,112,255,.10) !important;
+  backdrop-filter: blur(28px) saturate(1.35) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.35) !important;
+}
+
+#widget::before,
+#shell::before,
+#panel::before {
+  opacity: .20 !important;
+}
+
+#mini-bar,
+#search-row,
+.timer-card,
+.breed-section,
+.w-stat-cell,
+.t-row,
+.narco-row,
+.food-info,
+.result-item,
+#dino-header,
+#controls,
+[class*="card"],
+[class*="panel"],
+[class*="section"],
+[class*="row"] {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.012)),
+    rgba(5, 4, 14, .36) !important;
+  border-color: rgba(255,224,146,.105) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.040),
+    0 8px 24px rgba(0,0,0,.16) !important;
+  backdrop-filter: blur(18px) saturate(1.18) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.18) !important;
+}
+
+#mini-bar {
+  background:
+    linear-gradient(90deg, rgba(8,7,18,.46), rgba(8,7,18,.20)),
+    rgba(0,0,0,.18) !important;
+}
+
+button,
+.size-btn,
+.pin-btn,
+.t-btn,
+.narco-btn,
+.add-btn,
+kbd,
+select,
+input {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.060), rgba(255,255,255,.016)),
+    rgba(9, 8, 22, .34) !important;
+  border-color: rgba(255,224,146,.14) !important;
+  color: rgba(246,241,255,.86) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.045) !important;
+}
+
+button:hover,
+.size-btn:hover,
+.pin-btn:hover,
+.t-btn:hover,
+.narco-btn:hover,
+.add-btn:hover {
+  border-color: rgba(232,190,92,.32) !important;
+  color: #fff2be !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.070),
+    0 0 18px rgba(157,112,255,.14),
+    0 0 12px rgba(232,190,92,.10) !important;
+}
+
+.active,
+.selected,
+.size-btn.active,
+.pin-btn.active,
+.t-btn.running,
+.narco-btn.active,
+.result-item.focused,
+.result-item:hover {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(
+      102deg,
+      transparent 0%,
+      transparent 24%,
+      rgba(255,232,166,.07) 34%,
+      rgba(255,172,66,.24) 44%,
+      rgba(181,89,255,.30) 56%,
+      rgba(104,184,255,.12) 68%,
+      transparent 82%,
+      transparent 100%
+    ) padding-box,
+    linear-gradient(180deg, rgba(9,8,22,.50), rgba(5,5,14,.36)) padding-box,
+    linear-gradient(90deg, rgba(255,230,164,.62), rgba(255,178,72,.92), rgba(183,91,255,.92), rgba(104,184,255,.40), rgba(255,230,164,.62)) border-box !important;
+  background-size: 260% 100%, 100% 100%, 320% 100% !important;
+  animation: overlayControlEnergy 5.8s linear infinite !important;
+  color: #fff2be !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.060),
+    0 0 18px rgba(157,112,255,.16),
+    0 0 10px rgba(232,190,92,.12) !important;
+}
+
+.timer-display,
+.w-val,
+.t-time,
+.narco-count,
+.n-val,
+.w-breed-time,
+.card-status,
+.badge,
+.timer-count {
+  color: #fff0b8 !important;
+  text-shadow:
+    0 0 10px rgba(232,190,92,.18),
+    0 0 18px rgba(157,112,255,.12) !important;
+}
+
+.w-bar-track,
+.t-bar {
+  background: rgba(255,255,255,.055) !important;
+  border: 1px solid rgba(255,224,146,.08) !important;
+}
+
+.w-bar-fill,
+.t-bar-fill,
+.progress-fill,
+[class*="bar-fill"] {
+  background: linear-gradient(90deg, #7e3dff, #9d70ff, #e8be5c, #ff9b45, #68b8ff, #7e3dff) !important;
+  background-size: 240% 100% !important;
+  animation: tekProgressFlow 5.6s linear infinite !important;
+}
+
+@keyframes overlayControlEnergy {
+  0% { background-position: 145% 50%, 0 0, 0% 50%; }
+  100% { background-position: -95% 50%, 0 0, 320% 50%; }
+}
+
+/* Final widget sizing and Quick Lookup polish. */
+#widget {
+  width: max-content !important;
+  min-width: 220px !important;
+  max-width: min(420px, 100vw) !important;
+}
+
+#widget[data-mode="standard"] {
+  min-width: 280px !important;
+}
+
+#widget[data-mode="detailed"] {
+  min-width: 340px !important;
+}
+
+#panel {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.052), rgba(255,255,255,.012) 40%, rgba(0,0,0,.34)),
+    radial-gradient(circle at 15% 0%, rgba(157,112,255,.13), transparent 18rem),
+    radial-gradient(circle at 92% 6%, rgba(232,190,92,.06), transparent 16rem),
+    rgba(3,3,10,.66) !important;
+  border-color: rgba(255,224,146,.17) !important;
+}
+
+#search-row,
+#results,
+#taming-panel,
+#dino-header,
+#controls,
+.result-item,
+.stat-card,
+.food-row,
+.info-row {
+  background-color: rgba(4,4,12,.30) !important;
+}
+
+#search {
+  color: #fff7dc !important;
+}
+
+#search::placeholder {
+  color: rgba(218, 213, 236, .46) !important;
+}
+
+#kbd-hint kbd,
+.badge,
+.ctrl-group select,
+#food-select {
+  border-color: rgba(255,224,146,.14) !important;
+  background: rgba(8,7,20,.34) !important;
+}
+
+/* Shared shell theme variants. Used by embedded pages, widgets and Quick Lookup. */
+html[data-overseer-theme="blackglass"] {
+  --accent: #d9c07a !important;
+  --accent-l: #f4e6bc !important;
+  --accent-d: #7e6dff !important;
+  --accent-bg: rgba(255,236,190,.075) !important;
+  --accent-border: rgba(255,236,190,.13) !important;
+  --accent-glow: rgba(255,236,190,.11) !important;
+  --blue: #68708f !important;
+  --pink: #7e6dff !important;
+  --purple: #7e6dff !important;
+  --gold: #d9c07a !important;
+  --text-0: #f2f0e8 !important;
+  --text-1: #d7d4ca !important;
+  --text-2: #98958d !important;
+  --text-3: #6f6b62 !important;
+  --border-0: rgba(255,236,190,.055) !important;
+  --border-1: rgba(255,236,190,.090) !important;
+  --border-2: rgba(255,236,190,.15) !important;
+  --glass-bg: rgba(4,4,9,.28) !important;
+  --glass-border: rgba(255,236,190,.10) !important;
+}
+
+html[data-overseer-theme="mutagen"] {
+  --accent: #b06cff !important;
+  --accent-l: #f0c76b !important;
+  --accent-d: #5d39db !important;
+  --accent-bg: rgba(176,108,255,.13) !important;
+  --accent-border: rgba(240,199,107,.20) !important;
+  --accent-glow: rgba(176,108,255,.17) !important;
+  --blue: #7b8dff !important;
+  --pink: #b06cff !important;
+  --purple: #b06cff !important;
+  --gold: #f0c76b !important;
+  --text-0: #f9f4ff !important;
+  --text-1: #e5daf2 !important;
+  --text-2: #ac9abe !important;
+  --text-3: #776688 !important;
+  --border-0: rgba(199,124,255,.075) !important;
+  --border-1: rgba(199,124,255,.13) !important;
+  --border-2: rgba(240,199,107,.20) !important;
+  --glass-bg: rgba(12,7,25,.30) !important;
+  --glass-border: rgba(199,124,255,.13) !important;
+}
+
+html[data-overseer-theme="blackglass"] body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,236,190,.070), transparent 28rem),
+    radial-gradient(circle at 84% 10%, rgba(126,109,255,.050), transparent 26rem),
+    #020205 !important;
+}
+
+html[data-overseer-theme="blackglass"] body::before {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,236,190,.070), transparent 28rem),
+    radial-gradient(circle at 82% 8%, rgba(126,109,255,.050), transparent 24rem),
+    linear-gradient(rgba(255,236,190,.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,236,190,.010) 1px, transparent 1px),
+    rgba(0,0,0,.22) !important;
+  opacity: .50 !important;
+}
+
+html[data-overseer-theme="blackglass"] body::after {
+  background:
+    linear-gradient(110deg, transparent 0 42%, rgba(255,236,190,.024) 48%, transparent 56%),
+    radial-gradient(circle at 50% 0%, rgba(126,109,255,.035), transparent 24rem) !important;
+  opacity: .55 !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  #app,
+  #shell,
+  #widget,
+  #panel,
+  .main,
+  .setup,
+  .content,
+  .srv-card,
+  .srv-fav-card,
+  .map-item,
+  .map-card,
+  .settings-card,
+  .kb-row,
+  .about-row,
+  .setting-row,
+  .species-header,
+  .stat-row,
+  .timer-card,
+  .task-card,
+  .template-card,
+  .paste-zone,
+  .scan-placeholder,
+  .shared-marker-card,
+  .marker-modal,
+  .modal-box,
+  [class*="card"],
+  [class*="panel"],
+  [class*="section"],
+  [class*="row"]
+) {
+  border-color: rgba(255,236,190,.095) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.034), rgba(255,255,255,.008) 42%, rgba(0,0,0,.25)),
+    radial-gradient(circle at 8% 0%, rgba(126,109,255,.052), transparent 22rem),
+    radial-gradient(circle at 96% 2%, rgba(255,236,190,.036), transparent 18rem),
+    rgba(4,4,9,.34) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.044),
+    inset 0 -1px 0 rgba(255,236,190,.014),
+    0 18px 48px rgba(0,0,0,.32) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  button,
+  input,
+  select,
+  textarea,
+  .bar-btn,
+  .bar-btn-s,
+  .scan-btn,
+  .filter-btn,
+  .tab-btn,
+  .task-opt-btn,
+  .srv-tab,
+  .srv-filter-btn,
+  .sb-tab,
+  .scale-preset,
+  .sound-preset,
+  .size-btn,
+  .tts-toggle
+) {
+  border-color: rgba(255,236,190,.105) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.044), rgba(255,255,255,.010)),
+    rgba(4,4,9,.42) !important;
+  color: rgba(242,240,232,.96) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .active,
+  .selected,
+  .size-btn.active,
+  .pin-btn.active,
+  .t-btn.running,
+  .narco-btn.active,
+  .result-item.focused,
+  .result-item:hover
+) {
+  background:
+    linear-gradient(
+      102deg,
+      transparent 0%,
+      transparent 24%,
+      rgba(255,236,190,.045) 34%,
+      rgba(217,192,122,.18) 44%,
+      rgba(126,109,255,.18) 56%,
+      rgba(198,138,84,.10) 68%,
+      transparent 82%,
+      transparent 100%
+    ) padding-box,
+    linear-gradient(180deg, rgba(9,8,14,.46), rgba(5,5,9,.32)) padding-box,
+    linear-gradient(90deg, rgba(255,236,190,.48), rgba(217,192,122,.72), rgba(126,109,255,.62), rgba(198,138,84,.34), rgba(255,236,190,.48)) border-box !important;
+  color: #f4e6bc !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.052),
+    0 0 18px rgba(255,236,190,.10),
+    0 0 10px rgba(126,109,255,.08) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .w-bar-fill,
+  .t-bar-fill,
+  .progress-fill,
+  [class*="bar-fill"]
+) {
+  background: linear-gradient(90deg, #202027, #d9c07a, #7e6dff, #c68a54, #202027) !important;
+  background-size: 260% 100% !important;
+}
+
+/* Black Glass Pro for overlays: widget, timer and quick lookup. */
+html[data-overseer-theme="blackglass"] {
+  --accent: #d6b66b !important;
+  --accent-l: #f1dda6 !important;
+  --accent-d: #7967ff !important;
+  --accent-bg: rgba(246,219,151,.060) !important;
+  --accent-border: rgba(246,219,151,.145) !important;
+  --accent-glow: rgba(246,219,151,.095) !important;
+  --blue: #79d7ff !important;
+  --pink: #7967ff !important;
+  --purple: #7967ff !important;
+  --gold: #d6b66b !important;
+  --text-0: #faf8f0 !important;
+  --text-1: #e5e0d3 !important;
+  --text-2: #a49d8e !important;
+  --text-3: #716b5f !important;
+  --border-0: rgba(246,219,151,.045) !important;
+  --border-1: rgba(246,219,151,.080) !important;
+  --border-2: rgba(246,219,151,.150) !important;
+  --glass-bg: rgba(2,2,5,.14) !important;
+  --glass-border: rgba(246,219,151,.085) !important;
+  --overlay-glass: rgba(2,2,5,.22) !important;
+  --overlay-glass-soft: rgba(3,3,7,.16) !important;
+  --overlay-line: rgba(246,219,151,.115) !important;
+  --overlay-violet: #7967ff !important;
+  --overlay-gold: #d6b66b !important;
+  --overlay-blue: #79d7ff !important;
+}
+
+html[data-overseer-theme="blackglass"] body::before,
+html[data-overseer-theme="blackglass"] body::after {
+  opacity: .22 !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(#widget, #shell, #panel) {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.042), rgba(255,255,255,.007) 42%, rgba(0,0,0,.28)),
+    radial-gradient(circle at 16% 0%, rgba(121,103,255,.050), transparent 14rem),
+    radial-gradient(circle at 100% 0%, rgba(214,182,107,.034), transparent 12rem),
+    rgba(2,2,5,.24) !important;
+  border-color: rgba(246,219,151,.105) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.050),
+    inset 0 -1px 0 rgba(214,182,107,.012),
+    0 22px 62px rgba(0,0,0,.48),
+    0 0 26px rgba(121,103,255,.055) !important;
+  backdrop-filter: blur(30px) saturate(1.42) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(1.42) !important;
+}
+
+html[data-overseer-theme="blackglass"] #widget {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.046), rgba(255,255,255,.008) 42%, rgba(0,0,0,.30)),
+    radial-gradient(circle at 0% 0%, rgba(121,103,255,.060), transparent 10rem),
+    radial-gradient(circle at 100% 0%, rgba(214,182,107,.046), transparent 10rem),
+    rgba(2,2,5,.28) !important;
+  border-radius: 16px !important;
+}
+
+html[data-overseer-theme="blackglass"] #panel {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.044), rgba(255,255,255,.007) 42%, rgba(0,0,0,.28)),
+    radial-gradient(circle at 14% 0%, rgba(121,103,255,.052), transparent 18rem),
+    radial-gradient(circle at 96% 0%, rgba(214,182,107,.040), transparent 15rem),
+    rgba(2,2,5,.25) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  #mini-bar,
+  #search-row,
+  #results,
+  #taming-panel,
+  #dino-header,
+  #controls,
+  .timer-card,
+  .breed-section,
+  .w-stat-cell,
+  .t-row,
+  .narco-row,
+  .food-info,
+  .result-item,
+  .stat-card,
+  .food-row,
+  .info-row,
+  [class*="card"],
+  [class*="panel"],
+  [class*="section"],
+  [class*="row"]
+) {
+  border-color: rgba(246,219,151,.078) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.032), rgba(255,255,255,.006)),
+    rgba(3,3,7,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.034),
+    0 10px 28px rgba(0,0,0,.18) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  button,
+  .size-btn,
+  .pin-btn,
+  .t-btn,
+  .narco-btn,
+  .add-btn,
+  kbd,
+  select,
+  input,
+  .bar-btn,
+  .bar-btn-s
+) {
+  border-color: rgba(246,219,151,.10) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.042), rgba(255,255,255,.007)),
+    rgba(4,4,8,.24) !important;
+  color: rgba(250,248,240,.92) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  button:hover,
+  .size-btn:hover,
+  .pin-btn:hover,
+  .t-btn:hover,
+  .narco-btn:hover,
+  .add-btn:hover,
+  .result-item:hover
+) {
+  border-color: rgba(246,219,151,.20) !important;
+  color: #f1dda6 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.052),
+    0 0 18px rgba(214,182,107,.08),
+    0 0 12px rgba(121,103,255,.06) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .active,
+  .selected,
+  .size-btn.active,
+  .pin-btn.active,
+  .t-btn.running,
+  .narco-btn.active,
+  .result-item.focused,
+  .result-item:hover
+) {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(
+      102deg,
+      transparent 0%,
+      rgba(214,182,107,.035) 25%,
+      rgba(214,182,107,.145) 42%,
+      rgba(121,103,255,.155) 56%,
+      rgba(185,120,72,.075) 72%,
+      transparent 100%
+    ) padding-box,
+    linear-gradient(180deg, rgba(8,7,12,.42), rgba(3,3,7,.30)) padding-box,
+    linear-gradient(90deg, rgba(246,219,151,.46), rgba(214,182,107,.72), rgba(121,103,255,.58), rgba(185,120,72,.30), rgba(246,219,151,.46)) border-box !important;
+  background-size: 300% 100%, 100% 100%, 340% 100% !important;
+  color: #f1dda6 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.052),
+    0 0 18px rgba(214,182,107,.09),
+    0 0 12px rgba(121,103,255,.06) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .timer-display,
+  .w-val,
+  .t-time,
+  .narco-count,
+  .n-val,
+  .w-breed-time,
+  .card-status,
+  .badge,
+  .timer-count
+) {
+  color: #f1dda6 !important;
+  text-shadow:
+    0 0 10px rgba(214,182,107,.14),
+    0 0 18px rgba(121,103,255,.08) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(.w-bar-track, .t-bar) {
+  background: rgba(255,255,255,.038) !important;
+  border-color: rgba(246,219,151,.070) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .w-bar-fill,
+  .t-bar-fill,
+  .progress-fill,
+  [class*="bar-fill"]
+) {
+  background: linear-gradient(90deg, #1a1820, #d6b66b, #7967ff, #79d7ff, #b97848, #1a1820) !important;
+  background-size: 260% 100% !important;
+  box-shadow: 0 0 13px rgba(214,182,107,.10) !important;
+}
+
+/* Final Black Glass shell coherence layer. */
+html[data-overseer-theme="blackglass"] {
+  --accent: #d9c07a !important;
+  --accent-l: #f4e6bc !important;
+  --accent-d: #8f7bff !important;
+  --accent-bg: rgba(217, 192, 122, 0.075) !important;
+  --accent-border: rgba(255, 216, 117, 0.18) !important;
+  --accent-glow: rgba(143, 123, 255, 0.12) !important;
+  --blue: #79d7ff !important;
+  --pink: #8f7bff !important;
+  --purple: #8f7bff !important;
+  --gold: #d9c07a !important;
+  --overlay-violet: #8f7bff !important;
+  --overlay-gold: #d9c07a !important;
+  --overlay-blue: #79d7ff !important;
+  --glass-bg: rgba(2, 2, 5, 0.16) !important;
+  --glass-border: rgba(255, 216, 117, 0.105) !important;
+  --overlay-glass: rgba(2, 2, 5, 0.24) !important;
+  --overlay-glass-soft: rgba(4, 4, 9, 0.18) !important;
+  --overlay-line: rgba(255, 216, 117, 0.12) !important;
+}
+
+html[data-overseer-theme="blackglass"] body {
+  color: rgba(248, 244, 232, 0.90) !important;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(217, 192, 122, 0.052), transparent 30rem),
+    radial-gradient(circle at 84% 10%, rgba(143, 123, 255, 0.052), transparent 28rem),
+    radial-gradient(circle at 70% 78%, rgba(121, 215, 255, 0.030), transparent 24rem),
+    #010104 !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  #widget,
+  #shell,
+  #panel,
+  .card,
+  .panel,
+  .section,
+  .content,
+  .map-card,
+  .server-card,
+  .settings-card,
+  .srv-card,
+  .srv-fav-card,
+  .timer-card,
+  .food-card,
+  .task-card,
+  .template-card,
+  .marker-modal,
+  [class*="card"],
+  [class*="panel"],
+  [class*="section"]
+) {
+  border-color: rgba(255, 216, 117, 0.105) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.046), rgba(255, 255, 255, 0.010) 45%, rgba(0, 0, 0, 0.25)),
+    radial-gradient(circle at 14% 0%, rgba(143, 123, 255, 0.050), transparent 16rem),
+    radial-gradient(circle at 100% 2%, rgba(217, 192, 122, 0.034), transparent 15rem),
+    rgba(4, 4, 9, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.050),
+    0 18px 48px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(22px) saturate(1.22) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.22) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  button,
+  input,
+  select,
+  textarea,
+  .srv-tab,
+  .srv-filter-btn,
+  .sb-tab,
+  .scale-preset,
+  .sound-preset,
+  .size-btn,
+  .tts-toggle,
+  .filter-btn,
+  .tab-btn,
+  .task-opt-btn,
+  .scan-btn,
+  .bar-btn
+) {
+  border-color: rgba(255, 232, 170, 0.10) !important;
+  color: rgba(248, 244, 232, 0.92) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.042), rgba(255, 255, 255, 0.008)),
+    rgba(3, 3, 8, 0.30) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.040) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  button:hover,
+  .srv-tab:hover,
+  .srv-filter-btn:hover,
+  .sb-tab:hover,
+  .scale-preset:hover,
+  .sound-preset:hover,
+  .size-btn:hover,
+  .filter-btn:hover,
+  .tab-btn:hover,
+  .task-opt-btn:hover,
+  .scan-btn:hover,
+  .bar-btn:hover
+) {
+  border-color: rgba(255, 216, 117, 0.22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.060),
+    0 0 18px rgba(143, 123, 255, 0.10),
+    0 14px 34px rgba(0, 0, 0, 0.36) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  button.active,
+  .srv-tab.active,
+  .srv-filter-btn.active,
+  .sb-tab.active,
+  .scale-preset.active,
+  .sound-preset.active,
+  .size-btn.active,
+  .tts-toggle.active,
+  .filter-btn.active,
+  .tab-btn.active,
+  .task-opt-btn.active,
+  .bar-btn.active
+) {
+  border-color: rgba(255, 216, 117, 0.28) !important;
+  color: #fff1bd !important;
+  background:
+    linear-gradient(105deg, rgba(217, 192, 122, 0.12), rgba(143, 123, 255, 0.16) 55%, rgba(121, 215, 255, 0.08)),
+    rgba(3, 3, 8, 0.38) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .w-bar-fill,
+  .t-bar-fill,
+  .srv-players-bar-fill,
+  .update-progress-fill,
+  .task-item-bar-fill,
+  .progress-fill,
+  [class*="bar-fill"],
+  [class*="progress"][class*="fill"]
+) {
+  background: linear-gradient(90deg, rgba(26, 24, 32, 0.70), #d9c07a, #8f7bff, #79d7ff, #c68a54, rgba(26, 24, 32, 0.70)) !important;
+  background-size: 260% 100% !important;
+  box-shadow:
+    0 0 16px rgba(143, 123, 255, 0.13),
+    0 0 10px rgba(217, 192, 122, 0.10) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  #main-wrap,
+  .main,
+  .maps-content,
+  .srv-content,
+  #map-container,
+  #sidebar,
+  .srv-panel.active
+) {
+  border-color: rgba(255, 216, 117, 0.090) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.006) 45%, rgba(0, 0, 0, 0.24)),
+    rgba(1, 1, 5, 0.26) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .map-item,
+  .srv-card,
+  .srv-fav-card
+) {
+  border-color: rgba(255, 232, 170, 0.080) !important;
+  background:
+    linear-gradient(90deg, rgba(143, 123, 255, 0.050), rgba(0, 0, 0, 0.18) 42%, rgba(0, 0, 0, 0.24)),
+    rgba(4, 4, 9, 0.24) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .map-item:hover,
+  .map-item.active,
+  .srv-card:hover,
+  .srv-fav-card:hover
+) {
+  border-color: rgba(255, 216, 117, 0.19) !important;
+  background:
+    linear-gradient(100deg, rgba(143, 123, 255, 0.11), rgba(217, 192, 122, 0.070), rgba(121, 215, 255, 0.040)),
+    rgba(5, 4, 10, 0.32) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .map-title,
+  .map-header,
+  .map-info,
+  .srv-search-bar,
+  .srv-list-header,
+  .srv-pagination
+) {
+  border-color: rgba(255, 216, 117, 0.075) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.006)),
+    rgba(3, 3, 8, 0.30) !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(
+  .map-item .m-ico,
+  .srv-tag.map,
+  .srv-connect-info code,
+  .coord-input:focus,
+  .status-text
+) {
+  color: #f4e6bc !important;
+}
+
+/* Black Glass embedded-page cleanup.
+   Some legacy windows use generic `.active` on whole tab containers; keep the
+   energy treatment on controls only so the maps/servers layout does not turn
+   into large brown/violet blocks. */
+html[data-overseer-theme="blackglass"] :is(
+  .sb-tab-content.active,
+  .sb-section,
+  .map-list,
+  .layer-list,
+  .layer-group-list,
+  .srv-panel.active
+) {
+  background: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+html[data-overseer-theme="blackglass"] :is(#sidebar, .maps-sidebar, .srv-sidebar) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.006) 34%, rgba(0, 0, 0, 0.20)),
+    rgba(1, 1, 5, 0.32) !important;
+  border-color: rgba(255, 232, 170, 0.085) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 18px 44px rgba(0, 0, 0, 0.42) !important;
+}
+
+html[data-overseer-theme="blackglass"] .map-item {
+  color: rgba(248, 244, 232, 0.84) !important;
+  border-color: rgba(255, 232, 170, 0.075) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.040), rgba(255, 255, 255, 0.006)),
+    rgba(4, 4, 9, 0.30) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 10px 26px rgba(0, 0, 0, 0.28) !important;
+}
+
+html[data-overseer-theme="blackglass"] .map-item:hover {
+  color: #fff1bd !important;
+  border-color: rgba(255, 216, 117, 0.20) !important;
+  background:
+    linear-gradient(100deg, rgba(217, 192, 122, 0.075), rgba(143, 123, 255, 0.075), rgba(121, 215, 255, 0.030)),
+    rgba(5, 4, 10, 0.36) !important;
+}
+
+html[data-overseer-theme="blackglass"] .map-item.active {
+  color: #fff4c9 !important;
+  border-color: rgba(255, 216, 117, 0.26) !important;
+  background:
+    linear-gradient(100deg, rgba(217, 192, 122, 0.12), rgba(143, 123, 255, 0.10), rgba(121, 215, 255, 0.040)),
+    rgba(5, 4, 10, 0.38) !important;
+}
+
+html[data-overseer-theme="blackglass"] .map-item .m-ico {
+  background:
+    radial-gradient(circle at 48% 42%, rgba(255, 232, 170, 0.18), rgba(143, 123, 255, 0.10) 44%, rgba(0, 0, 0, 0.40) 72%),
+    rgba(4, 4, 9, 0.58) !important;
+  border-color: rgba(255, 232, 170, 0.13) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 16px rgba(143, 123, 255, 0.11) !important;
+}
+
+html[data-overseer-theme="blackglass"] .map-hud-card,
+html[data-overseer-theme="blackglass"] .map-hud-chip,
+html[data-overseer-theme="blackglass"] .map-title,
+html[data-overseer-theme="blackglass"] .map-header,
+html[data-overseer-theme="blackglass"] .map-info,
+html[data-overseer-theme="blackglass"] .srv-search-bar,
+html[data-overseer-theme="blackglass"] .srv-list-header,
+html[data-overseer-theme="blackglass"] .srv-pagination {
+  border-color: rgba(255, 232, 170, 0.09) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.040), rgba(255, 255, 255, 0.006)),
+    rgba(3, 3, 8, 0.34) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 14px 34px rgba(0, 0, 0, 0.34) !important;
+}
+
+html[data-overseer-theme="blackglass"] .map-hud-eyebrow,
+html[data-overseer-theme="blackglass"] .srv-section-title,
+html[data-overseer-theme="blackglass"] .srv-meta-label {
+  color: rgba(255, 226, 145, 0.88) !important;
+}

@@ -22,8 +22,7 @@ import {
   uploadProfileAvatar,
   upsertUserProfile,
 } from '../data/supabaseClient';
-import { createHostedTribe, joinHostedTribe } from '../data/tribeCloud';
-import { CheckIcon, ClipboardIcon, DnaIcon, PlusIcon, ServerIcon, ShieldIcon, SparklesIcon, ZapIcon } from './Icons';
+import { CheckIcon, ClipboardIcon, ServerIcon, ShieldIcon, SparklesIcon, ZapIcon } from './Icons';
 
 const PLATFORM_TRACKS = [
   {
@@ -88,20 +87,20 @@ const DONATION_LINKS = [
   {
     id: 'paypal',
     label: 'PayPal.me',
-    detail: 'One-time support for server costs and development time.',
-    url: import.meta.env?.VITE_DONATE_PAYPAL_URL || '',
+    detail: 'A direct boost for hosting, imports and release builds.',
+    url: import.meta.env?.VITE_DONATE_PAYPAL_URL || 'https://paypal.me/haitamhil',
   },
   {
     id: 'kofi',
     label: 'Ko-fi',
-    detail: 'Small tips from players who want the app to keep improving.',
-    url: import.meta.env?.VITE_DONATE_KOFI_URL || '',
+    detail: 'Quick tips that help ship polish, maps and quality-of-life updates.',
+    url: import.meta.env?.VITE_DONATE_KOFI_URL || 'https://ko-fi.com/haitamhil3',
   },
   {
     id: 'coffee',
     label: 'Buy Me a Coffee',
-    detail: 'Casual support while OVERSEER stays freemium.',
-    url: import.meta.env?.VITE_DONATE_COFFEE_URL || '',
+    detail: 'Casual support to keep OVERSEER freemium for more survivors.',
+    url: import.meta.env?.VITE_DONATE_COFFEE_URL || 'https://buymeacoffee.com/haylow',
   },
 ];
 
@@ -158,7 +157,6 @@ export default function AccountBilling() {
   const [account, setAccount] = useState(loadAccount);
   const [authMode, setAuthMode] = useState('signin');
   const [password, setPassword] = useState('');
-  const [inviteCode, setInviteCode] = useState('');
   const [sessionUser, setSessionUser] = useState(null);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState('');
@@ -384,66 +382,6 @@ export default function AccountBilling() {
     }
   };
 
-  const createTribe = async () => {
-    if ((isSupabaseConfigured || useCloudflareAuth) && !account.userId) {
-      setNotice('Connecte-toi avant de creer une tribu cloud.');
-      return;
-    }
-    if (!account.tribeName.trim()) {
-      setNotice('Entre un nom de tribu avant de creer le workspace.');
-      return;
-    }
-    setBusy('tribe-create');
-    setNotice('');
-    try {
-      const tribe = await createHostedTribe({
-        name: account.tribeName.trim(),
-        ownerId: account.userId,
-        ownerName: account.displayName || account.email,
-      });
-      updateAccount({
-        tribeName: tribe.name || tribe.tribeName || account.tribeName,
-        tribeCode: tribe.invite_code || tribe.tribeCode || account.tribeCode,
-        hostedTribeId: tribe.id || account.hostedTribeId,
-        billingStatus: (isSupabaseConfigured || useCloudflareAuth) ? 'tribe-hosted' : 'local-tribe-ready',
-      });
-      setNotice((isSupabaseConfigured || useCloudflareAuth) ? 'Tribu cloud creee.' : 'Tribu creee en mode local. Elle sera hostee quand le cloud sera configure.');
-    } catch (error) {
-      setNotice(error.message || 'Impossible de creer la tribu.');
-    } finally {
-      setBusy('');
-    }
-  };
-
-  const joinTribe = async () => {
-    if (!inviteCode.trim()) return;
-    if ((isSupabaseConfigured || useCloudflareAuth) && !account.userId) {
-      setNotice('Connecte-toi avant de rejoindre une tribu cloud.');
-      return;
-    }
-    setBusy('tribe-join');
-    setNotice('');
-    try {
-      const tribe = await joinHostedTribe({
-        inviteCode,
-        userId: account.userId,
-        displayName: account.displayName || account.email,
-      });
-      updateAccount({
-        tribeName: tribe.name || account.tribeName,
-        tribeCode: tribe.invite_code || tribe.tribeCode || inviteCode.toUpperCase(),
-        hostedTribeId: tribe.id || account.hostedTribeId,
-        billingStatus: (isSupabaseConfigured || useCloudflareAuth) ? 'tribe-joined' : 'local-join-ready',
-      });
-      setNotice('Tribu liee au compte.');
-      setInviteCode('');
-    } catch (error) {
-      setNotice(error.message || 'Invite code invalide.');
-    } finally {
-      setBusy('');
-    }
-  };
-
   const exportSnapshot = async () => {
     const snapshot = buildLocalSyncSnapshot(account);
     const text = JSON.stringify(snapshot, null, 2);
@@ -516,13 +454,23 @@ export default function AccountBilling() {
     }
   };
 
-  const openDonation = (url) => {
+  const openDonation = async (url) => {
     if (!url) {
       setNotice('Ajoute ton lien de donation dans .env.local pour activer ce bouton.');
       return;
     }
-    window.open(url, '_blank', 'noopener,noreferrer');
+    try {
+      if (window.api?.openExternalUrl) {
+        const result = await window.api.openExternalUrl(url);
+        if (result?.ok) return;
+      }
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      setNotice('Impossible d ouvrir le lien automatiquement. Copie le lien depuis le bouton.');
+    }
   };
+
+  const isSignedIn = Boolean(sessionUser || account.userId);
 
   return (
     <motion.div
@@ -536,7 +484,7 @@ export default function AccountBilling() {
         <div>
           <span className="account-eyebrow"><SparklesIcon size={14} /> Account</span>
           <h1>OVERSEER profile</h1>
-          <p>Manage your player profile, tribe workspace, avatar and cloud sync settings.</p>
+          <p>Manage your player profile, avatar, login and cloud sync settings.</p>
         </div>
         <div className="account-status">
           <span>Access</span>
@@ -564,46 +512,47 @@ export default function AccountBilling() {
               <input type="file" accept="image/*" onChange={changeAvatar} />
             </label>
           </div>
-          <form className="account-form" onSubmit={submitAuth}>
-            <div className="account-auth-tabs">
-              <button type="button" className={authMode === 'signin' ? 'active' : ''} onClick={() => setAuthMode('signin')}>Login</button>
-              <button type="button" className={authMode === 'signup' ? 'active' : ''} onClick={() => setAuthMode('signup')}>Inscription</button>
+          {isSignedIn ? (
+            <div className="account-signed-panel">
+              <div className="account-signed-copy">
+                <strong>Compte connecte</strong>
+                <span>{account.email || 'Session active'} · {useCloudflareAuth ? 'Cloudflare sync' : isSupabaseConfigured ? 'Supabase sync' : 'Local profile'}</span>
+              </div>
+              <div className="account-form account-form-compact">
+                <Field label="Display name">
+                  <input value={account.displayName} onChange={event => updateAccount({ displayName: event.target.value })} placeholder="Breeder name" />
+                </Field>
+                <Field label="Email">
+                  <input value={account.email} onChange={event => updateAccount({ email: event.target.value })} placeholder="you@tribe.gg" />
+                </Field>
+              </div>
+              <div className="account-inline-actions">
+                <button className="account-primary" type="button" onClick={syncNow} disabled={busy === 'sync'}><ZapIcon size={14} /> {busy === 'sync' ? 'Syncing...' : 'Sync profile'}</button>
+                <button className="account-secondary" type="button" onClick={logout} disabled={busy === 'logout'}>Logout</button>
+              </div>
             </div>
-            <Field label="Email">
-              <input value={account.email} onChange={event => updateAccount({ email: event.target.value })} placeholder="you@tribe.gg" />
-            </Field>
-            <Field label="Display name">
-              <input value={account.displayName} onChange={event => updateAccount({ displayName: event.target.value })} placeholder="Breeder name" />
-            </Field>
-            <Field label="Password">
-              <input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder={(isSupabaseConfigured || useCloudflareAuth) ? '8+ characters' : 'local mode ignores password'} />
-            </Field>
-            <div className="account-inline-actions">
-              <button className="account-primary" type="submit" disabled={busy === 'auth'}><ShieldIcon size={14} /> {busy === 'auth' ? 'Working...' : authMode === 'signup' ? 'Create account' : 'Login'}</button>
-              <button className="account-secondary" type="button" onClick={logout} disabled={busy === 'logout' || (!sessionUser && !account.userId)}>Logout</button>
-            </div>
-          </form>
+          ) : (
+            <form className="account-form" onSubmit={submitAuth}>
+              <div className="account-auth-tabs">
+                <button type="button" className={authMode === 'signin' ? 'active' : ''} onClick={() => setAuthMode('signin')}>Login</button>
+                <button type="button" className={authMode === 'signup' ? 'active' : ''} onClick={() => setAuthMode('signup')}>Inscription</button>
+              </div>
+              <Field label="Email">
+                <input value={account.email} onChange={event => updateAccount({ email: event.target.value })} placeholder="you@tribe.gg" />
+              </Field>
+              <Field label="Display name">
+                <input value={account.displayName} onChange={event => updateAccount({ displayName: event.target.value })} placeholder="Breeder name" />
+              </Field>
+              <Field label="Password">
+                <input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder={(isSupabaseConfigured || useCloudflareAuth) ? '8+ characters' : 'local mode ignores password'} />
+              </Field>
+              <div className="account-inline-actions">
+                <button className="account-primary" type="submit" disabled={busy === 'auth'}><ShieldIcon size={14} /> {busy === 'auth' ? 'Working...' : authMode === 'signup' ? 'Create account' : 'Login'}</button>
+              </div>
+            </form>
+          )}
         </div>
 
-        <div className="account-panel">
-          <div className="account-panel-title">
-            <div><ServerIcon size={15} /> Hosted Tribe Data</div>
-            <span>{account.hostedTribeId ? 'hosted' : account.tribeCode ? 'linked' : 'not linked'}</span>
-          </div>
-          <div className="account-usage">
-            <Field label="Tribe name">
-              <input value={account.tribeName} onChange={event => updateAccount({ tribeName: event.target.value })} placeholder="Les Raptors" />
-            </Field>
-            <Field label="Invite code">
-              <input value={inviteCode} onChange={event => setInviteCode(event.target.value.toUpperCase())} placeholder={account.tribeCode || 'TRIBE-XXXX'} />
-            </Field>
-            <div className="account-inline-actions">
-              <button className="account-primary" onClick={createTribe} disabled={busy === 'tribe-create'}><PlusIcon size={14} /> {busy === 'tribe-create' ? 'Creating...' : 'Create tribe'}</button>
-              <button className="account-secondary" onClick={joinTribe} disabled={busy === 'tribe-join'}>Join code</button>
-            </div>
-            {account.tribeCode && <div className="account-cloud-badge">Invite: <strong>{account.tribeCode}</strong></div>}
-          </div>
-        </div>
       </section>
 
       {notice && <section className="account-notice">{notice}</section>}
@@ -623,7 +572,7 @@ export default function AccountBilling() {
             <span><CheckIcon size={12} /> Profile settings</span>
             <span><CheckIcon size={12} /> Creature library</span>
             <span><CheckIcon size={12} /> Raising timers</span>
-            <span className={account.tribeCode ? 'ready' : ''}><CheckIcon size={12} /> Tribe workspace</span>
+            <span className={account.tribeCode ? 'ready' : ''}><CheckIcon size={12} /> Cloud account link</span>
           </div>
           <div className="account-inline-actions">
             <button className="account-primary" onClick={syncNow} disabled={busy === 'sync'}><ZapIcon size={14} /> {busy === 'sync' ? 'Syncing...' : 'Sync now'}</button>
@@ -639,8 +588,8 @@ export default function AccountBilling() {
         </div>
         <div className="account-donation-panel">
           <div className="account-donation-copy">
-            <strong>OVERSEER stays free while the cloud foundation grows.</strong>
-            <p>Players can support hosting, data imports, maps, timers and tribe sync without forcing subscriptions on day one.</p>
+            <strong>Help keep OVERSEER fast, free and constantly improving.</strong>
+            <p>Your support pays for hosting, data sync, creature imports, map assets and the long polish pass that makes the app feel premium.</p>
           </div>
           <div className="account-donation-links">
             {DONATION_LINKS.map(link => (

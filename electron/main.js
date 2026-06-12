@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, session, screen, Notification, dialog, desktopCapturer } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, session, screen, Notification, dialog, desktopCapturer, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
@@ -22,7 +22,6 @@ let settingsWindow = null;
 let breedingWindow = null;
 let ocrWindow = null;
 let tribeWindow = null;
-let isOverlay = false;
 let quickLookupWindow = null;
 let pendingTimerSync = null;
 let regionSelectorWindow = null;
@@ -32,10 +31,10 @@ let asbWatchHandle = null;
 let asbWatchSeen = new Set();
 let asbExportServer = null;
 let asbExportPort = 0;
+let currentUiTheme = 'overseer';
 
 // ===== KEYBINDS CONFIG =====
 const DEFAULT_KEYBINDS = {
-  toggleOverlay: 'Alt+O',
   toggleWindow:  'Alt+T',
   toggleTimer:   'Alt+M',
   toggleWidget:  'Alt+W',
@@ -73,13 +72,34 @@ function saveKeybinds(bindings) {
   } catch (e) {}
 }
 
+function getThemePath() {
+  return path.join(app.getPath('userData'), 'ui-theme.json');
+}
+
+function loadUiTheme() {
+  try {
+    const data = JSON.parse(fs.readFileSync(getThemePath(), 'utf8'));
+    currentUiTheme = data.theme || 'overseer';
+  } catch (e) {
+    currentUiTheme = 'overseer';
+  }
+}
+
+function saveUiTheme(theme) {
+  const normalized = ['overseer', 'blackglass', 'mutagen'].includes(theme) ? theme : 'overseer';
+  currentUiTheme = normalized;
+  try {
+    fs.writeFileSync(getThemePath(), JSON.stringify({ theme: normalized }, null, 2), 'utf8');
+  } catch (e) {}
+  return normalized;
+}
+
+function themedLoadFile(win, filePath) {
+  return win.loadFile(filePath, { query: { theme: currentUiTheme } });
+}
+
 function registerAllShortcuts() {
   globalShortcut.unregisterAll();
-  try {
-    if (currentKeybinds.toggleOverlay) {
-      globalShortcut.register(currentKeybinds.toggleOverlay, () => toggleOverlay());
-    }
-  } catch (e) {}
   try {
     if (currentKeybinds.toggleWindow) {
       globalShortcut.register(currentKeybinds.toggleWindow, () => {
@@ -273,10 +293,13 @@ function createWindow() {
     height: 850,
     minWidth: 420,
     minHeight: 350,
-    frame: false,
+    frame: true,
+    thickFrame: true,
     backgroundColor: '#000000',
     alwaysOnTop: false,
     resizable: true,
+    maximizable: true,
+    minimizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -380,7 +403,7 @@ function createTimerWindow() {
     },
   });
 
-  timerWindow.loadFile(path.join(__dirname, '..', 'shell', 'timer-overlay.html'));
+  themedLoadFile(timerWindow, path.join(__dirname, '..', 'shell', 'timer-overlay.html'));
   timerWindow.setAlwaysOnTop(true, 'screen-saver');
   timerWindow.setIgnoreMouseEvents(false);
 
@@ -454,7 +477,7 @@ function createWidgetWindow() {
     },
   });
 
-  widgetWindow.loadFile(path.join(__dirname, '..', 'shell', 'widget-mini.html'));
+  themedLoadFile(widgetWindow, path.join(__dirname, '..', 'shell', 'widget-mini.html'));
   widgetWindow.setAlwaysOnTop(true, 'screen-saver');
 
   widgetWindow.webContents.once('did-finish-load', () => {
@@ -500,7 +523,7 @@ function createQuickLookupWindow() {
     },
   });
 
-  quickLookupWindow.loadFile(path.join(__dirname, '..', 'shell', 'quick-lookup.html'));
+  themedLoadFile(quickLookupWindow, path.join(__dirname, '..', 'shell', 'quick-lookup.html'));
   quickLookupWindow.setAlwaysOnTop(true, 'screen-saver');
   quickLookupWindow.setIgnoreMouseEvents(false);
 
@@ -548,7 +571,7 @@ function createMapsWindow(mapSlug, mapName) {
     icon: APP_ICON,
   });
 
-  mapsWindow.loadFile(path.join(__dirname, '..', 'shell', 'maps-window.html'));
+  themedLoadFile(mapsWindow, path.join(__dirname, '..', 'shell', 'maps-window.html'));
   mapsWindow.setAlwaysOnTop(true, 'floating');
 
   mapsWindow.on('closed', () => { mapsWindow = null; });
@@ -561,26 +584,6 @@ function createMapsWindow(mapSlug, mapName) {
       }
     });
   }
-}
-
-// ===== OVERLAY =====
-function toggleOverlay() {
-  if (!mainWindow || mainWindow.isDestroyed()) return;
-  isOverlay = !isOverlay;
-  if (isOverlay) {
-    mainWindow.setAlwaysOnTop(true, 'screen-saver');
-    mainWindow.setOpacity(0.92);
-  } else {
-    mainWindow.setAlwaysOnTop(false);
-    mainWindow.setOpacity(1.0);
-    // Double-check it's really not on top
-    setTimeout(() => {
-      if (mainWindow && !mainWindow.isDestroyed() && !isOverlay) {
-        mainWindow.setAlwaysOnTop(false);
-      }
-    }, 100);
-  }
-  mainWindow.webContents.send('overlay-changed', isOverlay);
 }
 
 // ===== SETTINGS WINDOW =====
@@ -606,7 +609,7 @@ function createSettingsWindow() {
     icon: APP_ICON,
   });
 
-  settingsWindow.loadFile(path.join(__dirname, '..', 'shell', 'settings-window.html'));
+  themedLoadFile(settingsWindow, path.join(__dirname, '..', 'shell', 'settings-window.html'));
   settingsWindow.setAlwaysOnTop(true, 'floating');
 
   // Send cached update status so settings shows correct state immediately
@@ -626,6 +629,7 @@ function createSettingsWindow() {
 
 app.whenReady().then(() => {
   loadKeybinds();
+  loadUiTheme();
 
   // --- Splash Screen ---
   splashWindow = new BrowserWindow({
@@ -684,10 +688,29 @@ ipcMain.on('win-maximize', () => {
   }
 });
 ipcMain.on('win-close', () => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close(); });
-ipcMain.on('toggle-overlay', () => toggleOverlay());
-ipcMain.on('set-opacity', (_, val) => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.setOpacity(val); });
-ipcMain.handle('get-overlay', () => isOverlay);
-
+ipcMain.handle('open-external-url', async (_, url) => {
+  try {
+    const parsed = new URL(String(url || ''));
+    if (!['https:', 'http:'].includes(parsed.protocol)) return { ok: false, error: 'invalid-url' };
+    await shell.openExternal(parsed.toString());
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: error?.message || 'open-external-failed' };
+  }
+});
+ipcMain.on('set-ui-theme', (_, theme) => {
+  const normalized = saveUiTheme(theme);
+  const wins = [timerWindow, widgetWindow, mapsWindow, settingsWindow, breedingWindow, ocrWindow, tribeWindow, quickLookupWindow];
+  for (const win of wins) {
+    if (!win || win.isDestroyed()) continue;
+    try {
+      win.webContents.executeJavaScript(
+        `window.__OVERSEER_SET_THEME__ && window.__OVERSEER_SET_THEME__(${JSON.stringify(normalized)})`,
+        true
+      ).catch(() => {});
+    } catch (e) {}
+  }
+});
 // ===== ZOOM / SCALE =====
 function getScalePath() { return path.join(app.getPath('userData'), 'scale.json'); }
 function loadScale() {
@@ -1263,7 +1286,7 @@ function createBreedingWindow() {
     });
   });
 
-  breedingWindow.loadFile(breedingPath);
+  themedLoadFile(breedingWindow, breedingPath);
   breedingWindow.once('ready-to-show', () => {
     console.log('[Breeding] Window ready-to-show');
     if (isBreedingAlive()) breedingWindow.show();
@@ -1386,7 +1409,7 @@ function createTribeWindow() {
       }
     });
   });
-  tribeWindow.loadFile(path.join(__dirname, '..', 'shell', 'tribe-tasks.html'));
+  themedLoadFile(tribeWindow, path.join(__dirname, '..', 'shell', 'tribe-tasks.html'));
   tribeWindow.once('ready-to-show', () => { if (isTribeAlive()) tribeWindow.show(); });
   tribeWindow.on('closed', () => { tribeWindow = null; });
 }
@@ -1549,7 +1572,7 @@ ipcMain.on('open-region-selector', () => {
     },
     icon: APP_ICON,
   });
-  regionSelectorWindow.loadFile(path.join(__dirname, '..', 'shell', 'region-selector.html'));
+  themedLoadFile(regionSelectorWindow, path.join(__dirname, '..', 'shell', 'region-selector.html'));
   regionSelectorWindow.once('ready-to-show', () => {
     if (regionSelectorWindow && !regionSelectorWindow.isDestroyed()) regionSelectorWindow.show();
   });
@@ -1608,7 +1631,7 @@ function createOCRWindow() {
     });
   });
 
-  ocrWindow.loadFile(path.join(__dirname, '..', 'shell', 'ocr-window.html'));
+  themedLoadFile(ocrWindow, path.join(__dirname, '..', 'shell', 'ocr-window.html'));
   ocrWindow.setAlwaysOnTop(true, 'screen-saver');
   ocrWindow.on('closed', () => { ocrWindow = null; });
 

@@ -10,13 +10,13 @@
 :root {
   --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent:#5fe4ff;--accent-l:#c7f6ff;--accent-d:#2fb7d4;
+  --accent-bg:rgba(95,228,255,0.08);--accent-border:rgba(95,228,255,0.22);--accent-glow:rgba(95,228,255,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --blue:#5fe4ff;--blue-bg:rgba(95,228,255,0.08);--blue-border:rgba(95,228,255,0.22);
+  --pink:#5fe4ff;--pink-bg:rgba(95,228,255,0.08);--pink-border:rgba(95,228,255,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
@@ -26,12 +26,12 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: transparent; color: var(--text-1); -webkit-font-smoothing: antialiased; }
-#app { display: flex; flex-direction: column; height: 100vh; background: rgba(2,2,8,0.88); border-radius: 12px; border: 1px solid rgba(123,147,248,0.25); overflow: hidden; backdrop-filter: blur(12px); position:relative;z-index:1; }
+#app { display: flex; flex-direction: column; height: 100vh; background: rgba(2,2,8,0.88); border-radius: 12px; border: 1px solid rgba(95,228,255,0.25); overflow: hidden; backdrop-filter: blur(12px); position:relative;z-index:1; }
 
 /* ===== TITLE BAR ===== */
 #ocr-bar {
   display: flex; align-items: center; height: var(--bar-h); padding: 0 12px;
-  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(123,147,248,0.08);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(95,228,255,0.08);
   -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
 }
 .bar-title { font-size: 12px; font-weight: 700; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
@@ -82,7 +82,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   gap: 14px; padding: 40px 24px; border: 2px dashed var(--border-1); border-radius: var(--r-lg);
   text-align: center; width: 100%; transition: border-color .2s;
 }
-.scan-placeholder:hover { border-color: rgba(123,147,248,0.30); }
+.scan-placeholder:hover { border-color: rgba(95,228,255,0.30); }
 .scan-placeholder.hidden { display: none; }
 .scan-ico { font-size: 48px; opacity: 0.4; }
 .scan-title { font-size: 15px; font-weight: 700; color: var(--text-0); }
@@ -96,17 +96,17 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
   font-family: inherit; transition: all .2s;
   text-transform: uppercase; letter-spacing: 0.5px;
-  box-shadow: 0 4px 20px rgba(123,147,248,0.3), 0 4px 16px rgba(123,147,248,0.2);
+  box-shadow: 0 4px 20px rgba(95,228,255,0.3), 0 4px 16px rgba(95,228,255,0.2);
   display: flex; align-items: center; gap: 8px;
 }
-.scan-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(123,147,248,0.4); }
+.scan-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(95,228,255,0.4); }
 .scan-btn:active { transform: translateY(0) scale(0.98); }
 .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
 /* ===== STATUS BAR ===== */
 .ocr-status {
   display: flex; align-items: center; gap: 8px; padding: 8px 16px;
-  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-top: 1px solid rgba(123,147,248,0.08);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-top: 1px solid rgba(95,228,255,0.08);
   font-size: 10px; color: var(--text-3); flex-shrink: 0;
 }
 .status-dot {
@@ -138,7 +138,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border: 1px solid var(--border-0); border-radius: var(--r-lg);
   transition: box-shadow .2s;
 }
-.species-header:hover { box-shadow: 0 0 16px rgba(123,147,248,0.08); }
+.species-header:hover { box-shadow: 0 0 16px rgba(95,228,255,0.08); }
 .species-icon { width: 48px; height: 48px; border-radius: var(--r-md); background: var(--bg-2); object-fit: contain; }
 .species-info { flex: 1; }
 .species-name { font-size: 16px; font-weight: 800; color: var(--text-0); }
@@ -154,7 +154,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   border-radius: var(--r-sm); color: var(--text-0); font-size: 12px; font-weight: 600;
   font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s;
 }
-.edit-input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(123,147,248,0.15); }
+.edit-input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(95,228,255,0.15); }
 
 .sex-toggle {
   display: flex; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--border-1);
@@ -164,7 +164,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   cursor: pointer; font-family: inherit; transition: all .15s;
   background: rgba(6,6,16,0.6); color: var(--text-3);
 }
-.sex-btn.active-male { background: rgba(96,165,250,0.15); color: var(--blue); }
+.sex-btn.active-male { background: rgba(95,228,255,0.15); color: var(--blue); }
 .sex-btn.active-female { background: rgba(244,114,182,0.15); color: var(--pink); }
 .sex-btn:hover { background: var(--bg-3); color: var(--text-1); }
 
@@ -183,7 +183,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   display: flex; align-items: center; padding: 7px 12px;
   border-bottom: 1px solid var(--border-0); transition: background .1s;
 }
-.stat-row:hover { background: rgba(123,147,248,0.04); }
+.stat-row:hover { background: rgba(95,228,255,0.04); }
 .stat-row:last-child { border-bottom: none; }
 .stat-row.stat-missing { background: rgba(239,68,68,0.04); }
 .stat-ico-wrap { width: 28px; text-align: center; display: flex; align-items: center; justify-content: center; }
@@ -195,7 +195,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   font-family: inherit; text-align: right; outline: none;
   font-variant-numeric: tabular-nums; transition: border-color .15s, box-shadow .15s;
 }
-.stat-input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(123,147,248,0.15); }
+.stat-input:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(95,228,255,0.15); }
 .stat-confidence {
   font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
   margin-left: 6px; min-width: 30px; text-align: center;
@@ -221,7 +221,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 /* Actions */
 .result-actions {
   display: none; gap: 6px; padding: 12px 16px;
-  border-top: 1px solid rgba(123,147,248,0.08); flex-shrink: 0;
+  border-top: 1px solid rgba(95,228,255,0.08); flex-shrink: 0;
 }
 .result-actions.show { display: flex; }
 .action-btn {
@@ -232,8 +232,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   display: flex; align-items: center; justify-content: center; gap: 5px;
 }
 .action-btn:hover { background: var(--bg-3); color: var(--text-0); border-color: rgba(255,255,255,0.15); }
-.action-btn.primary { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); box-shadow: 0 4px 16px rgba(123,147,248,0.2); }
-.action-btn.primary:hover { background: rgba(123,147,248,0.14); color: var(--accent-l); }
+.action-btn.primary { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); box-shadow: 0 4px 16px rgba(95,228,255,0.2); }
+.action-btn.primary:hover { background: rgba(95,228,255,0.14); color: var(--accent-l); }
 .action-btn.success { background: rgba(45,212,160,0.10); color: var(--green); border-color: rgba(45,212,160,0.20); }
 .action-btn.success:hover { background: rgba(45,212,160,0.16); }
 
@@ -249,10 +249,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.15); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
+::-webkit-scrollbar-thumb { background: rgba(95,228,255,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(95,228,255,0.3); }
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 <div id="app">
@@ -964,7 +966,7 @@ function filterSpeciesCorrect() {
     var name = DINO_NAMES[i].name;
     if (name.toLowerCase().indexOf(q) !== -1) {
       var wn = name.replace(/ /g, '_');
-      html += '<div onclick="pickSpeciesCorrect(\'' + name.replace(/'/g, "\\'") + '\')" style="padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:11px;border-bottom:1px solid var(--border-0);transition:background .1s" onmouseover="this.style.background=\'rgba(123,147,248,0.1)\'" onmouseout="this.style.background=\'transparent\'">';
+      html += '<div onclick="pickSpeciesCorrect(\'' + name.replace(/'/g, "\\'") + '\')" style="padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:11px;border-bottom:1px solid var(--border-0);transition:background .1s" onmouseover="this.style.background=\'rgba(95,228,255,0.1)\'" onmouseout="this.style.background=\'transparent\'">';
       html += '<img src="https://ark.wiki.gg/images/thumb/' + wn + '.png/24px-' + wn + '.png" style="width:20px;height:20px;filter:invert(1) brightness(1.8)" onerror="this.style.display=\'none\'">';
       html += '<span style="color:var(--text-0)">' + name + '</span></div>';
       count++;
@@ -1030,7 +1032,7 @@ function showResults() {
   var html = '';
   if (tripleMode) {
     html += '<div style="display:grid;grid-template-columns:28px 90px 1fr 1fr 1fr 50px;gap:4px;padding:4px 8px;font:700 8px var(--font);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border-0);margin-bottom:4px">';
-    html += '<span></span><span></span><span style="color:#4ade80;text-align:center">Sauvage</span><span style="color:#7B93F8;text-align:center">Muté</span><span style="color:#666;text-align:center">Attribué</span><span></span></div>';
+    html += '<span></span><span></span><span style="color:#4ade80;text-align:center">Sauvage</span><span style="color:#5fe4ff;text-align:center">Muté</span><span style="color:#666;text-align:center">Attribué</span><span></span></div>';
   }
   for (var i = 0; i < STAT_PATTERNS.length; i++) {
     var pat = STAT_PATTERNS[i];
@@ -1045,7 +1047,7 @@ function showResults() {
       html += '<span class="stat-ico-wrap">' + pat.ico + '</span>';
       html += '<span class="stat-label">' + pat.name + '</span>';
       html += '<input type="number" class="stat-input stat-input-wild" data-stat="' + pat.key + '" data-type="wild" value="' + (stat.wild||0) + '" style="border-color:rgba(74,237,196,0.2);text-align:center">';
-      html += '<input type="number" class="stat-input stat-input-muta" data-stat="' + pat.key + '" data-type="mutated" value="' + (stat.mutated||0) + '" style="border-color:rgba(123,147,248,0.2);text-align:center">';
+      html += '<input type="number" class="stat-input stat-input-muta" data-stat="' + pat.key + '" data-type="mutated" value="' + (stat.mutated||0) + '" style="border-color:rgba(95,228,255,0.2);text-align:center">';
       html += '<input type="number" class="stat-input stat-input-alloc" data-stat="' + pat.key + '" data-type="allocated" value="' + (stat.allocated||0) + '" style="border-color:rgba(255,255,255,0.05);text-align:center">';
       if (stat) html += '<span class="stat-confidence ' + confClass + '">' + conf + '%</span>';
       html += '</div>';
@@ -1065,8 +1067,8 @@ function showResults() {
   if (detectedMutaPat !== null || detectedMutaMat !== null) {
     html += '<div style="display:flex;gap:8px;margin-top:8px;padding:8px;border-radius:6px;background:rgba(6,6,16,0.4);border:1px solid var(--border-0)">';
     html += '<span style="font:700 10px var(--font);color:var(--text-2)">Mutations:</span>';
-    html += '<span style="font:700 10px var(--font);color:#60a5fa">Pat: <input type="number" id="ocrMutaPat" value="' + (detectedMutaPat||0) + '" style="width:40px;background:rgba(6,6,16,0.5);border:1px solid rgba(96,165,250,0.2);border-radius:4px;color:#60a5fa;font:700 11px var(--font);text-align:center;padding:2px">/20</span>';
-    html += '<span style="font:700 10px var(--font);color:#d946ef">Mat: <input type="number" id="ocrMutaMat" value="' + (detectedMutaMat||0) + '" style="width:40px;background:rgba(6,6,16,0.5);border:1px solid rgba(217,70,239,0.2);border-radius:4px;color:#d946ef;font:700 11px var(--font);text-align:center;padding:2px">/20</span>';
+    html += '<span style="font:700 10px var(--font);color:#5fe4ff">Pat: <input type="number" id="ocrMutaPat" value="' + (detectedMutaPat||0) + '" style="width:40px;background:rgba(6,6,16,0.5);border:1px solid rgba(95,228,255,0.2);border-radius:4px;color:#5fe4ff;font:700 11px var(--font);text-align:center;padding:2px">/20</span>';
+    html += '<span style="font:700 10px var(--font);color:#5fe4ff">Mat: <input type="number" id="ocrMutaMat" value="' + (detectedMutaMat||0) + '" style="width:40px;background:rgba(6,6,16,0.5);border:1px solid rgba(95,228,255,0.2);border-radius:4px;color:#5fe4ff;font:700 11px var(--font);text-align:center;padding:2px">/20</span>';
     html += '</div>';
   }
 

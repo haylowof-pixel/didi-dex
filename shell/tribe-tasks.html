@@ -9,13 +9,13 @@
 :root {
   --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent:#5fe4ff;--accent-l:#c7f6ff;--accent-d:#2fb7d4;
+  --accent-bg:rgba(95,228,255,0.08);--accent-border:rgba(95,228,255,0.22);--accent-glow:rgba(95,228,255,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --blue:#5fe4ff;--blue-bg:rgba(95,228,255,0.08);--blue-border:rgba(95,228,255,0.22);
+  --pink:#5fe4ff;--pink-bg:rgba(95,228,255,0.08);--pink-border:rgba(95,228,255,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
@@ -26,8 +26,8 @@
 body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12px;overflow:hidden;height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;position:relative}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(123,147,248,0.15);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:rgba(123,147,248,0.25)}
+::-webkit-scrollbar-thumb{background:rgba(95,228,255,0.15);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(95,228,255,0.25)}
 
 /* ===== ANIMATED BACKGROUND BUBBLES ===== */
 .bg-bubbles{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:0;pointer-events:none}
@@ -44,9 +44,9 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .glass{background:rgba(6,6,16,0.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06)}
 
 /* ===== TITLE BAR ===== */
-.bar{display:flex;align-items:center;height:var(--bar-h);padding:0 8px 0 14px;-webkit-app-region:drag;background:rgba(4,4,12,0.7);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-bottom:1px solid rgba(123,147,248,0.08);flex-shrink:0;z-index:10;position:relative}
+.bar{display:flex;align-items:center;height:var(--bar-h);padding:0 8px 0 14px;-webkit-app-region:drag;background:rgba(4,4,12,0.7);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-bottom:1px solid rgba(95,228,255,0.08);flex-shrink:0;z-index:10;position:relative}
 .bar-title{font-weight:700;font-size:11px;letter-spacing:0.5px;color:var(--text-1);display:flex;align-items:center;gap:8px}
-.bar-title .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#7B93F8,#60a5fa)}
+.bar-title .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#5fe4ff,#5fe4ff)}
 .bar-spacer{flex:1}
 .bar-btn{-webkit-app-region:no-drag;border:none;background:rgba(255,255,255,0.03);color:var(--text-2);padding:4px 10px;border-radius:var(--r-sm);cursor:pointer;font:600 10px var(--font);display:flex;align-items:center;gap:4px;margin-left:6px;border:1px solid var(--border-0);transition:all .15s}
 .bar-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-0)}
@@ -68,14 +68,14 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 
 /* ===== SETUP SCREEN ===== */
 .setup{flex:1;display:flex;flex-direction:column;align-items:center;gap:20px;padding:30px 20px;overflow-y:auto;background:transparent}
-.setup-title{font-size:18px;font-weight:800;letter-spacing:0.5px;background:linear-gradient(135deg,#7B93F8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.setup-title{font-size:18px;font-weight:800;letter-spacing:0.5px;background:linear-gradient(135deg,#5fe4ff,#5fe4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .setup-sub{color:var(--text-2);font-size:12px;text-align:center;max-width:360px;line-height:1.6}
 .setup-row{display:flex;gap:8px;align-items:center}
 .setup-input{background:rgba(6,6,16,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-1);border-radius:var(--r-md);padding:10px 14px;color:var(--text-0);font:600 13px var(--font);width:220px;outline:none;text-align:center;letter-spacing:1px;transition:all .2s}
-.setup-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg),0 0 20px rgba(123,147,248,0.15)}
+.setup-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg),0 0 20px rgba(95,228,255,0.15)}
 .setup-input::placeholder{color:var(--text-3);letter-spacing:0;font-weight:400}
-.btn-primary{background:linear-gradient(135deg,#7B93F8,#60a5fa);color:white;border:none;padding:10px 20px;border-radius:var(--r-md);font:700 12px var(--font);cursor:pointer;transition:all .15s;box-shadow:0 4px 16px rgba(123,147,248,0.25)}
-.btn-primary:hover{filter:brightness(1.1);transform:scale(1.02);box-shadow:0 6px 24px rgba(123,147,248,0.35)}
+.btn-primary{background:linear-gradient(135deg,#5fe4ff,#5fe4ff);color:white;border:none;padding:10px 20px;border-radius:var(--r-md);font:700 12px var(--font);cursor:pointer;transition:all .15s;box-shadow:0 4px 16px rgba(95,228,255,0.25)}
+.btn-primary:hover{filter:brightness(1.1);transform:scale(1.02);box-shadow:0 6px 24px rgba(95,228,255,0.35)}
 .btn-primary:active{transform:scale(0.96)}
 .btn-secondary{background:rgba(255,255,255,0.04);color:var(--text-1);border:1px solid var(--border-1);padding:10px 20px;border-radius:var(--r-md);font:600 12px var(--font);cursor:pointer;transition:all .15s}
 .btn-secondary:hover{background:rgba(255,255,255,0.08);color:var(--text-0)}
@@ -117,7 +117,7 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .tab-btn{padding:6px 14px;border-radius:99px;font:600 11px var(--font);color:var(--text-2);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .tab-btn:hover{color:var(--text-0);background:rgba(255,255,255,0.04)}
 .tab-btn:active{transform:scale(0.96)}
-.tab-btn.active{background:linear-gradient(135deg,rgba(123,147,248,0.15),rgba(96,165,250,0.1));color:var(--text-0);border-color:var(--accent-border)}
+.tab-btn.active{background:linear-gradient(135deg,rgba(95,228,255,0.15),rgba(95,228,255,0.1));color:var(--text-0);border-color:var(--accent-border)}
 .tab-panel{display:none;flex:1;overflow-y:auto;padding:0;flex-direction:column}
 .tab-panel.active{display:flex}
 .filter-btn{padding:4px 10px;border-radius:99px;font:600 10px var(--font);color:var(--text-3);background:transparent;border:1px solid var(--border-0);cursor:pointer;transition:all .15s;margin-left:auto}
@@ -132,7 +132,7 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .add-task-row input::placeholder{color:var(--text-3)}
 .add-task-row select{background:rgba(6,6,16,0.5);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:8px;color:var(--text-1);font:500 11px var(--font);outline:none;cursor:pointer;transition:all .2s}
 .add-task-row select:focus{border-color:var(--accent)}
-.btn-add{background:linear-gradient(135deg,#7B93F8,#60a5fa);color:white;border:none;padding:8px 14px;border-radius:var(--r-sm);font:700 11px var(--font);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-add{background:linear-gradient(135deg,#5fe4ff,#5fe4ff);color:white;border:none;padding:8px 14px;border-radius:var(--r-sm);font:700 11px var(--font);cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn-add:hover{filter:brightness(1.1)}
 .btn-add:active{transform:scale(0.96)}
 
@@ -191,7 +191,7 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .task-card.cat-raid::before{background:var(--red)}
 .task-card.cat-breeding::before{background:var(--pink)}
 .task-card.cat-autre::before{background:var(--accent-l)}
-.task-card:hover{border-color:rgba(123,147,248,0.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3),0 0 20px rgba(123,147,248,0.06)}
+.task-card:hover{border-color:rgba(95,228,255,0.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3),0 0 20px rgba(95,228,255,0.06)}
 .task-card.done{opacity:0.5}
 .task-card.done .task-title{text-decoration:line-through;color:var(--text-3)}
 .task-card.prio-haute-glow{box-shadow:0 0 20px rgba(239,68,68,0.15)}
@@ -227,7 +227,7 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .task-progress-badge.complete{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
 .recur-badge{font-size:11px;cursor:default;title:string}
 .assign-chip{font:600 9px var(--font);padding:2px 7px;border-radius:99px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);display:flex;align-items:center;gap:3px;white-space:nowrap}
-.assign-chip .assign-initial{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#7B93F8,#60a5fa);color:white;font:700 8px var(--font);display:flex;align-items:center;justify-content:center}
+.assign-chip .assign-initial{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#5fe4ff,#5fe4ff);color:white;font:700 8px var(--font);display:flex;align-items:center;justify-content:center}
 .deadline-badge{font:600 9px var(--font);padding:2px 7px;border-radius:99px;background:rgba(255,255,255,0.04);color:var(--text-2);border:1px solid var(--border-0);white-space:nowrap;display:flex;align-items:center;gap:3px}
 .deadline-badge.urgent{background:var(--red-bg);color:var(--red);border-color:var(--red-border);animation:prioPulse 1.5s ease infinite}
 .coords-badge{font:500 9px var(--font);padding:2px 7px;border-radius:99px;background:rgba(255,255,255,0.04);color:var(--text-2);border:1px solid var(--border-0);cursor:pointer;white-space:nowrap;transition:all .15s}
@@ -301,7 +301,7 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .marker-filter-btn:hover{color:var(--text-1);border-color:var(--border-1)}
 .marker-filter-btn.active{background:var(--accent-bg);color:var(--accent-l);border-color:var(--accent-border)}
 .shared-marker-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:6px;border-radius:var(--r-lg);background:rgba(6,6,16,0.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);transition:all .25s ease;position:relative;overflow:hidden;animation:fadeSlideIn .3s ease backwards}
-.shared-marker-card:hover{border-color:rgba(123,147,248,0.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.shared-marker-card:hover{border-color:rgba(95,228,255,0.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
 .shared-marker-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
 .marker-color-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:2px;border:2px solid rgba(255,255,255,0.15)}
 .marker-card-body{flex:1;min-width:0}
@@ -415,6 +415,8 @@ body{font-family:var(--font);background:#020208;color:var(--text-0);font-size:12
 .modal-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 
@@ -684,12 +686,12 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
     </select>
     <label>Couleur</label>
     <div class="marker-color-picker" id="markerColorPicker">
-      <div class="marker-color-opt selected" data-color="#7B93F8" style="background:#7B93F8" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt selected" data-color="#5fe4ff" style="background:#5fe4ff" onclick="selectMarkerColor(this)"></div>
       <div class="marker-color-opt" data-color="#2dd4a0" style="background:#2dd4a0" onclick="selectMarkerColor(this)"></div>
       <div class="marker-color-opt" data-color="#ef4444" style="background:#ef4444" onclick="selectMarkerColor(this)"></div>
       <div class="marker-color-opt" data-color="#f59e0b" style="background:#f59e0b" onclick="selectMarkerColor(this)"></div>
-      <div class="marker-color-opt" data-color="#60a5fa" style="background:#60a5fa" onclick="selectMarkerColor(this)"></div>
-      <div class="marker-color-opt" data-color="#d946ef" style="background:#d946ef" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#5fe4ff" style="background:#5fe4ff" onclick="selectMarkerColor(this)"></div>
+      <div class="marker-color-opt" data-color="#5fe4ff" style="background:#5fe4ff" onclick="selectMarkerColor(this)"></div>
       <div class="marker-color-opt" data-color="#ffdd00" style="background:#ffdd00" onclick="selectMarkerColor(this)"></div>
       <div class="marker-color-opt" data-color="#ff6b6b" style="background:#ff6b6b" onclick="selectMarkerColor(this)"></div>
       <div class="marker-color-opt" data-color="#ffffff" style="background:#ffffff" onclick="selectMarkerColor(this)"></div>
@@ -882,138 +884,138 @@ var TASK_TEMPLATES = [
   // THE ISLAND — BOSS FIGHTS
   // ============================================================
   // --- Broodmother Lysrix ---
-  {title:"🕷️ Broodmother Gamma (Island)",category:"raid",priority:"moyenne",
+  {title:"Broodmother Gamma (Island)",category:"raid",priority:"moyenne",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1}]},
-  {title:"🕷️ Broodmother Beta (Island)",category:"raid",priority:"haute",
+  {title:"Broodmother Beta (Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
       {name:"Argentavis Talon",qty:3},{name:"Sarcosuchus Skin",qty:3},{name:"Sauropod Vertebra",qty:3},{name:"Tyrannosaurus Arm",qty:3}]},
-  {title:"🕷️ Broodmother Alpha (Island)",category:"raid",priority:"haute",
+  {title:"Broodmother Alpha (Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
       {name:"Argentavis Talon",qty:5},{name:"Sarcosuchus Skin",qty:5},{name:"Sauropod Vertebra",qty:5},{name:"Tyrannosaurus Arm",qty:5}]},
   // --- Megapithecus ---
-  {title:"🦍 Megapithecus Gamma (Island)",category:"raid",priority:"moyenne",
+  {title:"Megapithecus Gamma (Island)",category:"raid",priority:"moyenne",
     items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1}]},
-  {title:"🦍 Megapithecus Beta (Island)",category:"raid",priority:"haute",
+  {title:"Megapithecus Beta (Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1},
       {name:"Megalodon Tooth",qty:3},{name:"Therizino Claws",qty:3},{name:"Thylacoleo Hook-Claw",qty:3},{name:"Yutyrannus Lungs",qty:3}]},
-  {title:"🦍 Megapithecus Alpha (Island)",category:"raid",priority:"haute",
+  {title:"Megapithecus Alpha (Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1},
       {name:"Megalodon Tooth",qty:5},{name:"Therizino Claws",qty:5},{name:"Thylacoleo Hook-Claw",qty:5},{name:"Yutyrannus Lungs",qty:5}]},
   // --- Dragon ---
-  {title:"🐉 Dragon Gamma (Island)",category:"raid",priority:"moyenne",
+  {title:"Dragon Gamma (Island)",category:"raid",priority:"moyenne",
     items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1}]},
-  {title:"🐉 Dragon Beta (Island)",category:"raid",priority:"haute",
+  {title:"Dragon Beta (Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1},
       {name:"Fire Talon",qty:1},{name:"Sarcosuchus Skin",qty:1},{name:"Argentavis Talon",qty:1},{name:"Sauropod Vertebra",qty:1},{name:"Tyrannosaurus Arm",qty:1}]},
-  {title:"🐉 Dragon Alpha (Island)",category:"raid",priority:"haute",
+  {title:"Dragon Alpha (Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1},
       {name:"Fire Talon",qty:2},{name:"Sarcosuchus Skin",qty:2},{name:"Argentavis Talon",qty:2},{name:"Sauropod Vertebra",qty:2},{name:"Tyrannosaurus Arm",qty:2}]},
   // --- Tek Cave / Overseer ---
-  {title:"🤖 Overseer Gamma (Island)",category:"raid",priority:"haute",
+  {title:"Overseer Gamma (Island)",category:"raid",priority:"haute",
     items:[{name:"Alpha Broodmother Trophy",qty:1},{name:"Alpha Megapithecus Trophy",qty:1},{name:"Alpha Dragon Trophy",qty:1}]},
-  {title:"🤖 Overseer Alpha (Island)",category:"raid",priority:"haute",
+  {title:"Overseer Alpha (Island)",category:"raid",priority:"haute",
     items:[{name:"Alpha Broodmother Trophy",qty:1},{name:"Alpha Megapithecus Trophy",qty:1},{name:"Alpha Dragon Trophy",qty:1}]},
 
   // ============================================================
   // SCORCHED EARTH
   // ============================================================
-  {title:"🦂 Manticore Gamma (Scorched)",category:"raid",priority:"moyenne",
+  {title:"Manticore Gamma (Scorched)",category:"raid",priority:"moyenne",
     items:[{name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1}]},
-  {title:"🦂 Manticore Beta (Scorched)",category:"raid",priority:"haute",
+  {title:"Manticore Beta (Scorched)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1},
       {name:"Fire Wyvern Talon",qty:2},{name:"Lightning Wyvern Talon",qty:2},{name:"Poison Wyvern Talon",qty:2},{name:"Deathworm Horn",qty:5}]},
-  {title:"🦂 Manticore Alpha (Scorched)",category:"raid",priority:"haute",
+  {title:"Manticore Alpha (Scorched)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1},
       {name:"Fire Wyvern Talon",qty:5},{name:"Lightning Wyvern Talon",qty:5},{name:"Poison Wyvern Talon",qty:5},{name:"Deathworm Horn",qty:10}]},
 
   // ============================================================
   // ABERRATION
   // ============================================================
-  {title:"👽 Rockwell Gamma (Aberration)",category:"raid",priority:"moyenne",
+  {title:"Rockwell Gamma (Aberration)",category:"raid",priority:"moyenne",
     items:[{name:"Artifact of the Depths",qty:1},{name:"Artifact of the Shadows",qty:1},{name:"Artifact of the Stalker",qty:1},
       {name:"Reaper Pheromone Gland",qty:3},{name:"Nameless Venom",qty:5}]},
-  {title:"👽 Rockwell Beta (Aberration)",category:"raid",priority:"haute",
+  {title:"Rockwell Beta (Aberration)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Depths",qty:1},{name:"Artifact of the Shadows",qty:1},{name:"Artifact of the Stalker",qty:1},
       {name:"Reaper Pheromone Gland",qty:5},{name:"Nameless Venom",qty:10},{name:"Rock Drake Feather",qty:3}]},
-  {title:"👽 Rockwell Alpha (Aberration)",category:"raid",priority:"haute",
+  {title:"Rockwell Alpha (Aberration)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Depths",qty:1},{name:"Artifact of the Shadows",qty:1},{name:"Artifact of the Stalker",qty:1},
       {name:"Reaper Pheromone Gland",qty:7},{name:"Nameless Venom",qty:15},{name:"Rock Drake Feather",qty:5},{name:"Charge Battery",qty:3}]},
 
   // ============================================================
   // EXTINCTION
   // ============================================================
-  {title:"❄️ Ice Titan (Extinction)",category:"raid",priority:"haute",
+  {title:"Ice Titan (Extinction)",category:"raid",priority:"haute",
     items:[{name:"Corrupt Heart",qty:100},{name:"Element Dust",qty:1000}]},
-  {title:"🌋 Desert Titan (Extinction)",category:"raid",priority:"haute",
+  {title:"Desert Titan (Extinction)",category:"raid",priority:"haute",
     items:[{name:"Corrupt Heart",qty:100},{name:"Element Dust",qty:1000}]},
-  {title:"🌿 Forest Titan (Extinction)",category:"raid",priority:"haute",
+  {title:"Forest Titan (Extinction)",category:"raid",priority:"haute",
     items:[{name:"Corrupt Heart",qty:100},{name:"Element Dust",qty:1000}]},
-  {title:"👑 King Titan Gamma (Extinction)",category:"raid",priority:"haute",
+  {title:"King Titan Gamma (Extinction)",category:"raid",priority:"haute",
     items:[{name:"Titan Trophy",qty:3},{name:"Corrupt Heart",qty:150},{name:"Element",qty:20}]},
-  {title:"👑 King Titan Alpha (Extinction)",category:"raid",priority:"haute",
+  {title:"King Titan Alpha (Extinction)",category:"raid",priority:"haute",
     items:[{name:"Titan Trophy",qty:3},{name:"Corrupt Heart",qty:300},{name:"Element",qty:100}]},
 
   // ============================================================
   // GENESIS PART 1
   // ============================================================
-  {title:"🌊 Moeder Gamma (Genesis 1)",category:"raid",priority:"moyenne",
+  {title:"Moeder Gamma (Genesis 1)",category:"raid",priority:"moyenne",
     items:[{name:"Golden Nugget",qty:50}]},
-  {title:"🌊 Moeder Beta (Genesis 1)",category:"raid",priority:"haute",
+  {title:"Moeder Beta (Genesis 1)",category:"raid",priority:"haute",
     items:[{name:"Golden Nugget",qty:100}]},
-  {title:"🌊 Moeder Alpha (Genesis 1)",category:"raid",priority:"haute",
+  {title:"Moeder Alpha (Genesis 1)",category:"raid",priority:"haute",
     items:[{name:"Golden Nugget",qty:200}]},
-  {title:"🧬 Corrupted Master Controller Gamma (Gen1)",category:"raid",priority:"haute",
+  {title:"Corrupted Master Controller Gamma (Gen1)",category:"raid",priority:"haute",
     items:[{name:"Golden Nugget",qty:150}]},
-  {title:"🧬 Corrupted Master Controller Alpha (Gen1)",category:"raid",priority:"haute",
+  {title:"Corrupted Master Controller Alpha (Gen1)",category:"raid",priority:"haute",
     items:[{name:"Golden Nugget",qty:500}]},
 
   // ============================================================
   // GENESIS PART 2
   // ============================================================
-  {title:"🌀 Rockwell Prime Gamma (Genesis 2)",category:"raid",priority:"haute",
+  {title:"Rockwell Prime Gamma (Genesis 2)",category:"raid",priority:"haute",
     items:[{name:"Element",qty:20},{name:"Mutagel",qty:50}]},
-  {title:"🌀 Rockwell Prime Beta (Genesis 2)",category:"raid",priority:"haute",
+  {title:"Rockwell Prime Beta (Genesis 2)",category:"raid",priority:"haute",
     items:[{name:"Element",qty:50},{name:"Mutagel",qty:100}]},
-  {title:"🌀 Rockwell Prime Alpha (Genesis 2)",category:"raid",priority:"haute",
+  {title:"Rockwell Prime Alpha (Genesis 2)",category:"raid",priority:"haute",
     items:[{name:"Element",qty:100},{name:"Mutagel",qty:200}]},
 
   // ============================================================
   // FJORDUR
   // ============================================================
-  {title:"🐺 Fenrisúlfr Gamma (Fjordur)",category:"raid",priority:"moyenne",
+  {title:"Fenrisúlfr Gamma (Fjordur)",category:"raid",priority:"moyenne",
     items:[{name:"Runestone",qty:30}]},
-  {title:"🐺 Fenrisúlfr Beta (Fjordur)",category:"raid",priority:"haute",
+  {title:"Fenrisúlfr Beta (Fjordur)",category:"raid",priority:"haute",
     items:[{name:"Runestone",qty:30},{name:"Alpha T-Rex Trophy",qty:1}]},
-  {title:"🐺 Fenrisúlfr Alpha (Fjordur)",category:"raid",priority:"haute",
+  {title:"Fenrisúlfr Alpha (Fjordur)",category:"raid",priority:"haute",
     items:[{name:"Runestone",qty:30},{name:"Alpha T-Rex Trophy",qty:1}]},
-  {title:"🐍 Broodmother/Megapithecus/Dragon (Fjordur)",category:"raid",priority:"haute",
+  {title:"Broodmother/Megapithecus/Dragon (Fjordur)",category:"raid",priority:"haute",
     items:[{name:"Runestone",qty:30},{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
       {name:"Artifact of the Brute",qty:1},{name:"Artifact of the Clever",qty:1},{name:"Artifact of the Devious",qty:1},
       {name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1}]},
-  {title:"🦊 Beyla Gamma (Fjordur)",category:"raid",priority:"moyenne",
+  {title:"Beyla Gamma (Fjordur)",category:"raid",priority:"moyenne",
     items:[{name:"Runestone",qty:30}]},
-  {title:"🦊 Beyla Alpha (Fjordur)",category:"raid",priority:"haute",
+  {title:"Beyla Alpha (Fjordur)",category:"raid",priority:"haute",
     items:[{name:"Runestone",qty:30}]},
-  {title:"🐲 Steinbjorn Gamma (Fjordur)",category:"raid",priority:"moyenne",
+  {title:"Steinbjorn Gamma (Fjordur)",category:"raid",priority:"moyenne",
     items:[{name:"Runestone",qty:30}]},
-  {title:"🐲 Steinbjorn Alpha (Fjordur)",category:"raid",priority:"haute",
+  {title:"Steinbjorn Alpha (Fjordur)",category:"raid",priority:"haute",
     items:[{name:"Runestone",qty:30}]},
-  {title:"⚡ Hati & Skoll Gamma (Fjordur)",category:"raid",priority:"moyenne",
+  {title:"Hati & Skoll Gamma (Fjordur)",category:"raid",priority:"moyenne",
     items:[{name:"Runestone",qty:30}]},
-  {title:"⚡ Hati & Skoll Alpha (Fjordur)",category:"raid",priority:"haute",
+  {title:"Hati & Skoll Alpha (Fjordur)",category:"raid",priority:"haute",
     items:[{name:"Runestone",qty:30}]},
 
   // ============================================================
   // THE CENTER
   // ============================================================
-  {title:"🕷️🦍 Broodmother & Megapithecus (Center)",category:"raid",priority:"haute",
+  {title:"Broodmother & Megapithecus (Center)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Pack",qty:1},{name:"Artifact of the Massive",qty:1},
       {name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1}]},
 
   // ============================================================
   // RAGNAROK
   // ============================================================
-  {title:"🐉🦂 Dragon & Manticore (Ragnarok)",category:"raid",priority:"haute",
+  {title:"Dragon & Manticore (Ragnarok)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1},
       {name:"Artifact of the Gatekeeper",qty:1},{name:"Artifact of the Crag",qty:1},{name:"Artifact of the Destroyer",qty:1},
       {name:"Fire Talon",qty:2},{name:"Deathworm Horn",qty:5}]},
@@ -1021,81 +1023,81 @@ var TASK_TEMPLATES = [
   // ============================================================
   // VALGUERO
   // ============================================================
-  {title:"🦍🐉 Megapithecus & Dragon (Valguero)",category:"raid",priority:"haute",
+  {title:"Megapithecus & Dragon (Valguero)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Brute",qty:1},{name:"Artifact of the Devious",qty:1},{name:"Artifact of the Clever",qty:1},
       {name:"Artifact of the Skylord",qty:1},{name:"Artifact of the Strong",qty:1},{name:"Artifact of the Immune",qty:1}]},
 
   // ============================================================
   // CRYSTAL ISLES
   // ============================================================
-  {title:"💎 Crystal Wyvern Queen Gamma (Crystal Isles)",category:"raid",priority:"moyenne",
+  {title:"Crystal Wyvern Queen Gamma (Crystal Isles)",category:"raid",priority:"moyenne",
     items:[{name:"Primal Crystal",qty:20}]},
-  {title:"💎 Crystal Wyvern Queen Beta (Crystal Isles)",category:"raid",priority:"haute",
+  {title:"Crystal Wyvern Queen Beta (Crystal Isles)",category:"raid",priority:"haute",
     items:[{name:"Primal Crystal",qty:40}]},
-  {title:"💎 Crystal Wyvern Queen Alpha (Crystal Isles)",category:"raid",priority:"haute",
+  {title:"Crystal Wyvern Queen Alpha (Crystal Isles)",category:"raid",priority:"haute",
     items:[{name:"Primal Crystal",qty:60},{name:"Alpha Crystal Wyvern Queen Trophy",qty:1}]},
 
   // ============================================================
   // LOST ISLAND
   // ============================================================
-  {title:"🦁 Dinopithecus King Gamma (Lost Island)",category:"raid",priority:"moyenne",
+  {title:"Dinopithecus King Gamma (Lost Island)",category:"raid",priority:"moyenne",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Massive",qty:1},{name:"Artifact of the Skylord",qty:1}]},
-  {title:"🦁 Dinopithecus King Beta (Lost Island)",category:"raid",priority:"haute",
+  {title:"Dinopithecus King Beta (Lost Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Massive",qty:1},{name:"Artifact of the Skylord",qty:1},
       {name:"Sarcosuchus Skin",qty:3},{name:"Tyrannosaurus Arm",qty:3}]},
-  {title:"🦁 Dinopithecus King Alpha (Lost Island)",category:"raid",priority:"haute",
+  {title:"Dinopithecus King Alpha (Lost Island)",category:"raid",priority:"haute",
     items:[{name:"Artifact of the Hunter",qty:1},{name:"Artifact of the Massive",qty:1},{name:"Artifact of the Skylord",qty:1},
       {name:"Sarcosuchus Skin",qty:5},{name:"Tyrannosaurus Arm",qty:5},{name:"Alpha T-Rex Trophy",qty:1}]},
 
   // ============================================================
   // LOST COLONY (ASA DLC)
   // ============================================================
-  {title:"🔥 Pyromaniac Boss (Lost Colony)",category:"raid",priority:"haute",
+  {title:"Pyromaniac Boss (Lost Colony)",category:"raid",priority:"haute",
     items:[{name:"Pyromaniac Fang",qty:10},{name:"Draconis Silk",qty:5},{name:"Drakling Talon",qty:5}]},
-  {title:"🦇 Gigadesmodus Boss (Lost Colony)",category:"raid",priority:"haute",
+  {title:"Gigadesmodus Boss (Lost Colony)",category:"raid",priority:"haute",
     items:[{name:"Gigadesmodus Wing",qty:10},{name:"Dreadmear Essence",qty:5},{name:"Aureliax Crystal",qty:5}]},
-  {title:"🐊 Fasolasuchus Boss (Lost Colony)",category:"raid",priority:"haute",
+  {title:"Fasolasuchus Boss (Lost Colony)",category:"raid",priority:"haute",
     items:[{name:"Fasolasuchus Scale",qty:10},{name:"Ceratosaurus Horn",qty:5},{name:"Shastasaurus Oil",qty:5}]},
 
   // ============================================================
   // UTILITY TEMPLATES
   // ============================================================
-  {title:"🏗️ Base métal 3x3",category:"building",priority:"moyenne",
+  {title:"Base métal 3x3",category:"building",priority:"moyenne",
     items:[{name:"Metal Foundation",qty:9},{name:"Metal Wall",qty:24},{name:"Metal Ceiling",qty:9},
       {name:"Metal Doorframe",qty:2},{name:"Metal Door",qty:2}]},
-  {title:"🏗️ Base métal 5x5 fortifiée",category:"building",priority:"haute",
+  {title:"Base métal 5x5 fortifiée",category:"building",priority:"haute",
     items:[{name:"Metal Foundation",qty:25},{name:"Metal Wall",qty:60},{name:"Metal Ceiling",qty:25},
       {name:"Metal Doorframe",qty:4},{name:"Metal Door",qty:4},{name:"Metal Gateway",qty:2},{name:"Metal Gate",qty:2},
       {name:"Auto Turret",qty:6},{name:"Generator",qty:1},{name:"Gasoline",qty:50}]},
-  {title:"⚔️ Kit PVP complet",category:"raid",priority:"haute",
+  {title:"Kit PVP complet",category:"raid",priority:"haute",
     items:[{name:"Flak Helmet",qty:3},{name:"Flak Chestpiece",qty:3},{name:"Flak Gauntlets",qty:3},
       {name:"Flak Leggings",qty:3},{name:"Flak Boots",qty:3},{name:"Longneck Rifle",qty:1},
       {name:"Pump-Action Shotgun",qty:1},{name:"Fabricated Pistol",qty:1},
       {name:"Medical Brew",qty:50},{name:"Stimulant",qty:50},{name:"Energy Brew",qty:30},
       {name:"Advanced Rifle Bullet",qty:200},{name:"Simple Shotgun Ammo",qty:100},{name:"Simple Bullet",qty:200}]},
-  {title:"⚔️ Kit Raid C4",category:"raid",priority:"haute",
+  {title:"Kit Raid C4",category:"raid",priority:"haute",
     items:[{name:"C4 Charge",qty:50},{name:"C4 Remote Detonator",qty:1},{name:"Rocket Launcher",qty:2},
       {name:"Rocket Propelled Grenade",qty:30},{name:"Flak Helmet",qty:2},{name:"Flak Chestpiece",qty:2},
       {name:"Flak Gauntlets",qty:2},{name:"Flak Leggings",qty:2},{name:"Flak Boots",qty:2},
       {name:"Medical Brew",qty:100}]},
-  {title:"🦖 Tame basique (KO)",category:"taming",priority:"moyenne",
+  {title:"Tame basique (KO)",category:"taming",priority:"moyenne",
     items:[{name:"Tranq Arrow",qty:50},{name:"Narcotic",qty:100},{name:"Raw Meat",qty:50},{name:"Narcoberry",qty:200}]},
-  {title:"🦖 Tame gros dino (Rex/Giga)",category:"taming",priority:"haute",
+  {title:"Tame gros dino (Rex/Giga)",category:"taming",priority:"haute",
     items:[{name:"Shocking Tranq Dart",qty:100},{name:"Narcotic",qty:500},{name:"Kibble (Exceptional)",qty:30},
       {name:"Longneck Rifle",qty:1},{name:"Biotoxin",qty:200}]},
-  {title:"🧬 Élevage complet",category:"breeding",priority:"moyenne",
+  {title:"Élevage complet",category:"breeding",priority:"moyenne",
     items:[{name:"Air Conditioner",qty:14},{name:"Cryopod",qty:10},{name:"Kibble (Extraordinary)",qty:50},
       {name:"Cryofridge",qty:1},{name:"Tek Trough",qty:1},{name:"Cooked Meat",qty:500}]},
-  {title:"🛡️ Tourelles x10",category:"building",priority:"haute",
+  {title:"Tourelles x10",category:"building",priority:"haute",
     items:[{name:"Auto Turret",qty:10},{name:"Advanced Bullet",qty:2000},{name:"Generator",qty:1},{name:"Gasoline",qty:50},{name:"Electrical Cable",qty:20}]},
-  {title:"🛡️ Tourelles Heavy x6",category:"building",priority:"haute",
+  {title:"Tourelles Heavy x6",category:"building",priority:"haute",
     items:[{name:"Heavy Auto Turret",qty:6},{name:"Advanced Rifle Bullet",qty:3000},{name:"Tek Generator",qty:1},{name:"Element",qty:10}]},
-  {title:"🧪 Farm Narco/Stimulant",category:"farming",priority:"moyenne",
+  {title:"Farm Narco/Stimulant",category:"farming",priority:"moyenne",
     items:[{name:"Narcoberry",qty:5000},{name:"Spoiled Meat",qty:1000},{name:"Stimberry",qty:2000},{name:"Sparkpowder",qty:500}]},
-  {title:"⛏️ Farm ressources de base",category:"farming",priority:"basse",
+  {title:"Farm ressources de base",category:"farming",priority:"basse",
     items:[{name:"Metal Ingot",qty:3000},{name:"Cementing Paste",qty:1000},{name:"Polymer",qty:500},
       {name:"Crystal",qty:500},{name:"Obsidian",qty:300},{name:"Silica Pearls",qty:500}]},
-  {title:"⛏️ Farm Element",category:"farming",priority:"haute",
+  {title:"Farm Element",category:"farming",priority:"haute",
     items:[{name:"Element",qty:50},{name:"Element Dust",qty:5000},{name:"Element Shard",qty:100}]}
 ];
 
@@ -1136,7 +1138,7 @@ var pendingItems = [];
 var acIndex = -1;
 var filterMyTasks = false;
 var markerMapFilter = 'all';
-var selectedMarkerColor = '#7B93F8';
+var selectedMarkerColor = '#5fe4ff';
 var previousTasksSnapshot = '';
 
 // =============================================
@@ -1936,7 +1938,7 @@ function showAddCategoryModal() {
   var html = '<div class="modal-overlay" onclick="closeModal()"><div class="modal-box" onclick="event.stopPropagation()">';
   html += '<h3>&#10133; Nouvelle categorie</h3>';
   html += '<input id="customCatName" placeholder="Nom de la categorie">';
-  html += '<input id="customCatColor" type="color" value="#97ADFF" style="width:100%;height:32px;border:none;cursor:pointer">';
+  html += '<input id="customCatColor" type="color" value="#c7f6ff" style="width:100%;height:32px;border:none;cursor:pointer">';
   html += '<div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Annuler</button>';
   html += '<button class="btn-primary" onclick="addCustomCategory()">Ajouter</button></div>';
   html += '</div></div>';
@@ -1968,10 +1970,10 @@ function updateCategoryDropdown() {
   });
 }
 function getCategoryColor(cat) {
-  var colors = {farming:'#2dd4a0',taming:'#60a5fa',building:'#f59e0b',raid:'#ef4444',breeding:'#d946ef',autre:'#97ADFF'};
+  var colors = {farming:'#2dd4a0',taming:'#5fe4ff',building:'#f59e0b',raid:'#ef4444',breeding:'#5fe4ff',autre:'#c7f6ff'};
   if (colors[cat]) return colors[cat];
   var custom = (STATE.customCategories||[]).find(function(c) { return c.slug === cat; });
-  return custom ? custom.color : '#97ADFF';
+  return custom ? custom.color : '#c7f6ff';
 }
 function getCategoryName(cat) {
   var names = {farming:'Farming',taming:'Taming',building:'Building',raid:'Raid',breeding:'Breeding',autre:'Autre'};
@@ -2389,8 +2391,8 @@ function showAddMarkerModal() {
   document.getElementById('markerDescInput').value = '';
   document.getElementById('markerLatInput').value = '';
   document.getElementById('markerLonInput').value = '';
-  selectedMarkerColor = '#7B93F8';
-  document.querySelectorAll('.marker-color-opt').forEach(function(c) { c.classList.toggle('selected', c.getAttribute('data-color') === '#7B93F8'); });
+  selectedMarkerColor = '#5fe4ff';
+  document.querySelectorAll('.marker-color-opt').forEach(function(c) { c.classList.toggle('selected', c.getAttribute('data-color') === '#5fe4ff'); });
   setTimeout(function() { document.getElementById('markerNameInput').focus(); }, 100);
 }
 function closeMarkerModal() {
@@ -2510,8 +2512,8 @@ function renderSharedMarkers() {
       var catName = MARKER_CAT_NAMES[m.category] || m.category || 'Base';
       var catIcon = MARKER_CAT_ICONS[m.category] || '&#128205;';
 
-      html += '<div class="shared-marker-card" style="animation-delay:' + (idx * 0.03) + 's;border-left:3px solid ' + (m.color||'#7B93F8') + '">';
-      html += '<div class="marker-color-dot" style="background:' + (m.color||'#7B93F8') + '"></div>';
+      html += '<div class="shared-marker-card" style="animation-delay:' + (idx * 0.03) + 's;border-left:3px solid ' + (m.color||'#5fe4ff') + '">';
+      html += '<div class="marker-color-dot" style="background:' + (m.color||'#5fe4ff') + '"></div>';
       html += '<div class="marker-card-body">';
       html += '<div class="marker-card-name">' + escH(m.name);
       if (isMe) html += ' <span style="font:600 8px var(--font);color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:1px 5px;border-radius:var(--r-sm)">MOI</span>';
@@ -2580,7 +2582,7 @@ function renderBreeding() {
     creatures.forEach(function(c) {
       var sexIcon = c.sex === 'M' ? '♂' : '♀';
       var sexColor = c.sex === 'M' ? 'var(--blue)' : 'var(--pink)';
-      html += '<div style="padding:10px 12px;border-radius:var(--r-lg);background:rgba(6,6,16,0.5);backdrop-filter:blur(12px);border:1px solid var(--border-0);transition:all .2s" onmouseover="this.style.borderColor=\'rgba(123,147,248,0.15)\'" onmouseout="this.style.borderColor=\'var(--border-0)\'">';
+      html += '<div style="padding:10px 12px;border-radius:var(--r-lg);background:rgba(6,6,16,0.5);backdrop-filter:blur(12px);border:1px solid var(--border-0);transition:all .2s" onmouseover="this.style.borderColor=\'rgba(95,228,255,0.15)\'" onmouseout="this.style.borderColor=\'var(--border-0)\'">';
       html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">';
       html += '<span style="font:800 12px var(--font);color:var(--text-0)">' + escH(c.name || c.species || '?') + '</span>';
       html += '<span style="font:700 9px var(--font);color:' + sexColor + ';background:rgba(' + (c.sex === 'M' ? '96,165,250' : '217,70,239') + ',0.08);border:1px solid rgba(' + (c.sex === 'M' ? '96,165,250' : '217,70,239') + ',0.2);padding:1px 6px;border-radius:var(--r-sm)">' + sexIcon + '</span>';

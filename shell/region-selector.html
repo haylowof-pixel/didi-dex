@@ -20,13 +20,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: transparen
 #instructions {
   position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
   background: rgba(6,6,16,0.92); backdrop-filter: blur(16px);
-  border: 1px solid rgba(123,147,248,0.3); border-radius: 10px;
+  border: 1px solid rgba(95,228,255,0.3); border-radius: 10px;
   padding: 14px 28px; color: #edeef3; font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 13px; font-weight: 600; text-align: center;
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   z-index: 10; pointer-events: none;
 }
-#instructions .accent { color: #97ADFF; }
+#instructions .accent { color: #c7f6ff; }
 #instructions .sub { font-size: 10px; color: #7d808e; margin-top: 4px; font-weight: 400; }
 
 #confirm-bar {
@@ -40,10 +40,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: transparen
   cursor: pointer; border: none; transition: all .15s;
 }
 #confirm-bar .btn-confirm {
-  background: linear-gradient(135deg, #7B93F8, #60a5fa); color: white;
-  box-shadow: 0 4px 20px rgba(123,147,248,0.4);
+  background: linear-gradient(135deg, #5fe4ff, #5fe4ff); color: white;
+  box-shadow: 0 4px 20px rgba(95,228,255,0.4);
 }
-#confirm-bar .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(123,147,248,0.5); }
+#confirm-bar .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(95,228,255,0.5); }
 #confirm-bar .btn-cancel {
   background: rgba(255,255,255,0.08); color: #b8bac4; border: 1px solid rgba(255,255,255,0.12);
 }
@@ -51,11 +51,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: transparen
 
 #region-info {
   position: fixed; display: none; padding: 4px 10px;
-  background: rgba(6,6,16,0.9); border: 1px solid rgba(123,147,248,0.3);
-  border-radius: 6px; color: #97ADFF; font: 700 10px 'Segoe UI', system-ui, sans-serif;
+  background: rgba(6,6,16,0.9); border: 1px solid rgba(95,228,255,0.3);
+  border-radius: 6px; color: #c7f6ff; font: 700 10px 'Segoe UI', system-ui, sans-serif;
   pointer-events: none; z-index: 10; white-space: nowrap;
 }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 
@@ -109,7 +111,7 @@ function drawOverlay() {
     ctx.fillRect(rect.x + rect.width, rect.y, canvas.width - rect.x - rect.width, rect.height);
 
     // Selection border
-    ctx.strokeStyle = '#7B93F8';
+    ctx.strokeStyle = '#5fe4ff';
     ctx.lineWidth = 2;
     ctx.setLineDash([6, 3]);
     ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
@@ -123,14 +125,14 @@ function drawOverlay() {
       [rect.x + rect.width, rect.y + rect.height]
     ];
     corners.forEach(function(c) {
-      ctx.fillStyle = '#7B93F8';
+      ctx.fillStyle = '#5fe4ff';
       ctx.fillRect(c[0] - 4, c[1] - 4, 8, 8);
     });
 
     // Glow effect on selection area
-    ctx.shadowColor = 'rgba(123,147,248,0.3)';
+    ctx.shadowColor = 'rgba(95,228,255,0.3)';
     ctx.shadowBlur = 15;
-    ctx.strokeStyle = 'rgba(123,147,248,0.5)';
+    ctx.strokeStyle = 'rgba(95,228,255,0.5)';
     ctx.lineWidth = 1;
     ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
     ctx.shadowBlur = 0;

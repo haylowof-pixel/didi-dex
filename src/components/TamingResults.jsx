@@ -1,5 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { BioToxinIcon, EfficiencyIcon, PillIcon, TimerIcon, TorporIcon } from './Icons';
+
+function ResultIcon({ icon, Icon }) {
+  if (Icon) return <Icon size={22} />;
+  if (typeof icon === 'string' && /^(https?:|\.\/|\/)/.test(icon)) {
+    return <img src={icon} alt="" width="28" height="28" onError={event => { event.currentTarget.style.display = 'none'; }} />;
+  }
+  return <span className="result-icon-fallback">{icon}</span>;
+}
 
 export default function TamingResults({ result, foodOverride, level }) {
   if (!result) return null;
@@ -20,35 +29,35 @@ export default function TamingResults({ result, foodOverride, level }) {
       cls: 'food',
     },
     {
-      icon: '⏱️',
+      Icon: TimerIcon,
       label: 'Temps de taming',
       value: adjustedTimeFmt,
       sub: `${Math.round(adjustedTime).toLocaleString()}s total`,
       cls: 'time',
     },
     {
-      icon: '💜',
+      Icon: TorporIcon,
       label: 'Torpeur max',
       value: result.maxTorpor.toLocaleString(),
       sub: `-${result.torporDrainPerMin}/min`,
       cls: 'torpor',
     },
     {
-      icon: '💊',
+      Icon: PillIcon,
       label: 'Narcotiques',
       value: result.narcoticsNeeded.toLocaleString(),
       sub: `ou ${result.narcoberriesNeeded.toLocaleString()} narcobaies`,
       cls: 'narco',
     },
     {
-      icon: '⚡',
+      Icon: EfficiencyIcon,
       label: 'Efficacité',
       value: `${result.effectiveness}%`,
       sub: `+${result.bonusLevels} niveaux bonus`,
       cls: 'time',
     },
     {
-      icon: '☠️',
+      Icon: BioToxinIcon,
       label: 'Bio Toxine',
       value: result.bioToxinNeeded.toLocaleString(),
       sub: 'alternative',
@@ -62,7 +71,7 @@ export default function TamingResults({ result, foodOverride, level }) {
   return (
     <div className="calc-section" key={resultKey}>
       <div className="calc-section-title">
-        <span className="icon">📊</span> Résultats
+        <span className="icon"><EfficiencyIcon size={15} /></span> Résultats
         <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--text-muted)' }}>
           Niveau {level} — Torpeur drain: {result.totalTorporDrain.toLocaleString()} total
         </span>
@@ -77,7 +86,7 @@ export default function TamingResults({ result, foodOverride, level }) {
             transition={{ delay: i * 0.04, duration: 0.25 }}
             whileHover={{ y: -4, boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}
           >
-            <div className="result-icon">{card.icon}</div>
+            <div className="result-icon"><ResultIcon icon={card.icon} Icon={card.Icon} /></div>
             <div className="result-label">{card.label}</div>
             <div className="result-value">{card.value}</div>
             <div className="result-sub">{card.sub}</div>
@@ -97,7 +106,7 @@ export default function TamingResults({ result, foodOverride, level }) {
         </thead>
         <tbody>
           <tr>
-            <td>💊 Narcotique</td>
+            <td><span className="table-icon"><PillIcon size={13} /></span>Narcotique</td>
             <td style={{ fontWeight: 700, color: 'var(--success)', fontSize: '15px' }}>
               {result.narcoticsNeeded.toLocaleString()}
             </td>
@@ -105,7 +114,7 @@ export default function TamingResults({ result, foodOverride, level }) {
             <td>{(result.narcoticsNeeded * 40).toLocaleString()}</td>
           </tr>
           <tr>
-            <td>🫐 Narcobaie</td>
+            <td><span className="table-icon"><TorporIcon size={13} /></span>Narcobaie</td>
             <td style={{ fontWeight: 700, color: 'var(--torpor-color)', fontSize: '15px' }}>
               {result.narcoberriesNeeded.toLocaleString()}
             </td>
@@ -113,7 +122,7 @@ export default function TamingResults({ result, foodOverride, level }) {
             <td>{(result.narcoberriesNeeded * 7.5).toLocaleString()}</td>
           </tr>
           <tr>
-            <td>☠️ Bio Toxine</td>
+            <td><span className="table-icon"><BioToxinIcon size={13} /></span>Bio Toxine</td>
             <td style={{ fontWeight: 700, color: 'var(--warning)', fontSize: '15px' }}>
               {result.bioToxinNeeded.toLocaleString()}
             </td>

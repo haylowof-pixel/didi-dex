@@ -8,6 +8,8 @@ public/models/creatures/local/
 public/models/creatures/local-manifest.json
 .local-tools/
 .local-export-test/
+artifacts/
 $out/
 $direct/
 cloudflare/**/.wrangler/
+.claude/worktrees/

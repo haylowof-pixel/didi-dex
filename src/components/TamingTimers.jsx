@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { formatTimerDisplay } from '../data/tamingCalculator';
+import { AlertIcon, BioToxinIcon, CheckIcon, DropletIcon, PauseIcon, PillIcon, PlayIcon, ResetIcon, SkullIcon, TimerIcon, TorporIcon } from './Icons';
+
+function InlineFoodIcon({ src }) {
+  if (typeof src === 'string' && /^(https?:|\.\/|\/)/.test(src)) {
+    return (
+      <img
+        className="timer-inline-img"
+        src={src}
+        alt=""
+        onError={event => {
+          event.currentTarget.src = './creatures/wiki/raw-meat.png';
+        }}
+      />
+    );
+  }
+
+  return <TimerIcon size={14} />;
+}
 
 export default function TamingTimers({ result, dino, level, foodOverride }) {
   const calcFoodCount = foodOverride != null ? foodOverride : result.foodNeeded;
@@ -195,7 +213,7 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
         transition={{ duration: 0.3 }}
       >
         <div className="timer-title">
-          <span>💜</span> Timer Torpeur
+          <TorporIcon size={15} /> Timer Torpeur
         </div>
 
         <div className="timer-display">
@@ -219,38 +237,38 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
         <div className="timer-controls">
           {!torporRunning ? (
             <button className="timer-btn primary" onClick={() => setTorporRunning(true)}>
-              ▶ D&eacute;marrer
+              <PlayIcon size={12} /> D&eacute;marrer
             </button>
           ) : (
             <button className="timer-btn" onClick={() => setTorporRunning(false)}>
-              ⏸ Pause
+              <PauseIcon size={12} /> Pause
             </button>
           )}
           <button className="timer-btn danger" onClick={() => { setTorporCurrent(result.maxTorpor); setTorporRunning(false); }}>
-            ↺ Reset
+            <ResetIcon size={12} /> Reset
           </button>
         </div>
 
         <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}>
           <button className="timer-btn" onClick={() => addNarcotic(40)} style={{ fontSize: '11px' }}>
-            💊 +Narcotique (+40)
+            <PillIcon size={12} /> +Narcotique (+40)
           </button>
           <button className="timer-btn" onClick={() => addNarcotic(7.5)} style={{ fontSize: '11px' }}>
-            🫐 +Narcobaie (+7.5)
+            <DropletIcon size={12} /> +Narcobaie (+7.5)
           </button>
           <button className="timer-btn" onClick={() => addNarcotic(80)} style={{ fontSize: '11px' }}>
-            ☠️ +Bio Toxine (+80)
+            <BioToxinIcon size={12} /> +Bio Toxine (+80)
           </button>
         </div>
 
         {torporWarning && !torporDanger && (
           <motion.div className="timer-status warning" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            ⚠️ Torpeur basse ! Ajoutez des narcotiques !
+            <AlertIcon size={13} /> Torpeur basse ! Ajoutez des narcotiques !
           </motion.div>
         )}
         {torporDanger && (
           <motion.div className="timer-status warning" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: 'var(--danger)' }}>
-            💀 Le dino va se r&eacute;veiller !
+            <SkullIcon size={13} /> Le dino va se r&eacute;veiller !
           </motion.div>
         )}
       </motion.div>
@@ -263,7 +281,7 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
         transition={{ duration: 0.3 }}
       >
         <div className="timer-title">
-          <span>🍖</span> Timer Nourriture
+          <InlineFoodIcon src={result.foodIcon} /> Timer Nourriture
         </div>
 
         {/* Main countdown: time until taming complete */}
@@ -287,7 +305,7 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
         <div className="timer-food-controls">
           {/* Total food */}
           <div className="timer-food-row">
-            <span className="timer-food-label">{result.foodIcon} Total :</span>
+            <span className="timer-food-label"><InlineFoodIcon src={result.foodIcon} /> Total :</span>
             <button className="timer-food-btn" onClick={() => { const v = Math.max(1, foodTotal - 1); setFoodTotal(v); setFoodTotalInput(String(v)); }}>−</button>
             <input
               type="number"
@@ -303,7 +321,7 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
 
           {/* Food eaten */}
           <div className="timer-food-row">
-            <span className="timer-food-label">🍽️ Mang&eacute; :</span>
+            <span className="timer-food-label"><CheckIcon size={12} /> Mang&eacute; :</span>
             <button className="timer-food-btn" onClick={() => handleFoodEatenButton(-1)}>−</button>
             <input
               type="number"
@@ -333,11 +351,11 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
         <div className="timer-controls" style={{ marginTop: '12px' }}>
           {!foodRunning ? (
             <button className="timer-btn primary" onClick={() => { if (!tamingDone) setFoodRunning(true); }}>
-              ▶ D&eacute;marrer
+              <PlayIcon size={12} /> D&eacute;marrer
             </button>
           ) : (
             <button className="timer-btn" onClick={() => setFoodRunning(false)}>
-              ⏸ Pause
+              <PauseIcon size={12} /> Pause
             </button>
           )}
           <button className="timer-btn danger" onClick={() => {
@@ -346,7 +364,7 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
             setNextFoodCountdown(result.secondsPerFood);
             setFoodRunning(false);
           }}>
-            ↺ Reset
+            <ResetIcon size={12} /> Reset
           </button>
         </div>
 
@@ -357,7 +375,7 @@ export default function TamingTimers({ result, dino, level, foodOverride }) {
             animate={{ opacity: 1 }}
             style={{ color: 'var(--success)', fontWeight: 600, marginTop: '8px' }}
           >
-            ✅ Taming termin&eacute; !
+            <CheckIcon size={13} /> Taming termin&eacute; !
           </motion.div>
         )}
       </motion.div>

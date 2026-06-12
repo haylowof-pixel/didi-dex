@@ -394,6 +394,9 @@ export default function StatsExtractor() {
   }, [appSpecies]);
 
   const result = useMemo(() => estimateWildPoints(species, values, settings), [species, values, settings]);
+  const breedingScore = result?.breedingScore || 0;
+  const breedingScorePct = Math.max(0, Math.min(100, Math.round((breedingScore / 180) * 100)));
+  const breedingScoreTone = breedingScore >= 135 ? 'legendary' : breedingScore >= 95 ? 'strong' : breedingScore >= 45 ? 'ok' : 'low';
   const annotatedLibrary = useMemo(() => annotateDuplicates(library), [library]);
   const owners = useMemo(() => Array.from(new Set(library.map(c => c.owner).filter(Boolean))).sort(), [library]);
   const tribes = useMemo(() => Array.from(new Set(library.map(c => c.tribe).filter(Boolean))).sort(), [library]);
@@ -981,8 +984,11 @@ export default function StatsExtractor() {
 
         <aside className="ase-right">
           <div className="ase-panel ase-summary">
-            <div className="ase-score-ring">
-              <strong>{result?.breedingScore || 0}</strong>
+            <div
+              className={`ase-score-ring score-${breedingScoreTone}`}
+              style={{ '--score-pct': `${breedingScorePct}%` }}
+            >
+              <strong>{breedingScore}</strong>
               <span>breeding score</span>
             </div>
             <div className="ase-pill-grid">

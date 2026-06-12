@@ -25452,7 +25452,7 @@ html body .app-shell.module-shell.theme-blackglass:not(.light-theme) {
   --theme-energy-a: #d9c07a !important;
   --theme-energy-b: #8f7bff !important;
   --theme-energy-c: #c68a54 !important;
-  --theme-energy-d: #6f78a8 !important;
+  --theme-energy-d: #79d7ff !important;
   --accent: var(--theme-energy-a) !important;
   --accent-l: #f4e6bc !important;
   --accent-d: var(--theme-energy-b) !important;
@@ -25702,7 +25702,7 @@ html body .app-shell.module-shell.theme-blackglass:not(.light-theme) {
   --theme-energy-a: #d6b66b !important;
   --theme-energy-b: #7967ff !important;
   --theme-energy-c: #b97848 !important;
-  --theme-energy-d: #5d668b !important;
+  --theme-energy-d: #79d7ff !important;
   --accent: var(--theme-energy-a) !important;
   --accent-l: #f1dda6 !important;
   --accent-d: var(--theme-energy-b) !important;
@@ -25710,7 +25710,7 @@ html body .app-shell.module-shell.theme-blackglass:not(.light-theme) {
   --accent-border: rgba(246, 219, 151, 0.145) !important;
   --accent-glow: rgba(246, 219, 151, 0.095) !important;
   --tek-cyan: #d6b66b !important;
-  --tek-blue: #5d668b !important;
+  --tek-blue: #79d7ff !important;
   --tek-violet: #7967ff !important;
   --tek-gold: #d6b66b !important;
   color: var(--theme-text-1) !important;
@@ -25875,7 +25875,7 @@ html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
   [class*="progress"][class*="fill"]
 ) {
   background:
-    linear-gradient(90deg, #1a1820, #d6b66b, #7967ff, #b97848, #1a1820) !important;
+    linear-gradient(90deg, #1a1820, #d6b66b, #7967ff, #79d7ff, #b97848, #1a1820) !important;
   background-size: 260% 100% !important;
   box-shadow: 0 0 16px rgba(214,182,107,0.10) !important;
 }
@@ -30439,4 +30439,2116 @@ html body .app-shell.module-shell .content-area {
   .ow-server-grid {
     padding-bottom: 36px;
   }
+}
+
+/* Black Glass coherence pass: final layer for the desktop app theme.
+   Keeps layouts intact, removes legacy cyan/green washes, and standardizes glass surfaces. */
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) {
+  --theme-black-0: rgba(1, 1, 4, 0.58);
+  --theme-black-1: rgba(4, 4, 9, 0.34);
+  --theme-black-2: rgba(8, 7, 13, 0.42);
+  --theme-glass-line: rgba(255, 232, 170, 0.105);
+  --theme-glass-line-strong: rgba(255, 216, 117, 0.22);
+  --theme-gold: #d9c07a;
+  --theme-gold-soft: #f4e6bc;
+  --theme-violet: #8f7bff;
+  --theme-blue: #79d7ff;
+  --theme-orange: #c68a54;
+  --accent: var(--theme-gold) !important;
+  --accent-l: var(--theme-gold-soft) !important;
+  --accent-d: var(--theme-violet) !important;
+  --accent-bg: rgba(217, 192, 122, 0.075) !important;
+  --accent-border: var(--theme-glass-line-strong) !important;
+  --accent-glow: rgba(143, 123, 255, 0.12) !important;
+  --blue: var(--theme-blue) !important;
+  --purple: var(--theme-violet) !important;
+  --pink: var(--theme-violet) !important;
+  --gold: var(--theme-gold) !important;
+  --tek-cyan: var(--theme-blue) !important;
+  --tek-blue: var(--theme-blue) !important;
+  --tek-violet: var(--theme-violet) !important;
+  --tek-gold: var(--theme-gold) !important;
+  --tribute-cyan: var(--theme-blue) !important;
+  --tribute-violet: var(--theme-violet) !important;
+  --tribute-gold: var(--theme-gold) !important;
+  color: rgba(248, 244, 232, 0.90) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .app-video-overlay {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(217, 192, 122, 0.050), transparent 31rem),
+    radial-gradient(circle at 86% 12%, rgba(143, 123, 255, 0.050), transparent 29rem),
+    radial-gradient(circle at 70% 78%, rgba(121, 215, 255, 0.030), transparent 25rem),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.48)) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .content-area,
+  .welcome-screen,
+  .welcome-state,
+  .settings-page,
+  .embedded-page
+) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .content-area,
+  .welcome-screen,
+  .welcome-state,
+  .settings-page,
+  .embedded-page,
+  .sidebar,
+  .sidebar-header,
+  .category-filters,
+  .dino-list
+)::before,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .content-area,
+  .welcome-screen,
+  .welcome-state,
+  .settings-page,
+  .embedded-page,
+  .sidebar,
+  .sidebar-header,
+  .category-filters,
+  .dino-list
+)::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .sidebar,
+  .detail-hero,
+  .detail-panel,
+  .key-stat-card,
+  .quick-stat,
+  .feature-card,
+  .tribe-home-section,
+  .account-hero,
+  .account-panel,
+  .account-donation-copy,
+  .account-donation-links button,
+  .ase-panel,
+  .ase-card,
+  .ase-stat-card,
+  .ase-form-card,
+  .ase-library-row,
+  .taming-panel,
+  .food-table-section,
+  .food-table tbody tr,
+  .tp-card,
+  .tp-ko-loadout,
+  .tp-ko-row,
+  .tp-torpor-loadout,
+  .tp-selected-narcotic,
+  .tp-narc-row,
+  .tribute-mock-frame,
+  .tribute-command,
+  .tribute-sidebar,
+  .tribute-run-card,
+  .tribute-category,
+  .tribute-summary-panel,
+  .tribute-side-card,
+  .tribe-tasks-native,
+  .tribe-task-command,
+  .tribe-task-console,
+  .tribe-task-pro-card,
+  .tribe-task-side-panel,
+  .tribe-workspace-card,
+  .tribe-workspace-hero,
+  .tribe-workspace-panel,
+  .settings-nav,
+  .settings-hero,
+  .settings-panel,
+  .settings-tile,
+  .theme-card,
+  .embedded-iframe
+) {
+  border-color: var(--theme-glass-line) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.046), rgba(255, 255, 255, 0.010) 45%, rgba(0, 0, 0, 0.25)),
+    radial-gradient(circle at 14% 0%, rgba(143, 123, 255, 0.050), transparent 20rem),
+    radial-gradient(circle at 100% 2%, rgba(217, 192, 122, 0.032), transparent 18rem),
+    var(--theme-black-1) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.050),
+    inset 0 -1px 0 rgba(255, 216, 117, 0.012),
+    0 18px 48px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(22px) saturate(1.22) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.22) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .sidebar-header,
+  .category-filters,
+  .sidebar-count,
+  .dino-list,
+  .welcome-state
+) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .search-input,
+  input,
+  select,
+  textarea
+) {
+  border-color: rgba(255, 232, 170, 0.105) !important;
+  color: rgba(248, 244, 232, 0.94) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.040), rgba(255, 255, 255, 0.006)),
+    rgba(1, 1, 4, 0.34) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.040) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  button:not(.title-btn),
+  .cat-chip,
+  .filter-chip,
+  .mult-chip,
+  .tab-btn,
+  .bar-btn,
+  .account-auth-tabs button,
+  .tribute-mini-nav button,
+  .tribute-difficulty button,
+  .tp-ko-global-presets button,
+  .tp-narc-btn,
+  .tp-narc-use-btn,
+  .elixir-toggle,
+  .settings-chip-row button,
+  .shortcut-row button
+) {
+  border-color: rgba(255, 232, 170, 0.10) !important;
+  color: rgba(248, 244, 232, 0.92) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.042), rgba(255, 255, 255, 0.008)),
+    rgba(3, 3, 8, 0.30) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.040) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  button:not(.title-btn):hover,
+  .cat-chip:hover,
+  .filter-chip:hover,
+  .mult-chip:hover,
+  .dino-list-item:hover,
+  .feature-card.clickable:hover,
+  .quick-stat:hover,
+  .tribe-home-section:hover
+) {
+  border-color: rgba(255, 216, 117, 0.22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.060),
+    0 0 18px rgba(143, 123, 255, 0.10),
+    0 14px 34px rgba(0, 0, 0, 0.36) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  button.active:not(.title-btn),
+  .cat-chip.active,
+  .filter-chip.active,
+  .mult-chip.active,
+  .dino-list-item.active,
+  .account-auth-tabs button.active,
+  .tribute-mini-nav button.active,
+  .tribute-difficulty button.active,
+  .tp-ko-global-presets button.active,
+  .tp-narc-row.active,
+  .tp-narc-btn.active,
+  .elixir-toggle.active,
+  .theme-card.active
+) {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  border: 1px solid transparent !important;
+  color: #fff1bd !important;
+  background:
+    linear-gradient(135deg, rgba(9, 8, 15, 0.86), rgba(3, 3, 8, 0.72)) padding-box,
+    conic-gradient(from var(--solar-angle, 0deg), rgba(255, 226, 150, 0.72), rgba(255, 152, 52, 0.42), rgba(143, 123, 255, 0.64), rgba(121, 215, 255, 0.30), rgba(255, 226, 150, 0.72)) border-box !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.050),
+    0 0 18px rgba(143, 123, 255, 0.13),
+    0 0 12px rgba(255, 184, 82, 0.10) !important;
+  animation: overseerSolarAngle 7.8s linear infinite, selectedElixirSoftPulse 7.6s ease-in-out infinite !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  button.active:not(.title-btn),
+  .cat-chip.active,
+  .filter-chip.active,
+  .mult-chip.active,
+  .dino-list-item.active,
+  .account-auth-tabs button.active,
+  .tribute-mini-nav button.active,
+  .tribute-difficulty button.active,
+  .tp-ko-global-presets button.active,
+  .tp-narc-row.active,
+  .tp-narc-btn.active,
+  .elixir-toggle.active,
+  .theme-card.active
+)::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  opacity: 0.70 !important;
+  background:
+    linear-gradient(100deg, transparent 0%, rgba(255, 226, 150, 0.00) 16%, rgba(255, 226, 150, 0.13) 30%, rgba(143, 123, 255, 0.22) 52%, rgba(121, 215, 255, 0.11) 68%, transparent 86%) !important;
+  background-size: 240% 100% !important;
+  background-position: 128% 50% !important;
+  mix-blend-mode: screen !important;
+  animation: overseerSmallElixirFlow 8.4s ease-in-out infinite !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  button.active:not(.title-btn),
+  .cat-chip.active,
+  .filter-chip.active,
+  .mult-chip.active,
+  .dino-list-item.active,
+  .account-auth-tabs button.active,
+  .tribute-mini-nav button.active,
+  .tribute-difficulty button.active,
+  .tp-ko-global-presets button.active,
+  .tp-narc-row.active,
+  .tp-narc-btn.active,
+  .elixir-toggle.active,
+  .theme-card.active
+) > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .settings-kicker,
+  .feature-section-title,
+  .account-eyebrow,
+  .tribute-side-title,
+  .tribute-kicker,
+  .tp-label,
+  .ase-label,
+  .sidebar-count,
+  .badge,
+  .chip,
+  .stat-label,
+  .dino-badge
+) {
+  color: rgba(244, 230, 188, 0.92) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .ase-pill.blue strong,
+  .key-stat-card [style*="--blue"],
+  .tribute-count,
+  .tp-ko-torpor,
+  .tp-narc-row small,
+  .srv-live,
+  .server-live,
+  [class*="cyan"],
+  [class*="blue"]
+) {
+  color: var(--theme-blue) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) :where(
+  .progress-fill,
+  .home-task-item-bar-fill,
+  .tp-progress-purple,
+  .account-meter i,
+  .level-slider-fill,
+  .srv-players-bar-fill,
+  .update-progress-fill,
+  .task-item-bar-fill,
+  [class*="bar-fill"],
+  [class*="progress"][class*="fill"]
+) {
+  background:
+    linear-gradient(90deg, rgba(26, 24, 32, 0.70), var(--theme-gold), var(--theme-violet), var(--theme-blue), var(--theme-orange), rgba(26, 24, 32, 0.70)) !important;
+  background-size: 260% 100% !important;
+  box-shadow:
+    0 0 16px rgba(143, 123, 255, 0.13),
+    0 0 10px rgba(217, 192, 122, 0.10) !important;
+  animation: sliderActiveEnergyVar 13s linear infinite !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .food-table tbody tr.active,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tp-large-energy,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tp-ko-loadout.active {
+  background:
+    linear-gradient(115deg, rgba(217, 192, 122, 0.12), rgba(143, 123, 255, 0.13) 52%, rgba(121, 215, 255, 0.070)),
+    rgba(3, 3, 8, 0.30) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .dino-icon img:not(.fallback-app-icon) {
+  filter: brightness(1.72) contrast(1.25) drop-shadow(0 0 10px rgba(244, 230, 188, 0.18)) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .dino-list-item.active .dino-icon img:not(.fallback-app-icon),
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .dino-list-item:hover .dino-icon img:not(.fallback-app-icon) {
+  filter: brightness(2.05) contrast(1.32) drop-shadow(0 0 14px rgba(121, 215, 255, 0.24)) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .embedded-iframe {
+  background-color: transparent !important;
+}
+
+/* Black Glass targeted polish from visual QA. */
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .dino-list-item {
+  border-color: rgba(255, 232, 170, 0.075) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.006)),
+    rgba(4, 4, 9, 0.28) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.032) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .dino-list-item.active,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button.active,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mini-nav button.active {
+  background:
+    linear-gradient(105deg, rgba(143, 123, 255, 0.16), rgba(217, 192, 122, 0.11) 56%, rgba(121, 215, 255, 0.055)),
+    rgba(5, 4, 10, 0.34) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button.active::before,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mini-nav button.active::before {
+  opacity: 0.42 !important;
+}
+
+/* Settings release polish: keep the app energy theme without blocky overlays. */
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav {
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.006)),
+    rgba(1, 1, 5, 0.30) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, 0.018) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button.active {
+  border-color: rgba(255, 232, 170, 0.20) !important;
+  background:
+    linear-gradient(110deg, rgba(255, 232, 170, 0.075), rgba(143, 123, 255, 0.060) 48%, rgba(121, 215, 255, 0.026)),
+    rgba(1, 1, 5, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.040),
+    0 0 18px rgba(143, 123, 255, 0.08) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button.active::before {
+  opacity: 0.20 !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .theme-grid {
+  align-items: stretch !important;
+  overflow: visible !important;
+  padding-bottom: 2px !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .theme-card {
+  min-height: 228px !important;
+  padding: 14px 14px 52px !important;
+  overflow: hidden !important;
+  align-content: start !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .theme-card.active {
+  border: 1px solid rgba(255, 232, 170, 0.30) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.050), rgba(255, 255, 255, 0.010) 46%, rgba(0, 0, 0, 0.28)),
+    radial-gradient(circle at 22% 8%, rgba(217, 192, 122, 0.055), transparent 14rem),
+    radial-gradient(circle at 90% 0%, rgba(143, 123, 255, 0.050), transparent 16rem),
+    rgba(1, 1, 5, 0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.058),
+    0 0 0 1px rgba(143, 123, 255, 0.08),
+    0 18px 44px rgba(0, 0, 0, 0.32) !important;
+  animation: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .theme-card.active::before {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .theme-check {
+  left: 14px !important;
+  right: auto !important;
+  bottom: 12px !important;
+  max-width: 120px !important;
+  width: 112px !important;
+  height: 28px !important;
+  padding: 0 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-color: rgba(255, 232, 170, 0.22) !important;
+  background:
+    linear-gradient(110deg, rgba(255, 232, 170, 0.13), rgba(143, 123, 255, 0.10)),
+    rgba(1, 1, 5, 0.34) !important;
+  color: rgba(255, 244, 205, 0.96) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .theme-swatches {
+  margin-bottom: 10px !important;
+}
+
+/* Settings nav final override: no conic active border, no hidden animated layer. */
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button:hover,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button.active {
+  position: relative !important;
+  isolation: auto !important;
+  overflow: hidden !important;
+  animation: none !important;
+  transform: none !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  gap: 12px !important;
+  border: 1px solid rgba(255, 232, 170, 0.095) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.006)),
+    rgba(1, 1, 5, 0.22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.030),
+    0 10px 22px rgba(0, 0, 0, 0.16) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button.active {
+  color: rgba(255, 244, 205, 0.98) !important;
+  border-color: rgba(255, 232, 170, 0.18) !important;
+  background:
+    linear-gradient(112deg, rgba(255, 232, 170, 0.090), rgba(143, 123, 255, 0.060) 54%, rgba(121, 215, 255, 0.026)),
+    rgba(1, 1, 5, 0.26) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.040),
+    0 0 14px rgba(143, 123, 255, 0.070),
+    0 10px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button::before,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .settings-nav button svg {
+  width: 17px !important;
+  height: 17px !important;
+  min-width: 17px !important;
+  flex: 0 0 17px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .dino-badge {
+  background: rgba(255, 255, 255, 0.050) !important;
+  border: 1px solid rgba(255, 232, 170, 0.070) !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .badge-carnivore {
+  color: #ff9d70 !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .badge-herbivore {
+  color: #f4e6bc !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .badge-knockout,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .badge-passive {
+  color: #d9c07a !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-side-content,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-rail {
+  border-color: rgba(255, 232, 170, 0.085) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.030), rgba(255, 255, 255, 0.006)),
+    rgba(1, 1, 5, 0.42) !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar::before,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar::after,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-rail::before,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-rail::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribe-task-empty-state,
+html body .app-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-empty-panel {
+  border-color: rgba(121, 215, 255, 0.10) !important;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(121, 215, 255, 0.024), transparent 18rem),
+    rgba(1, 1, 5, 0.24) !important;
+}
+
+/* Tribute Black Glass recovery: consistent surfaces, no clipped command rail, no legacy color blocks. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-frame {
+  grid-template-columns: 180px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  padding: 10px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar {
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-side-content {
+  padding: 12px 10px !important;
+  gap: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribe-module-switch {
+  gap: 7px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribe-module-switch button {
+  min-height: 34px !important;
+  padding: 0 10px !important;
+  border-radius: 8px !important;
+  justify-content: flex-start !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-rail {
+  gap: 8px !important;
+  padding-right: 2px !important;
+  overflow: hidden auto !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card {
+  min-height: 78px !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  gap: 8px !important;
+  padding: 9px !important;
+  border-radius: 9px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.032), rgba(255,255,255,0.006)),
+    rgba(3, 3, 8, 0.30) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card.active {
+  border-color: rgba(255, 216, 117, 0.24) !important;
+  background:
+    linear-gradient(105deg, rgba(217, 192, 122, 0.095), rgba(143, 123, 255, 0.10), rgba(121, 215, 255, 0.035)),
+    rgba(4, 3, 9, 0.34) !important;
+  animation: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-thumb,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-boss-portrait {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 232, 170, 0.12), rgba(143, 123, 255, 0.10) 45%, rgba(0, 0, 0, 0.46) 78%),
+    rgba(4, 4, 9, 0.52) !important;
+  border: 1px solid rgba(255, 232, 170, 0.10) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(143, 123, 255, 0.10) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-thumb {
+  width: 42px !important;
+  height: 42px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-thumb img,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-boss-portrait img {
+  filter: brightness(1.65) contrast(1.18) saturate(0.82) drop-shadow(0 0 10px rgba(244, 230, 188, 0.16)) !important;
+  object-fit: cover !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy {
+  min-width: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy strong {
+  max-width: 100% !important;
+  font-size: 10.5px !important;
+  line-height: 1.08 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy span,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy em {
+  max-width: 100% !important;
+  font-size: 8px !important;
+  line-height: 1.1 !important;
+  color: rgba(248, 244, 232, 0.56) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card small {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  justify-self: start !important;
+  max-width: 48px !important;
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  color: #f4e6bc !important;
+  background: rgba(217, 192, 122, 0.08) !important;
+  border-color: rgba(255, 232, 170, 0.12) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card i {
+  grid-column: 1 / -1 !important;
+  height: 4px !important;
+  margin-top: 3px !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card mark {
+  grid-column: 1 / -1 !important;
+  justify-self: end !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card i b {
+  background: linear-gradient(90deg, var(--theme-gold), var(--theme-violet), var(--theme-blue)) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command {
+  grid-template-columns: minmax(150px, .78fr) minmax(250px, 1.45fr) minmax(104px, .58fr) minmax(190px, 1fr) 86px minmax(150px, .82fr) 32px !important;
+  min-height: 118px !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  border-radius: 11px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+  padding: 12px !important;
+  border-left: 1px solid rgba(255, 232, 170, 0.07) !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title {
+  font-size: 20px !important;
+  line-height: 1.04 !important;
+  color: #f4e6bc !important;
+  border-left: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell.boss {
+  grid-template-columns: 54px minmax(0, 1fr) !important;
+  gap: 11px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-boss-portrait {
+  width: 54px !important;
+  height: 54px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-boss-select {
+  height: 32px !important;
+  max-width: 100% !important;
+  font-size: 11px !important;
+  text-overflow: ellipsis !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-plan-boss {
+  width: 100% !important;
+  height: 28px !important;
+  margin-top: 5px !important;
+  font-size: 10px !important;
+  border-radius: 7px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell.map {
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell strong {
+  font-size: 17px !important;
+  line-height: 1.08 !important;
+  white-space: normal !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+  display: grid !important;
+  align-content: center !important;
+  gap: 5px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel label {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 15px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel input {
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 28px !important;
+  font-size: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel label b {
+  display: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel button {
+  width: 100% !important;
+  height: 28px !important;
+  font-size: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-more {
+  position: static !important;
+  width: 32px !important;
+  height: 32px !important;
+  align-self: start !important;
+  justify-self: center !important;
+  margin-top: 10px !important;
+  border-radius: 8px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  height: auto !important;
+  min-height: 74px !important;
+  margin: 0 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  grid-template-columns: 1.25fr 1fr .86fr !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-block {
+  min-width: 0 !important;
+  padding: 11px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions {
+  min-width: 0 !important;
+  gap: 7px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category:nth-child(1) .tribute-category-head strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category:nth-child(2) .tribute-category-head strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category:nth-child(3) .tribute-category-head strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-title {
+  color: #f4e6bc !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel {
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-item-row,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category-head,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-item-head {
+  border-color: rgba(255, 232, 170, 0.055) !important;
+}
+
+@media (max-width: 1180px) {
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command {
+    grid-template-columns: minmax(132px, .82fr) minmax(220px, 1.35fr) minmax(86px, .52fr) minmax(164px, .9fr) 76px minmax(126px, .72fr) 30px !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title {
+    font-size: 17px !important;
+  }
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-frame {
+  grid-template-columns: 252px minmax(0, 1fr) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category {
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.030),
+    inset 0 -1px 0 rgba(255,232,170,0.025),
+    0 14px 34px rgba(0,0,0,0.28) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  border: 0 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.030),
+    inset 0 -1px 0 rgba(255,232,170,0.025),
+    0 14px 34px rgba(0,0,0,0.28) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category-head {
+  height: 46px !important;
+  padding: 12px 13px 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-item-head {
+  padding: 9px 13px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-item-row {
+  min-height: 36px !important;
+  padding: 7px 13px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-board {
+  align-items: start !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy strong {
+  font-size: 11px !important;
+  line-height: 1.12 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy span,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy em {
+  font-size: 8.5px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+  border-left-color: rgba(255, 232, 170, 0.024) !important;
+}
+
+/* Boss Planner final QA cleanup: large glass panels stay calm; energy is reserved for controls. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command {
+  grid-template-columns: 130px minmax(260px, 1fr) 120px minmax(176px, .78fr) 76px minmax(150px, .62fr) !important;
+  gap: 9px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.006) 54%, rgba(0,0,0,0.18)),
+    radial-gradient(circle at 12% 8%, rgba(143,123,255,0.050), transparent 15rem),
+    rgba(2,2,7,0.38) !important;
+  border: 0 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.032),
+    0 16px 34px rgba(0,0,0,0.30) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.006) 48%, rgba(0,0,0,0.16)),
+    radial-gradient(circle at 14% 0%, rgba(143,123,255,0.050), transparent 17rem),
+    radial-gradient(circle at 100% 0%, rgba(217,192,122,0.030), transparent 13rem),
+    rgba(2,2,7,0.34) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell.map strong {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  font-size: 14px !important;
+  line-height: 1.06 !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title {
+  border-radius: 0 !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.026), rgba(255,255,255,0.004)),
+    rgba(3,3,8,0.18) !important;
+  box-shadow: none !important;
+  font-size: 18px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-empty {
+  display: grid !important;
+  align-content: center !important;
+  gap: 8px !important;
+  min-height: 136px !important;
+  padding: 16px 12px !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+  color: rgba(248,244,232,0.72) !important;
+  border: 1px dashed rgba(255,232,170,0.12) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(217,192,122,0.050), transparent 11rem),
+    rgba(255,255,255,0.018) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-empty strong {
+  color: #f4e6bc !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-empty span {
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  min-height: 92px !important;
+  height: 92px !important;
+  padding: 10px !important;
+  align-items: stretch !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-block {
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown b {
+  min-height: 40px !important;
+  align-content: center !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+  padding: 10px 11px !important;
+  gap: 4px !important;
+  grid-template-rows: auto 1fr auto !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel span {
+  line-height: 1.05 !important;
+  word-break: normal !important;
+  max-width: 92px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel em {
+  min-height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel button {
+  justify-content: center !important;
+  min-width: 0 !important;
+  padding: 0 7px !important;
+  white-space: nowrap !important;
+  align-self: end !important;
+  font-size: 9px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status p {
+  margin: 0 !important;
+  color: rgba(248,244,232,0.66) !important;
+  line-height: 1.35 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions {
+  display: grid !important;
+  gap: 8px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions button {
+  min-height: 34px !important;
+  border-radius: 8px !important;
+}
+
+@media (max-width: 720px) {
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-frame {
+    grid-template-columns: 1fr !important;
+    overflow: auto !important;
+    align-content: start !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar {
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-rail {
+    max-height: 190px !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-empty {
+    min-height: 96px !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-main {
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-rows: auto auto auto !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title,
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell,
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap,
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+    border-left: 0 !important;
+    border-top: 1px solid rgba(255, 232, 170, 0.040) !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-pro-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-board {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: 1fr !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics,
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown,
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown b:last-child,
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions button:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel {
+    min-height: 0 !important;
+  }
+}
+
+/* Tribute planner hard polish pass: remove remaining visual artifacts from legacy global effects. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-side-content {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.026), rgba(255,255,255,0.004)),
+    rgba(2,2,7,0.34) !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-new-run {
+  width: calc(100% - 24px) !important;
+  margin: 10px 12px 12px !important;
+  min-height: 38px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255,232,170,0.095) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.006)),
+    rgba(3,3,8,0.42) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-new-run::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-new-run::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card {
+  display: grid !important;
+  grid-template-columns: 46px minmax(0, 1fr) 34px !important;
+  grid-template-rows: minmax(38px, auto) 22px 8px !important;
+  align-items: start !important;
+  gap: 7px 8px !important;
+  min-height: 118px !important;
+  padding: 10px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-thumb {
+  grid-column: 1 !important;
+  grid-row: 1 / 3 !important;
+  width: 46px !important;
+  height: 46px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy {
+  grid-column: 2 / 4 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 2px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy strong {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  font-size: 10.5px !important;
+  line-height: 1.08 !important;
+  overflow-wrap: anywhere !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card small {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  align-self: start !important;
+  justify-self: start !important;
+  max-width: 62px !important;
+  height: 18px !important;
+  line-height: 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card i {
+  grid-column: 1 / 4 !important;
+  grid-row: 3 !important;
+  align-self: end !important;
+  margin: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card mark {
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+  align-self: start !important;
+  justify-self: end !important;
+  line-height: 18px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  height: 108px !important;
+  min-height: 108px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-block {
+  display: grid !important;
+  grid-template-rows: 20px minmax(0, 1fr) !important;
+  align-content: stretch !important;
+  padding: 12px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions {
+  align-items: stretch !important;
+  height: 100% !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown b {
+  min-height: 50px !important;
+  padding: 8px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  gap: 4px !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics strong em {
+  margin-top: 0 !important;
+  line-height: 1 !important;
+  color: rgba(244,230,188,0.74) !important;
+  transform: translateY(-1px) !important;
+  overflow: visible !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status {
+  padding: 12px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status .tribute-inspector-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status .tribute-inspector-title svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex: 0 0 14px !important;
+  margin: 0 !important;
+  position: static !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status .tribute-inspector-title::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status .tribute-inspector-title::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions button::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions button::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (max-width: 720px) {
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card {
+    min-height: 110px !important;
+  }
+}
+
+/* Tribute planner final layout clamp: summary labels and run-card footer must not collide. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-main {
+  grid-template-rows: 116px 108px minmax(0, 1fr) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card {
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  grid-template-rows: minmax(58px, auto) 12px !important;
+  min-height: 104px !important;
+  padding: 10px 10px 9px !important;
+  position: relative !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card i {
+  grid-column: 1 / 3 !important;
+  grid-row: 2 !important;
+  margin-right: 34px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card mark {
+  position: absolute !important;
+  right: 9px !important;
+  bottom: 8px !important;
+  line-height: 12px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status .tribute-inspector-title svg {
+  display: none !important;
+}
+
+@media (max-width: 720px) {
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-main {
+    grid-template-rows: auto auto auto !important;
+  }
+}
+
+/* Final run rail cleanup: no detached tag badge, no clipped boss names, no footer seam. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar {
+  width: 100% !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.022), rgba(255,255,255,0.003)),
+    rgba(2,2,7,0.46) !important;
+  border-right: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-rail {
+  padding-right: 0 !important;
+  overflow: hidden auto !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card small {
+  display: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-thumb {
+  width: 34px !important;
+  height: 34px !important;
+  grid-row: 1 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  align-self: start !important;
+  padding-top: 1px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy strong {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  font-size: 9.6px !important;
+  line-height: 1.1 !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  max-height: 34px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy span,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy em {
+  display: block !important;
+  font-size: 8px !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card i {
+  height: 3px !important;
+  align-self: center !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-new-run {
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel textarea + small {
+  display: none !important;
+}
+
+/* Tribute planner reset: separate real panels, remove black connector layers. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-main,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-workbench,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-pro-layout,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-board,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-main {
+  gap: 14px !important;
+  grid-template-rows: 116px 96px minmax(0, 1fr) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-pro-layout {
+  gap: 14px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-board {
+  gap: 14px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector {
+  gap: 18px !important;
+  padding: 0 !important;
+  overflow: hidden auto !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255,232,170,0.070) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.006) 52%, rgba(0,0,0,0.10)),
+    rgba(3,3,8,0.40) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.030),
+    0 12px 26px rgba(0,0,0,0.24) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  height: 96px !important;
+  min-height: 96px !important;
+  overflow: visible !important;
+  padding: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-block {
+  overflow: visible !important;
+  padding: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown b,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions button {
+  min-height: 42px !important;
+  border-radius: 9px !important;
+  border: 1px solid rgba(255,232,170,0.070) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.026), rgba(255,255,255,0.006)),
+    rgba(2,2,7,0.34) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.025) !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown strong {
+  margin-top: 3px !important;
+  line-height: 1 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-side-content {
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar {
+  grid-template-rows: minmax(0, 1fr) 58px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-new-run {
+  align-self: center !important;
+  justify-self: center !important;
+  width: calc(100% - 24px) !important;
+  margin: 0 !important;
+  height: 38px !important;
+  min-height: 38px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy em {
+  width: max-content !important;
+  max-width: 68px !important;
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  color: #f4e6bc !important;
+  border: 1px solid rgba(255,232,170,0.14) !important;
+  background: rgba(217,192,122,0.08) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status {
+  margin-top: 8px !important;
+}
+
+@media (max-width: 720px) {
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-main {
+    grid-template-rows: auto auto auto !important;
+  }
+
+  html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+}
+
+/* Tribute planner hard polish: remove residual shared layers and keep every panel independent. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-frame {
+  grid-template-columns: 176px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  background: rgba(1, 1, 5, 0.20) !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-page {
+  height: calc(100vh - 52px) !important;
+  max-height: calc(100vh - 52px) !important;
+  min-height: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-frame {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-workbench,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-pro-layout,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-board,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector {
+  background: none !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-title::after,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell::before,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command-cell::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-category,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel {
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.034), rgba(255,255,255,0.006) 55%, rgba(0,0,0,0.18)),
+    rgba(4, 3, 9, 0.52) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-dock {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .95fr) minmax(240px, .8fr) !important;
+  gap: 14px !important;
+  height: 104px !important;
+  min-height: 104px !important;
+  padding: 10px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-block {
+  min-width: 0 !important;
+  height: 100% !important;
+  padding: 8px !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,0.012) !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown {
+  height: 48px !important;
+  align-items: stretch !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-metrics strong,
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-breakdown b {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 2px 4px 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector textarea {
+  min-height: 68px !important;
+  height: 72px !important;
+  max-height: 76px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status {
+  margin-top: 0 !important;
+  padding-bottom: 14px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel:nth-child(1) {
+  height: 118px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel:nth-child(2) {
+  height: 184px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel:nth-child(3) {
+  height: 108px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-inspector-panel:nth-child(3) textarea {
+  min-height: 42px !important;
+  height: 46px !important;
+  max-height: 46px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status {
+  height: 148px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status p {
+  margin: 8px 0 10px !important;
+  line-height: 1.28 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions {
+  gap: 8px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions button {
+  min-height: 30px !important;
+  height: 30px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-army {
+  gap: 8px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-army div {
+  min-height: 26px !important;
+  padding: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-guide-button {
+  min-height: 30px !important;
+  height: 30px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-app-sidebar {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.026), rgba(255,255,255,0.004)),
+    rgba(2,2,8,0.42) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-side-content {
+  padding: 14px 12px 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-card {
+  min-height: 96px !important;
+  padding: 9px !important;
+  gap: 7px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.006)),
+    rgba(4,3,9,0.48) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy strong {
+  font-size: 10.6px !important;
+  line-height: 1.08 !important;
+  max-height: 36px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy span {
+  max-width: 86px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-copy em {
+  max-width: 76px !important;
+}
+
+/* Tribute planner final action polish: no clipped action panels. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-summary-block:last-child {
+  padding: 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  align-items: center !important;
+  height: 48px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-quick-actions button {
+  min-height: 38px !important;
+  height: 38px !important;
+  border-radius: 9px !important;
+  padding: 0 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status {
+  display: grid !important;
+  grid-template-rows: 20px minmax(32px, auto) 28px !important;
+  gap: 9px !important;
+  height: 132px !important;
+  padding: 12px 13px 14px !important;
+  overflow: visible !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-run-status p {
+  margin: 0 !important;
+  line-height: 1.22 !important;
+  font-size: 11px !important;
+  max-height: 34px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  min-height: 28px !important;
+  align-items: center !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions button {
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 0 9px !important;
+  white-space: nowrap !important;
+  border-radius: 8px !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+/* Tribute planner header clamp: keep Readiness readable and remove the top seam. */
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-page {
+  border-top: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-mock-frame {
+  border-top-color: rgba(255, 232, 170, 0.055) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.018),
+    0 18px 46px rgba(0,0,0,0.26) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-command {
+  grid-template-columns:
+    minmax(136px, .72fr)
+    minmax(252px, 1.38fr)
+    minmax(108px, .52fr)
+    minmax(214px, .95fr)
+    minmax(116px, .58fr)
+    minmax(168px, .78fr) !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-more {
+  display: none !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap {
+  min-width: 116px !important;
+  padding: 12px 10px !important;
+  align-items: center !important;
+  justify-items: center !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge-wrap > span {
+  width: 100% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  font-size: 10px !important;
+  letter-spacing: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-gauge {
+  width: 66px !important;
+  height: 66px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel {
+  min-width: 168px !important;
+  padding: 12px 10px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel > span {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-date-panel button {
+  min-width: 92px !important;
+  justify-self: end !important;
+  padding: 0 8px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-status-actions button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+html body .app-shell.tribute-shell.module-shell.theme-blackglass:not(.light-theme) .tribute-new-run {
+  position: static !important;
+  width: calc(100% - 24px) !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  margin: 6px 12px 8px !important;
+}
+
+/* Public website Black Glass button parity with the app. */
+@keyframes owButtonEnergyDrift {
+  0% { background-position: 0% 50%, 0 0; }
+  50% { background-position: 100% 50%, 0 0; }
+  100% { background-position: 0% 50%, 0 0; }
+}
+
+@keyframes owButtonInnerSweep {
+  0% { transform: translateX(-145%) skewX(-18deg); opacity: 0; }
+  18% { opacity: .42; }
+  52% { opacity: .24; }
+  100% { transform: translateX(145%) skewX(-18deg); opacity: 0; }
+}
+
+.ow-site :is(
+  .ow-header nav button,
+  .ow-mobile-dock button,
+  .ow-mobile-more button,
+  .ow-mobile-more a,
+  .ow-header-actions a,
+  .ow-header-actions button,
+  .ow-hero-actions button,
+  .ow-overview-picker button,
+  .ow-detail-hero button,
+  .ow-map-tabs button,
+  .ow-narco-list button,
+  .ow-module-tabs button,
+  .ow-task-compose button,
+  .ow-task-row button,
+  .ow-tribe-status button,
+  .ow-difficulty button,
+  .ow-workspace-form button,
+  .ow-server-controls button,
+  .ow-server-card button,
+  .ow-account-card button,
+  .ow-support a,
+  .ow-browser-focus button,
+  .ow-bosses button
+) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: rgba(255, 216, 117, .16) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.070), rgba(255,255,255,.016)),
+    rgba(2, 2, 6, .34) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 10px 26px rgba(0,0,0,.20) !important;
+}
+
+.ow-site :is(
+  .ow-header nav button,
+  .ow-mobile-dock button,
+  .ow-mobile-more button,
+  .ow-mobile-more a,
+  .ow-header-actions a,
+  .ow-header-actions button,
+  .ow-hero-actions button,
+  .ow-overview-picker button,
+  .ow-detail-hero button,
+  .ow-map-tabs button,
+  .ow-narco-list button,
+  .ow-module-tabs button,
+  .ow-task-compose button,
+  .ow-task-row button,
+  .ow-tribe-status button,
+  .ow-difficulty button,
+  .ow-workspace-form button,
+  .ow-server-controls button,
+  .ow-server-card button,
+  .ow-account-card button,
+  .ow-support a,
+  .ow-browser-focus button,
+  .ow-bosses button
+)::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  background:
+    linear-gradient(105deg,
+      rgba(255,216,117,.40) 0%,
+      rgba(166,108,255,.34) 34%,
+      rgba(93,184,255,.26) 62%,
+      rgba(255,155,73,.32) 100%),
+    rgba(2,2,6,.36);
+  background-size: 260% 100%, 100% 100%;
+  transition: opacity .22s ease;
+}
+
+.ow-site :is(
+  .ow-header nav button,
+  .ow-mobile-dock button,
+  .ow-mobile-more button,
+  .ow-mobile-more a,
+  .ow-header-actions a,
+  .ow-header-actions button,
+  .ow-hero-actions button,
+  .ow-overview-picker button,
+  .ow-detail-hero button,
+  .ow-map-tabs button,
+  .ow-narco-list button,
+  .ow-module-tabs button,
+  .ow-task-compose button,
+  .ow-task-row button,
+  .ow-tribe-status button,
+  .ow-difficulty button,
+  .ow-workspace-form button,
+  .ow-server-controls button,
+  .ow-server-card button,
+  .ow-account-card button,
+  .ow-support a,
+  .ow-browser-focus button,
+  .ow-bosses button
+)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent 0 28%, rgba(255,255,255,.20) 45%, transparent 62% 100%);
+  transition: opacity .22s ease;
+}
+
+.ow-site :is(
+  .ow-header nav button:hover,
+  .ow-header nav button.active,
+  .ow-mobile-dock button:hover,
+  .ow-mobile-dock button.active,
+  .ow-mobile-more button:hover,
+  .ow-mobile-more button.active,
+  .ow-mobile-more a:hover,
+  .ow-header-actions a:hover,
+  .ow-header-actions button:hover,
+  .ow-hero-actions button:hover,
+  .ow-hero-actions button:first-child,
+  .ow-overview-picker button:hover,
+  .ow-overview-picker button.active,
+  .ow-detail-hero button:hover,
+  .ow-map-tabs button.active,
+  .ow-narco-list button.active,
+  .ow-module-tabs button.active,
+  .ow-task-compose button:hover,
+  .ow-task-row button:hover,
+  .ow-tribe-status button:hover,
+  .ow-difficulty button.active,
+  .ow-workspace-form button:hover,
+  .ow-server-controls button:hover,
+  .ow-server-card button:hover,
+  .ow-server-card.favorite button,
+  .ow-account-card button:hover,
+  .ow-support a:hover,
+  .ow-browser-focus button:hover,
+  .ow-bosses button:hover,
+  .ow-bosses button.active
+) {
+  border-color: rgba(255, 216, 117, .44) !important;
+  color: var(--ow-text) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.15),
+    0 0 26px rgba(166,108,255,.16),
+    0 0 18px rgba(255,216,117,.10),
+    0 14px 34px rgba(0,0,0,.28) !important;
+  transform: translateY(-1px);
+}
+
+.ow-site :is(
+  .ow-header nav button:hover,
+  .ow-header nav button.active,
+  .ow-mobile-dock button:hover,
+  .ow-mobile-dock button.active,
+  .ow-mobile-more button:hover,
+  .ow-mobile-more button.active,
+  .ow-mobile-more a:hover,
+  .ow-header-actions a:hover,
+  .ow-header-actions button:hover,
+  .ow-hero-actions button:hover,
+  .ow-hero-actions button:first-child,
+  .ow-overview-picker button:hover,
+  .ow-overview-picker button.active,
+  .ow-detail-hero button:hover,
+  .ow-map-tabs button.active,
+  .ow-narco-list button.active,
+  .ow-module-tabs button.active,
+  .ow-task-compose button:hover,
+  .ow-task-row button:hover,
+  .ow-tribe-status button:hover,
+  .ow-difficulty button.active,
+  .ow-workspace-form button:hover,
+  .ow-server-controls button:hover,
+  .ow-server-card button:hover,
+  .ow-server-card.favorite button,
+  .ow-account-card button:hover,
+  .ow-support a:hover,
+  .ow-browser-focus button:hover,
+  .ow-bosses button:hover,
+  .ow-bosses button.active
+)::before {
+  opacity: .82;
+  animation: owButtonEnergyDrift 8.5s ease-in-out infinite;
+}
+
+.ow-site :is(
+  .ow-header nav button:hover,
+  .ow-header nav button.active,
+  .ow-mobile-dock button.active,
+  .ow-hero-actions button:first-child,
+  .ow-overview-picker button.active,
+  .ow-map-tabs button.active,
+  .ow-narco-list button.active,
+  .ow-module-tabs button.active,
+  .ow-difficulty button.active,
+  .ow-server-card.favorite button,
+  .ow-bosses button.active
+)::after {
+  opacity: .55;
+  animation: owButtonInnerSweep 5.8s ease-in-out infinite;
+}
+
+.ow-site :is(.ow-header nav button, .ow-mobile-dock button, .ow-module-tabs button, .ow-difficulty button).active {
+  color: #fff4cf !important;
 }

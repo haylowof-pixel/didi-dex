@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon, CalculatorIcon, DnaIcon, TimerIcon, MapIcon, ScanIcon, WidgetIcon, ClipboardIcon, FarmingIcon, TamingLassoIcon, BuildingIcon, RaidIcon, TaskClipboardIcon, CheckIcon, ServerIcon } from './Icons';
+import AnimatedAppIcon from './AnimatedAppIcon';
+import { dinosaurs } from '../data/dinosaurs';
+import {
+  CalculatorIcon,
+  CheckIcon,
+  ClipboardIcon,
+  FarmingIcon,
+  RaidIcon,
+  ScanIcon,
+  ServerIcon,
+  TaskClipboardIcon,
+  TamingLassoIcon,
+  TekBreedingIcon,
+  TekMapIcon,
+  TekServerIcon,
+  TekTimerIcon,
+  TekTributeIcon,
+  TekWidgetIcon,
+} from './Icons';
 
 /* ─── Background handled by global app-video-bg ─── */
 function AnimatedCanvasBg() {
@@ -18,7 +36,7 @@ function ArkLogo() {
     >
       <div className="ark-logo-glow-ring" />
       <div className="ark-logo-img-wrap">
-        <img src="./icon.png" alt="ARK" className="ark-logo-img" />
+        <AnimatedAppIcon className="ark-logo-img" alt="OVERSEER" />
         <div className="ark-logo-scan-line" />
       </div>
       <div className="ark-logo-label">
@@ -31,29 +49,20 @@ function ArkLogo() {
 
 const getFeatures = (onNavigate) => [
   { Icon: CalculatorIcon, title: 'Taming Calculator', desc: 'Sélectionnez une créature dans la sidebar' },
-  { Icon: DnaIcon,        title: 'ARK Smart Breeding Suite', desc: 'Extracteur ASB, library, couleurs, pedigree et planner', shortcut: 'Alt+B', action: () => onNavigate?.('extractor:planner') },
-  { Icon: TimerIcon,      title: 'Timer Overlay',     desc: 'Timers flottants pendant le jeu',          shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
-  { Icon: MapIcon,        title: 'Cartes Interactives', desc: 'Cartes interactives des maps ARK',         shortcut: 'Alt+G', action: () => onNavigate?.('maps') },
-  { Icon: ServerIcon,     title: 'Server Status',      desc: 'Status des serveurs ARK en temps réel',                       action: () => onNavigate?.('servers') },
-  { Icon: WidgetIcon,     title: 'Widget Mini',        desc: 'Widget compact toujours visible',          shortcut: 'Alt+W', action: () => window.api?.openWidget() },
+  { Icon: TekBreedingIcon, title: 'ARK Smart Breeding Suite', desc: 'Extracteur ASB, library, couleurs, pedigree et planner', shortcut: 'Alt+B', action: () => onNavigate?.('extractor:planner') },
+  { Icon: TekTimerIcon, title: 'Timer Overlay', desc: 'Timers flottants pendant le jeu', shortcut: 'Alt+M', action: () => window.api?.openTimerOverlay() },
+  { Icon: TekMapIcon, title: 'Cartes Interactives', desc: 'Cartes interactives des maps ARK', shortcut: 'Alt+G', action: () => onNavigate?.('maps') },
+  { Icon: TekServerIcon, title: 'Server Status', desc: 'Status des serveurs ARK en temps réel', action: () => onNavigate?.('servers') },
+  { Icon: TekWidgetIcon, title: 'Widget Mini', desc: 'Widget compact toujours visible', shortcut: 'Alt+W', action: () => window.api?.openWidget() },
 ];
 
 const CATEGORY_ICONS = {
   farming: FarmingIcon,
   taming: TamingLassoIcon,
-  building: BuildingIcon,
-  raid: RaidIcon,
-  breeding: DnaIcon,
+  building: TekServerIcon,
+  raid: TekTributeIcon,
+  breeding: TekBreedingIcon,
   autre: TaskClipboardIcon,
-};
-
-const CATEGORY_COLORS = {
-  farming: '#2dd4a0',
-  taming: '#60a5fa',
-  building: '#f59e0b',
-  raid: '#ef4444',
-  breeding: '#d946ef',
-  autre: '#97ADFF',
 };
 
 const CATEGORY_LABELS = {
@@ -65,7 +74,6 @@ const CATEGORY_LABELS = {
   autre: 'Autre',
 };
 
-const PRIORITY_COLORS = { haute: '#ef4444', moyenne: '#f59e0b', basse: '#2dd4a0' };
 const PRIORITY_LABELS = { haute: 'Haute', moyenne: 'Moyenne', basse: 'Basse' };
 
 function TaskItemRow({ item, taskId, itemIdx, onUpdate }) {
@@ -132,7 +140,6 @@ function TaskItemRow({ item, taskId, itemIdx, onUpdate }) {
           className="home-task-item-bar-fill"
           style={{
             width: `${pct}%`,
-            background: isDone ? '#2dd4a0' : 'linear-gradient(90deg, #7B93F8, #60a5fa)'
           }}
         />
       </div>
@@ -232,7 +239,7 @@ function TribeTasks() {
     >
       <div className="tribe-home-header">
         <ClipboardIcon size={16} />
-        <span>{tribeData.tribeName ? `⚔️ ${tribeData.tribeName}` : 'Tâches de Tribu'}</span>
+        <span>{tribeData.tribeName || 'Tâches de Tribu'}</span>
         <span className="tribe-home-count">{pendingTasks.length} en attente</span>
         {doneTasks.length > 0 && (
           <span className="tribe-home-done">{doneTasks.length} terminée{doneTasks.length > 1 ? 's' : ''}</span>
@@ -251,8 +258,6 @@ function TribeTasks() {
         <div className="tribe-tasks-grid">
           {pendingTasks.slice(0, 6).map((task, i) => {
             const CatIcon = CATEGORY_ICONS[task.category] || TaskClipboardIcon;
-            const catColor = CATEGORY_COLORS[task.category] || '#97ADFF';
-            const prioColor = PRIORITY_COLORS[task.priority] || '#888';
 
             const hasItems = task.items && task.items.length > 0;
             const totalReq = hasItems ? task.items.reduce((s, it) => s + it.qty, 0) : 0;
@@ -262,30 +267,29 @@ function TribeTasks() {
             return (
               <motion.div
                 key={task.id}
-                className="tribe-task-card"
+                className={`tribe-task-card cat-${task.category || 'autre'} prio-${task.priority || 'moyenne'}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 + i * 0.05 }}
-                style={{ borderLeft: `3px solid ${catColor}` }}
               >
                 <div className="tribe-task-card-header" onClick={() => toggleTask(task.id)} title="Cliquer pour marquer comme terminée">
-                  <div className="tribe-task-icon" style={{ color: catColor, background: catColor + '15' }}>
+                  <div className="tribe-task-icon">
                     <CatIcon size={16} />
                   </div>
                   <div className="tribe-task-content">
                     <div className="tribe-task-title-row">
                       <div className="tribe-task-title">{task.title}</div>
                       {hasItems && (
-                        <span className="tribe-task-pct" style={{ color: taskPct >= 100 ? '#2dd4a0' : '#97ADFF' }}>
+                        <span className={`tribe-task-pct ${taskPct >= 100 ? 'done' : ''}`}>
                           {taskPct}%
                         </span>
                       )}
                     </div>
                     <div className="tribe-task-meta">
-                      <span className="tribe-task-cat" style={{ color: catColor }}>
+                      <span className="tribe-task-cat">
                         {CATEGORY_LABELS[task.category] || task.category}
                       </span>
-                      <span className="tribe-task-prio" style={{ background: prioColor + '20', color: prioColor }}>
+                      <span className="tribe-task-prio">
                         {PRIORITY_LABELS[task.priority] || task.priority}
                       </span>
                       {task.author && <span className="tribe-task-author">par {task.author}</span>}
@@ -449,13 +453,13 @@ function FavServers() {
 }
 
 function QuickStats() {
-  const [stats, setStats] = useState({ creatures: 0, timers: 0 });
+  const [stats, setStats] = useState({ creatures: dinosaurs.length, timers: 0 });
 
   useEffect(() => {
     // Load breeding data count
     if (window.api?.loadBreedingData) {
       window.api.loadBreedingData().then(data => {
-        if (data?.creatures) setStats(s => ({ ...s, creatures: data.creatures.length }));
+        if (data?.creatures?.length) setStats(s => ({ ...s, creatures: data.creatures.length }));
       }).catch(() => {});
     }
   }, []);
@@ -468,28 +472,28 @@ function QuickStats() {
       transition={{ delay: 0.15 }}
     >
       <div className="quick-stat" onClick={() => window.__navigate?.('breeding')}>
-        <div className="quick-stat-icon" style={{ background: 'rgba(217,70,239,0.1)', color: '#d946ef' }}>
-          <DnaIcon size={16} />
+        <div className="quick-stat-icon">
+          <TekBreedingIcon size={16} />
         </div>
         <div className="quick-stat-val">{stats.creatures}</div>
         <div className="quick-stat-label">Créatures</div>
       </div>
       <div className="quick-stat" onClick={() => window.api?.openTimerOverlay()}>
-        <div className="quick-stat-icon" style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa' }}>
-          <TimerIcon size={16} />
+        <div className="quick-stat-icon">
+          <TekTimerIcon size={16} />
         </div>
         <div className="quick-stat-val">—</div>
         <div className="quick-stat-label">Timers</div>
       </div>
       <div className="quick-stat" onClick={() => window.__navigate?.('maps')}>
-        <div className="quick-stat-icon" style={{ background: 'rgba(45,212,160,0.1)', color: '#2dd4a0' }}>
-          <MapIcon size={16} />
+        <div className="quick-stat-icon">
+          <TekMapIcon size={16} />
         </div>
-        <div className="quick-stat-val">🗺️</div>
+        <div className="quick-stat-val"><TekMapIcon size={23} /></div>
         <div className="quick-stat-label">Cartes</div>
       </div>
       <div className="quick-stat" onClick={() => window.__navigate?.('extractor')}>
-        <div className="quick-stat-icon" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }}>
+        <div className="quick-stat-icon">
           <ScanIcon size={16} />
         </div>
         <div className="quick-stat-val">F8</div>

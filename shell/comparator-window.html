@@ -8,13 +8,13 @@
 :root {
   --bg-0:#020208;--bg-1:#0a0a0a;--bg-2:#111111;--bg-3:#181818;--bg-4:#1e1e1e;
   --text-0:#edeef3;--text-1:#b8bac4;--text-2:#7d808e;--text-3:#4e5160;
-  --accent:#7B93F8;--accent-l:#97ADFF;--accent-d:#5B75DA;
-  --accent-bg:rgba(123,147,248,0.08);--accent-border:rgba(123,147,248,0.22);--accent-glow:rgba(123,147,248,0.15);
+  --accent:#5fe4ff;--accent-l:#c7f6ff;--accent-d:#2fb7d4;
+  --accent-bg:rgba(95,228,255,0.08);--accent-border:rgba(95,228,255,0.22);--accent-glow:rgba(95,228,255,0.15);
   --green:#2dd4a0;--green-bg:rgba(45,212,160,0.08);--green-border:rgba(45,212,160,0.22);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-border:rgba(239,68,68,0.22);
   --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);--orange-border:rgba(245,158,11,0.22);
-  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.08);--blue-border:rgba(96,165,250,0.22);
-  --pink:#d946ef;--pink-bg:rgba(217,70,239,0.08);--pink-border:rgba(217,70,239,0.22);
+  --blue:#5fe4ff;--blue-bg:rgba(95,228,255,0.08);--blue-border:rgba(95,228,255,0.22);
+  --pink:#5fe4ff;--pink-bg:rgba(95,228,255,0.08);--pink-border:rgba(95,228,255,0.22);
   --border-0:rgba(255,255,255,0.04);--border-1:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
@@ -30,7 +30,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 /* Title bar */
 #cmp-bar {
   display: flex; align-items: center; height: var(--bar-h); padding: 0 12px;
-  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(123,147,248,0.08);
+  background: rgba(4,4,12,0.7); backdrop-filter: blur(32px); border-bottom: 1px solid rgba(95,228,255,0.08);
   -webkit-app-region: drag; flex-shrink: 0; gap: 8px;
 }
 .cmp-title { font-size: 12px; font-weight: 600; color: #666; }
@@ -42,7 +42,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   cursor: pointer; font-family: inherit; transition: all .1s;
 }
 .cmp-btn:hover { background: #1a1a1a; color: #ccc; }
-.cmp-btn.pin { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); box-shadow: 0 4px 16px rgba(123,147,248,0.2); }
+.cmp-btn.pin { background: var(--accent-bg); color: var(--accent-l); border-color: var(--accent-border); box-shadow: 0 4px 16px rgba(95,228,255,0.2); }
 .cmp-close {
   -webkit-app-region: no-drag; width: 34px; height: 28px; border: none;
   background: transparent; color: #555; font-size: 12px; cursor: pointer;
@@ -60,7 +60,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   flex: 1; display: flex; flex-direction: column; gap: 6px;
   padding: 12px; border-radius: 10px;
 }
-.dino-col.left { background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(123,147,248,0.08); margin-right: 6px; }
+.dino-col.left { background: rgba(6,6,16,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(95,228,255,0.08); margin-right: 6px; }
 .dino-col.right { background: rgba(10,10,24,0.4); backdrop-filter: blur(12px); border: 1px solid rgba(45,212,160,0.08); margin-left: 6px; }
 
 .vs-divider {
@@ -82,7 +82,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   background: rgba(255,255,255,0.02); transition: box-shadow .2s;
 }
 .stat-row-cmp:nth-child(even) { background: rgba(255,255,255,0.04); }
-.stat-row-cmp:hover { box-shadow: 0 0 16px rgba(123,147,248,0.08); }
+.stat-row-cmp:hover { box-shadow: 0 0 16px rgba(95,228,255,0.08); }
 .stat-name-cmp { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
 .stat-val-cmp { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .stat-val-cmp.better { color: var(--green); }
@@ -96,10 +96,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(123,147,248,0.15); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(123,147,248,0.3); }
+::-webkit-scrollbar-thumb { background: rgba(95,228,255,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(95,228,255,0.3); }
 body.embedded .bar, body.embedded #titlebar { display: none !important; } body.embedded { overflow: auto !important; }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 <video id="bgVideo" autoplay muted loop playsinline style="position:absolute;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;object-fit:cover;opacity:0.18;filter:brightness(0.7) saturate(1.2);border-radius:12px">
@@ -107,10 +109,10 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
 </video>
 <div id="app">
   <div id="cmp-bar">
-    <span class="cmp-title">⚖️ Comparateur de Dinos</span>
+    <span class="cmp-title"><img src="../public/maps/icons/spyglass.png" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:6px">Comparateur de Dinos</span>
     <div class="cmp-spacer"></div>
-    <button class="cmp-btn pin" id="pinBtn" onclick="pinCurrent()">📌 Pin Dino 1</button>
-    <button class="cmp-btn" id="windowPinBtn" onclick="toggleWindowPin()" title="Keep on top" style="font-size:11px;padding:0 6px;">📌</button>
+    <button class="cmp-btn pin" id="pinBtn" onclick="pinCurrent()"><img src="../public/maps/icons/gps.png" alt="" style="width:13px;height:13px;object-fit:contain;vertical-align:-2px;margin-right:4px">Pin Dino 1</button>
+    <button class="cmp-btn" id="windowPinBtn" onclick="toggleWindowPin()" title="Keep on top" style="font-size:11px;padding:0 6px;"><img src="../public/maps/icons/gps.png" alt="" style="width:13px;height:13px;object-fit:contain"></button>
     <button class="cmp-close" onclick="window.api.comparatorClose()">✕</button>
   </div>
 
@@ -120,7 +122,7 @@ body.embedded .bar, body.embedded #titlebar { display: none !important; } body.e
         <div class="dino-header-name" id="name1">—</div>
         <div class="dino-header-sub">FIXÉ</div>
       </div>
-      <div id="stats1" class="empty-state">Navigue vers un dino<br>puis clique 📌 Pin</div>
+      <div id="stats1" class="empty-state">Navigue vers un dino<br>puis clique Pin</div>
     </div>
     <div class="vs-divider">VS</div>
     <div class="dino-col right" id="col2">
@@ -142,7 +144,7 @@ function pinCurrent() {
   if (currentData) {
     pinnedData = JSON.parse(JSON.stringify(currentData));
     renderAll();
-    document.getElementById('pinBtn').textContent = '📌 Re-Pin';
+    document.getElementById('pinBtn').innerHTML = '<img src="../public/maps/icons/gps.png" alt="" style="width:13px;height:13px;object-fit:contain;vertical-align:-2px;margin-right:4px">Re-Pin';
   }
 }
 

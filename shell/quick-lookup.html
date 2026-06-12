@@ -12,7 +12,7 @@
     --bg-panel:   rgba(12, 12, 24, 0.97);
     --border:     rgba(123, 147, 248, 0.18);
     --border-hi:  rgba(123, 147, 248, 0.45);
-    --accent:     #7B93F8;
+    --accent:     #5fe4ff;
     --accent-dim: rgba(123, 147, 248, 0.12);
     --green:      #2dd4a0;
     --red:        #ef5f5f;
@@ -40,7 +40,7 @@
     background: rgba(10, 10, 20, 0.98);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(123,147,248,0.06);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(95,228,255,0.06);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -136,7 +136,7 @@
   .result-icon-fallback {
     width: 28px; height: 28px;
     border-radius: 6px;
-    background: rgba(123,147,248,0.15);
+    background: rgba(95,228,255,0.15);
     display: flex; align-items: center; justify-content: center;
     font-size: 14px;
     flex-shrink: 0;
@@ -160,7 +160,7 @@
     color: var(--text-3);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    border-bottom: 1px solid rgba(123,147,248,0.07);
+    border-bottom: 1px solid rgba(95,228,255,0.07);
   }
 
   /* ── Taming panel ── */
@@ -195,10 +195,11 @@
   #dino-header-icon-fb {
     width: 38px; height: 38px;
     border-radius: 9px;
-    background: rgba(123,147,248,0.15);
+    background: rgba(95,228,255,0.15);
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
+    border: 1px solid rgba(95,228,255,0.26);
   }
+  #dino-header-icon-fb img { width: 26px; height: 26px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(95,228,255,0.35)); }
   #dino-title { font-size: 15px; font-weight: 700; }
   #dino-badge { margin-left: auto; }
 
@@ -281,7 +282,7 @@
   }
   .speed-btn:hover { border-color: var(--border-hi); color: var(--text-1); }
   .speed-btn.active {
-    background: rgba(123,147,248,0.18);
+    background: rgba(95,228,255,0.18);
     border-color: var(--accent);
     color: var(--accent);
   }
@@ -359,7 +360,7 @@
   .food-card-icon-fb {
     width: 20px; height: 20px;
     border-radius: 3px;
-    background: rgba(123,147,248,0.15);
+    background: rgba(95,228,255,0.15);
     display: flex; align-items: center; justify-content: center;
     font-size: 11px;
     flex-shrink: 0;
@@ -580,6 +581,13 @@
     user-select: none;
   }
   #ko-header:hover { background: rgba(255,255,255,0.02); }
+  .ko-header-mark {
+    width: 24px; height: 18px; border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(239,68,68,0.32);
+    background: rgba(239,68,68,0.12);
+    color: #ff8a8a; font-size: 9px; font-weight: 900; letter-spacing: 0.08em;
+  }
   #ko-header-title { font-size: 11px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; flex: 1; }
   #ko-toggle { font-size: 12px; color: var(--text-3); transition: transform 0.15s; }
   #ko-toggle.collapsed { transform: rotate(-90deg); }
@@ -607,7 +615,7 @@
     transition: all 0.12s;
   }
   .ko-preset-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
-  .ko-preset-btn.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
+  .ko-preset-btn.active { background: rgba(95,228,255,0.15); border-color: rgba(95,228,255,0.4); color: var(--accent); }
 
   .ko-weapon-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
   .ko-tab {
@@ -624,7 +632,7 @@
   .ko-tab-name { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
   .ko-tab-ammo-name { font-size: 8px; font-weight: 500; text-transform: none; letter-spacing: 0; opacity: 0.7; white-space: nowrap; }
   .ko-tab:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
-  .ko-tab.active { background: rgba(123,147,248,0.15); border-color: rgba(123,147,248,0.4); color: var(--accent); }
+  .ko-tab.active { background: rgba(95,228,255,0.15); border-color: rgba(95,228,255,0.4); color: var(--accent); }
   .ko-tab.active .ko-tab-ammo-name { color: var(--accent); }
 
   .ko-grid {
@@ -640,6 +648,8 @@
   .ko-cell-sub { font-size: 9px; color: var(--text-3); margin: 2px 0; }
   .ko-cell-dmg { font-size: 10px; color: var(--text-2); font-weight: 600; margin-top: 2px; }
 </style>
+<script src="./overseer-theme.js"></script>
+<link rel="stylesheet" href="./overseer-shell-theme.css">
 </head>
 <body>
 
@@ -665,7 +675,7 @@
     <div id="taming-panel">
       <div id="dino-header">
         <img id="dino-header-icon" src="" alt="" onerror="this.style.display='none';document.getElementById('dino-header-icon-fb').style.display='flex'"/>
-        <div id="dino-header-icon-fb" style="display:none">🦕</div>
+        <div id="dino-header-icon-fb" style="display:none"><img src="../public/icon-128.png" alt=""></div>
         <div>
           <div id="dino-title">—</div>
           <div id="dino-sub" style="font-size:11px;color:var(--text-3);margin-top:2px"></div>
@@ -728,7 +738,7 @@
             <div class="narco-dot" id="narco-dot-1"></div>
             <div class="narco-dot" id="narco-dot-2"></div>
           </div>
-          <div class="stat-label" id="narco-label">Narcotics 💊</div>
+          <div class="stat-label" id="narco-label">Narcotics</div>
           <div class="stat-value" id="stat-narco">—</div>
           <div class="stat-sub" id="stat-narco-sub">narcotics needed</div>
         </div>
@@ -759,7 +769,7 @@
       <!-- Knockout Calculator (shown for KO dinos only) -->
       <div id="ko-section">
         <div id="ko-header" onclick="toggleKO()">
-          <span>☠️</span>
+          <span class="ko-header-mark">KO</span>
           <div id="ko-header-title">Knockout Calculator</div>
           <div id="ko-toggle">▾</div>
         </div>
@@ -785,7 +795,7 @@
           <span><kbd>Tab</kbd> food</span>
           <span><kbd>Esc</kbd> close</span>
         </div>
-        <button id="starve-btn" disabled onclick="sendStarveTimer()">⏱ Starve timer</button>
+        <button id="starve-btn" disabled onclick="sendStarveTimer()">Starve timer</button>
         <div id="effectiveness-badge">
           <div id="eff-pct-text">— %</div>
           <div id="eff-footer-bar-wrap"><div id="eff-footer-bar-fill" style="width:0%"></div></div>
@@ -1027,37 +1037,231 @@ var ICON_BASE = {
   'Quetzalcoatlus':    'Quetzal',
 };
 var LOCAL_ICON_URLS = {
-  'Ankylosaurus': '../public/creatures/wiki/ankylosaurus.png',
-  'Argentavis': '../public/creatures/wiki/argentavis.png',
-  'Baryonyx': '../public/creatures/wiki/baryonyx.png',
-  'Carnotaurus': '../public/creatures/wiki/carnotaurus.png',
-  'Carno': '../public/creatures/wiki/carnotaurus.png',
-  'Doedicurus': '../public/creatures/wiki/doedicurus.png',
-  'Giganotosaurus': '../public/creatures/wiki/giganotosaurus.png',
-  'Parasaur': '../public/creatures/wiki/parasaur.png',
-  'Pteranodon': '../public/creatures/wiki/pteranodon.png',
-  'Quetzalcoatlus': '../public/creatures/wiki/quetzalcoatlus.png',
-  'Quetzal': '../public/creatures/wiki/quetzalcoatlus.png',
-  'Raptor': '../public/creatures/wiki/raptor.png',
-  'Alpha Raptor': '../public/creatures/wiki/raptor.png',
-  'Rex': '../public/creatures/wiki/rex.png',
-  'Alpha Rex': '../public/creatures/wiki/rex.png',
-  'Alpha T-Rex': '../public/creatures/wiki/rex.png',
-  'Tek Rex': '../public/creatures/wiki/rex.png',
-  'X-Rex': '../public/creatures/wiki/rex.png',
-  'Spinosaurus': '../public/creatures/wiki/spinosaurus.png',
-  'Spino': '../public/creatures/wiki/spinosaurus.png',
-  'Aberrant Spino': '../public/creatures/wiki/spinosaurus.png',
-  'Stegosaurus': '../public/creatures/wiki/stegosaurus.png',
-  'Stego': '../public/creatures/wiki/stegosaurus.png',
-  'Aberrant Stegosaurus': '../public/creatures/wiki/stegosaurus.png',
-  'Therizinosaurus': '../public/creatures/wiki/therizinosaurus.png',
-  'Therizinosaur': '../public/creatures/wiki/therizinosaurus.png',
-  'Triceratops': '../public/creatures/wiki/triceratops.png',
-  'Trike': '../public/creatures/wiki/triceratops.png',
-  'X-Triceratops': '../public/creatures/wiki/triceratops.png',
-  'Aberrant Triceratops': '../public/creatures/wiki/triceratops.png',
-  'Yutyrannus': '../public/creatures/wiki/yutyrannus.png',
+  'Exceptional Kibble': "../public/creatures/wiki/exceptional-kibble.png",
+  'Superior Kibble': "../public/creatures/wiki/superior-kibble.png",
+  'Regular Kibble': "../public/creatures/wiki/regular-kibble.png",
+  'Simple Kibble': "../public/creatures/wiki/simple-kibble.png",
+  'Basic Kibble': "../public/creatures/wiki/basic-kibble.png",
+  'Raw Mutton': "../public/creatures/wiki/raw-mutton.png",
+  'Cooked Lamb Chop': "../public/creatures/wiki/cooked-lamb-chop.png",
+  'Raw Prime Meat': "../public/creatures/wiki/raw-prime-meat.png",
+  'Cooked Prime Meat': "../public/creatures/wiki/cooked-prime-meat.png",
+  'Raw Prime Fish Meat': "../public/creatures/wiki/raw-prime-fish-meat.png",
+  'Raw Meat': "../public/creatures/wiki/raw-meat.png",
+  'Cooked Meat': "../public/creatures/wiki/cooked-meat.png",
+  'Raw Fish Meat': "../public/creatures/wiki/raw-fish-meat.png",
+  'Mejoberry': "../public/creatures/wiki/mejoberry.png",
+  'Berries': "../public/creatures/wiki/berries.png",
+  'Rare Flower': "../public/creatures/wiki/rare-flower.png",
+  'Giant Bee Honey': "../public/creatures/wiki/giant-bee-honey.png",
+  'Cooked Fish Meat': "../public/creatures/wiki/cooked-fish-meat.png",
+  'Cooked Prime Fish Meat': "../public/creatures/wiki/cooked-prime-fish-meat.png",
+  'Spoiled Meat': "../public/creatures/wiki/spoiled-meat.png",
+  'Extraordinary Kibble': "../public/creatures/wiki/extraordinary-kibble.png",
+  'Black Pearl': "../public/creatures/wiki/black-pearl.png",
+  'Beer Jar': "../public/creatures/wiki/beer-jar.png",
+  'Rare Mushroom': "../public/creatures/wiki/rare-mushroom.png",
+  'Element': "../public/creatures/wiki/element.png",
+  'Blood Pack': "../public/creatures/wiki/blood-pack.png",
+  'Mutagel': "../public/creatures/wiki/mutagel.png",
+  'Deathworm Horn': "../public/creatures/wiki/deathworm-horn.png",
+  'Plant Species Y Seed': "../public/creatures/wiki/plant-species-y-seed.png",
+  'Seeds': "../public/creatures/wiki/seeds.png",
+  'Chitin': "../public/creatures/wiki/chitin.png",
+  'Snow Owl Pellet': "../public/creatures/wiki/snow-owl-pellet.png",
+  'Metal': "../public/creatures/wiki/metal.png",
+  'Stone': "../public/creatures/wiki/stone.png",
+  'Flint': "../public/creatures/wiki/flint.png",
+  'Wood': "../public/creatures/wiki/wood.png",
+  'Thatch': "../public/creatures/wiki/thatch.png",
+  'Narcoberry': "../public/creatures/wiki/narcoberry.png",
+  'Narcotic': "../public/creatures/wiki/narcotic.png",
+  'Bio Toxin': "../public/creatures/wiki/bio-toxin.png",
+  'Rex': "../public/creatures/wiki/rex.png",
+  'Raptor': "../public/creatures/wiki/raptor.png",
+  'Triceratops': "../public/creatures/wiki/triceratops.png",
+  'Argentavis': "../public/creatures/wiki/argentavis.png",
+  'Pteranodon': "../public/creatures/wiki/pteranodon.png",
+  'Ankylosaurus': "../public/creatures/wiki/ankylosaurus.png",
+  'Doedicurus': "../public/creatures/wiki/doedicurus.png",
+  'Quetzalcoatlus': "../public/creatures/wiki/quetzalcoatlus.png",
+  'Spinosaurus': "../public/creatures/wiki/spinosaurus.png",
+  'Therizinosaurus': "../public/creatures/wiki/therizinosaurus.png",
+  'Giganotosaurus': "../public/creatures/wiki/giganotosaurus.png",
+  'Baryonyx': "../public/creatures/wiki/baryonyx.png",
+  'Parasaur': "../public/creatures/wiki/parasaur.png",
+  'Stegosaurus': "../public/creatures/wiki/stegosaurus.png",
+  'Yutyrannus': "../public/creatures/wiki/yutyrannus.png",
+  'Tapejara': "../public/creatures/wiki/tapejara.png",
+  'Dimetrodon': "../public/creatures/wiki/dimetrodon.png",
+  'Mammoth': "../public/creatures/wiki/mammoth.png",
+  'Carnotaurus': "../public/creatures/wiki/carnotaurus.png",
+  'Daeodon': "../public/creatures/wiki/daeodon.png",
+  'Brontosaurus': "../public/creatures/wiki/brontosaurus.png",
+  'Dilophosaur': "../public/creatures/wiki/dilophosaur.png",
+  'Dodo': "../public/creatures/wiki/dodo.png",
+  'Kairuku': "../public/creatures/wiki/kairuku.png",
+  'Phiomia': "../public/creatures/wiki/phiomia.png",
+  'Lystrosaurus': "../public/creatures/wiki/lystrosaurus.png",
+  'Mesopithecus': "../public/creatures/wiki/mesopithecus.png",
+  'Moschops': "../public/creatures/wiki/moschops.png",
+  'Maewing': "../public/creatures/wiki/maewing.png",
+  'Diplocaulus': "../public/creatures/wiki/diplocaulus.png",
+  'Gallimimus': "../public/creatures/wiki/gallimimus.png",
+  'Iguanodon': "../public/creatures/wiki/iguanodon.png",
+  'Megaloceros': "../public/creatures/wiki/megaloceros.png",
+  'Pachycephalosaurus': "../public/creatures/wiki/pachycephalosaurus.png",
+  'Morellatops': "../public/creatures/wiki/morellatops.png",
+  'Ichthyosaurus': "../public/creatures/wiki/ichthyosaurus.png",
+  'Giant Bee': "../public/creatures/wiki/giant-bee.png",
+  'Anglerfish': "../public/creatures/wiki/anglerfish.png",
+  'Beelzebufo': "../public/creatures/wiki/beelzebufo.png",
+  'Carbonemys': "../public/creatures/wiki/carbonemys.png",
+  'Kaprosuchus': "../public/creatures/wiki/kaprosuchus.png",
+  'Kentrosaurus': "../public/creatures/wiki/kentrosaurus.png",
+  'Sabertooth': "../public/creatures/wiki/sabertooth.png",
+  'Sarcosuchus': "../public/creatures/wiki/sarcosuchus.png",
+  'Pulmonoscorpius': "../public/creatures/wiki/pulmonoscorpius.png",
+  'Terror Bird': "../public/creatures/wiki/terror-bird.png",
+  'Ichthyornis': "../public/creatures/wiki/ichthyornis.png",
+  'Pelagornis': "../public/creatures/wiki/pelagornis.png",
+  'Lymantria': "../public/creatures/wiki/lymantria.png",
+  'Purlovia': "../public/creatures/wiki/purlovia.png",
+  'Thorny Dragon': "../public/creatures/wiki/thorny-dragon.png",
+  'Velonasaur': "../public/creatures/wiki/velonasaur.png",
+  'Diplodocus': "../public/creatures/wiki/diplodocus.png",
+  'Equus': "../public/creatures/wiki/equus.png",
+  'Gigantopithecus': "../public/creatures/wiki/gigantopithecus.png",
+  'Allosaurus': "../public/creatures/wiki/allosaurus.png",
+  'Castoroides': "../public/creatures/wiki/castoroides.png",
+  'Dire Bear': "../public/creatures/wiki/dire-bear.png",
+  'Direwolf': "../public/creatures/wiki/direwolf.png",
+  'Dunkleosteus': "../public/creatures/wiki/dunkleosteus.png",
+  'Megalodon': "../public/creatures/wiki/megalodon.png",
+  'Megalosaurus': "../public/creatures/wiki/megalosaurus.png",
+  'Megatherium': "../public/creatures/wiki/megatherium.png",
+  'Paraceratherium': "../public/creatures/wiki/paraceratherium.png",
+  'Plesiosaur': "../public/creatures/wiki/plesiosaur.png",
+  'Snow Owl': "../public/creatures/wiki/snow-owl.png",
+  'Woolly Rhino': "../public/creatures/wiki/woolly-rhino.png",
+  'Gasbags': "../public/creatures/wiki/gasbags.png",
+  'Mosasaurus': "../public/creatures/wiki/mosasaurus.png",
+  'Karkinos': "../public/creatures/wiki/karkinos.png",
+  'Managarmr': "../public/creatures/wiki/managarmr.png",
+  'Basilosaurus': "../public/creatures/wiki/basilosaurus.png",
+  'Tropeognathus': "../public/creatures/wiki/tropeognathus.png",
+  'Amargasaurus': "../public/creatures/wiki/amargasaurus.png",
+  'Thylacoleo': "../public/creatures/wiki/thylacoleo.png",
+  'Megalania': "../public/creatures/wiki/megalania.png",
+  'Griffin': "../public/creatures/wiki/griffin.png",
+  'Rock Elemental': "../public/creatures/wiki/rock-elemental.png",
+  'Ceratosaurus': "../public/creatures/wiki/ceratosaurus.png",
+  'Shastasaurus': "../public/creatures/wiki/shastasaurus.png",
+  'Ovis': "../public/creatures/wiki/ovis.png",
+  'Achatina': "../public/creatures/wiki/achatina.png",
+  'Dung Beetle': "../public/creatures/wiki/dung-beetle.png",
+  'Araneo': "../public/creatures/wiki/araneo.png",
+  'Arthropluera': "../public/creatures/wiki/arthropluera.png",
+  'Onyc': "../public/creatures/wiki/onyc.png",
+  'Chalicotherium': "../public/creatures/wiki/chalicotherium.png",
+  'Procoptodon': "../public/creatures/wiki/procoptodon.png",
+  'Pegomastax': "../public/creatures/wiki/pegomastax.png",
+  'Mantis': "../public/creatures/wiki/mantis.png",
+  'Oviraptor': "../public/creatures/wiki/oviraptor.png",
+  'Otter': "../public/creatures/wiki/otter.png",
+  'Hesperornis': "../public/creatures/wiki/hesperornis.png",
+  'Compsognathus': "../public/creatures/wiki/compsognathus.png",
+  'Dimorphodon': "../public/creatures/wiki/dimorphodon.png",
+  'Microraptor': "../public/creatures/wiki/microraptor.png",
+  'Pachyrhinosaurus': "../public/creatures/wiki/pachyrhinosaurus.png",
+  'Ravager': "../public/creatures/wiki/ravager.png",
+  'Roll Rat': "../public/creatures/wiki/roll-rat.png",
+  'Bulbdog': "../public/creatures/wiki/bulbdog.png",
+  'Featherlight': "../public/creatures/wiki/featherlight.png",
+  'Glowtail': "../public/creatures/wiki/glowtail.png",
+  'Shinehorn': "../public/creatures/wiki/shinehorn.png",
+  'Gacha': "../public/creatures/wiki/gacha.png",
+  'Shadowmane': "../public/creatures/wiki/shadowmane.png",
+  'Desmodus': "../public/creatures/wiki/desmodus.png",
+  'Tusoteuthis': "../public/creatures/wiki/tusoteuthis.png",
+  'Carcharodontosaurus': "../public/creatures/wiki/carcharodontosaurus.png",
+  'Dinopithecus': "../public/creatures/wiki/dinopithecus.png",
+  'Sinomacrops': "../public/creatures/wiki/sinomacrops.png",
+  'Fjordhawk': "../public/creatures/wiki/fjordhawk.png",
+  'Vulture': "../public/creatures/wiki/vulture.png",
+  'Jerboa': "../public/creatures/wiki/jerboa.png",
+  'Deinosuchus': "../public/creatures/wiki/deinosuchus.png",
+  'Fasolasuchus': "../public/creatures/wiki/fasolasuchus.png",
+  'Yi Ling': "../public/creatures/wiki/yi-ling.png",
+  'Archelon': "../public/creatures/wiki/archelon.png",
+  'Gigantoraptor': "../public/creatures/wiki/gigantoraptor.png",
+  'Magmasaur': "../public/creatures/wiki/magmasaur.png",
+  'Wyvern': "../public/creatures/wiki/wyvern.png",
+  'Rock Drake': "../public/creatures/wiki/rock-drake.png",
+  'Phoenix': "../public/creatures/wiki/phoenix.png",
+  'Basilisk': "../public/creatures/wiki/basilisk.png",
+  'Manta': "../public/creatures/wiki/manta.png",
+  'Electrophorus': "../public/creatures/wiki/electrophorus.png",
+  'Archaeopteryx': "../public/creatures/wiki/archaeopteryx.png",
+  'Titanoboa': "../public/creatures/wiki/titanoboa.png",
+  'Titanosaur': "../public/creatures/wiki/titanosaur.png",
+  'Coelacanth': "../public/creatures/wiki/coelacanth.png",
+  'Piranha': "../public/creatures/wiki/piranha.png",
+  'Cnidaria': "../public/creatures/wiki/cnidaria.png",
+  'Leech': "../public/creatures/wiki/leech.png",
+  'Trilobite': "../public/creatures/wiki/trilobite.png",
+  'Meganeura': "../public/creatures/wiki/meganeura.png",
+  'Titanomyrma': "../public/creatures/wiki/titanomyrma.png",
+  'Tek Parasaur': "../public/creatures/wiki/tek-parasaur.png",
+  'Tek Raptor': "../public/creatures/wiki/tek-raptor.png",
+  'Tek Rex': "../public/creatures/wiki/rex.png",
+  'Tek Quetzal': "../public/creatures/wiki/tek-quetzal.png",
+  'Thylacosmilus': "../public/creatures/wiki/thylacosmilus.png",
+  'Troodon': "../public/creatures/wiki/troodon.png",
+  'Hyaenodon': "../public/creatures/wiki/hyaenodon.png",
+  'Alpha Megalodon': "../public/creatures/wiki/alpha-megalodon.png",
+  'Deathworm': "../public/creatures/wiki/deathworm.png",
+  'Jug Bug': "../public/creatures/wiki/jug-bug.png",
+  'Fire Wyvern': "../public/creatures/wiki/fire-wyvern.png",
+  'Lightning Wyvern': "../public/creatures/wiki/lightning-wyvern.png",
+  'Poison Wyvern': "../public/creatures/wiki/poison-wyvern.png",
+  'Ice Wyvern': "../public/creatures/wiki/ice-wyvern.png",
+  'Reaper King': "../public/creatures/wiki/reaper-king.png",
+  'Nameless': "../public/creatures/wiki/nameless.png",
+  'Seeker': "../public/creatures/wiki/seeker.png",
+  'Lamprey': "../public/creatures/wiki/lamprey.png",
+  'Andrewsarchus': "../public/creatures/wiki/andrewsarchus.png",
+  'Fenrir': "../public/creatures/wiki/fenrir.png",
+  'Sabertooth Salmon': "../public/creatures/wiki/sabertooth-salmon.png",
+  'Alpha Raptor': "../public/creatures/wiki/raptor.png",
+  'Alpha Rex': "../public/creatures/wiki/rex.png",
+  'Alpha Carnotaurus': "../public/creatures/wiki/alpha-carnotaurus.png",
+  'Alpha Mosasaur': "../public/creatures/wiki/alpha-mosasaur.png",
+  'Alpha Tusoteuthis': "../public/creatures/wiki/alpha-tusoteuthis.png",
+  'Alpha Leedsichthys': "../public/creatures/wiki/alpha-leedsichthys.png",
+  'Leedsichthys': "../public/creatures/wiki/leedsichthys.png",
+  'Ammonite': "../public/creatures/wiki/ammonite.png",
+  'Eurypterid': "../public/creatures/wiki/eurypterid.png",
+  'Tek Triceratops': "../public/creatures/wiki/tek-triceratops.png",
+  'Pyromane': "../public/creatures/wiki/pyromane.png",
+  'Dreadmare': "../public/creatures/wiki/dreadmare.png",
+  'Drakeling': "../public/creatures/wiki/drakeling.png",
+  'Xiphactinus': "../public/creatures/wiki/xiphactinus.png",
+  'Maeguana': "../public/creatures/wiki/maeguana.png",
+  'Grand Tortugar': "../public/creatures/wiki/grand-tortugar.png",
+  'Bison': "../public/creatures/wiki/bison.png",
+  'Megaraptor': "../public/creatures/wiki/megaraptor.png",
+  'Veilwyn': "../public/creatures/wiki/veilwyn.png",
+  'Malwyn': "../public/creatures/wiki/malwyn.png",
+  'Solwyn': "../public/creatures/wiki/solwyn.png",
+  'Cryolophosaurus': "../public/creatures/wiki/cryolophosaurus.png",
+  'Ossidon': "../public/creatures/wiki/ossidon.png",
+  'Gloon': "../public/creatures/wiki/gloon.png",
+  'Aureliax': "../public/creatures/wiki/aureliax.png",
+  'Gigadesmodus': "../public/creatures/wiki/gigadesmodus.png",
+  'Elderclaw': "../public/creatures/wiki/elderclaw.png",
+  'Tek Stego': "../public/creatures/wiki/stegosaurus.png",
+  'Tek Megalodon': "../public/creatures/wiki/megalodon.png"
 };
 
 function resolveVariantName(name) {
@@ -1096,9 +1300,9 @@ function getFoodIconUrl(foodKey) {
 
 // ── Narco mode cycling ──────────────────────────────
 const NARCO_MODES = [
-  { label: 'Narcotics 💊',   key: 'narcoticsNeeded',  sub: 'narcotics needed' },
-  { label: 'Narcoberries 🫐', key: 'narcoberriesNeeded', sub: 'narcoberries needed' },
-  { label: 'Bio Toxin ☠️',   key: 'bioToxinNeeded',   sub: 'bio toxin needed' },
+  { label: 'Narcotics',    key: 'narcoticsNeeded',  sub: 'narcotics needed' },
+  { label: 'Narcoberries', key: 'narcoberriesNeeded', sub: 'narcoberries needed' },
+  { label: 'Bio Toxin',    key: 'bioToxinNeeded',   sub: 'bio toxin needed' },
 ];
 
 function cycleNarcoMode() {
@@ -1149,8 +1353,8 @@ function renderFoodCompare() {
 
     const iconUrl = getFoodIconUrl(fk);
     const iconHtml = iconUrl
-      ? `<img class="food-card-icon" src="${iconUrl}" alt="" onerror="this.style.display='none'">`
-      : `<div class="food-card-icon-fb">🍖</div>`;
+      ? `<img class="food-card-icon" src="${iconUrl}" alt="" onerror="this.src='../public/creatures/wiki/raw-meat.png'">`
+      : `<img class="food-card-icon" src="../public/creatures/wiki/raw-meat.png" alt="">`;
 
     const foodName = (FOOD_TYPES[fk] && FOOD_TYPES[fk].name) || fk;
 

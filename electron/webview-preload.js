@@ -22,11 +22,8 @@ contextBridge.exposeInMainWorld('api', {
   minimize:       () => ipcRenderer.send('win-minimize'),
   maximize:       () => ipcRenderer.send('win-maximize'),
   close:          () => ipcRenderer.send('win-close'),
-  toggleOverlay:  () => ipcRenderer.send('toggle-overlay'),
-  setOpacity:     (v) => ipcRenderer.send('set-opacity', v),
-  getOverlay:     () => ipcRenderer.invoke('get-overlay'),
-  onOverlay:      (cb) => subscribe('overlay-changed', cb),
   resizeWindow:   (preset) => ipcRenderer.send('resize-window', preset),
+  setUiTheme:      (theme) => ipcRenderer.send('set-ui-theme', theme),
 
   // Timer
   openTimerOverlay:  () => ipcRenderer.send('open-timer-overlay'),
@@ -160,6 +157,7 @@ contextBridge.exposeInMainWorld('api', {
 
   // Server Status
   fetchUrl:          (url) => ipcRenderer.invoke('fetch-url', url),
+  openExternalUrl:   (url) => ipcRenderer.invoke('open-external-url', url),
   loadFavServers:    () => ipcRenderer.invoke('load-fav-servers'),
   saveFavServers:    (data) => ipcRenderer.send('save-fav-servers', data),
   sendToHost:        (channel, ...args) => { try { ipcRenderer.sendToHost(channel, ...args); } catch(e){} },

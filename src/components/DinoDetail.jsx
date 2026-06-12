@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FOOD_TYPES } from '../data/dinosaurs';
 import { calculateTaming } from '../data/tamingCalculator';
 import TamingPanel from './TamingPanel';
-import { getCreatureIconUrl, getCreatureImageFallbacks } from '../data/creatureIcons';
+import { getCreatureImageFallbacks } from '../data/creatureIcons';
 import { ClockIcon, ZapIcon, SparklesIcon, ShieldIcon } from './Icons';
 
 /* Background handled by global app-video-bg */
@@ -31,33 +31,57 @@ const MULTIPLIER_PRESETS = [
 ];
 
 function DossierImage({ name }) {
-  const urls = getCreatureImageFallbacks(name);
+  const urls = useMemo(() => getCreatureImageFallbacks(name), [name]);
   const localSrc = name === 'Rex' ? './creatures/wiki/rex-dossier.png' : '';
-  const [src, setSrc] = useState(localSrc || urls[0]);
+  const [src, setSrc] = useState(localSrc || '');
   const [isIcon, setIsIcon] = useState(false);
-  const triedRef = React.useRef(0);
+  const [unavailable, setUnavailable] = useState(false);
 
   React.useEffect(() => {
     if (localSrc) {
       setSrc(localSrc);
       setIsIcon(false);
+      setUnavailable(false);
       return;
     }
-    triedRef.current = 0;
+    setSrc('');
     setIsIcon(false);
+    setUnavailable(false);
+    const candidates = urls.filter(Boolean);
     function tryLoad(i) {
-      if (i >= urls.length) { setSrc(urls[urls.length - 1]); setIsIcon(true); return; }
+      if (i >= candidates.length) {
+        setSrc('');
+        setIsIcon(false);
+        setUnavailable(true);
+        return;
+      }
       const img = new Image();
-      img.onload = () => { setSrc(urls[i]); setIsIcon(i >= urls.length - 1); };
+      img.onload = () => { setSrc(candidates[i]); setIsIcon(i >= candidates.length - 1); };
       img.onerror = () => tryLoad(i + 1);
-      img.src = urls[i];
+      img.src = candidates[i];
     }
     tryLoad(0);
-  }, [name, localSrc]);
+  }, [name, localSrc, urls]);
 
   return (
     <div className="detail-hero-dossier">
-      <img src={src} alt={name} className={`dossier-img${isIcon ? ' dossier-fallback' : ''}`} />
+      {unavailable ? (
+        <div className="dossier-missing">
+          <strong>{name}</strong>
+          <span>Dossier image unavailable</span>
+        </div>
+      ) : !src ? (
+        <div className="dossier-missing dossier-loading">
+          <strong>{name}</strong>
+          <span>Loading dossier</span>
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={name}
+          className={`dossier-img${isIcon ? ' dossier-fallback' : ''}`}
+        />
+      )}
     </div>
   );
 }
@@ -70,6 +94,56 @@ function formatTime(seconds) {
   if (h > 0) return `${h}h ${m}m`;
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
+}
+
+function SanguineElixirIcon() {
+  return (
+    <svg className="sanguine-elixir-svg" viewBox="0 0 32 32" aria-hidden="true">
+      <defs>
+        <linearGradient id="sanguineGlass" x1="9" y1="4" x2="24" y2="29" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#fff0d8" />
+          <stop offset="0.38" stopColor="#ff5b5b" />
+          <stop offset="1" stopColor="#5b0710" />
+        </linearGradient>
+        <linearGradient id="sanguineCore" x1="12" y1="12" x2="21" y2="26" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#ffb09a" />
+          <stop offset="0.55" stopColor="#ff2424" />
+          <stop offset="1" stopColor="#8a0018" />
+        </linearGradient>
+      </defs>
+      <path d="M13 3h6v4l-1.4 1.8v2.6l6.6 12.1c1.2 2.2-.4 4.9-2.9 4.9H10.7c-2.5 0-4.1-2.7-2.9-4.9l6.6-12.1V8.8L13 7V3Z" fill="rgba(255,255,255,0.08)" stroke="#ffd985" strokeWidth="1.2" />
+      <path d="M11 24.5 16 13l5 11.5c.5 1.2-.3 2.5-1.6 2.5h-6.8c-1.3 0-2.1-1.3-1.6-2.5Z" fill="url(#sanguineCore)" />
+      <path d="M13.3 3.4h5.4v2.8h-5.4z" fill="#2b2238" stroke="#ffd985" strokeWidth="0.9" />
+      <path d="M12.4 21.8c3.2.9 5.9.7 8.2-.4" fill="none" stroke="#ff7a4a" strokeWidth="1.1" strokeLinecap="round" />
+      <path d="M13.2 10.2c1.4.5 3.8.5 5.2 0" fill="none" stroke="#fff1cc" strokeWidth="1" strokeLinecap="round" opacity=".65" />
+      <path d="M18.3 13.8 20.7 19" stroke="#ffefcf" strokeWidth="1.3" strokeLinecap="round" opacity=".55" />
+    </svg>
+  );
+}
+
+function FoodIcon({ src, name }) {
+  const [failed, setFailed] = useState(false);
+  const fallback = name?.trim()?.charAt(0)?.toUpperCase() || '?';
+
+  if (!src || failed) {
+    return (
+      <span className="food-table-img food-table-img-fallback" aria-hidden="true">
+        {fallback}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      className="food-table-img"
+      src={src}
+      alt=""
+      width="28"
+      height="28"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 export default function DinoDetail({ dino }) {
@@ -103,6 +177,8 @@ export default function DinoDetail({ dino }) {
     if (bestFood) setSelectedFood(bestFood);
   }, [dino.name]);
 
+  const levelProgress = `${((level - 1) / (450 - 1)) * 100}%`;
+
   const handleLevelSlider = useCallback((e) => {
     const v = parseInt(e.target.value);
     setLevel(v);
@@ -125,6 +201,14 @@ export default function DinoDetail({ dino }) {
   }, [levelInput]);
 
   const categoryClass = dino.category?.toLowerCase() || '';
+  const displayTips = useMemo(() => {
+    if (!dino.tips) return '';
+    return dino.tips
+      .split(/(?<=[.!?])\s+/)
+      .filter(sentence => !/\b(trap|gates?|gateway|pi[eè]ge)\b/i.test(sentence))
+      .join(' ')
+      .trim();
+  }, [dino.tips]);
 
   return (
     <motion.div
@@ -187,7 +271,10 @@ export default function DinoDetail({ dino }) {
         <div className="control-group level-group">
           <label className="control-label">Niveau</label>
           <div className="level-control">
-            <input type="range" className="level-slider" min={1} max={450} value={level} onChange={handleLevelSlider} />
+            <div className="level-slider-shell" style={{ '--level-progress': levelProgress }}>
+              <span className="level-slider-fill" aria-hidden="true" />
+              <input type="range" className="level-slider" min={1} max={450} value={level} onChange={handleLevelSlider} />
+            </div>
             <input
               type="number" className="level-input"
               value={levelInput} min={1} max={450}
@@ -220,7 +307,9 @@ export default function DinoDetail({ dino }) {
             onClick={() => setSanguineElixir(v => !v)}
             title="Applique le bonus de Sanguine Elixir au calcul de nourriture"
           >
-            <SparklesIcon size={13} />
+            <span className="elixir-icon-wrap">
+              <SanguineElixirIcon />
+            </span>
             <span>Sanguine Elixir</span>
             <strong>{sanguineElixir ? '+30%' : 'Off'}</strong>
           </button>
@@ -234,52 +323,54 @@ export default function DinoDetail({ dino }) {
           <span>Nourriture</span>
         </div>
         <div className="food-table-wrap">
-          <table className="food-table">
-            <thead>
-              <tr>
-                <th>Nourriture</th>
-                <th>Quantité</th>
-                <th>Food</th>
-                <th>Durée</th>
-                <th>Niveau</th>
-                <th>Efficacité</th>
-              </tr>
-            </thead>
-            <tbody>
+          <div className="food-grid" role="table" aria-label="Comparaison des nourritures">
+            <div className="food-grid-head" role="row">
+              <span role="columnheader">Nourriture</span>
+              <span role="columnheader">Quantité</span>
+              <span role="columnheader">Food</span>
+              <span role="columnheader">Durée</span>
+              <span role="columnheader">Niveau</span>
+              <span role="columnheader">Efficacité</span>
+            </div>
+            <div className="food-grid-body" role="rowgroup">
               {allFoodResults.map((fr, i) => {
                 const isSelected = fr.foodKey === selectedFood;
                 return (
-                  <tr
+                  <button
+                    type="button"
                     key={fr.foodKey}
-                    className={`food-table-row ${isSelected ? 'food-table-row-selected' : ''} ${i === 0 ? 'food-table-row-best' : ''}`}
+                    className={`food-grid-row ${isSelected ? 'food-grid-row-selected' : ''} ${i === 0 ? 'food-grid-row-best' : ''}`}
                     onClick={() => setSelectedFood(fr.foodKey)}
+                    role="row"
                   >
-                    <td className="food-table-name">
-                      <img className="food-table-img" src={fr.foodInfo.img || fr.foodInfo.icon} alt="" width="24" height="24" onError={e => { e.target.style.display='none'; }} />
-                      <span>{fr.foodInfo.name}</span>
-                      {i === 0 && <span className="food-table-best-badge">Meilleur</span>}
-                    </td>
-                    <td className="food-table-qty">{fr.foodNeeded}</td>
-                    <td className="food-table-time">{fr.foodPointsConsumed > 0 ? Math.round(fr.foodPointsConsumed) : '-'}</td>
-                    <td className="food-table-time">{fr.totalTimeFmt}</td>
-                    <td className="food-table-level">Lvl {fr.maxLevel}</td>
-                    <td className="food-table-eff">
+                    <span className="food-grid-cell food-table-name" role="cell">
+                      <span className="food-table-name-inner">
+                        <FoodIcon src={fr.foodInfo.img || fr.foodInfo.icon} name={fr.foodInfo.name} />
+                        <span className="food-table-label">{fr.foodInfo.name}</span>
+                        {i === 0 && <span className="food-table-best-badge">Meilleur</span>}
+                      </span>
+                    </span>
+                    <span className="food-grid-cell food-table-qty" role="cell">{fr.foodNeeded}</span>
+                    <span className="food-grid-cell food-table-time" role="cell">{fr.foodPointsConsumed > 0 ? Math.round(fr.foodPointsConsumed) : '-'}</span>
+                    <span className="food-grid-cell food-table-time" role="cell">{fr.totalTimeFmt}</span>
+                    <span className="food-grid-cell food-table-level" role="cell">Lvl {fr.maxLevel}</span>
+                    <span className="food-grid-cell food-table-eff" role="cell">
                       <span className={`food-table-eff-val ${fr.effectiveness >= 99 ? 'eff-perfect' : fr.effectiveness >= 80 ? 'eff-good' : 'eff-low'}`}>
                         {fr.effectiveness}%
                       </span>
-                    </td>
-                  </tr>
+                    </span>
+                  </button>
                 );
               })}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       </motion.div>
 
       {/* ── TIMERS & NARCOTIC PANEL ── */}
       {result && (
         <motion.div variants={itemVariants}>
-          <TamingPanel result={result} dino={dino} level={level} />
+              <TamingPanel result={result} dino={{ ...dino, tips: displayTips }} level={level} />
         </motion.div>
       )}
     </motion.div>

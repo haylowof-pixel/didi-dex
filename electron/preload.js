@@ -12,11 +12,8 @@ contextBridge.exposeInMainWorld('api', {
   minimize:       () => ipcRenderer.send('win-minimize'),
   maximize:       () => ipcRenderer.send('win-maximize'),
   close:          () => ipcRenderer.send('win-close'),
-  toggleOverlay:  () => ipcRenderer.send('toggle-overlay'),
-  setOpacity:     (v) => ipcRenderer.send('set-opacity', v),
-  getOverlay:     () => ipcRenderer.invoke('get-overlay'),
-  onOverlay:      (cb) => subscribe('overlay-changed', cb),
   resizeWindow:   (preset) => ipcRenderer.send('resize-window', preset),
+  setUiTheme:      (theme) => ipcRenderer.send('set-ui-theme', theme),
   // Timer
   openTimerOverlay:  () => ipcRenderer.send('open-timer-overlay'),
   closeTimerOverlay: () => ipcRenderer.send('close-timer-overlay'),
@@ -132,6 +129,7 @@ contextBridge.exposeInMainWorld('api', {
   onTrackerRegionSet: (cb) => subscribe('tracker-region-set', cb),
   // Server Status
   fetchUrl:          (url) => ipcRenderer.invoke('fetch-url', url),
+  openExternalUrl:   (url) => ipcRenderer.invoke('open-external-url', url),
   loadFavServers:    () => ipcRenderer.invoke('load-fav-servers'),
   saveFavServers:    (data) => ipcRenderer.send('save-fav-servers', data),
   // Webview-to-host relay (for embedded pages)
