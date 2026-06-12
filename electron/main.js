@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, session, screen, Notification, dialog, desktopCapturer, shell } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, globalShortcut, session, screen, Notification, dialog, desktopCapturer, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
@@ -31,7 +31,7 @@ let asbWatchHandle = null;
 let asbWatchSeen = new Set();
 let asbExportServer = null;
 let asbExportPort = 0;
-let currentUiTheme = 'overseer';
+let currentUiTheme = 'blackglass';
 
 // ===== KEYBINDS CONFIG =====
 const DEFAULT_KEYBINDS = {
@@ -79,14 +79,14 @@ function getThemePath() {
 function loadUiTheme() {
   try {
     const data = JSON.parse(fs.readFileSync(getThemePath(), 'utf8'));
-    currentUiTheme = data.theme || 'overseer';
+    currentUiTheme = data.theme || 'blackglass';
   } catch (e) {
-    currentUiTheme = 'overseer';
+    currentUiTheme = 'blackglass';
   }
 }
 
 function saveUiTheme(theme) {
-  const normalized = ['overseer', 'blackglass', 'mutagen'].includes(theme) ? theme : 'overseer';
+  const normalized = ['overseer', 'blackglass', 'mutagen'].includes(theme) ? theme : 'blackglass';
   currentUiTheme = normalized;
   try {
     fs.writeFileSync(getThemePath(), JSON.stringify({ theme: normalized }, null, 2), 'utf8');
@@ -288,13 +288,16 @@ ipcMain.handle('get-preload-path', () => {
 });
 
 function createWindow() {
+  Menu.setApplicationMenu(null);
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 850,
     minWidth: 420,
     minHeight: 350,
-    frame: true,
+    frame: false,
     thickFrame: true,
+    autoHideMenuBar: true,
     backgroundColor: '#000000',
     alwaysOnTop: false,
     resizable: true,
