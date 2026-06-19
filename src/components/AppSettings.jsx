@@ -150,7 +150,7 @@ export default function AppSettings({ theme = 'blackglass', onThemeChange }) {
               </div>
             </SettingTile>
             <SettingTile title="Mode fenêtres" icon={<TekWidgetIcon size={16} />}>
-              <p>La fenêtre principale utilise la barre Windows native. Les widgets restent en overlay transparent.</p>
+              <p>La fenêtre principale utilise la barre OVERSEER custom. Les widgets restent en overlay transparent.</p>
             </SettingTile>
             <SettingTile title="Animations" icon={<SparklesIcon size={16} />}>
               <label className="settings-toggle"><input type="checkbox" defaultChecked /> Effets énergie activés</label>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import TitleBar from './components/TitleBar';
 import Sidebar from './components/Sidebar';
 import PublicWebsite from './components/PublicWebsite';
@@ -568,7 +571,8 @@ export default function App() {
   const localPreviewHosts = new Set(['127.0.0.1', 'localhost']);
   const forceLocalAppPreview = localPreviewHosts.has(window.location.hostname)
     && new URLSearchParams(window.location.search).get('app') === '1';
-  const isPublicWeb = !window.api && !forceLocalAppPreview;
+  const isNativeMobile = Capacitor.isNativePlatform();
+  const isPublicWeb = !window.api && !forceLocalAppPreview && !isNativeMobile;
   const [selectedDino, setSelectedDino] = useState(null);
   const [activePage, setActivePage] = useState(getInitialPage);
   const [preloadPath, setPreloadPath] = useState('');
@@ -585,8 +589,17 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.overseerTheme = uiTheme;
     document.body.dataset.overseerTheme = uiTheme;
+    document.body.classList.toggle('overseer-native-mobile', isNativeMobile);
     window.api?.setUiTheme?.(uiTheme);
-  }, [uiTheme]);
+  }, [uiTheme, isNativeMobile]);
+
+  useEffect(() => {
+    if (!isNativeMobile) return undefined;
+    StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
+    StatusBar.setBackgroundColor({ color: '#010104' }).catch(() => {});
+    SplashScreen.hide().catch(() => {});
+    return undefined;
+  }, [isNativeMobile]);
 
   const toggleFavorite = useCallback((dinoId) => {
     setFavorites(prev => {
@@ -680,7 +693,7 @@ export default function App() {
   if (isPublicWeb) return <PublicWebsite />;
 
   return (
-    <div className={`app-shell ${showTribeModule ? 'tribute-shell' : ''} module-shell theme-${uiTheme}`}>
+    <div className={`app-shell ${showTribeModule ? 'tribute-shell' : ''} ${isNativeMobile ? 'mobile-shell' : ''} module-shell theme-${uiTheme}`}>
       {/* Global video background */}
       <video
         className="app-video-bg"
@@ -693,6 +706,7 @@ export default function App() {
         onGoHome={goHome}
         activePage={activePage}
         onNavigate={navigateTo}
+        isNativeMobile={isNativeMobile}
       />
       <div className="main-layout">
         {showSidebar && (

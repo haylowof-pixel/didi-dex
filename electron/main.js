@@ -537,8 +537,6 @@ function createQuickLookupWindow() {
     }
   });
 
-  // Close when focus is lost (click outside)
-  quickLookupWindow.on('blur', () => { safeDestroyQuickLookup(); });
   quickLookupWindow.on('closed', () => { quickLookupWindow = null; });
   quickLookupWindow.webContents.on('destroyed', () => { quickLookupWindow = null; });
 }

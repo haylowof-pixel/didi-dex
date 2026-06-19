@@ -636,14 +636,17 @@ function enhanceImageForOCR(imageData) {
         var saturation = maxC > 0 ? (maxC - minC) / maxC : 0;
 
         // A pixel is "text" if:
-        // 1. It's bright enough (white/light text) - brightness > 140
-        // 2. OR it's colored and moderately bright (green/cyan stat text) - sat > 0.2 && brightness > 80
-        // 3. OR it's specifically green-ish (ARK TEK green numbers)
+        // 1. White/light text (ARK UI labels) - brightness > 130
+        // 2. Saturated colored text (green/cyan TEK numbers) - sat > 0.28 && brightness > 60
+        // 3. Green-dominant (ARK TEK green stat numbers)
+        // 4. Cyan-dominant (ASA interface values)
+        // 5. Yellow/orange (highlighted stats)
         var isText = false;
-        if (brightness > 140) isText = true;
-        if (saturation > 0.25 && brightness > 70) isText = true;
-        if (g > 120 && g > r * 1.1 && brightness > 60) isText = true; // green text
-        if (b > 120 && b > r * 1.1 && brightness > 60) isText = true; // blue/cyan text
+        if (brightness > 130) isText = true;
+        if (saturation > 0.28 && brightness > 60) isText = true;
+        if (g > 110 && g > r * 1.15 && g > b * 0.9 && brightness > 55) isText = true; // green
+        if (b > 110 && b > r * 1.1 && b >= g * 0.85 && brightness > 55) isText = true; // blue/cyan
+        if (r > 160 && g > 130 && b < 80 && brightness > 100) isText = true; // yellow/orange
 
         // Make text pixels black, background white (Tesseract prefers dark-on-light)
         if (isText) {
@@ -808,22 +811,18 @@ function parseStats(text, globalConf) {
 
   // Collect ALL W/M/A triplets from the entire text using multiple patterns
   var wmaPatterns = [
-    // Pattern 1: (N|N|N) or (N | N | N) — clean parens with pipes
+    // Pattern 1: (N|N|N) or (N | N | N) — clean parens with pipes (most reliable)
     /\(\s*(\d+)\s*[|lI]\s*(\d+)\s*[|lI]\s*(\d+)\s*\)/g,
-    // Pattern 2: OCR might miss parens: N|N|N or N | N | N at end of line
-    /(\d+)\s*[|]\s*(\d+)\s*[|]\s*(\d+)(?:\s*\)|\s*$)/gm,
-    // Pattern 3: OCR reads | as 1 or l between small numbers: (5 1 0 1 1) → need context
+    // Pattern 2: OCR might miss closing paren: N|N|N at end of line
+    /(\d{1,3})\s*[|]\s*(\d{1,3})\s*[|]\s*(\d{1,3})(?:\s*\)|\s*$)/gm,
+    // Pattern 3: Small numbers in parens with spaces (OCR lost pipes): (5 0 1)
     /\(\s*(\d{1,2})\s+(\d{1,2})\s+(\d{1,2})\s*\)/g,
-    // Pattern 4: with slashes instead of pipes: (5/0/1)
-    /\(\s*(\d+)\s*\/\s*(\d+)\s*\/\s*(\d+)\s*\)/g,
-    // Pattern 5: Just 3 small numbers separated by spaces at end of a line (OCR lost | chars)
-    /(\d{1,3})\s+(\d{1,3})\s+(\d{1,3})\s*$/gm,
-    // Pattern 6: colon or dot separated: 5.0.1 or 5:0:1
-    /\(\s*(\d{1,3})\s*[.:]\s*(\d{1,3})\s*[.:]\s*(\d{1,3})\s*\)/g,
-    // Pattern 7: OCR reads parentheses as brackets or nothing: [N|N|N] or N|N|N
+    // Pattern 4: Slashes instead of pipes: (5/0/1)
+    /\(\s*(\d{1,3})\s*\/\s*(\d{1,3})\s*\/\s*(\d{1,3})\s*\)/g,
+    // Pattern 5: Brackets instead of parens: [N|N|N]
     /\[\s*(\d+)\s*[|lI]\s*(\d+)\s*[|lI]\s*(\d+)\s*\]/g,
-    // Pattern 8: digits with any separator that looks like | (common OCR errors)
-    /(\d{1,3})\s*[|l!i]\s*(\d{1,3})\s*[|l!i]\s*(\d{1,3})/g,
+    // Pattern 6: Colon/dot separated in parens: (5.0.1) or (5:0:1)
+    /\(\s*(\d{1,3})\s*[.:]\s*(\d{1,3})\s*[.:]\s*(\d{1,3})\s*\)/g,
   ];
 
   var allWma = [];

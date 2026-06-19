@@ -2702,7 +2702,7 @@ body {
   padding: 10px 7px;
   background:
     radial-gradient(circle at 50% 92%, rgba(245,166,35,0.08), transparent 24%),
-    linear-gradient(180deg, rgba(0,0,0,0.82), rgba(0,0,0,0.94));
+    linear-gradient(180deg, rgba(0,0,0,0.52), rgba(0,0,0,0.62));
   border-right: 1px solid rgba(121,148,141,0.2);
   border-bottom: 0;
 }
@@ -13568,17 +13568,24 @@ textarea,
 }
 
 .app-shell.module-shell:not(.light-theme) .tb-home .animated-artifact-icon {
-  width: 30px !important;
-  height: 30px !important;
+  width: 34px !important;
+  height: 34px !important;
   place-self: center !important;
+}
+
+/* Masquer l'overlay SVG animé dans la sidebar — trop chargé à petite taille */
+.app-shell.module-shell .tb-home .artifact-energy-overlay,
+.app-shell.module-shell .tb-avatar .artifact-energy-overlay {
+  display: none !important;
 }
 
 .app-shell.module-shell:not(.light-theme) .tb-home .animated-artifact-icon img,
 .app-shell.module-shell:not(.light-theme) .tb-avatar .animated-artifact-icon img,
 .app-shell.module-shell:not(.light-theme) .ark-logo-img.animated-artifact-icon img {
   background: transparent !important;
-  border-radius: 0 !important;
+  border-radius: 6px !important;
   object-fit: contain !important;
+  filter: drop-shadow(0 0 6px rgba(166,108,255,0.5)) !important;
 }
 
 .app-shell.module-shell:not(.light-theme) .tb-avatar {
@@ -32736,4 +32743,101 @@ html body .app-shell.module-shell .window-title-strip .title-btn:hover {
     linear-gradient(110deg, rgba(255, 226, 150, 0.085), rgba(121, 215, 255, 0.050)),
     rgba(255, 255, 255, 0.018) !important;
   border-color: rgba(255, 226, 150, 0.16) !important;
+}
+
+/* Native Android shell baseline. Keeps the app usable before the full mobile redesign. */
+html body.overseer-native-mobile,
+html body.overseer-native-mobile #root {
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: #010104;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell {
+  --app-titlebar-h: 0px !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .window-title-strip {
+  display: none !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .main-layout {
+  height: 100% !important;
+  padding-top: 0 !important;
+  padding-bottom: 76px !important;
+  overflow: hidden !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .title-bar {
+  position: fixed !important;
+  left: max(10px, env(safe-area-inset-left)) !important;
+  right: max(10px, env(safe-area-inset-right)) !important;
+  bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  top: auto !important;
+  z-index: 22000 !important;
+  width: auto !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding: 8px !important;
+  border: 1px solid rgba(255, 226, 150, 0.12) !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.012)),
+    rgba(1, 1, 4, 0.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.050),
+    0 18px 44px rgba(0,0,0,0.48) !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .title-bar-left,
+html body.overseer-native-mobile .app-shell.mobile-shell .tb-tools {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .title-bar .tb-home,
+html body.overseer-native-mobile .app-shell.mobile-shell .title-bar .tb-tool,
+html body.overseer-native-mobile .app-shell.mobile-shell .title-bar .tb-profile-hub {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  padding: 0 !important;
+  border-radius: 16px !important;
+  justify-content: center !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .title-bar :is(.title-bar-brand, .title-bar-subbrand, .tb-tool-label, .tb-profile-copy, .tb-profile-pulse, .tb-sep) {
+  display: none !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .tb-tools {
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .tb-tools::-webkit-scrollbar {
+  display: none !important;
+}
+
+html body.overseer-native-mobile .app-shell.mobile-shell .content-area,
+html body.overseer-native-mobile .app-shell.mobile-shell .sidebar {
+  height: 100% !important;
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch !important;
 }

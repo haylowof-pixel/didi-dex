@@ -27,7 +27,8 @@ const WINDOW_TOOLS = [
   { key: 'lookup', Icon: TekOverlayIcon, label: 'Quick Lookup', shortcut: 'Alt+L', action: () => window.api?.openQuickLookup() },
 ];
 
-export default function TitleBar({ onGoHome, activePage, onNavigate }) {
+export default function TitleBar({ onGoHome, activePage, onNavigate, isNativeMobile = false }) {
+  const canUseDesktopWindows = Boolean(window.api) && !isNativeMobile;
   const minimize = () => window.api?.minimize();
   const maximize = () => window.api?.maximize();
   const close = () => window.api?.close();
@@ -59,20 +60,24 @@ export default function TitleBar({ onGoHome, activePage, onNavigate }) {
             </button>
           ))}
 
-          <div className="tb-sep" />
+          {canUseDesktopWindows && (
+            <>
+              <div className="tb-sep" />
 
-          {/* Window tools — open separate windows */}
-          {WINDOW_TOOLS.map(t => (
-            <button
-              key={t.key}
-              className="tb-tool"
-              onClick={t.action}
-              title={t.shortcut ? `${t.label} (${t.shortcut})` : t.label}
-            >
-              <t.Icon size={13} />
-              <span className="tb-tool-label">{t.label}</span>
-            </button>
-          ))}
+              {/* Window tools — open separate windows */}
+              {WINDOW_TOOLS.map(t => (
+                <button
+                  key={t.key}
+                  className="tb-tool"
+                  onClick={t.action}
+                  title={t.shortcut ? `${t.label} (${t.shortcut})` : t.label}
+                >
+                  <t.Icon size={13} />
+                  <span className="tb-tool-label">{t.label}</span>
+                </button>
+              ))}
+            </>
+          )}
 
           <div className="tb-sep" />
 
@@ -107,7 +112,7 @@ export default function TitleBar({ onGoHome, activePage, onNavigate }) {
         </button>
       </div>
 
-      <div className="window-title-strip">
+      {canUseDesktopWindows && <div className="window-title-strip">
         <div className="window-title-brand">
           <AnimatedAppIcon className="window-title-icon" imgProps={{ width: 16, height: 16 }} />
           <span>OVERSEER</span>
@@ -124,7 +129,7 @@ export default function TitleBar({ onGoHome, activePage, onNavigate }) {
             <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
           </button>
         </div>
-      </div>
+      </div>}
     </>
   );
 }

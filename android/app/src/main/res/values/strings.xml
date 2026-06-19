@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">OVERSEER</string>
+    <string name="title_activity_main">OVERSEER</string>
+    <string name="package_name">com.overseer.app</string>
+    <string name="custom_url_scheme">com.overseer.app</string>
+</resources>
