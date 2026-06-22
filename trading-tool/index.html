@@ -552,11 +552,208 @@ const WS_URL = `ws://${location.hostname}:3000`;
 
 let ws = null;
 let reconnectTimer = null;
-let serverState = { simBalance: 100, totalPnl: 0, wins: 0, totalTrades: 0, openPositions: {}, realBalances: {}, botRunning: false, mode: 'sim', signals: {} };
+let standaloneMode = false;   // true = pas de serveur, tout tourne dans le browser
+let serverState = { simBalance: 100, totalPnl: 0, wins: 0, totalTrades: 0, openPositions: {}, realBalances: {}, botRunning: false, mode: 'sim', market: 'crypto', signals: {} };
 let serverPrices = {};
 let serverHistory = {};
 let trades = [];
 let selectedCoin = 'BTC';
+
+// ── Standalone simulation (no server) ────────────────────────
+const SIM = {
+  balance: 100,
+  startBalance: 100,
+  openPositions: {},
+  trades: [],
+  wins: 0,
+  totalPnl: 0,
+  botRunning: false,
+  botInterval: null,
+  priceInterval: null,
+  stopLoss: 3,
+  takeProfit: 6,
+  tradePercent: 10,
+  coins: ['BTC','ETH'],
+  market: 'crypto',
+  forexPairs: ['EUR_USD','GBP_USD'],
+  leverage: 30,
+  strategy: 'rsi_macd',
+};
+
+const FOREX_SEED = { EUR_USD:1.085, GBP_USD:1.267, USD_JPY:149.5, AUD_USD:0.646, USD_CHF:0.898, EUR_GBP:0.857 };
+const CRYPTO_SEED = { BTC:95000, ETH:3500, SOL:180, BNB:600, XRP:0.55, ADA:0.45 };
+
+async function standaloneInit() {
+  standaloneMode = true;
+  document.getElementById('offline-overlay').classList.add('hidden');
+  setDot('sim', 'Simulation hors-ligne');
+  document.querySelector('.logo-sub').textContent = 'Simulation — Sans serveur';
+
+  // Initialise les prix seed
+  COINS.forEach(c => {
+    serverPrices[c.id] = CRYPTO_SEED[c.id] || 100;
+    serverHistory[c.id] = Array.from({length:20}, (_,i) => serverPrices[c.id] * (1 + (Math.random()-.5)*.01));
+  });
+  Object.keys(FOREX_SEED).forEach(p => {
+    serverPrices[p] = FOREX_SEED[p];
+    serverHistory[p] = Array.from({length:20}, (_,i) => FOREX_SEED[p] * (1 + (Math.random()-.5)*.002));
+  });
+
+  await standaloneFetchPrices();
+  renderPriceList(); renderChart(); renderActiveSignal(); renderSignalList();
+  updateDashStats(); updatePerfPanel();
+  syncModeUI();
+
+  // Polling prix toutes les 15s
+  SIM.priceInterval = setInterval(async () => {
+    await standaloneFetchPrices();
+    renderPriceList(); renderChart(); renderActiveSignal(); renderSignalList();
+    if (SIM.botRunning) standaloneComputeSignalsAndTrade();
+    updateDashStats(); updatePerfPanel(); renderPositions();
+  }, 15000);
+}
+
+async function standaloneFetchPrices() {
+  // Crypto via CoinGecko
+  try {
+    const ids = 'bitcoin,ethereum,solana,binancecoin,ripple,cardano';
+    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=eur`);
+    if (r.ok) {
+      const d = await r.json();
+      const map = { bitcoin:'BTC', ethereum:'ETH', solana:'SOL', binancecoin:'BNB', ripple:'XRP', cardano:'ADA' };
+      Object.entries(map).forEach(([id,sym]) => {
+        if (d[id]?.eur) {
+          serverPrices[sym] = d[id].eur;
+          if (!serverHistory[sym]) serverHistory[sym] = [];
+          serverHistory[sym].push(d[id].eur);
+          if (serverHistory[sym].length > 60) serverHistory[sym].shift();
+        }
+      });
+    }
+  } catch {}
+  // Forex via frankfurter.app (ECB rates + micro variation simulée)
+  try {
+    const r = await fetch('https://api.frankfurter.app/latest?base=EUR&symbols=USD,GBP,JPY,CHF,AUD');
+    if (r.ok) {
+      const d = await r.json();
+      const pairs = { EUR_USD: d.rates.USD, GBP_USD: d.rates.USD / d.rates.GBP, USD_JPY: d.rates.JPY / d.rates.USD, AUD_USD: d.rates.USD / d.rates.AUD, USD_CHF: d.rates.CHF / d.rates.USD, EUR_GBP: d.rates.GBP };
+      Object.entries(pairs).forEach(([pair, price]) => {
+        // Ajoute une micro-variation pour simuler le mouvement temps réel
+        const v = price * (1 + (Math.random()-.5) * 0.0004);
+        serverPrices[pair] = parseFloat(v.toFixed(5));
+        if (!serverHistory[pair]) serverHistory[pair] = [];
+        serverHistory[pair].push(serverPrices[pair]);
+        if (serverHistory[pair].length > 60) serverHistory[pair].shift();
+      });
+    }
+  } catch {
+    // Fallback : variation aléatoire sur les prix seed
+    Object.keys(FOREX_SEED).forEach(p => {
+      serverPrices[p] = parseFloat((serverPrices[p] * (1 + (Math.random()-.5)*0.0003)).toFixed(5));
+      if (!serverHistory[p]) serverHistory[p] = [];
+      serverHistory[p].push(serverPrices[p]);
+      if (serverHistory[p].length > 60) serverHistory[p].shift();
+    });
+  }
+}
+
+// ── Calcul RSI/MACD côté client (identique au serveur) ───────
+function clientRSI(prices, period=14) {
+  if (prices.length < period+1) return 50;
+  let g=0, l=0;
+  for (let i=prices.length-period; i<prices.length; i++) { const d=prices[i]-prices[i-1]; if(d>0) g+=d; else l-=d; }
+  const rs=(g/period)/((l/period)||0.001);
+  return 100-100/(1+rs);
+}
+function clientEMA(prices, period) {
+  const k=2/(period+1);
+  return prices.reduce((ema,p,i)=>i===0?p:p*k+ema*(1-k), prices[0]||0);
+}
+function clientSignal(instrument) {
+  const h = serverHistory[instrument] || [];
+  const price = serverPrices[instrument] || 0;
+  if (h.length < 5) return { signal:'WATCH', rsi:50, macd:0, score:0, price, ma20:price };
+  const rsi = clientRSI(h);
+  const macd = clientEMA(h,12) - clientEMA(h,26);
+  const ma20 = h.slice(-20).reduce((a,b)=>a+b,0) / Math.min(20, h.length);
+  let score = 0;
+  if (rsi<35) score+=2; else if(rsi<45) score+=1; else if(rsi>65) score-=2; else if(rsi>55) score-=1;
+  if (macd>0) score+=1; else score-=1;
+  if (price>ma20) score+=1; else score-=1;
+  return { signal: score>=3?'BUY':score<=-3?'SELL':score>=1?'WATCH':'HOLD', rsi, macd, score, price, ma20 };
+}
+
+function standaloneComputeSignalsAndTrade() {
+  const instruments = SIM.market==='forex' ? SIM.forexPairs : SIM.coins;
+  const slPct = SIM.stopLoss/100, tpPct = SIM.takeProfit/100;
+  const pct = SIM.tradePercent/100;
+
+  instruments.forEach(inst => {
+    const price = serverPrices[inst]; if (!price) return;
+    const pos = SIM.openPositions[inst];
+    if (pos) {
+      const pnlPct = (price - pos.entry) / pos.entry;
+      const hit = pnlPct <= -slPct ? 'Stop-Loss' : pnlPct >= tpPct ? 'Take-Profit' : null;
+      if (hit) {
+        const pnl = (price - pos.entry) * pos.qty;
+        SIM.totalPnl += pnl; if(pnl>0) SIM.wins++;
+        SIM.balance += pos.amount + pnl;
+        SIM.trades.unshift({ coin:inst, entry:pos.entry, exit:price, qty:pos.qty, pnl, amount:pos.amount, reason:hit, mode:'SIM', time:new Date().toISOString() });
+        delete SIM.openPositions[inst];
+        addLog(`${pnl>=0?'🟢':'🔴'} CLÔTURE ${inst} (${hit}) · PnL: ${pnl>=0?'+':''}€${pnl.toFixed(4)}`, pnl>=0?'win':'loss');
+        trades = SIM.trades; renderJournal();
+      }
+      return;
+    }
+    const sig = clientSignal(inst);
+    if (sig.signal !== 'BUY') return;
+    const amount = SIM.balance * pct;
+    if (amount < 0.001) return;
+    let qty;
+    if (SIM.market === 'forex') {
+      qty = Math.max(1, Math.floor((amount * SIM.leverage) / price));
+      SIM.balance -= amount;
+    } else {
+      qty = amount / price;
+      SIM.balance -= amount;
+    }
+    SIM.openPositions[inst] = { entry:price, qty, amount, time:Date.now() };
+    addLog(`🟢 ACHAT ${inst} @ ${price.toFixed(SIM.market==='forex'?5:2)} · €${amount.toFixed(4)} [SIM]`, 'buy');
+  });
+
+  // Sync serverState depuis SIM
+  serverState.simBalance    = SIM.balance;
+  serverState.openPositions = SIM.openPositions;
+  serverState.totalPnl      = SIM.totalPnl;
+  serverState.wins          = SIM.wins;
+  serverState.totalTrades   = SIM.trades.length;
+  serverState.signals       = Object.fromEntries(instruments.map(i => [i, clientSignal(i)]));
+}
+
+function standaloneToggleBot() {
+  if (SIM.botRunning) {
+    SIM.botRunning = false; clearInterval(SIM.botInterval);
+    addLog('⏹ Bot arrêté', 'info');
+  } else {
+    SIM.botRunning = true;
+    SIM.stopLoss      = parseFloat(document.getElementById('cfgSL').value)||3;
+    SIM.takeProfit    = parseFloat(document.getElementById('cfgTP').value)||6;
+    SIM.tradePercent  = parseFloat(document.getElementById('cfgPct').value)||10;
+    SIM.balance       = parseFloat(document.getElementById('cfgCapital').value)||100;
+    SIM.startBalance  = SIM.balance;
+    SIM.market        = document.getElementById('cfgMarket').value;
+    SIM.leverage      = parseInt(document.getElementById('cfgLeverage')?.value||30);
+    SIM.coins         = ['BTC','ETH','SOL','BNB'].filter(c=>document.getElementById('c'+c)?.checked);
+    const fxMap = {pEURUSD:'EUR_USD',pGBPUSD:'GBP_USD',pUSDJPY:'USD_JPY',pAUDUSD:'AUD_USD',pUSDCHF:'USD_CHF',pEURGBP:'EUR_GBP'};
+    SIM.forexPairs    = Object.entries(fxMap).filter(([id])=>document.getElementById(id)?.checked).map(([,v])=>v);
+    if (!SIM.forexPairs.length) SIM.forexPairs = ['EUR_USD','GBP_USD'];
+    SIM.botInterval   = setInterval(() => { standaloneComputeSignalsAndTrade(); updateDashStats(); updatePerfPanel(); renderPositions(); }, 15000);
+    standaloneComputeSignalsAndTrade();
+    addLog(`🤖 Bot démarré · ${SIM.market==='forex'?'FOREX':'CRYPTO'} · Simulation`, 'info');
+  }
+  serverState.botRunning = SIM.botRunning;
+  syncBotBadge();
+}
 
 const COINS = [
   { id:'BTC', icon:'₿', name:'Bitcoin' },
@@ -568,25 +765,39 @@ const COINS = [
 ];
 
 // ════════════════════════════════════════════════════════════
-//  WEBSOCKET
+//  WEBSOCKET — bascule en standalone si pas de serveur
 // ════════════════════════════════════════════════════════════
+let standaloneTimer = null;
+
 function connect() {
+  // Si déjà en mode standalone, ne pas retenter le serveur
+  if (standaloneMode) return;
   try {
     ws = new WebSocket(WS_URL);
+    // Bascule en standalone après 3s si pas de connexion
+    standaloneTimer = setTimeout(() => {
+      if (ws.readyState !== WebSocket.OPEN) {
+        ws.close();
+        standaloneInit();
+      }
+    }, 3000);
     ws.onopen = () => {
+      clearTimeout(standaloneTimer);
       document.getElementById('offline-overlay').classList.add('hidden');
-      setDot('live', 'Connecté');
+      setDot('live', 'Serveur connecté');
       clearTimeout(reconnectTimer);
       loadTrades();
     };
     ws.onmessage = e => handleMsg(JSON.parse(e.data));
     ws.onclose = () => {
-      document.getElementById('offline-overlay').classList.remove('hidden');
-      setDot('err', 'Déconnecté');
-      reconnectTimer = setTimeout(connect, 4000);
+      clearTimeout(standaloneTimer);
+      if (!standaloneMode) {
+        setDot('err', 'Déconnecté');
+        reconnectTimer = setTimeout(connect, 5000);
+      }
     };
-    ws.onerror = () => ws.close();
-  } catch { reconnectTimer = setTimeout(connect, 4000); }
+    ws.onerror = () => { ws.close(); };
+  } catch { setTimeout(standaloneInit, 100); }
 }
 
 function handleMsg(msg) {
@@ -738,6 +949,7 @@ function renderChart() {
 //  SIGNALS
 // ════════════════════════════════════════════════════════════
 function renderActiveSignal() {
+  if (standaloneMode) serverState.signals[selectedCoin] = clientSignal(selectedCoin);
   const sig = serverState.signals[selectedCoin];
   const panel = document.getElementById('sigPanel');
   if (!sig) return;
@@ -753,6 +965,7 @@ function renderActiveSignal() {
 function renderSignalList() {
   const el = document.getElementById('signalList');
   if (!Object.keys(serverPrices).length) return;
+  if (standaloneMode) COINS.forEach(c => serverState.signals[c.id] = clientSignal(c.id));
   el.innerHTML = COINS.map(c => {
     const sig = serverState.signals[c.id] || {};
     const p = serverPrices[c.id];
@@ -790,8 +1003,15 @@ function showSigDetail(coinId) {
 //  DASHBOARD STATS
 // ════════════════════════════════════════════════════════════
 function updateDashStats() {
+  if (standaloneMode) {
+    serverState.simBalance    = SIM.balance;
+    serverState.totalPnl      = SIM.totalPnl;
+    serverState.wins          = SIM.wins;
+    serverState.totalTrades   = SIM.trades.length;
+    serverState.openPositions = SIM.openPositions;
+  }
   const st = serverState;
-  const isLive = st.mode === 'live';
+  const isLive = st.mode === 'live' && !standaloneMode;
   const bal = isLive
     ? (st.realBalances['EUR'] || st.realBalances['USDT'] || 0)
     : st.simBalance;
@@ -848,13 +1068,26 @@ async function closePosition(coin) {
 //  BOT CONTROLS
 // ════════════════════════════════════════════════════════════
 async function toggleBot() {
+  if (standaloneMode) { standaloneToggleBot(); return; }
   await applyConfig();
-  const running = serverState.botRunning;
-  await api('POST', running ? '/api/bot/stop' : '/api/bot/start');
+  await api('POST', serverState.botRunning ? '/api/bot/stop' : '/api/bot/start');
 }
 
 async function resetBot() {
-  if (!confirm('Réinitialiser le bot ? (positions sim effacées)')) return;
+  if (!confirm('Réinitialiser le bot ?')) return;
+  if (standaloneMode) {
+    SIM.botRunning = false; clearInterval(SIM.botInterval);
+    SIM.balance = parseFloat(document.getElementById('cfgCapital').value)||100;
+    SIM.startBalance = SIM.balance;
+    SIM.trades = []; SIM.openPositions = {};
+    SIM.totalPnl = 0; SIM.wins = 0;
+    trades = [];
+    serverState.simBalance = SIM.balance; serverState.totalPnl = 0; serverState.wins = 0;
+    serverState.totalTrades = 0; serverState.openPositions = {}; serverState.botRunning = false;
+    addLog('↺ Bot réinitialisé', 'info');
+    updateDashStats(); updatePerfPanel(); renderPositions(); renderJournal(); syncBotBadge();
+    return;
+  }
   await api('POST', '/api/bot/reset');
 }
 
