@@ -350,14 +350,25 @@ node server.js</div>
             <div class="ctrl-label">Mode</div>
             <select id="cfgMode" onchange="onModeChange()">
               <option value="sim">Simulation</option>
-              <option value="live">Réel (Binance)</option>
+              <option value="live">Réel (Exchange)</option>
             </select>
           </div>
 
+          <div class="ctrl-row">
+            <div class="ctrl-label">Exchange</div>
+            <select id="cfgExchange" onchange="onExchangeChange()">
+              <option value="kraken">⭐ Kraken (recommandé Europe)</option>
+              <option value="bybit">Bybit (frais ultra faibles)</option>
+              <option value="kucoin">KuCoin (petits montants)</option>
+              <option value="binance">Binance</option>
+            </select>
+          </div>
+
+          <div id="exchangeInfo" style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;"></div>
+
           <div id="liveSection" style="display:none;">
             <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#fca5a5;">
-              🔑 <strong>Binance API</strong> — Crée tes clés sur Binance.com → Profil → Gestion API.<br>
-              Active <em>Spot & Margin Trading</em> uniquement. <strong>N'active JAMAIS les retraits.</strong>
+              🔑 Crée tes clés API sur l'exchange choisi → Active <em>Spot Trading</em> uniquement. <strong>N'active JAMAIS les retraits.</strong>
             </div>
             <div class="ctrl-row">
               <div class="ctrl-label">API Key</div>
@@ -366,6 +377,10 @@ node server.js</div>
             <div class="ctrl-row">
               <div class="ctrl-label">Secret Key</div>
               <input type="password" id="cfgApiSecret" placeholder="Ta clé secrète" style="width:100%;" />
+            </div>
+            <div class="ctrl-row" id="passphraseRow" style="display:none;">
+              <div class="ctrl-label">Passphrase</div>
+              <input type="password" id="cfgPassphrase" placeholder="Passphrase KuCoin" style="width:100%;" />
             </div>
             <button class="btn primary" onclick="testConnection()" id="testBtn" style="margin-bottom:14px;width:100%;">🔗 Tester la connexion</button>
             <div id="connResult" style="font-size:12px;margin-bottom:10px;"></div>
@@ -789,17 +804,37 @@ async function resetBot() {
 async function applyConfig() {
   const coins = ['BTC','ETH','SOL','BNB'].filter(c => document.getElementById('c'+c)?.checked);
   await api('POST', '/api/config', {
-    mode:       document.getElementById('cfgMode').value,
-    apiKey:     document.getElementById('cfgApiKey')?.value || '',
-    apiSecret:  document.getElementById('cfgApiSecret')?.value || '',
-    startBalance: document.getElementById('cfgCapital').value,
-    tradePercent: document.getElementById('cfgPct').value,
-    stopLoss:   document.getElementById('cfgSL').value,
-    takeProfit: document.getElementById('cfgTP').value,
-    strategy:   document.getElementById('cfgStrat').value,
+    exchange:      document.getElementById('cfgExchange').value,
+    mode:          document.getElementById('cfgMode').value,
+    apiKey:        document.getElementById('cfgApiKey')?.value || '',
+    apiSecret:     document.getElementById('cfgApiSecret')?.value || '',
+    apiPassphrase: document.getElementById('cfgPassphrase')?.value || '',
+    startBalance:  document.getElementById('cfgCapital').value,
+    tradePercent:  document.getElementById('cfgPct').value,
+    stopLoss:      document.getElementById('cfgSL').value,
+    takeProfit:    document.getElementById('cfgTP').value,
+    strategy:      document.getElementById('cfgStrat').value,
     coins,
   });
 }
+
+const EXCHANGE_INFO = {
+  kraken:  '⭐ Recommandé pour l\'Europe · Paires EUR directes · Régulé · Min ~€10/trade',
+  bybit:   '⚡ Frais parmi les plus bas · Paires USDT · Pas de compte EUR direct',
+  kucoin:  '🪙 Minimum par trade très faible · Beaucoup d\'altcoins · Paires USDT · Passphrase requis',
+  binance: '🌍 Le plus grand volume mondial · Paires EUR disponibles · Min ~€10/trade',
+};
+
+function onExchangeChange() {
+  const ex = document.getElementById('cfgExchange').value;
+  const info = document.getElementById('exchangeInfo');
+  if (info) info.textContent = EXCHANGE_INFO[ex] || '';
+  const pp = document.getElementById('passphraseRow');
+  if (pp) pp.style.display = ex === 'kucoin' ? 'flex' : 'none';
+}
+
+// Init exchange info on load
+setTimeout(() => onExchangeChange(), 100);
 
 async function testConnection() {
   const btn = document.getElementById('testBtn');
@@ -809,9 +844,9 @@ async function testConnection() {
   const r = await api('POST', '/api/test-connection');
   btn.disabled = false; btn.textContent = '🔗 Tester la connexion';
   if (r.ok) {
-    const balStr = Object.entries(r.balances).map(([k,v]) => `${k}: ${v}`).join(' · ');
-    res.innerHTML = `<span style="color:var(--green)">✅ Connecté · ${balStr}</span>`;
-    setDot('live', 'Binance connecté');
+    const balStr = Object.entries(r.balances).slice(0,5).map(([k,v]) => `${k}: ${parseFloat(v).toFixed(4)}`).join(' · ');
+    res.innerHTML = `<span style="color:var(--green)">✅ ${r.exchange?.toUpperCase()} connecté · ${balStr}</span>`;
+    setDot('live', r.exchange?.toUpperCase() + ' connecté');
   } else {
     res.innerHTML = `<span style="color:var(--red)">❌ ${r.error}</span>`;
   }
@@ -826,20 +861,24 @@ function onModeChange() {
 
 function syncModeUI(mode) {
   const m = mode || serverState.mode;
+  const ex = serverState.exchange || 'kraken';
   const banner = document.getElementById('modeBanner');
   const text = document.getElementById('modeText');
   if (m === 'live') {
     banner.className = 'mode-banner live';
-    text.textContent = '🔴 Mode RÉEL — Le bot exécute de vraies transactions sur Binance';
-    setDot('live', 'Mode Réel');
+    text.textContent = `🔴 Mode RÉEL — Le bot exécute de vraies transactions sur ${ex.toUpperCase()}`;
+    setDot('live', ex.toUpperCase() + ' Réel');
   } else {
     banner.className = 'mode-banner sim';
     text.textContent = '⚠️ Mode Simulation — le bot trade avec de l\'argent virtuel';
     setDot('sim', 'Simulation');
   }
   document.getElementById('cfgMode').value = m;
+  const exEl = document.getElementById('cfgExchange');
+  if (exEl && ex) exEl.value = ex;
   const liveSection = document.getElementById('liveSection');
   if (liveSection) liveSection.style.display = m === 'live' ? 'block' : 'none';
+  onExchangeChange();
 }
 
 function syncBotBadge() {
