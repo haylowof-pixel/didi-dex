@@ -21,7 +21,7 @@ const PORT   = process.env.PORT || 3000;
 // ─── Config ───────────────────────────────────────────────────────────────────
 const CONFIG_FILE = path.join(__dirname, '.trademind-config.json');
 let config = {
-  exchange:     'kraken',  // 'kraken' | 'bybit' | 'kucoin' | 'binance'
+  exchange:     'kucoin',  // 'kucoin' | 'bybit' | 'kraken' | 'binance'
   apiKey:       '',
   apiSecret:    '',
   apiPassphrase: '',       // KuCoin uniquement

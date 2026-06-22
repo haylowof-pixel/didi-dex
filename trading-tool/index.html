@@ -357,10 +357,10 @@ node server.js</div>
           <div class="ctrl-row">
             <div class="ctrl-label">Exchange</div>
             <select id="cfgExchange" onchange="onExchangeChange()">
-              <option value="kraken">⭐ Kraken (recommandé Europe)</option>
-              <option value="bybit">Bybit (frais ultra faibles)</option>
-              <option value="kucoin">KuCoin (petits montants)</option>
-              <option value="binance">Binance</option>
+              <option value="kucoin">⭐ KuCoin — retrait dès ~0.10 USDT</option>
+              <option value="bybit">Bybit — retrait dès ~1 USDT</option>
+              <option value="kraken">Kraken — retrait EUR dès ~1€ (SEPA)</option>
+              <option value="binance">Binance — retrait EUR dès ~10€</option>
             </select>
           </div>
 
@@ -819,10 +819,10 @@ async function applyConfig() {
 }
 
 const EXCHANGE_INFO = {
-  kraken:  '⭐ Recommandé pour l\'Europe · Paires EUR directes · Régulé · Min ~€10/trade',
-  bybit:   '⚡ Frais parmi les plus bas · Paires USDT · Pas de compte EUR direct',
-  kucoin:  '🪙 Minimum par trade très faible · Beaucoup d\'altcoins · Paires USDT · Passphrase requis',
-  binance: '🌍 Le plus grand volume mondial · Paires EUR disponibles · Min ~€10/trade',
+  kucoin:  '⭐ MEILLEUR POUR PETITS MONTANTS · Retrait dès ~0.10 USDT (réseau TRC20) · Trade dès ~$1 · Passphrase requis à la création des clés API',
+  bybit:   '✅ Retrait dès ~1 USDT · Frais de trading parmi les plus bas · Trade dès ~$5 · Réseau TRC20/BEP20 pour retraits rapides',
+  kraken:  '🏦 Retrait EUR via SEPA dès ~1€ · Paires EUR directes · Très régulé Europe · Trade dès ~€10',
+  binance: '🌍 Retrait EUR dès ~€10 · Plus grand volume mondial · Trade dès ~€10',
 };
 
 function onExchangeChange() {
