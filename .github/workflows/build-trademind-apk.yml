@@ -24,13 +24,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install trading-tool dependencies
+      - name: Install Capacitor locally
         working-directory: trading-tool
-        run: npm install
+        run: npm install @capacitor/cli @capacitor/core @capacitor/android @capacitor/splash-screen @capacitor/status-bar
 
-      - name: Install Capacitor CLI
+      - name: Prepare www folder (Capacitor webDir)
         working-directory: trading-tool
-        run: npm install -g @capacitor/cli @capacitor/core @capacitor/android
+        run: |
+          mkdir -p www
+          cp index.html www/
+          cp manifest.json www/ 2>/dev/null || true
+          cp sw.js www/ 2>/dev/null || true
 
       - name: Add Android platform
         working-directory: trading-tool
