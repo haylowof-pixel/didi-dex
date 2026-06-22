@@ -347,29 +347,94 @@ node server.js</div>
           </div>
 
           <div class="ctrl-row">
-            <div class="ctrl-label">Mode</div>
-            <select id="cfgMode" onchange="onModeChange()">
-              <option value="sim">Simulation</option>
-              <option value="live">Réel (Exchange)</option>
+            <div class="ctrl-label">Marché</div>
+            <select id="cfgMarket" onchange="onMarketChange()">
+              <option value="forex">💱 Forex — dès €1, sans minimum</option>
+              <option value="crypto">🪙 Crypto — KuCoin / Bybit / Kraken...</option>
             </select>
           </div>
 
           <div class="ctrl-row">
-            <div class="ctrl-label">Exchange</div>
-            <select id="cfgExchange" onchange="onExchangeChange()">
-              <option value="kucoin">⭐ KuCoin — retrait dès ~0.10 USDT</option>
-              <option value="bybit">Bybit — retrait dès ~1 USDT</option>
-              <option value="kraken">Kraken — retrait EUR dès ~1€ (SEPA)</option>
-              <option value="binance">Binance — retrait EUR dès ~10€</option>
+            <div class="ctrl-label">Mode</div>
+            <select id="cfgMode" onchange="onModeChange()">
+              <option value="sim">Simulation (sans risque)</option>
+              <option value="live">Réel</option>
             </select>
           </div>
 
-          <div id="exchangeInfo" style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;"></div>
+          <!-- Forex section -->
+          <div id="forexSection">
+            <div class="ctrl-row">
+              <div class="ctrl-label">Compte OANDA</div>
+              <select id="cfgOandaEnv" style="width:100%;">
+                <option value="practice">Practice (gratuit, argent virtuel)</option>
+                <option value="live">Live (argent réel)</option>
+              </select>
+            </div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 12px;background:rgba(99,210,255,.05);border-radius:8px;border:1px solid rgba(99,210,255,.12);">
+              💱 <strong>OANDA</strong> — Pas de dépôt minimum · Trade dès 1 unité (~0.0001€) · Retrait dès 1€ · Compte practice gratuit pour tester
+            </div>
+            <div id="oandaLiveSection" style="display:none;">
+              <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.8;color:#fca5a5;">
+                🔑 <strong>OANDA API</strong> — Connecte-toi sur oanda.com → Mon Compte → Clés API → Générer une clé<br>
+                Ton Account ID est visible dans l'URL de ton compte (ex: 101-004-XXXXXXX-001)
+              </div>
+              <div class="ctrl-row">
+                <div class="ctrl-label">API Token</div>
+                <input type="password" id="cfgOandaToken" placeholder="Ton token OANDA" style="width:100%;" />
+              </div>
+              <div class="ctrl-row">
+                <div class="ctrl-label">Account ID</div>
+                <input type="text" id="cfgOandaAccount" placeholder="101-004-XXXXXXX-001" style="width:100%;" />
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label">Paires Forex</div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px;">
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" checked id="pEURUSD"> EUR/USD</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" checked id="pGBPUSD"> GBP/USD</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="pUSDJPY"> USD/JPY</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="pAUDUSD"> AUD/USD</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="pUSDCHF"> USD/CHF</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="pEURGBP"> EUR/GBP</label>
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label">Levier</div>
+              <select id="cfgLeverage" style="width:100%;">
+                <option value="1">1:1 (sans levier — le plus sûr)</option>
+                <option value="5">1:5</option>
+                <option value="10">1:10</option>
+                <option value="20">1:20</option>
+                <option value="30" selected>1:30 (max légal EU — majors)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Crypto section -->
+          <div id="cryptoSection" style="display:none;">
+            <div class="ctrl-row">
+              <div class="ctrl-label">Exchange</div>
+              <select id="cfgExchange" onchange="onExchangeChange()">
+                <option value="kucoin">⭐ KuCoin — retrait dès ~0.10 USDT</option>
+                <option value="bybit">Bybit — retrait dès ~1 USDT</option>
+                <option value="kraken">Kraken — retrait EUR dès ~1€</option>
+                <option value="binance">Binance — retrait EUR dès ~10€</option>
+              </select>
+            </div>
+            <div id="exchangeInfo" style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;"></div>
+            <div style="margin-bottom:12px;">
+              <div class="ctrl-label" style="margin-bottom:7px;">Cryptos</div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px;">
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" checked id="cBTC"> BTC</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" checked id="cETH"> ETH</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="cSOL"> SOL</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="cBNB"> BNB</label>
+              </div>
+            </div>
+          </div>
 
           <div id="liveSection" style="display:none;">
-            <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#fca5a5;">
-              🔑 Crée tes clés API sur l'exchange choisi → Active <em>Spot Trading</em> uniquement. <strong>N'active JAMAIS les retraits.</strong>
-            </div>
             <div class="ctrl-row">
               <div class="ctrl-label">API Key</div>
               <input type="text" id="cfgApiKey" placeholder="Ta clé API" style="width:100%;" />
@@ -382,9 +447,10 @@ node server.js</div>
               <div class="ctrl-label">Passphrase</div>
               <input type="password" id="cfgPassphrase" placeholder="Passphrase KuCoin" style="width:100%;" />
             </div>
-            <button class="btn primary" onclick="testConnection()" id="testBtn" style="margin-bottom:14px;width:100%;">🔗 Tester la connexion</button>
-            <div id="connResult" style="font-size:12px;margin-bottom:10px;"></div>
           </div>
+
+          <button class="btn primary" onclick="testConnection()" id="testBtn" style="margin-bottom:8px;width:100%;display:none;">🔗 Tester la connexion</button>
+          <div id="connResult" style="font-size:12px;margin-bottom:10px;"></div>
 
           <div class="ctrl-row">
             <div class="ctrl-label">Capital (€)</div>
@@ -412,15 +478,6 @@ node server.js</div>
               <option value="ma_cross">Croisement MA</option>
               <option value="momentum">Momentum</option>
             </select>
-          </div>
-          <div style="margin-bottom:14px;">
-            <div class="ctrl-label" style="margin-bottom:8px;">Cryptos ciblées</div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;">
-              <label style="font-size:12px;display:flex;align-items:center;gap:6px;"><input type="checkbox" checked id="cBTC"> BTC</label>
-              <label style="font-size:12px;display:flex;align-items:center;gap:6px;"><input type="checkbox" checked id="cETH"> ETH</label>
-              <label style="font-size:12px;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="cSOL"> SOL</label>
-              <label style="font-size:12px;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="cBNB"> BNB</label>
-            </div>
           </div>
           <div style="display:flex;gap:10px;">
             <button class="btn success" id="startBtn" onclick="toggleBot()">▶ Démarrer</button>
@@ -802,13 +859,22 @@ async function resetBot() {
 }
 
 async function applyConfig() {
-  const coins = ['BTC','ETH','SOL','BNB'].filter(c => document.getElementById('c'+c)?.checked);
+  const market = document.getElementById('cfgMarket').value;
+  const coins  = ['BTC','ETH','SOL','BNB'].filter(c => document.getElementById('c'+c)?.checked);
+  const fxMap  = { pEURUSD:'EUR_USD', pGBPUSD:'GBP_USD', pUSDJPY:'USD_JPY', pAUDUSD:'AUD_USD', pUSDCHF:'USD_CHF', pEURGBP:'EUR_GBP' };
+  const forexPairs = Object.entries(fxMap).filter(([id]) => document.getElementById(id)?.checked).map(([,v]) => v);
   await api('POST', '/api/config', {
-    exchange:      document.getElementById('cfgExchange').value,
-    mode:          document.getElementById('cfgMode').value,
+    market,
+    exchange:      document.getElementById('cfgExchange')?.value || 'kucoin',
     apiKey:        document.getElementById('cfgApiKey')?.value || '',
     apiSecret:     document.getElementById('cfgApiSecret')?.value || '',
     apiPassphrase: document.getElementById('cfgPassphrase')?.value || '',
+    oandaToken:    document.getElementById('cfgOandaToken')?.value || '',
+    oandaAccount:  document.getElementById('cfgOandaAccount')?.value || '',
+    oandaEnv:      document.getElementById('cfgOandaEnv')?.value || 'practice',
+    forexPairs:    forexPairs.length ? forexPairs : ['EUR_USD'],
+    leverage:      document.getElementById('cfgLeverage')?.value || 30,
+    mode:          document.getElementById('cfgMode').value,
     startBalance:  document.getElementById('cfgCapital').value,
     tradePercent:  document.getElementById('cfgPct').value,
     stopLoss:      document.getElementById('cfgSL').value,
@@ -816,6 +882,22 @@ async function applyConfig() {
     strategy:      document.getElementById('cfgStrat').value,
     coins,
   });
+}
+
+function onMarketChange() {
+  const market = document.getElementById('cfgMarket').value;
+  document.getElementById('forexSection').style.display  = market === 'forex'  ? 'block' : 'none';
+  document.getElementById('cryptoSection').style.display = market === 'crypto' ? 'block' : 'none';
+  const liveMode = document.getElementById('cfgMode').value === 'live';
+  // Pour forex : section OANDA live uniquement si mode réel
+  const oandaLive = document.getElementById('oandaLiveSection');
+  if (oandaLive) oandaLive.style.display = (market === 'forex' && liveMode) ? 'block' : 'none';
+  // Pour crypto : section clés API uniquement si mode réel
+  const liveSection = document.getElementById('liveSection');
+  if (liveSection) liveSection.style.display = (market === 'crypto' && liveMode) ? 'block' : 'none';
+  // Bouton test connexion : seulement en mode réel
+  const testBtn = document.getElementById('testBtn');
+  if (testBtn) testBtn.style.display = liveMode ? 'block' : 'none';
 }
 
 const EXCHANGE_INFO = {
@@ -833,8 +915,8 @@ function onExchangeChange() {
   if (pp) pp.style.display = ex === 'kucoin' ? 'flex' : 'none';
 }
 
-// Init exchange info on load
-setTimeout(() => onExchangeChange(), 100);
+// Init on load
+setTimeout(() => { onMarketChange(); onExchangeChange(); }, 100);
 
 async function testConnection() {
   const btn = document.getElementById('testBtn');
@@ -853,15 +935,13 @@ async function testConnection() {
 }
 
 function onModeChange() {
-  const mode = document.getElementById('cfgMode').value;
-  const liveSection = document.getElementById('liveSection');
-  liveSection.style.display = mode === 'live' ? 'block' : 'none';
-  syncModeUI(mode);
+  syncModeUI();
+  onMarketChange();
 }
 
 function syncModeUI(mode) {
   const m = mode || serverState.mode;
-  const ex = serverState.exchange || 'kraken';
+  const ex = serverState.exchange || 'kucoin';
   const banner = document.getElementById('modeBanner');
   const text = document.getElementById('modeText');
   if (m === 'live') {

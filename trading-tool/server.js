@@ -1,6 +1,7 @@
 /**
- * TradeMind Server — Multi-Exchange Trading Bot
- * Exchanges supportés : Kraken (recommandé Europe), Bybit, KuCoin, Binance
+ * TradeMind Server — Multi-Exchange + Forex Trading Bot
+ * Crypto : KuCoin · Bybit · Kraken · Binance
+ * Forex  : OANDA (EUR/USD, GBP/USD, USD/JPY...) — dès €1, pas de minimum
  * Lance avec : node server.js
  */
 
@@ -21,18 +22,26 @@ const PORT   = process.env.PORT || 3000;
 // ─── Config ───────────────────────────────────────────────────────────────────
 const CONFIG_FILE = path.join(__dirname, '.trademind-config.json');
 let config = {
-  exchange:     'kucoin',  // 'kucoin' | 'bybit' | 'kraken' | 'binance'
-  apiKey:       '',
-  apiSecret:    '',
-  apiPassphrase: '',       // KuCoin uniquement
-  mode:         'sim',
-  startBalance: 100,
-  tradePercent: 10,
-  stopLoss:     3,
-  takeProfit:   6,
-  strategy:     'rsi_macd',
-  coins:        ['BTC', 'ETH'],
-  currency:     'EUR',     // EUR ou USDT selon exchange
+  market:        'crypto',  // 'crypto' | 'forex'
+  exchange:      'kucoin',  // crypto: 'kucoin'|'bybit'|'kraken'|'binance'
+  apiKey:        '',
+  apiSecret:     '',
+  apiPassphrase: '',        // KuCoin uniquement
+  // Forex OANDA
+  oandaToken:    '',
+  oandaAccount:  '',
+  oandaEnv:      'practice', // 'practice' | 'live'
+  forexPairs:    ['EUR_USD', 'GBP_USD'],
+  forexUnits:    1,         // unités par trade (1 = ~0.001€ risque)
+  leverage:      30,        // max légal EU = 30:1 sur majors
+  // Commun
+  mode:          'sim',
+  startBalance:  100,
+  tradePercent:  10,
+  stopLoss:      3,
+  takeProfit:    6,
+  strategy:      'rsi_macd',
+  coins:         ['BTC', 'ETH'],
 };
 
 function saveConfig() { try { fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2)); } catch {} }
@@ -265,14 +274,100 @@ async function binancePlaceOrder(coin, side, qty) {
   return binanceSigned('POST', '/api/v3/order', { symbol: sym, side, type: 'MARKET', quantity: qty });
 }
 
+// ─── OANDA Forex ──────────────────────────────────────────────────────────────
+// Dépôt minimum : 0€ (compte practice gratuit), dès 1 unité = ~0.0001€
+// Paires majeures : EUR/USD GBP/USD USD/JPY AUD/USD USD/CHF USD/CAD NZD/USD
+// Paires mineures : EUR/GBP EUR/JPY GBP/JPY
+// Levier max EU : 30:1 sur majors (ESMA), 20:1 sur indices, 10:1 sur matières premières
+
+function oandaBase() {
+  return config.oandaEnv === 'live'
+    ? 'https://api-fxtrade.oanda.com'
+    : 'https://api-fxpractice.oanda.com';
+}
+
+function oandaHeaders() {
+  return { 'Authorization': `Bearer ${config.oandaToken}`, 'Content-Type': 'application/json' };
+}
+
+async function oandaGet(path_) {
+  const r = await fetch(oandaBase() + path_, { headers: oandaHeaders() });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.errorMessage || d.message || 'OANDA error ' + r.status);
+  return d;
+}
+
+async function oandaPost(path_, body) {
+  const r = await fetch(oandaBase() + path_, { method: 'POST', headers: oandaHeaders(), body: JSON.stringify(body) });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.errorMessage || d.message || 'OANDA error ' + r.status);
+  return d;
+}
+
+async function oandaGetPrices() {
+  const pairs = config.forexPairs.join(',');
+  const d = await oandaGet(`/v3/accounts/${config.oandaAccount}/pricing?instruments=${pairs}`);
+  const result = {};
+  (d.prices || []).forEach(p => {
+    result[p.instrument] = (parseFloat(p.asks[0].price) + parseFloat(p.bids[0].price)) / 2;
+  });
+  return result;
+}
+
+async function oandaGetBalances() {
+  const d = await oandaGet(`/v3/accounts/${config.oandaAccount}/summary`);
+  return { EUR: parseFloat(d.account.balance), NAV: parseFloat(d.account.NAV) };
+}
+
+async function oandaPlaceOrder(pair, side, units) {
+  const u = side === 'BUY' ? Math.abs(units) : -Math.abs(units);
+  return oandaPost(`/v3/accounts/${config.oandaAccount}/orders`, {
+    order: { type: 'MARKET', instrument: pair, units: u.toString() }
+  });
+}
+
+async function oandaGetOpenTrades() {
+  const d = await oandaGet(`/v3/accounts/${config.oandaAccount}/openTrades`);
+  return d.trades || [];
+}
+
+async function oandaCloseTrade(tradeId) {
+  const r = await fetch(`${oandaBase()}/v3/accounts/${config.oandaAccount}/trades/${tradeId}/close`, {
+    method: 'PUT', headers: oandaHeaders()
+  });
+  return r.json();
+}
+
+// Formule pip value approximative (paires /USD ou USD/)
+function pipValue(pair, units) {
+  // Pour paires XXX/USD (EUR/USD, GBP/USD) : 1 pip = 0.0001 * units USD
+  // Pour paires USD/XXX (USD/JPY) : 1 pip = (0.01 / taux) * units USD
+  // Simplification : ~0.0001 * units pour majors
+  return 0.0001 * Math.abs(units);
+}
+
 // ─── Exchange router ──────────────────────────────────────────────────────────
-async function getPrices()     { return { kraken: krakenGetPrices, bybit: bybitGetPrices, kucoin: kucoinGetPrices, binance: binanceGetPrices }[config.exchange](); }
-async function getBalances()   { return { kraken: krakenGetBalances, bybit: bybitGetBalances, kucoin: kucoinGetBalances, binance: binanceGetBalances }[config.exchange](); }
-async function placeOrder(coin, side, qty) { return { kraken: krakenPlaceOrder, bybit: bybitPlaceOrder, kucoin: kucoinPlaceOrder, binance: binancePlaceOrder }[config.exchange](coin, side, qty); }
+async function getPrices() {
+  if (config.market === 'forex') return oandaGetPrices();
+  return { kraken: krakenGetPrices, bybit: bybitGetPrices, kucoin: kucoinGetPrices, binance: binanceGetPrices }[config.exchange]();
+}
+async function getBalances() {
+  if (config.market === 'forex') return oandaGetBalances();
+  return { kraken: krakenGetBalances, bybit: bybitGetBalances, kucoin: kucoinGetBalances, binance: binanceGetBalances }[config.exchange]();
+}
+async function placeOrder(coin, side, qty) {
+  if (config.market === 'forex') return oandaPlaceOrder(coin, side, qty);
+  return { kraken: krakenPlaceOrder, bybit: bybitPlaceOrder, kucoin: kucoinPlaceOrder, binance: binancePlaceOrder }[config.exchange](coin, side, qty);
+}
 
 function getQuoteCurrency() {
+  if (config.market === 'forex') return 'EUR';
   if (config.exchange === 'kraken' || config.exchange === 'binance') return 'EUR';
   return 'USDT';
+}
+
+function getInstruments() {
+  return config.market === 'forex' ? config.forexPairs : config.coins;
 }
 
 // ════════════════════════════════════════════════════════════════════════════════
@@ -350,13 +445,15 @@ function computeSignal(coin) {
 //  BOT LOGIC
 // ════════════════════════════════════════════════════════════════════════════════
 async function botTick() {
-  const isLive = config.mode === 'live';
-  const slPct  = config.stopLoss / 100;
-  const tpPct  = config.takeProfit / 100;
+  const isLive   = config.mode === 'live';
+  const isForex  = config.market === 'forex';
+  const slPct    = config.stopLoss / 100;
+  const tpPct    = config.takeProfit / 100;
   const tradePct = config.tradePercent / 100;
-  const quote = getQuoteCurrency();
+  const quote    = getQuoteCurrency();
+  const instruments = getInstruments();
 
-  for (const coin of config.coins) {
+  for (const coin of instruments) {
     const price = state.prices[coin];
     if (!price) continue;
     const pos = state.openPositions[coin];
@@ -387,21 +484,39 @@ async function botTick() {
 
     try {
       let amount, qty;
-      if (isLive) {
-        const bal = state.realBalances[quote] || state.realBalances['EUR'] || 0;
+      if (isForex) {
+        // Forex : on trade en unités (1 unité = 1 devise de base)
+        // Avec €1 et leverage 30 : on peut contrôler €30 → ~300 unités EUR/USD
+        const bal = isLive ? (state.realBalances['EUR'] || state.realBalances['NAV'] || 0) : state.simBalance;
         amount = bal * tradePct;
-        if (amount < 5) { broadcast({ type: 'log', level: 'warn', msg: `⚠️ ${coin} — balance ${quote} insuffisante (${bal.toFixed(2)})` }); continue; }
-        qty = amount / price;
-        await placeOrder(coin, 'BUY', parseFloat(qty.toFixed(8)));
-        await fetchBalances();
+        if (amount < 0.01 && isLive) { broadcast({ type: 'log', level: 'warn', msg: `⚠️ Balance insuffisante (${bal.toFixed(4)} EUR)` }); continue; }
+        // Unités = (montant * levier) / prix  — arrondi à l'entier
+        qty = Math.max(1, Math.floor((amount * config.leverage) / price));
+        if (isLive) {
+          await placeOrder(coin, 'BUY', qty);
+          await fetchBalances();
+        } else {
+          state.simBalance -= amount;
+        }
+        const label = isLive ? 'RÉEL FOREX' : 'SIM FOREX';
+        broadcast({ type: 'log', level: 'buy', msg: `🟢 ACHAT ${coin} · ${qty} unités @ ${price.toFixed(5)} · Exposition: €${(qty/price).toFixed(2)} · [${label}]` });
       } else {
-        amount = state.simBalance * tradePct;
-        if (amount < 0.5) continue;
-        qty = amount / price;
-        state.simBalance -= amount;
+        if (isLive) {
+          const bal = state.realBalances[quote] || state.realBalances['EUR'] || 0;
+          amount = bal * tradePct;
+          if (amount < 5) { broadcast({ type: 'log', level: 'warn', msg: `⚠️ ${coin} — balance insuffisante (${bal.toFixed(2)} ${quote})` }); continue; }
+          qty = amount / price;
+          await placeOrder(coin, 'BUY', parseFloat(qty.toFixed(8)));
+          await fetchBalances();
+        } else {
+          amount = state.simBalance * tradePct;
+          if (amount < 0.5) continue;
+          qty = amount / price;
+          state.simBalance -= amount;
+        }
+        broadcast({ type: 'log', level: 'buy', msg: `🟢 ACHAT ${coin} @ €${price.toFixed(2)} · €${(amount||0).toFixed(2)} · [${isLive?'RÉEL':'SIM'}]` });
       }
-      state.openPositions[coin] = { entry: price, qty, amount, time: Date.now() };
-      broadcast({ type: 'log', level: 'buy', msg: `🟢 ACHAT ${coin} @ €${price.toFixed(2)} · €${amount.toFixed(2)} · [${config.exchange.toUpperCase()}] ${isLive?'RÉEL':'SIM'}` });
+      state.openPositions[coin] = { entry: price, qty, amount: amount || qty * price / config.leverage, time: Date.now() };
       broadcast({ type: 'position_opened', coin, position: state.openPositions[coin] });
     } catch (e) { broadcast({ type: 'error', msg: `Achat ${coin}: ${e.message}` }); }
   }
@@ -409,8 +524,9 @@ async function botTick() {
 }
 
 function broadcastState() {
+  const instruments = getInstruments();
   broadcast({
-    type: 'state',
+    type:          'state',
     simBalance:    state.simBalance,
     realBalances:  state.realBalances,
     openPositions: state.openPositions,
@@ -419,8 +535,9 @@ function broadcastState() {
     totalTrades:   state.trades.length,
     botRunning:    state.botRunning,
     mode:          config.mode,
-    exchange:      config.exchange,
-    signals:       Object.fromEntries(config.coins.map(c => [c, computeSignal(c)])),
+    market:        config.market,
+    exchange:      config.market === 'forex' ? 'oanda' : config.exchange,
+    signals:       Object.fromEntries(instruments.map(c => [c, computeSignal(c)])),
   });
 }
 
@@ -441,11 +558,18 @@ app.get('/api/status', (_, res) => res.json({ ok: true, mode: config.mode, excha
 app.get('/api/config', (_, res) => res.json({ ...config, apiSecret: config.apiSecret ? '••••' : '', apiPassphrase: config.apiPassphrase ? '••••' : '' }));
 
 app.post('/api/config', (req, res) => {
-  const { exchange, apiKey, apiSecret, apiPassphrase, mode, startBalance, tradePercent, stopLoss, takeProfit, strategy, coins } = req.body;
+  const { market, exchange, apiKey, apiSecret, apiPassphrase, oandaToken, oandaAccount, oandaEnv, forexPairs, forexUnits, leverage, mode, startBalance, tradePercent, stopLoss, takeProfit, strategy, coins } = req.body;
+  if (market        !== undefined) config.market = market;
   if (exchange      !== undefined) config.exchange = exchange;
   if (apiKey        !== undefined) config.apiKey = apiKey;
   if (apiSecret     !== undefined && !apiSecret.includes('••')) config.apiSecret = apiSecret;
   if (apiPassphrase !== undefined && !apiPassphrase.includes('••')) config.apiPassphrase = apiPassphrase;
+  if (oandaToken    !== undefined && !oandaToken.includes('••')) config.oandaToken = oandaToken;
+  if (oandaAccount  !== undefined) config.oandaAccount = oandaAccount;
+  if (oandaEnv      !== undefined) config.oandaEnv = oandaEnv;
+  if (forexPairs    !== undefined) config.forexPairs = forexPairs;
+  if (forexUnits    !== undefined) config.forexUnits = parseInt(forexUnits);
+  if (leverage      !== undefined) config.leverage = parseInt(leverage);
   if (mode          !== undefined) config.mode = mode;
   if (startBalance  !== undefined) { config.startBalance = parseFloat(startBalance); state.simBalance = config.startBalance; }
   if (tradePercent  !== undefined) config.tradePercent = parseFloat(tradePercent);
@@ -461,7 +585,10 @@ app.post('/api/test-connection', async (req, res) => {
   try {
     const balances = await getBalances();
     state.realBalances = balances;
-    res.json({ ok: true, balances, exchange: config.exchange });
+    const label = config.market === 'forex'
+      ? `OANDA ${config.oandaEnv.toUpperCase()}`
+      : config.exchange.toUpperCase();
+    res.json({ ok: true, balances, exchange: label, market: config.market });
   } catch (e) {
     res.status(400).json({ ok: false, error: e.message });
   }
