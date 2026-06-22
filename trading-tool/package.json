@@ -1,6 +1,6 @@
 {
   "name": "trademind-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TradeMind — Bot de trading Binance",
   "main": "server.js",
   "scripts": {
