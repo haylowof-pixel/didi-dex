@@ -1,0 +1,24 @@
+{
+  "name": "trademind-server",
+  "version": "1.0.0",
+  "description": "TradeMind — Bot de trading Binance",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "ws": "^8.16.0",
+    "node-fetch": "^2.7.0",
+    "crypto": "*"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.7.0",
+    "@capacitor/core": "^5.7.0",
+    "@capacitor/android": "^5.7.0",
+    "@capacitor/splash-screen": "^5.0.7",
+    "@capacitor/status-bar": "^5.0.7"
+  }
+}
