@@ -1,0 +1,21 @@
+{
+  "appId": "com.trademind.app",
+  "appName": "TradeMind",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 800,
+      "launchAutoHide": true,
+      "backgroundColor": "#050810",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#050810",
+      "overlaysWebView": false
+    }
+  }
+}
