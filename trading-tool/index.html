@@ -301,6 +301,14 @@ node server.js</div>
 
     <!-- ═══ DASHBOARD ═══ -->
     <div class="page active" id="page-dashboard">
+      <div id="botLiveBanner" style="display:none;padding:12px 16px;border-radius:12px;margin-bottom:16px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;gap:10px;font-size:14px;">
+        <span class="dot live"></span>
+        <span><strong style="color:var(--green)">Bot actif</strong> — analyse du marché en direct. Les trades apparaissent dans le Journal 📒</span>
+      </div>
+      <div id="botHelpBanner" style="padding:14px 16px;border-radius:12px;margin-bottom:16px;background:rgba(99,210,255,.07);border:1px solid rgba(99,210,255,.2);font-size:13px;line-height:1.7;">
+        👋 <strong>Bienvenue.</strong> C'est une <strong>simulation</strong> (argent virtuel, zéro risque).<br>
+        ➊ Va dans l'onglet <strong>🤖 Bot</strong> &nbsp;→&nbsp; ➋ clique <strong>▶ Démarrer</strong> &nbsp;→&nbsp; ➌ reviens ici, regarde les prix bouger et les trades arriver dans <strong>📒 Journal</strong>.
+      </div>
       <div class="g4">
         <div class="scard b"><div class="slabel" id="balLabel">Capital Simulation</div><div class="sval" id="balVal">€—</div><div class="ssub" id="balSub">—</div></div>
         <div class="scard g"><div class="slabel">P&L Total</div><div class="sval" id="pnlVal">+€0.00</div><div class="ssub" id="pnlPct">+0.00%</div></div>
@@ -604,13 +612,33 @@ async function standaloneInit() {
   updateDashStats(); updatePerfPanel();
   syncModeUI();
 
-  // Polling prix toutes les 15s
+  // Vrais prix toutes les 15s (limites des API gratuites)
   SIM.priceInterval = setInterval(async () => {
     await standaloneFetchPrices();
     renderPriceList(); renderChart(); renderActiveSignal(); renderSignalList();
-    if (SIM.botRunning) standaloneComputeSignalsAndTrade();
     updateDashStats(); updatePerfPanel(); renderPositions();
   }, 15000);
+
+  // Tick rapide toutes les 2s : le marché bouge en continu + le bot analyse → tout est visible
+  SIM.fastTick = setInterval(() => {
+    standaloneWalkPrices();
+    renderPriceList(); renderChart(); renderActiveSignal(); renderSignalList();
+    if (SIM.botRunning) standaloneComputeSignalsAndTrade();
+    updateDashStats(); updatePerfPanel(); renderPositions();
+  }, 2000);
+}
+
+// Micro-mouvement réaliste des prix entre deux appels API — rend le graphique et les signaux vivants
+function standaloneWalkPrices() {
+  const list = SIM.market === 'forex' ? Object.keys(FOREX_SEED) : COINS.map(c => c.id);
+  list.forEach(inst => {
+    if (!serverPrices[inst]) return;
+    const vol = SIM.market === 'forex' ? 0.0012 : 0.006;   // amplitude du mouvement
+    serverPrices[inst] = serverPrices[inst] * (1 + (Math.random() - 0.5) * vol);
+    if (!serverHistory[inst]) serverHistory[inst] = [];
+    serverHistory[inst].push(serverPrices[inst]);
+    if (serverHistory[inst].length > 60) serverHistory[inst].shift();
+  });
 }
 
 async function standaloneFetchPrices() {
@@ -706,7 +734,8 @@ function standaloneComputeSignalsAndTrade() {
       return;
     }
     const sig = clientSignal(inst);
-    if (sig.signal !== 'BUY') return;
+    // Mode démo réactif : on entre sur signal haussier (BUY) ou tendance haussière forte (score >= 2)
+    if (sig.score < 2) return;
     const amount = SIM.balance * pct;
     if (amount < 0.001) return;
     let qty;
@@ -747,9 +776,9 @@ function standaloneToggleBot() {
     const fxMap = {pEURUSD:'EUR_USD',pGBPUSD:'GBP_USD',pUSDJPY:'USD_JPY',pAUDUSD:'AUD_USD',pUSDCHF:'USD_CHF',pEURGBP:'EUR_GBP'};
     SIM.forexPairs    = Object.entries(fxMap).filter(([id])=>document.getElementById(id)?.checked).map(([,v])=>v);
     if (!SIM.forexPairs.length) SIM.forexPairs = ['EUR_USD','GBP_USD'];
-    SIM.botInterval   = setInterval(() => { standaloneComputeSignalsAndTrade(); updateDashStats(); updatePerfPanel(); renderPositions(); }, 15000);
     standaloneComputeSignalsAndTrade();
-    addLog(`🤖 Bot démarré · ${SIM.market==='forex'?'FOREX':'CRYPTO'} · Simulation`, 'info');
+    addLog(`🤖 Bot DÉMARRÉ · ${SIM.market==='forex'?'FOREX':'CRYPTO'} · Simulation · analyse en direct toutes les 2s`, 'info');
+    addLog(`👀 Regarde le journal ci-dessous : les achats et clôtures vont apparaître ici`, 'info');
   }
   serverState.botRunning = SIM.botRunning;
   syncBotBadge();
@@ -1197,14 +1226,20 @@ function syncModeUI(mode) {
 function syncBotBadge() {
   const badge = document.getElementById('botStatusBadge');
   const btn = document.getElementById('startBtn');
+  const liveBanner = document.getElementById('botLiveBanner');
+  const helpBanner = document.getElementById('botHelpBanner');
   if (serverState.botRunning) {
     badge.textContent = serverState.mode === 'live' ? '🔴 EN COURS RÉEL' : '🟡 EN COURS SIM';
     badge.style.color = serverState.mode === 'live' ? 'var(--red)' : 'var(--gold)';
     btn.textContent = '⏹ Arrêter';
     btn.className = 'btn danger';
+    if (liveBanner) liveBanner.style.display = 'flex';
+    if (helpBanner) helpBanner.style.display = 'none';
   } else {
     badge.textContent = 'ARRÊTÉ'; badge.style.color = 'var(--text2)';
     btn.textContent = '▶ Démarrer'; btn.className = 'btn success';
+    if (liveBanner) liveBanner.style.display = 'none';
+    if (helpBanner) helpBanner.style.display = 'block';
   }
 }
 
