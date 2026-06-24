@@ -394,13 +394,7 @@ node server.js</div>
             <div id="botStatusBadge" style="font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);">ARRÊTÉ</div>
           </div>
 
-          <div class="ctrl-row">
-            <div class="ctrl-label">Marché</div>
-            <select id="cfgMarket" onchange="onMarketChange()">
-              <option value="forex">💱 Forex — dès €1, sans minimum</option>
-              <option value="crypto">🪙 Crypto — KuCoin / Bybit / Kraken...</option>
-            </select>
-          </div>
+          <input type="hidden" id="cfgMarket" value="crypto" />
 
           <div class="ctrl-row">
             <div class="ctrl-label">Mode</div>
@@ -410,8 +404,8 @@ node server.js</div>
             </select>
           </div>
 
-          <!-- Forex section -->
-          <div id="forexSection">
+          <!-- Forex section (désactivé — app en crypto uniquement) -->
+          <div id="forexSection" style="display:none;">
             <div class="ctrl-row">
               <div class="ctrl-label">Compte OANDA</div>
               <select id="cfgOandaEnv" style="width:100%;">
