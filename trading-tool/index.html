@@ -340,7 +340,8 @@ node server.js</div>
       </div>
       <div id="botHelpBanner" style="padding:14px 16px;border-radius:12px;margin-bottom:16px;background:rgba(99,210,255,.07);border:1px solid rgba(99,210,255,.2);font-size:13px;line-height:1.7;">
         👋 <strong>Bienvenue.</strong> C'est une <strong>simulation</strong> (argent virtuel, zéro risque).<br>
-        ➊ Va dans l'onglet <strong>🤖 Bot</strong> &nbsp;→&nbsp; ➋ clique <strong>▶ Démarrer</strong> &nbsp;→&nbsp; ➌ reviens ici, regarde les prix bouger et les trades arriver dans <strong>📒 Journal</strong>.
+        Le <strong>🤖 Pilote Automatique</strong> est activé : le bot choisit les cryptos tout seul.<br>
+        ➊ Va dans l'onglet <strong>🤖 Bot</strong> &nbsp;→&nbsp; ➋ clique <strong>▶ Démarrer</strong> &nbsp;→&nbsp; ➌ reviens ici et regarde le bot trader dans <strong>📒 Journal</strong>.
       </div>
       <div class="card" style="margin-bottom:16px;padding:10px 16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
@@ -395,6 +396,15 @@ node server.js</div>
           </div>
 
           <input type="hidden" id="cfgMarket" value="crypto" />
+
+          <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;margin-bottom:14px;border-radius:12px;background:linear-gradient(135deg,rgba(99,210,255,.14),rgba(124,58,237,.14));border:1px solid rgba(99,210,255,.3);">
+            <div style="font-size:24px;">🤖</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:14px;">Pilote Automatique</div>
+              <div style="font-size:11px;color:var(--text1);line-height:1.5;">Le bot scanne toutes les cryptos et achète les meilleures tout seul</div>
+            </div>
+            <label class="tog"><input type="checkbox" id="cfgAutopilot" checked onchange="onAutopilotChange()"><span class="tog-s"></span></label>
+          </div>
 
           <div class="ctrl-row">
             <div class="ctrl-label">Mode</div>
@@ -465,7 +475,8 @@ node server.js</div>
               </select>
             </div>
             <div id="exchangeInfo" style="font-size:11px;color:var(--text2);margin-bottom:12px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;"></div>
-            <div style="margin-bottom:12px;">
+            <div id="autopilotNote" style="font-size:11px;color:var(--accent);margin-bottom:12px;padding:8px 12px;background:rgba(99,210,255,.06);border-radius:8px;border:1px solid rgba(99,210,255,.15);">🤖 Pilote automatique actif : le bot choisit les cryptos lui-même. Désactive-le pour choisir à la main.</div>
+            <div id="manualCoins" style="margin-bottom:12px;display:none;">
               <div class="ctrl-label" style="margin-bottom:7px;">Cryptos</div>
               <div style="display:flex;flex-wrap:wrap;gap:7px;">
                 <label style="font-size:12px;display:flex;align-items:center;gap:5px;"><input type="checkbox" checked id="cBTC"> BTC</label>
@@ -617,6 +628,8 @@ const SIM = {
   takeProfit: 6,
   tradePercent: 10,
   coins: ['BTC','ETH'],
+  autopilot: true,
+  maxPositions: 3,
   market: 'crypto',
   forexPairs: ['EUR_USD','GBP_USD'],
   leverage: 30,
@@ -747,43 +760,50 @@ function clientSignal(instrument) {
 }
 
 function standaloneComputeSignalsAndTrade() {
-  const instruments = SIM.market==='forex' ? SIM.forexPairs : SIM.coins;
+  // En autopilote : tout le marché crypto. Sinon : les cryptos cochées manuellement.
+  const universe = SIM.autopilot ? COINS.map(c => c.id) : SIM.coins;
   const slPct = SIM.stopLoss/100, tpPct = SIM.takeProfit/100;
   const pct = SIM.tradePercent/100;
 
-  instruments.forEach(inst => {
+  // 1) Gérer les positions ouvertes : stop-loss / take-profit
+  Object.keys(SIM.openPositions).forEach(inst => {
     const price = serverPrices[inst]; if (!price) return;
     const pos = SIM.openPositions[inst];
-    if (pos) {
-      const pnlPct = (price - pos.entry) / pos.entry;
-      const hit = pnlPct <= -slPct ? 'Stop-Loss' : pnlPct >= tpPct ? 'Take-Profit' : null;
-      if (hit) {
-        const pnl = (price - pos.entry) * pos.qty;
-        SIM.totalPnl += pnl; if(pnl>0) SIM.wins++;
-        SIM.balance += pos.amount + pnl;
-        SIM.trades.unshift({ coin:inst, entry:pos.entry, exit:price, qty:pos.qty, pnl, amount:pos.amount, reason:hit, mode:'SIM', time:new Date().toISOString() });
-        delete SIM.openPositions[inst];
-        addLog(`${pnl>=0?'🟢':'🔴'} CLÔTURE ${inst} (${hit}) · PnL: ${pnl>=0?'+':''}€${pnl.toFixed(4)}`, pnl>=0?'win':'loss');
-        trades = SIM.trades; renderJournal();
-      }
-      return;
+    const pnlPct = (price - pos.entry) / pos.entry;
+    const hit = pnlPct <= -slPct ? 'Stop-Loss' : pnlPct >= tpPct ? 'Take-Profit' : null;
+    if (hit) {
+      const pnl = (price - pos.entry) * pos.qty;
+      SIM.totalPnl += pnl; if (pnl > 0) SIM.wins++;
+      SIM.balance += pos.amount + pnl;
+      SIM.trades.unshift({ coin:inst, entry:pos.entry, exit:price, qty:pos.qty, pnl, amount:pos.amount, reason:hit, mode:'SIM', time:new Date().toISOString() });
+      delete SIM.openPositions[inst];
+      addLog(`${pnl>=0?'🟢':'🔴'} CLÔTURE ${inst} (${hit}) · PnL: ${pnl>=0?'+':''}€${pnl.toFixed(4)}`, pnl>=0?'win':'loss');
+      trades = SIM.trades; renderJournal();
     }
-    const sig = clientSignal(inst);
-    // Mode démo réactif : on entre sur signal haussier (BUY) ou tendance haussière forte (score >= 2)
-    if (sig.score < 2) return;
-    const amount = SIM.balance * pct;
-    if (amount < 0.001) return;
-    let qty;
-    if (SIM.market === 'forex') {
-      qty = Math.max(1, Math.floor((amount * SIM.leverage) / price));
-      SIM.balance -= amount;
-    } else {
-      qty = amount / price;
-      SIM.balance -= amount;
-    }
-    SIM.openPositions[inst] = { entry:price, qty, amount, time:Date.now() };
-    addLog(`🟢 ACHAT ${inst} @ ${price.toFixed(SIM.market==='forex'?5:2)} · €${amount.toFixed(4)} [SIM]`, 'buy');
   });
+
+  // 2) Ouvrir de nouvelles positions sur les MEILLEURS signaux disponibles
+  const maxPos = SIM.autopilot ? SIM.maxPositions : universe.length;
+  let slots = maxPos - Object.keys(SIM.openPositions).length;
+  if (slots > 0) {
+    const candidates = universe
+      .filter(inst => !SIM.openPositions[inst] && serverPrices[inst])
+      .map(inst => ({ inst, sig: clientSignal(inst) }))
+      .filter(x => x.sig.score >= 2)                 // signal haussier suffisant
+      .sort((a, b) => b.sig.score - a.sig.score);    // le meilleur d'abord
+    for (const { inst, sig } of candidates) {
+      if (slots <= 0) break;
+      const price = serverPrices[inst];
+      const amount = SIM.balance * pct;
+      if (amount < 0.001) break;
+      const qty = amount / price;
+      SIM.balance -= amount;
+      SIM.openPositions[inst] = { entry:price, qty, amount, time:Date.now() };
+      if (SIM.autopilot) addLog(`🎯 AUTOPILOTE a choisi ${inst} (signal +${sig.score}/4) · achat €${amount.toFixed(2)}`, 'buy');
+      else addLog(`🟢 ACHAT ${inst} @ €${price.toFixed(2)} · €${amount.toFixed(2)} [SIM]`, 'buy');
+      slots--;
+    }
+  }
 
   // Sync serverState depuis SIM
   serverState.simBalance    = SIM.balance;
@@ -791,7 +811,7 @@ function standaloneComputeSignalsAndTrade() {
   serverState.totalPnl      = SIM.totalPnl;
   serverState.wins          = SIM.wins;
   serverState.totalTrades   = SIM.trades.length;
-  serverState.signals       = Object.fromEntries(instruments.map(i => [i, clientSignal(i)]));
+  serverState.signals       = Object.fromEntries(COINS.map(c => [c.id, clientSignal(c.id)]));
 }
 
 function standaloneToggleBot() {
@@ -807,13 +827,17 @@ function standaloneToggleBot() {
     SIM.startBalance  = SIM.balance;
     SIM.market        = document.getElementById('cfgMarket').value;
     SIM.leverage      = parseInt(document.getElementById('cfgLeverage')?.value||30);
+    SIM.autopilot     = document.getElementById('cfgAutopilot')?.checked ?? true;
     SIM.coins         = ['BTC','ETH','SOL','BNB'].filter(c=>document.getElementById('c'+c)?.checked);
-    const fxMap = {pEURUSD:'EUR_USD',pGBPUSD:'GBP_USD',pUSDJPY:'USD_JPY',pAUDUSD:'AUD_USD',pUSDCHF:'USD_CHF',pEURGBP:'EUR_GBP'};
-    SIM.forexPairs    = Object.entries(fxMap).filter(([id])=>document.getElementById(id)?.checked).map(([,v])=>v);
-    if (!SIM.forexPairs.length) SIM.forexPairs = ['EUR_USD','GBP_USD'];
+    if (!SIM.coins.length) SIM.coins = ['BTC','ETH'];
     standaloneComputeSignalsAndTrade();
-    addLog(`🤖 Bot DÉMARRÉ · ${SIM.market==='forex'?'FOREX':'CRYPTO'} · Simulation · analyse en direct toutes les 2s`, 'info');
-    addLog(`👀 Regarde le journal ci-dessous : les achats et clôtures vont apparaître ici`, 'info');
+    if (SIM.autopilot) {
+      addLog(`🤖 PILOTE AUTOMATIQUE activé · le bot scanne ${COINS.length} cryptos et choisit les meilleures tout seul`, 'info');
+      addLog(`🎯 Jusqu'à ${SIM.maxPositions} positions sur les signaux les plus forts · simulation`, 'info');
+    } else {
+      addLog(`🤖 Bot DÉMARRÉ · Crypto · Simulation · cryptos choisies manuellement`, 'info');
+    }
+    addLog(`👀 Regarde le journal ci-dessous : les achats et clôtures apparaissent ici`, 'info');
   }
   serverState.botRunning = SIM.botRunning;
   syncBotBadge();
@@ -1280,8 +1304,17 @@ function onExchangeChange() {
   if (pp) pp.style.display = ex === 'kucoin' ? 'flex' : 'none';
 }
 
+function onAutopilotChange() {
+  const on = document.getElementById('cfgAutopilot')?.checked ?? true;
+  SIM.autopilot = on;
+  const manual = document.getElementById('manualCoins');
+  const note = document.getElementById('autopilotNote');
+  if (manual) manual.style.display = on ? 'none' : 'block';
+  if (note) note.style.display = on ? 'block' : 'none';
+}
+
 // Init on load
-setTimeout(() => { onMarketChange(); onExchangeChange(); }, 100);
+setTimeout(() => { onMarketChange(); onExchangeChange(); onAutopilotChange(); }, 100);
 
 async function testConnection() {
   const btn = document.getElementById('testBtn');
