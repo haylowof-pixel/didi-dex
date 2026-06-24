@@ -34,6 +34,13 @@ jobs:
       - name: Build site
         run: npm run vite:build
 
+      - name: Bundle TradeMind at /trademind/
+        run: |
+          mkdir -p dist/trademind
+          cp trading-tool/index.html dist/trademind/
+          cp trading-tool/manifest.json dist/trademind/ 2>/dev/null || true
+          cp trading-tool/sw.js dist/trademind/ 2>/dev/null || true
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
