@@ -88,7 +88,9 @@
       padding: 9px 18px; border-radius: 10px 10px 0 0;
       border: none; background: transparent; color: var(--text1);
       font-size: 13px; cursor: pointer; transition: all .2s;
+      display: inline-flex; align-items: center; gap: 7px;
     }
+    .tab svg { width: 19px; height: 19px; }
     .tab.active { background: var(--bg3); color: var(--accent); border: 1px solid var(--border); border-bottom: 1px solid var(--bg3); margin-bottom: -1px; }
     .tab:hover:not(.active) { color: var(--text0); background: rgba(255,255,255,0.04); }
 
@@ -284,8 +286,18 @@
       color:var(--green); background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3);
       padding:3px 8px; border-radius:20px; letter-spacing:.5px; }
 
+    /* ── Icônes & en-tête portefeuille ── */
+    .logo-icon svg { width:20px; height:20px; color:#fff; }
+    .hdr-port { text-align:right; line-height:1.25; margin-right:12px; }
+    .hdr-port .hp-bal { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+    .hdr-port .hp-pnl { font-size:11px; font-weight:600; }
+    .hdr-port .hp-lbl { font-size:9px; color:var(--text2); text-transform:uppercase; letter-spacing:.8px; }
+    .header-right { display:flex; align-items:center; }
+
     @media (max-width: 600px) {
       .pitem .spark { display:none; }
+      .hdr-port .hp-lbl { display:none; }
+      .hdr-port { margin-right:8px; }
     }
 
     ::-webkit-scrollbar { width:5px; }
@@ -310,24 +322,31 @@ node server.js</div>
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <div class="logo-icon">📈</div>
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg></div>
       <div>
         <div class="logo-text">TradeMind</div>
-        <div class="logo-sub">Bot de Trading Réel</div>
+        <div class="logo-sub">Auto-Trading Bot</div>
       </div>
     </div>
-    <div class="conn-badge">
-      <div class="dot" id="dot"></div>
-      <span id="connLabel">Connexion...</span>
+    <div class="header-right">
+      <div class="hdr-port">
+        <div class="hp-lbl">Portefeuille</div>
+        <div class="hp-bal" id="hdrBal">€—</div>
+        <div class="hp-pnl" id="hdrPnl">+0.00%</div>
+      </div>
+      <div class="conn-badge">
+        <div class="dot" id="dot"></div>
+        <span id="connLabel">Connexion...</span>
+      </div>
     </div>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="showPage('dashboard')">📊<span>Dashboard</span></button>
-    <button class="tab" onclick="showPage('bot')">🤖<span>Bot</span></button>
-    <button class="tab" onclick="showPage('signals')">📡<span>Signaux</span></button>
-    <button class="tab" onclick="showPage('journal')">📒<span>Journal</span></button>
+    <button class="tab active" onclick="showPage('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg><span>Dashboard</span></button>
+    <button class="tab" onclick="showPage('bot')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M12 8V4M8.5 4h7M9 13.5h.01M15 13.5h.01M2 13h2M20 13h2"/></svg><span>Bot</span></button>
+    <button class="tab" onclick="showPage('signals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>Signaux</span></button>
+    <button class="tab" onclick="showPage('journal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Journal</span></button>
   </div>
 
   <div class="main">
@@ -1185,6 +1204,14 @@ function updateDashStats() {
   document.getElementById('wrVal').textContent = `${wr}%`;
   document.getElementById('wrSub').textContent = `${st.wins}/${st.totalTrades}`;
   document.getElementById('posCount').textContent = posCount;
+
+  // En-tête : portefeuille live
+  const hb = document.getElementById('hdrBal'), hp = document.getElementById('hdrPnl');
+  if (hb) hb.textContent = `€${parseFloat(bal).toFixed(2)}`;
+  if (hp) {
+    hp.textContent = `${pnlPct>=0?'+':''}${pnlPct}%`;
+    hp.style.color = pnlPct>=0 ? 'var(--green)' : 'var(--red)';
+  }
 }
 
 // ════════════════════════════════════════════════════════════
