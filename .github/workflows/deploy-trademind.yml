@@ -1,9 +1,9 @@
 name: Deploy TradeMind to GitHub Pages
 
+# NOTE: TradeMind is now bundled into the main "Deploy web" workflow (pages.yml)
+# at /trademind/ to avoid two workflows fighting over the same GitHub Pages site.
+# This workflow is kept for manual standalone deploys only.
 on:
-  push:
-    branches: [master]
-    paths: ['trading-tool/**']
   workflow_dispatch:
 
 permissions:
