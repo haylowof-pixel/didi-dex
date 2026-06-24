@@ -146,10 +146,13 @@
 
     /* ── Prices ── */
     .pitem {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 10px; border-radius: 8px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 10px; border-radius: 10px; cursor: pointer;
       transition: background .15s; margin: 2px -10px;
     }
+    .pitem .pname-wrap { flex: 1 1 auto; min-width: 0; }
+    .pitem .spark { flex: 0 0 64px; opacity: .95; }
+    .pitem .pright { text-align: right; flex: 0 0 auto; }
     .pitem:hover { background: rgba(255,255,255,.04); }
     .pitem.sel { background: rgba(99,210,255,.08); border: 1px solid rgba(99,210,255,.2); }
     .cicon { width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(255,255,255,.06); }
@@ -255,6 +258,36 @@
       .card { padding:14px; }
     }
 
+    /* ── Sparkline + flux temps réel ── */
+    .spark svg { display:block; width:100%; height:26px; }
+    @keyframes flashG { 0%,35%{color:var(--green);text-shadow:0 0 10px rgba(34,197,94,.6)} 100%{color:var(--text0);text-shadow:none} }
+    @keyframes flashR { 0%,35%{color:var(--red);text-shadow:0 0 10px rgba(239,68,68,.6)} 100%{color:var(--text0);text-shadow:none} }
+    .flash-up   { animation: flashG .7s ease-out; }
+    .flash-down { animation: flashR .7s ease-out; }
+    .cchg.dn { background:rgba(239,68,68,.15); color:var(--red); }
+
+    /* ── Jauge RSI ── */
+    .gauge { position:relative; height:8px; border-radius:5px; overflow:hidden;
+      background: linear-gradient(90deg, rgba(34,197,94,.5) 0%, rgba(34,197,94,.5) 30%, rgba(245,158,11,.4) 30%, rgba(245,158,11,.4) 70%, rgba(239,68,68,.5) 70%, rgba(239,68,68,.5) 100%); }
+    .gauge-needle { position:absolute; top:-3px; width:3px; height:14px; background:#fff; border-radius:2px; box-shadow:0 0 6px rgba(255,255,255,.7); transform:translateX(-50%); transition:left .4s; }
+    .zone-row { display:flex; justify-content:space-between; font-size:9px; color:var(--text2); margin-top:3px; }
+
+    /* ── Ticker bandeau live ── */
+    .ticker { display:flex; gap:18px; overflow-x:auto; padding:8px 0; scrollbar-width:none; }
+    .ticker::-webkit-scrollbar { display:none; }
+    .ticker-item { display:flex; align-items:center; gap:6px; font-size:12px; white-space:nowrap; }
+    .ticker-item .tk-sym { color:var(--text1); font-weight:600; }
+    .ticker-item .tk-px { font-variant-numeric:tabular-nums; }
+
+    /* ── LIVE pill ── */
+    .live-pill { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700;
+      color:var(--green); background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3);
+      padding:3px 8px; border-radius:20px; letter-spacing:.5px; }
+
+    @media (max-width: 600px) {
+      .pitem .spark { display:none; }
+    }
+
     ::-webkit-scrollbar { width:5px; }
     ::-webkit-scrollbar-thumb { background:rgba(99,210,255,.13);border-radius:3px; }
   </style>
@@ -308,6 +341,13 @@ node server.js</div>
       <div id="botHelpBanner" style="padding:14px 16px;border-radius:12px;margin-bottom:16px;background:rgba(99,210,255,.07);border:1px solid rgba(99,210,255,.2);font-size:13px;line-height:1.7;">
         👋 <strong>Bienvenue.</strong> C'est une <strong>simulation</strong> (argent virtuel, zéro risque).<br>
         ➊ Va dans l'onglet <strong>🤖 Bot</strong> &nbsp;→&nbsp; ➋ clique <strong>▶ Démarrer</strong> &nbsp;→&nbsp; ➌ reviens ici, regarde les prix bouger et les trades arriver dans <strong>📒 Journal</strong>.
+      </div>
+      <div class="card" style="margin-bottom:16px;padding:10px 16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text2);">Cours en direct</div>
+          <span class="live-pill"><span class="dot live"></span>LIVE</span>
+        </div>
+        <div class="ticker" id="ticker"></div>
       </div>
       <div class="g4">
         <div class="scard b"><div class="slabel" id="balLabel">Capital Simulation</div><div class="sval" id="balVal">€—</div><div class="ssub" id="balSub">—</div></div>
@@ -566,6 +606,7 @@ let serverPrices = {};
 let serverHistory = {};
 let trades = [];
 let selectedCoin = 'BTC';
+let prevPrices = {};
 
 // ── Standalone simulation (no server) ────────────────────────
 const SIM = {
@@ -911,24 +952,66 @@ function fmtPrice(p) {
   return p.toFixed(4);
 }
 
+// Mini-graphique SVG (sparkline) à partir de l'historique
+function sparkline(hist, color) {
+  if (!hist || hist.length < 2) return '';
+  const w = 64, h = 26;
+  const min = Math.min(...hist), max = Math.max(...hist), rng = (max - min) || 1;
+  const pts = hist.map((v, i) => `${((i / (hist.length - 1)) * w).toFixed(1)},${(h - ((v - min) / rng) * (h - 2) - 1).toFixed(1)}`).join(' ');
+  const last = pts.split(' ').pop().split(',');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="${last[0]}" cy="${last[1]}" r="1.8" fill="${color}"/>
+  </svg>`;
+}
+
+function changePct(coin, price) {
+  const h = serverHistory[coin] || [];
+  if (h.length < 2 || !h[0]) return 0;
+  return (price - h[0]) / h[0] * 100;
+}
+
 function renderPriceList() {
   const el = document.getElementById('priceList');
   el.innerHTML = COINS.map(c => {
     const p = serverPrices[c.id];
     if (!p) return '';
     const sig = serverState.signals[c.id] || {};
-    const chg24 = sig.change24h || 0;
+    const h = serverHistory[c.id] || [];
+    const chg = changePct(c.id, p);
+    const up = chg >= 0;
+    const prev = prevPrices[c.id];
+    const flash = prev !== undefined ? (p > prev ? 'flash-up' : (p < prev ? 'flash-down' : '')) : '';
     return `<div class="pitem ${selectedCoin===c.id?'sel':''}" onclick="selectCoin('${c.id}')">
-      <div style="display:flex;align-items:center;gap:9px;">
+      <div style="display:flex;align-items:center;gap:9px;flex:1 1 auto;min-width:0;">
         <div class="cicon">${c.icon}</div>
-        <div><div class="cname">${c.name}</div><div class="csym">${c.id}</div></div>
+        <div class="pname-wrap"><div class="cname">${c.name}</div><div class="csym">${c.id}/EUR</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div>
-          <div class="cprice">€${fmtPrice(p)}</div>
-        </div>
-        <div class="sig ${sig.signal||'WATCH'}">${sig.signal||'—'}</div>
+      <div class="spark">${sparkline(h, up ? '#22c55e' : '#ef4444')}</div>
+      <div class="pright">
+        <div class="cprice ${flash}">€${fmtPrice(p)}</div>
+        <div class="cchg ${up?'up':'dn'}">${up?'▲':'▼'} ${Math.abs(chg).toFixed(2)}%</div>
       </div>
+      <div class="sig ${sig.signal||'WATCH'}">${sig.signal||'—'}</div>
+    </div>`;
+  }).join('');
+  renderTicker();
+  // mémorise les prix pour le clignotement au prochain rendu
+  COINS.forEach(c => { if (serverPrices[c.id]) prevPrices[c.id] = serverPrices[c.id]; });
+}
+
+function renderTicker() {
+  const el = document.getElementById('ticker');
+  if (!el) return;
+  el.innerHTML = COINS.map(c => {
+    const p = serverPrices[c.id];
+    if (!p) return '';
+    const chg = changePct(c.id, p);
+    const up = chg >= 0;
+    return `<div class="ticker-item">
+      <span class="tk-sym">${c.id}</span>
+      <span class="tk-px">€${fmtPrice(p)}</span>
+      <span style="color:${up?'var(--green)':'var(--red)'};font-weight:600;">${up?'▲':'▼'}${Math.abs(chg).toFixed(2)}%</span>
     </div>`;
   }).join('');
 }
@@ -938,7 +1021,6 @@ function selectCoin(id) {
   renderPriceList();
   renderChart();
   renderActiveSignal();
-  document.getElementById('chartTitle').textContent = id + '/EUR';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -956,6 +1038,18 @@ function renderChart() {
   const pad = 28;
   const tx = i => pad + (i/(h.length-1))*(W-pad*2);
   const ty = v => H-pad-((v-min)/rng)*(H-pad*2);
+  // Grille horizontale
+  ctx.strokeStyle = 'rgba(99,210,255,.06)'; ctx.lineWidth = 1;
+  for (let g = 0; g <= 4; g++) {
+    const gy = pad + (g/4)*(H-pad*2);
+    ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(W-pad, gy); ctx.stroke();
+  }
+  // Titre live (prix + variation)
+  const titleEl = document.getElementById('chartTitle');
+  if (titleEl) {
+    const cur = h[h.length-1], chg = changePct(selectedCoin, cur), up = chg >= 0;
+    titleEl.innerHTML = `${selectedCoin}/EUR &nbsp; <span style="color:var(--text0);font-weight:700;">€${fmtPrice(cur)}</span> <span style="color:${up?'var(--green)':'var(--red)'};font-size:11px;">${up?'▲':'▼'}${Math.abs(chg).toFixed(2)}%</span>`;
+  }
   const grad = ctx.createLinearGradient(0,0,0,H);
   grad.addColorStop(0,'rgba(99,210,255,.28)'); grad.addColorStop(1,'rgba(99,210,255,0)');
   ctx.beginPath();
@@ -982,13 +1076,28 @@ function renderActiveSignal() {
   const sig = serverState.signals[selectedCoin];
   const panel = document.getElementById('sigPanel');
   if (!sig) return;
+  const rsi = sig.rsi || 50;
+  const advice = sig.signal === 'BUY' ? 'Signal d\'achat — momentum haussier'
+    : sig.signal === 'SELL' ? 'Signal de vente — momentum baissier'
+    : sig.signal === 'WATCH' ? 'À surveiller — tendance naissante'
+    : 'Neutre — pas de signal clair';
   panel.innerHTML = `
-    <div style="text-align:center;margin-bottom:12px;"><div class="sig ${sig.signal}" style="font-size:14px;padding:6px 18px;display:inline-block;">${sig.signal}</div></div>
-    <div style="margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text2)">RSI (14)</span><span style="color:${sig.rsi<35?'var(--green)':sig.rsi>65?'var(--red)':'var(--text1)'}">${(sig.rsi||50).toFixed(1)}</span></div>
-      <div class="bar-t"><div class="bar-f" style="width:${sig.rsi||50}%;background:${sig.rsi<35?'var(--green)':sig.rsi>65?'var(--red)':'var(--accent)'}"></div></div>
+    <div style="text-align:center;margin-bottom:14px;">
+      <div class="sig ${sig.signal}" style="font-size:15px;padding:7px 22px;display:inline-block;">${sig.signal}</div>
+      <div style="font-size:11px;color:var(--text1);margin-top:7px;">${advice}</div>
     </div>
-    <div style="font-size:11px;color:var(--text2);">Score: ${sig.score>0?'+':''}${sig.score||0}/4 · MA20: €${fmtPrice(sig.ma20)}</div>`;
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text2)">RSI (14)</span><span style="font-weight:700;color:${rsi<35?'var(--green)':rsi>65?'var(--red)':'var(--text0)'}">${rsi.toFixed(1)}</span></div>
+      <div class="gauge"><div class="gauge-needle" style="left:${Math.max(2,Math.min(98,rsi))}%;"></div></div>
+      <div class="zone-row"><span>Survente</span><span>Neutre</span><span>Surachat</span></div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text2)">MACD</span><span style="color:${(sig.macd||0)>=0?'var(--green)':'var(--red)'}">${(sig.macd||0)>=0?'haussier ▲':'baissier ▼'}</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding-top:8px;border-top:1px solid var(--border);">
+      <span>Score: <strong style="color:${sig.score>0?'var(--green)':sig.score<0?'var(--red)':'var(--text1)'}">${sig.score>0?'+':''}${sig.score||0}/4</strong></span>
+      <span>MA20: €${fmtPrice(sig.ma20)}</span>
+    </div>`;
 }
 
 function renderSignalList() {
